@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "category": {
+            "type": "string"
+          },
+          "brandName": {
+            "type": "string"
+          },
+          "goodsName": {
+            "type": "string"
+          },
+          "point": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "category",
+          "brandName",
+          "goodsName",
+          "point",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "data",
+    "total"
+  ],
+  "additionalProperties": false
+}

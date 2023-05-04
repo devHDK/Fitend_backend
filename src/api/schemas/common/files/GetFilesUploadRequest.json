@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "image",
+        "file",
+        "video"
+      ]
+    },
+    "mimeType": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "type",
+    "mimeType"
+  ]
+}

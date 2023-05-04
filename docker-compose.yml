@@ -1,0 +1,81 @@
+version: '3.7'
+services:
+  backend:
+    image: 091144939942.dkr.ecr.ap-northeast-2.amazonaws.com/fitend-backend-dev:latest
+    environment:
+      - NODE_ENV=development
+    networks:
+      - inbound
+      - backend
+    logging:
+      driver: json-file
+      options:
+        max-file: '10'
+        max-size: '100m'
+    deploy:
+      mode: replicated
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+      labels:
+        - traefik.enable=true
+        - traefik.docker.lbswarm=true
+        - traefik.docker.network=inbound
+        - traefik.http.routers.fitend-backend.rule=Host(`api-dev.fit-end.com`)
+        - traefik.http.routers.fitend-backend.entrypoints=websecure
+        - traefik.http.routers.fitend-backend.tls=true
+        - traefik.http.routers.fitend-backend.tls.certresolver=fitend
+        - traefik.http.services.fitend-backend-service.loadbalancer.server.port=4000
+
+  traefik:
+    image: traefik:2.2
+    command:
+      #- --log.level=DEBUG
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.swarmMode=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesResolvers.fitend.acme.httpchallenge=true
+      - --certificatesResolvers.fitend.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.fitend.acme.storage=/letsencrypt/acme.json
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+    volumes:
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - inbound
+    logging:
+      driver: json-file
+      options:
+        max-file: '5'
+        max-size: '20m'
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  letsencrypt:
+
+networks:
+  inbound:
+    name: inbound
+
+  backend:
+    name: backend

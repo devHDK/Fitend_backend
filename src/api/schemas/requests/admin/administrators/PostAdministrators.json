@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "string",
+      "pattern": "^[0-9a-zA-Z!_]{4,20}$"
+    },
+    "password": {
+      "type": "string",
+      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=\/]{6,40}$"
+    },
+    "role": {
+      "type": "string",
+      "enum": ["master"]
+    }
+  },
+  "required": [
+    "username",
+    "password",
+    "role"
+  ],
+  "additionalProperties": false
+}

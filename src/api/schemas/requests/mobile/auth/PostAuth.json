@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "password": {
+      "type": "string",
+      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=\/]{8,20}$"
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["android", "ios"]
+    },
+    "token": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "email",
+    "password",
+    "platform",
+    "token"
+  ],
+  "additionalProperties": false
+}

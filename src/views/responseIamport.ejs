@@ -1,0 +1,19 @@
+<script>
+  if (window.CallbackWebInterface) {
+    if ('<%= result %>' === 'true') {
+      window.CallbackWebInterface.paymentSuccess(Number('<%= id %>'));
+    } else {
+      window.CallbackWebInterface.paymentFail({msg: '<%= msg %>'});
+    }
+  } else if (webkit && webkit.messageHandlers && webkit.messageHandlers.callbackHandler) {
+    if ('<%= result %>' === 'true') {
+      var message = {'command': 'paymentSuccess', 'id': Number('<%= id %>'), 'orderId': 2, 'msg': 'success'};
+      webkit.messageHandlers.callbackHandler.postMessage(message);
+    } else {
+      var message = {'command': 'paymentFail', 'id': 0, 'msg': '<%= msg %>'};
+      webkit.messageHandlers.callbackHandler.postMessage(message);
+    }
+  } else {
+    alert('모바일 또는 태블릿 기기에서만 사용 가능합니다.');
+  }
+</script>

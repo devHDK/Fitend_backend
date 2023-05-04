@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport"
+          content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>DFANG</title>
+</head>
+<body>
+<div id="popup_zip"
+     style="position:fixed;overflow:hidden;z-index:998;-webkit-overflow-scrolling:touch;top:0;left:0;width:100%;height:100%;"></div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
+<script>
+  var webkit = webkit;
+  var element_layer = document.getElementById('popup_zip');
+  new daum.Postcode({
+    oncomplete: function (data) {
+      if (window && window.ReactNativeWebView) {
+        var message = {'command': 'getAddress', 'postcode': data.zonecode, 'address': data.roadAddress};
+        window.ReactNativeWebView.postMessage(JSON.stringify(message))
+      } else {
+        alert('모바일 또는 태블릿 기기에서만 사용 가능합니다.');
+      }
+    },
+    width: '100%',
+    height: '100%',
+    maxSuggestItems: 5
+  }).embed(element_layer, {autoClose: false});
+</script>
+</body>
+</html>

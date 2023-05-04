@@ -1,0 +1,6 @@
+node_modules
+scripts
+test
+lambdas
+logs
+.nyc_output
