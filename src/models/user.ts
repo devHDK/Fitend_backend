@@ -1,37 +1,73 @@
 import moment from 'moment-timezone'
 import {v4 as uuid} from 'uuid'
 import {PoolConnection} from 'mysql'
+import crypto from 'crypto'
 import {db} from '../loaders'
+import {passwordIterations} from '../libs/code'
 import {IUser, IUserCreateOne, IUserFindOne, IUserUpdate, IUserUpdatePassword} from '../interfaces/user'
 
 moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'Users'
 
+function verifyPassword(password, hash, salt) {
+  return new Promise((resolve, reject) => {
+    crypto.pbkdf2(password, salt, passwordIterations.mobile, 64, 'sha512', (err, key) => {
+      if (err) reject(err)
+      if (key.toString('base64') === hash) resolve(true)
+      else resolve(false)
+    })
+  })
+}
+
 async function create(options: IUserCreateOne, connection?: PoolConnection): Promise<IUser> {
   try {
-    options.deviceId = uuid()
-    const {accountInfo, ...data} = options
+    const {email, nickname, password, ...data} = options
     const {insertId} = await db.query({
       connection,
       sql: `INSERT INTO ?? SET ?`,
       values: [
         tableName,
         {
-          accountInfo: JSON.stringify(accountInfo),
+          email,
+          nickname,
+          password: JSON.stringify(password),
           ...data
         }
       ]
     })
     options.id = insertId
-    options.point = 0
-    if (!options.cityId) options.cityId = null
-    if (!options.isMarried) options.isMarried = null
+
     return options
   } catch (e) {
     throw e
   }
 }
+
+// async function create(options: IUserCreateOne, connection?: PoolConnection): Promise<IUser> {
+//   try {
+//     options.deviceId = uuid()
+//     const {accountInfo, ...data} = options
+//     const {insertId} = await db.query({
+//       connection,
+//       sql: `INSERT INTO ?? SET ?`,
+//       values: [
+//         tableName,
+//         {
+//           accountInfo: JSON.stringify(accountInfo),
+//           ...data
+//         }
+//       ]
+//     })
+//     options.id = insertId
+//     options.point = 0
+//     if (!options.cityId) options.cityId = null
+//     if (!options.isMarried) options.isMarried = null
+//     return options
+//   } catch (e) {
+//     throw e
+//   }
+// }
 
 async function findOne(options: IUserFindOne): Promise<IUser> {
   try {
@@ -82,10 +118,4 @@ async function updateOne(options: IUserUpdate, connection?: PoolConnection): Pro
   }
 }
 
-export {
-  tableName,
-  create,
-  findOne,
-  updateOne,
-  updatePassword
-}
+export {tableName, verifyPassword, create, findOne, updateOne, updatePassword}

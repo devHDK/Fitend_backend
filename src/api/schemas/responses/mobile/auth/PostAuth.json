@@ -7,7 +7,7 @@
     "refreshToken": {
       "type": "string"
     },
-    "presenter": {
+    "user": {
       "type": "object",
       "properties": {
         "id": {
@@ -22,13 +22,6 @@
         "phone": {
           "type": "string"
         },
-        "isMarketing": {
-          "type": "boolean"
-        },
-        "membership": {
-          "type": "string",
-          "enum": ["general", "club"]
-        },
         "deletedAt": {
           "type": "string",
           "nullable": true
@@ -40,7 +33,7 @@
   "required": [
     "accessToken",
     "refreshToken",
-    "presenter"
+    "user"
   ],
   "additionalProperties": false
 }
