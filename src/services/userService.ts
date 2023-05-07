@@ -31,6 +31,17 @@ async function create(options: {email: string; nickname: string; password: strin
   }
 }
 
+async function getMe(options: {id: number}): Promise<IUser> {
+  try {
+    const {id} = options
+    const user = await User.findOne({id})
+
+    return user
+  } catch (e) {
+    throw e
+  }
+}
+
 // async function create(options: {
 //   email: string
 //   nickname: string
@@ -161,4 +172,4 @@ async function updateStatus(
   }
 }
 
-export {create, findOne, update, updatePassword, updateStatus}
+export {create, getMe, findOne, update, updatePassword, updateStatus}

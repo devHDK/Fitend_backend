@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "properties": {
+    "user": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "email": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "deletedAt": {
+          "type": "string",
+          "nullable": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "user"
+  ],
+  "additionalProperties": false
+}

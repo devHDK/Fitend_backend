@@ -14,4 +14,16 @@ const createUser = new ApiRouter({
   handler: ctrl.createUser
 })
 
-export {createUser}
+const getOne = new ApiRouter({
+  name: ':id',
+  method: 'get',
+  summary: '회원 조회',
+  tags: ['Users'],
+  schema: 'requests/mobile/users/GetOne',
+  responses: {
+    200: {schema: 'responses/mobile/users/GetOne'}
+  },
+  handler: ctrl.getOne
+})
+
+export {createUser, getOne}
