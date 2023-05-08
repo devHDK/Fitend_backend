@@ -2,6 +2,7 @@ import {Response} from 'express'
 import {db} from '../../../../loaders'
 import {UserService} from '../../../../services'
 import {IUser} from '../../../../interfaces/user'
+import {jwt as JWT} from '../../../../libs'
 
 async function createUser(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
@@ -14,10 +15,17 @@ async function createUser(req: IRequest, res: Response, next: Function): Promise
   }
 }
 
-async function getOne(req: IRequest, res: Response, next: Function): Promise<void> {
+async function getMe(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {id} = req.options
-    const user = await UserService.getMe({id})
+    const {authorization} = req.headers
+    if (authorization && authorization.split(' ')[0] === 'Bearer') {
+      const jwtToken = await JWT.decodeToken(authorization.split(' ')[1], {algorithms: ['RS256']})
+      if (jwtToken.sub) {
+        req.userId = jwtToken.sub
+        req.userType = jwtToken.type
+      }
+    }
+    const user = await UserService.getMe({id: req.userId})
 
     delete user.password
 
@@ -27,4 +35,4 @@ async function getOne(req: IRequest, res: Response, next: Function): Promise<voi
   }
 }
 
-export {createUser, getOne}
+export {createUser, getMe}
