@@ -2,7 +2,7 @@ import {ApiRouter} from '../../default'
 import * as ctrl from './auth-ctrl'
 
 const postAuth = new ApiRouter({
-  name: 'presenters',
+  name: 'login',
   method: 'post',
   summary: '로그인',
   tags: ['Auth'],
@@ -29,7 +29,4 @@ const postAuthRefresh = new ApiRouter({
   handler: ctrl.postAuthRefresh
 })
 
-export {
-  postAuth,
-  postAuthRefresh
-}
+export {postAuth, postAuthRefresh}

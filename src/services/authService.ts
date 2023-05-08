@@ -31,26 +31,19 @@ async function signIn(options: {
 
 async function refreshToken(accessToken: string, refreshToken: string): Promise<string> {
   try {
-    // const payload = await JWT.decodeToken(accessToken, {algorithms: ['RS256'], ignoreExpiration: true})
-    // if (payload.sub) {
-    //   let refreshHash
-    //   if (payload.type === 'presenter') {
-    //     const presenter = await Presenter.findOne(payload.sub)
-    //     if (!presenter) throw new Error('not_found')
-    //     refreshHash = presenter.password.salt
-    //   } else {
-    //     const student = await Student.findOne(payload.sub)
-    //     if (!student) throw new Error('not_found')
-    //     refreshHash = student.password.salt
-    //   }
-    //   await JWT.decodeToken(refreshToken, {algorithms: ['HS256']}, refreshHash)
-    //   delete payload.iat
-    //   delete payload.exp
-    //   delete payload.nbf
-    //   delete payload.jti
-    //   return await JWT.createAccessToken({id: payload.sub, type: payload.type})
-    // }
-    throw new Error('invalid_token')
+    const payload = await JWT.decodeToken(accessToken, {algorithms: ['RS256'], ignoreExpiration: true})
+    if (payload.sub) {
+      let refreshHash
+      if (payload.type === 'user') {
+        const user = await User.findOne(payload.sub)
+        if (!user) throw new Error('not_found')
+        refreshHash = user.password.salt
+      }
+
+      await JWT.decodeToken(refreshToken, {algorithms: ['HS256']}, refreshHash)
+      const reissuedToken = await JWT.createAccessToken({id: payload.sub, type: payload.type})
+      return reissuedToken
+    }
   } catch (e) {
     throw e
   }
