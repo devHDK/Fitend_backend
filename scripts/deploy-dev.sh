@@ -27,7 +27,7 @@ fi
 
 set -e
 
-docker build -t ${IMAGE_NAME} .
+docker build --platform linux/amd64 -t ${IMAGE_NAME} .
 errorCheck
 
 docker tag ${IMAGE_NAME}:latest ${REGISTRY_URL}
