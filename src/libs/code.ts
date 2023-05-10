@@ -10,7 +10,8 @@ interface IPasswordHash {
 
 const passwordIterations = {
   mobile: 132436,
-  admin: 123853
+  admin: 123853,
+  web: 113422
 }
 
 function generateRandomCode(digit: number): number {

@@ -18,11 +18,16 @@ if (process.env.NODE_ENV !== 'production') {
   adminDoc.info.title = `${adminDoc.info.title} admin api`
   delete adminDoc.components.securitySchemes
 
+  const webDoc = generator('web')
+  adminDoc.info.title = `${adminDoc.info.title} web trainer api`
+  delete adminDoc.components.securitySchemes
+
   let description = ''
-  description = `\n- [${generalDoc.info.title}](/api/swagger)\n- [${adminDoc.info.title}](/api/swagger/admin)`
+  description = `\n- [${generalDoc.info.title}](/api/swagger)\n- [${adminDoc.info.title}](/api/swagger/admin)\n- [${webDoc.info.title}](/api/swagger/web)`
 
   generalDoc.info.description += description
   adminDoc.info.description += description
+  webDoc.info.description += description
 
   router.use(
     basicAuth({
@@ -62,6 +67,25 @@ if (process.env.NODE_ENV !== 'production') {
   )
 
   router.route(`/admin/${swaggerFile}`).get((req, res, next) => {
+    try {
+      res.status(200).json(adminDoc)
+    } catch (e) {
+      next(e)
+    }
+  })
+
+  router.use(
+    '/web',
+    (req, res, next) => {
+      if (req.url === '/') {
+        return res.redirect(`?url=${swaggerFile}`)
+      }
+      next()
+    },
+    express.static(swaggerUI.absolutePath())
+  )
+
+  router.route(`/web/${swaggerFile}`).get((req, res, next) => {
     try {
       res.status(200).json(adminDoc)
     } catch (e) {
