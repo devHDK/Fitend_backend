@@ -6,36 +6,16 @@ import {createPasswordHash, generateRandomCode, passwordIterations} from '../lib
 import {db} from '../loaders'
 import {code as Code} from '../libs'
 
-async function create(options: {
-  email: string
-  nickname: string
-  password: string
-  impUid: string
-  cityId?: number
-  isMarried?: boolean
-  categoryIds: []
-  referralCode: string
-  isMarketing: boolean
-  socialType?: 'facebook' | 'naver' | 'apple' | 'email'
-  socialToken?: string
-  accountId: string
-}): Promise<IUser> {
+async function create(options: {email: string; nickname: string; password: string}): Promise<IUser> {
   const connection = await db.beginTransaction()
   try {
-    let passwordHash: {password?: string; salt: string}
-    const {password, impUid, referralCode, categoryIds, socialType, socialToken, ...data} = options
-    if (socialType !== 'email') {
-      passwordHash = {salt: Code.generateRandomHash(64)}
-    } else {
-      passwordHash = await createPasswordHash(password, passwordIterations.mobile)
-    }
-    let referrerUser
+    const {password, email, nickname, ...data} = options
+    const passwordHash = Code.createPasswordHash(password, passwordIterations.mobile)
     const user = await User.create(
       {
-        referralCode: shortId.generate(),
-        referrerId: referrerUser ? referrerUser.id : null,
-        accountInfo: passwordHash,
-        type: socialType,
+        email,
+        nickname,
+        password: passwordHash,
         ...data
       },
       connection
@@ -50,6 +30,62 @@ async function create(options: {
     throw e
   }
 }
+
+async function getMe(options: {id: number}): Promise<IUser> {
+  try {
+    const {id} = options
+    const user = await User.findOne({id})
+
+    return user
+  } catch (e) {
+    throw e
+  }
+}
+
+// async function create(options: {
+//   email: string
+//   nickname: string
+//   password: string
+//   impUid: string
+//   cityId?: number
+//   isMarried?: boolean
+//   categoryIds: []
+//   referralCode: string
+//   isMarketing: boolean
+//   socialType?: 'facebook' | 'naver' | 'apple' | 'email'
+//   socialToken?: string
+//   accountId: string
+// }): Promise<IUser> {
+//   const connection = await db.beginTransaction()
+//   try {
+//     let passwordHash: {password?: string; salt: string}
+//     const {password, impUid, referralCode, categoryIds, socialType, socialToken, ...data} = options
+//     if (socialType !== 'email') {
+//       passwordHash = {salt: Code.generateRandomHash(64)}
+//     } else {
+//       passwordHash = await createPasswordHash(password, passwordIterations.mobile)
+//     }
+//     let referrerUser
+//     const user = await User.create(
+//       {
+//         referralCode: shortId.generate(),
+//         referrerId: referrerUser ? referrerUser.id : null,
+//         accountInfo: passwordHash,
+//         type: socialType,
+//         ...data
+//       },
+//       connection
+//     )
+//     await db.commit(connection)
+//     return user
+//   } catch (e) {
+//     if (connection) await db.rollback(connection)
+//     if (e.code === 'ER_DUP_ENTRY') {
+//       throw new Error('already_in_use')
+//     }
+//     throw e
+//   }
+// }
 
 async function findOne(options: IUserFindOne): Promise<IUser> {
   try {
@@ -136,4 +172,4 @@ async function updateStatus(
   }
 }
 
-export {create, findOne, update, updatePassword, updateStatus}
+export {create, getMe, findOne, update, updatePassword, updateStatus}

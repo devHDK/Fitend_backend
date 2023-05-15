@@ -1,46 +1,63 @@
 export interface IUser {
   id?: number
   nickname?: string
+  password?: any
   email?: string
-  accountInfo?: any
-  cityId?: number
-  isMarried?: boolean
-  referralCode?: string
-  referrerId?: number
-  gender?: string
-  name?: string
-  birth?: string
   phone?: string
-  uniqueKey?: string
-  deviceId?: string
-  isMarketing?: boolean
   createdAt?: string
-  point?: number
-  type?: 'email' | 'facebook' | 'naver' | 'apple'
   deletedAt?: Date | string
-  updatedAt?: Date | string
-  deletedType?: 'point' | 'use' | 'service' | 'error' | 'etc' | 'force'
 }
+
+// export interface IUser {
+//   id?: number
+//   nickname?: string
+//   email?: string
+//   accountInfo?: any
+//   cityId?: number
+//   isMarried?: boolean
+//   referralCode?: string
+//   referrerId?: number
+//   gender?: string
+//   name?: string
+//   birth?: string
+//   phone?: string
+//   uniqueKey?: string
+//   deviceId?: string
+//   isMarketing?: boolean
+//   createdAt?: string
+//   point?: number
+//   type?: 'email' | 'facebook' | 'naver' | 'apple'
+//   deletedAt?: Date | string
+//   updatedAt?: Date | string
+//   deletedType?: 'point' | 'use' | 'service' | 'error' | 'etc' | 'force'
+// }
 
 export interface IUserCreateOne {
   id?: number
   nickname?: string
   email?: string
-  accountInfo?: object
-  cityId?: number
-  isMarried?: boolean
-  referralCode?: string
-  referrerId?: number
-  gender?: string
-  name?: string
-  birth?: string
-  uniqueKey?: string
-  deviceId?: string
-  isMarketing?: boolean
-  point?: number
-  accountId?: string
-  type: 'email' | 'facebook' | 'naver' | 'apple'
+  password: object
 }
+
+// export interface IUserCreateOne {
+//   id?: number
+//   nickname?: string
+//   email?: string
+//   accountInfo?: object
+//   cityId?: number
+//   isMarried?: boolean
+//   referralCode?: string
+//   referrerId?: number
+//   gender?: string
+//   name?: string
+//   birth?: string
+//   uniqueKey?: string
+//   deviceId?: string
+//   isMarketing?: boolean
+//   point?: number
+//   accountId?: string
+//   type: 'email' | 'facebook' | 'naver' | 'apple'
+// }
 
 export type IUserList = IResponseList<IUser>
 
