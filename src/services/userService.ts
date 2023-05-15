@@ -1,8 +1,7 @@
-import shortId from 'shortid'
 import {PoolConnection} from 'mysql'
 import {User} from '../models'
-import {IUser, IUserFindOne, IUserUpdate} from '../interfaces/user'
-import {createPasswordHash, generateRandomCode, passwordIterations} from '../libs/code'
+import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserList} from '../interfaces/user'
+import {passwordIterations} from '../libs/code'
 import {db} from '../loaders'
 import {code as Code} from '../libs'
 
@@ -66,7 +65,7 @@ async function getMe(options: {id: number}): Promise<IUser> {
 //       passwordHash = await createPasswordHash(password, passwordIterations.mobile)
 //     }
 //     let referrerUser
-//     const user = await User.create(
+//     const users = await User.create(
 //       {
 //         referralCode: shortId.generate(),
 //         referrerId: referrerUser ? referrerUser.id : null,
@@ -77,7 +76,7 @@ async function getMe(options: {id: number}): Promise<IUser> {
 //       connection
 //     )
 //     await db.commit(connection)
-//     return user
+//     return users
 //   } catch (e) {
 //     if (connection) await db.rollback(connection)
 //     if (e.code === 'ER_DUP_ENTRY') {
@@ -90,6 +89,14 @@ async function getMe(options: {id: number}): Promise<IUser> {
 async function findOne(options: IUserFindOne): Promise<IUser> {
   try {
     return await User.findOne(options)
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllForTrainer(options: IUserFindAll): Promise<IUserList> {
+  try {
+    return await User.findAllForTrainer(options)
   } catch (e) {
     throw e
   }
@@ -139,23 +146,6 @@ async function update(options: IUserUpdate): Promise<void> {
   }
 }
 
-async function updatePassword(options: {id: number; password: string; newPassword: string}): Promise<void> {
-  try {
-    const {id, password, newPassword} = options
-    const user = await User.findOne({id})
-    if (user.type !== 'email') throw new Error('social_account')
-    if (
-      user &&
-      Code.verifyPassword(password, user.accountInfo.password, user.accountInfo.salt, passwordIterations.mobile)
-    ) {
-      const passwordHash = await createPasswordHash(newPassword, passwordIterations.mobile)
-      await User.updatePassword({id: user.id, accountInfo: passwordHash})
-    } else throw new Error('not_found')
-  } catch (e) {
-    throw e
-  }
-}
-
 async function updateStatus(
   options: {
     id: number
@@ -172,4 +162,4 @@ async function updateStatus(
   }
 }
 
-export {create, getMe, findOne, update, updatePassword, updateStatus}
+export {create, getMe, findOne, findAllForTrainer, update, updateStatus}

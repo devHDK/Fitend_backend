@@ -40,7 +40,7 @@ async function login(): Promise<void> {
 
 describe('로그인', function () {
   it('일반 로그인 ', async function () {
-    const email = 'user@example.com'
+    const email = 'users@example.com'
     const password = '12341234'
     const response = await request(server)
       .post('/api/mobile/auth')

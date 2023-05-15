@@ -19,7 +19,7 @@ describe('유저 관리 API', function () {
     await request(server)
       .get('/api/mobile/verifications/email')
       .send({
-        email: 'user@example.com'
+        email: 'users@example.com'
       })
       .expect(409)
   })

@@ -2,9 +2,12 @@ export interface ITrainer {
   id?: number
   nickname?: string
   email?: string
-  password?: string
+  password?: {
+    password: string,
+    salt: string
+  }
   salt?: string
-  createdAt: string
+  createdAt?: string
 }
 
 export type ITrainerList = IResponseList<ITrainer>

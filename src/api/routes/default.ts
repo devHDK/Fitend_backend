@@ -26,8 +26,6 @@ export class ApiRouter {
   fileNames: string[]
   handler: Function
   isPublic: boolean
-  isStudent: boolean
-  isPresenter: boolean
   method: string
   middlewares: Function[]
   name: string
@@ -53,8 +51,6 @@ export class ApiRouter {
     this.contentType = object.contentType || 'application/json'
     this.middlewares = object.middlewares || []
     this.isPublic = object.isPublic || false
-    this.isPresenter = object.isPresenter || false
-    this.isStudent = object.isStudent || false
     this.roles = object.roles || []
     this.fileNames = object.fileNames || []
     this.coerceTypes = object.coerceTypes ? object.coerceTypes : 'array'

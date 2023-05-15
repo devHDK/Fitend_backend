@@ -56,11 +56,8 @@ function getController(path: string, obj: any, router: Router): void {
         const args = [requestMiddleware(ctrl.paths, ctrl.schema, ctrl.coerceTypes), ...ctrl.middlewares, ctrl.handler]
 
         if (path.startsWith('/admin') && !ctrl.isPublic) args.unshift(authMiddleware.admin())
-        else if (!ctrl.isPublic) {
-          if (ctrl.isPresenter) args.unshift(authMiddleware.userType('presenter'))
-          else if (ctrl.isStudent) args.unshift(authMiddleware.userType('student'))
-          else args.unshift(authMiddleware.user())
-        }
+        if (path.startsWith('/web') && !ctrl.isPublic) args.unshift(authMiddleware.web())
+        else if (!ctrl.isPublic) args.unshift(authMiddleware.user())
         args.unshift(validateResponse(ctrl))
         router[ctrl.method](url, args)
       }

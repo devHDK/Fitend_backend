@@ -1,5 +1,5 @@
 import events from 'events'
-import {logger, mailer} from '../loaders'
+import {logger} from '../loaders'
 
 const eventsEmitter = new events.EventEmitter()
 const sendResetPasswordEvent = 'onSendResetPassword'

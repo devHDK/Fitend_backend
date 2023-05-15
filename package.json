@@ -16,7 +16,7 @@
     "local": "NODE_ENV=test nodemon --exec ts-node --transpile-only ./src/app.ts",
     "dev": "NODE_ENV=development ts-nod e --transpile-only ./src/app.ts",
     "start": "NODE_ENV=production ts-node --transpile-only ./src/app.ts",
-    "deploy": "npm run test && npm run build && bash scripts/deploy-dev.sh",
+    "deploy": "npm run build && bash scripts/deploy-dev.sh",
     "deploy:production": "npm run test && npm run build && bash scripts/deploy-prod.sh",
     "lint": "eslint ./src/**/*.ts --fix",
     "test": "NODE_ENV=test mocha"

@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   backend:
-    image: 091144939942.dkr.ecr.ap-northeast-2.amazonaws.com/fitend-backend-dev:latest
+    image: 310950945477.dkr.ecr.ap-northeast-2.amazonaws.com/fitend-backend-dev:latest
     environment:
       - NODE_ENV=development
     networks:

@@ -4,7 +4,8 @@ import {PoolConnection} from 'mysql'
 import crypto from 'crypto'
 import {db} from '../loaders'
 import {passwordIterations} from '../libs/code'
-import {IUser, IUserCreateOne, IUserFindOne, IUserUpdate, IUserUpdatePassword} from '../interfaces/user'
+import {IUser, IUserCreateOne, IUserFindOne, IUserUpdate, IUserUpdatePassword, IUserFindAll, IUserList} from '../interfaces/user'
+import { IAdministrator } from "../interfaces/administrator";
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -83,6 +84,30 @@ async function findOne(options: IUserFindOne): Promise<IUser> {
   }
 }
 
+async function findAllForTrainer(options: IUserFindAll): Promise<IUserList> {
+  try {
+    const {start, perPage} = options
+    const where = []
+
+    const rows: IUser[] = await db.query({
+      sql: `SELECT t.id, t.nickname, t.email, t.phone, t.createdAt, t.deletedAt
+            FROM ?? t
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            ORDER BY t.createdAt DESC
+            LIMIT ${start}, ${perPage}`,
+      values: [tableName]
+    })
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total FROM ?? t
+      ${where.length ? `WHERE ${where.join(' AND ')}` : ''}`,
+      values: [tableName]
+    })
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updatePassword(options: IUserUpdatePassword, connection?: PoolConnection): Promise<void> {
   try {
     const {id, accountInfo} = options
@@ -118,4 +143,4 @@ async function updateOne(options: IUserUpdate, connection?: PoolConnection): Pro
   }
 }
 
-export {tableName, verifyPassword, create, findOne, updateOne, updatePassword}
+export {tableName, verifyPassword, create, findOne, findAllForTrainer, updateOne, updatePassword}

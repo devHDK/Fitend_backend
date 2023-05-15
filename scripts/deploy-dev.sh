@@ -1,9 +1,9 @@
 #!/bin/bash
 AWS_PROFILE=$1
 IMAGE_NAME=fitend-backend-dev
-STACK_NAME=fitend-dev
+STACK_NAME=fitend-backend-dev
 TARGET=backend
-REGISTRY_URL=091144939942.dkr.ecr.ap-northeast-2.amazonaws.com/${IMAGE_NAME}:latest
+REGISTRY_URL=310950945477.dkr.ecr.ap-northeast-2.amazonaws.com/${IMAGE_NAME}:latest
 HOST=ubuntu@api-dev.fit-end.com
 APP_PATH=/home/ubuntu/${STACK_NAME}
 DOCKER_COMPOSE=docker-compose.yml

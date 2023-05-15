@@ -16,11 +16,9 @@ if (process.env.NODE_ENV !== 'production') {
 
   const adminDoc = generator('admin')
   adminDoc.info.title = `${adminDoc.info.title} admin api`
-  delete adminDoc.components.securitySchemes
 
   const webDoc = generator('web')
-  adminDoc.info.title = `${adminDoc.info.title} web trainer api`
-  delete adminDoc.components.securitySchemes
+  webDoc.info.title = `${webDoc.info.title} web trainer api`
 
   let description = ''
   description = `\n- [${generalDoc.info.title}](/api/swagger)\n- [${adminDoc.info.title}](/api/swagger/admin)\n- [${webDoc.info.title}](/api/swagger/web)`
@@ -36,6 +34,7 @@ if (process.env.NODE_ENV !== 'production') {
       realm: `${pkg.name} ${process.env.NODE_ENV}`
     })
   )
+
   router.use(
     '/',
     (req, res, next) => {
@@ -44,7 +43,7 @@ if (process.env.NODE_ENV !== 'production') {
       }
       next()
     },
-    express.static(`${__dirname}/../../../../node_modules/swagger-ui-dist`)
+    express.static(swaggerUI.absolutePath())
   )
 
   router.route(`/${swaggerFile}`).get((req, res, next) => {
@@ -87,7 +86,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   router.route(`/web/${swaggerFile}`).get((req, res, next) => {
     try {
-      res.status(200).json(adminDoc)
+      res.status(200).json(webDoc)
     } catch (e) {
       next(e)
     }
