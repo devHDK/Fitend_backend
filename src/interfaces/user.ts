@@ -8,58 +8,24 @@ export interface IUser {
   deletedAt?: Date | string
 }
 
-// export interface IUser {
-//   id?: number
-//   nickname?: string
-//   email?: string
-//   accountInfo?: any
-//   cityId?: number
-//   isMarried?: boolean
-//   referralCode?: string
-//   referrerId?: number
-//   gender?: string
-//   name?: string
-//   birth?: string
-//   phone?: string
-//   uniqueKey?: string
-//   deviceId?: string
-//   isMarketing?: boolean
-//   createdAt?: string
-//   point?: number
-//   type?: 'email' | 'facebook' | 'naver' | 'apple'
-//   deletedAt?: Date | string
-//   updatedAt?: Date | string
-//   deletedType?: 'point' | 'use' | 'service' | 'error' | 'etc' | 'force'
-// }
-
 export interface IUserCreateOne {
-  id?: number
-  nickname?: string
-  email?: string
-  password: object
+  nickname: string
+  email: string
+  phone: string
+  birth: string
+  gender: string
+  password: string
 }
 
-// export interface IUserCreateOne {
-//   id?: number
-//   nickname?: string
-//   email?: string
-//   accountInfo?: object
-//   cityId?: number
-//   isMarried?: boolean
-//   referralCode?: string
-//   referrerId?: number
-//   gender?: string
-//   name?: string
-//   birth?: string
-//   uniqueKey?: string
-//   deviceId?: string
-//   isMarketing?: boolean
-//   point?: number
-//   accountId?: string
-//   type: 'email' | 'facebook' | 'naver' | 'apple'
-// }
+export interface IUserData{
+  id: number,
+  nickname: string,
+  phone: string,
+  trainers: [{id: string, nickname: string}],
+  createdAt: Date
+}
 
-export type IUserList = IResponseList<IUser>
+export type IUserListForTrainer = IResponseList<IUserData>
 
 export interface IUserFindOne {
   uniqueKey?: string

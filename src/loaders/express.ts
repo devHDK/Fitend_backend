@@ -3,6 +3,7 @@ import path from 'path'
 import helmet from 'helmet'
 import {assignId, morgan} from '../api/middlewares'
 import {logger} from './'
+import cors from 'cors'
 import routes from '../api/routes'
 
 const app = express()
@@ -13,6 +14,8 @@ app.set('views', path.join(__dirname, '../views'))
 app.set('view engine', 'ejs')
 
 app.use(assignId)
+app.use(cors())
+
 app.use(
   morgan({
     skip: (req, res) =>

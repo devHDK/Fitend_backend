@@ -12,29 +12,34 @@
           "nickname": {
             "type": "string"
           },
-          "email": {
-            "type": "string"
-          },
           "phone": {
             "type": "string"
+          },
+          "trainers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "nickname": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "createdAt": {
             "type": "string",
             "format": "date-time"
-          },
-          "deletedAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
           }
         },
         "required": [
           "id",
           "nickname",
-          "email",
           "phone",
-          "createdAt",
-          "deletedAt"
+          "trainers",
+          "createdAt"
         ],
         "additionalProperties": false
       }

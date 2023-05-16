@@ -1,13 +1,22 @@
 import moment from 'moment-timezone'
-import {v4 as uuid} from 'uuid'
 import {PoolConnection} from 'mysql'
 import crypto from 'crypto'
 import {db} from '../loaders'
 import {passwordIterations} from '../libs/code'
-import {IUser, IUserCreateOne, IUserFindOne, IUserUpdate, IUserUpdatePassword, IUserFindAll, IUserList} from '../interfaces/user'
-import { IAdministrator } from "../interfaces/administrator";
+import {
+  IUser,
+  IUserCreateOne,
+  IUserFindOne,
+  IUserUpdate,
+  IUserUpdatePassword,
+  IUserFindAll,
+  IUserListForTrainer,
+  IUserData
+} from "../interfaces/user";
+import {Trainer, Ticket} from './'
+import { reduceNull } from "../loaders/mysql";
 
-moment.tz.setDefault('Asia/Seoul')
+const utcTime = moment.utc()
 
 const tableName = 'Users'
 
@@ -21,54 +30,17 @@ function verifyPassword(password, hash, salt) {
   })
 }
 
-async function create(options: IUserCreateOne, connection?: PoolConnection): Promise<IUser> {
+async function create(options: IUserCreateOne) {
   try {
     const {email, nickname, password, ...data} = options
-    const {insertId} = await db.query({
-      connection,
+    await db.query({
       sql: `INSERT INTO ?? SET ?`,
-      values: [
-        tableName,
-        {
-          email,
-          nickname,
-          password: JSON.stringify(password),
-          ...data
-        }
-      ]
+      values: [tableName, options]
     })
-    options.id = insertId
-
-    return options
   } catch (e) {
     throw e
   }
 }
-
-// async function create(options: IUserCreateOne, connection?: PoolConnection): Promise<IUser> {
-//   try {
-//     options.deviceId = uuid()
-//     const {accountInfo, ...data} = options
-//     const {insertId} = await db.query({
-//       connection,
-//       sql: `INSERT INTO ?? SET ?`,
-//       values: [
-//         tableName,
-//         {
-//           accountInfo: JSON.stringify(accountInfo),
-//           ...data
-//         }
-//       ]
-//     })
-//     options.id = insertId
-//     options.point = 0
-//     if (!options.cityId) options.cityId = null
-//     if (!options.isMarried) options.isMarried = null
-//     return options
-//   } catch (e) {
-//     throw e
-//   }
-// }
 
 async function findOne(options: IUserFindOne): Promise<IUser> {
   try {
@@ -84,19 +56,26 @@ async function findOne(options: IUserFindOne): Promise<IUser> {
   }
 }
 
-async function findAllForTrainer(options: IUserFindAll): Promise<IUserList> {
+async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTrainer> {
   try {
     const {start, perPage} = options
     const where = []
 
-    const rows: IUser[] = await db.query({
-      sql: `SELECT t.id, t.nickname, t.email, t.phone, t.createdAt, t.deletedAt
+    const currentTime = utcTime.format('YYYY-MM-DDTHH:mm:ss')
+    let rows: IUserData[] = await db.query({
+      sql: `SELECT t.id, t.nickname, t.phone, t.createdAt,
+            JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) as trainers
             FROM ?? t
+            LEFT JOIN ?? tr ON tr.userId = t.id
+            LEFT JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt > '${currentTime}'
+            LEFT JOIN ?? tra ON tra.id = tr.trainerId 
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY t.id
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
-      values: [tableName]
+      values: [tableName, Ticket.tableTicketRelation, Ticket.tableName, Trainer.tableName]
     })
+    rows = reduceNull(rows, 'trainers', 'id', null)
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM ?? t
       ${where.length ? `WHERE ${where.join(' AND ')}` : ''}`,
