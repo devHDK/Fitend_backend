@@ -1,19 +1,6 @@
 import {Response} from 'express'
-import {db} from '../../../../loaders'
 import {UserService} from '../../../../services'
-import {IUser} from '../../../../interfaces/user'
 import {jwt as JWT} from '../../../../libs'
-
-async function createUser(req: IRequest, res: Response, next: Function): Promise<void> {
-  try {
-    const {email, nickname, password} = req.options
-    const ret = await UserService.create({email, nickname, password})
-
-    res.status(200).json(ret)
-  } catch (e) {
-    next(e)
-  }
-}
 
 async function getMe(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
@@ -35,4 +22,4 @@ async function getMe(req: IRequest, res: Response, next: Function): Promise<void
   }
 }
 
-export {createUser, getMe}
+export {getMe}
