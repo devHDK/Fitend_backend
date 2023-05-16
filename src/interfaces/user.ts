@@ -47,17 +47,10 @@ export interface IUserUpdatePassword {
 
 export interface IUserUpdate {
   id: number
-  nickname?: string
-  gender?: 'male' | 'female'
-  birth?: string
-  phone?: string
-  cityId?: number
-  isMarried?: boolean
-  deviceId?: string
-  accountInfo?: object | string
-  deletedAt?: Date
-  categoryIds?: number[]
-  deleteType?: 'point' | 'use' | 'service' | 'error' | 'etc' | 'force'
-  deleteDescription?: string
-  status?: 'general' | 'delete'
+  nickname: string
+  email: string
+  phone: string
+  birth: string
+  gender: string
+  password: string
 }

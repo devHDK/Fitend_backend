@@ -30,7 +30,7 @@ function verifyPassword(password, hash, salt) {
   })
 }
 
-async function create(options: IUserCreateOne) {
+async function create(options: IUserCreateOne): Promise<void>  {
   try {
     const {email, nickname, password, ...data} = options
     await db.query({
@@ -100,23 +100,13 @@ async function updatePassword(options: IUserUpdatePassword, connection?: PoolCon
   }
 }
 
-async function updateOne(options: IUserUpdate, connection?: PoolConnection): Promise<IUser> {
+async function updateOne(options: IUserUpdate): Promise<void> {
   const {id, ...data} = options
   try {
-    if (!data.nickname) delete data.nickname
-    if (!data.cityId) delete data.cityId
-    if (!data.accountInfo) delete data.accountInfo
-    else data.accountInfo = JSON.stringify(data.accountInfo)
-    if (!data.deleteType) delete data.deleteType
-    if (!data.deleteDescription) delete data.deleteDescription
-    if (!data.deviceId) delete data.deviceId
-    if (data.isMarried === undefined || data.isMarried === null) delete data.isMarried
-    const {affectedRows} = await db.query({
-      connection,
+    await db.query({
       sql: `UPDATE ?? SET ? WHERE ? `,
       values: [tableName, data, {id}]
     })
-    if (affectedRows > 0) return options
   } catch (e) {
     throw e
   }

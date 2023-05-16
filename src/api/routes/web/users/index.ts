@@ -25,7 +25,20 @@ const getUsers = new ApiRouter({
   handler: ctrl.getUsers
 })
 
+const putUsers = new ApiRouter({
+  name: '',
+  method: 'put',
+  summary: '회원수정',
+  tags: ['User'],
+  schema: 'requests/web/users/PutUsers',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putUsers
+})
+
 export {
   getUsers,
-  postUsers
+  postUsers,
+  putUsers
 }
