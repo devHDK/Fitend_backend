@@ -32,7 +32,6 @@ function verifyPassword(password, hash, salt) {
 
 async function create(options: IUserCreateOne): Promise<void>  {
   try {
-    const {email, nickname, password, ...data} = options
     await db.query({
       sql: `INSERT INTO ?? SET ?`,
       values: [tableName, options]

@@ -8,7 +8,8 @@ const postUsers = new ApiRouter({
   tags: ['User'],
   schema: 'requests/web/users/PostUsers',
   responses: {
-    200: {description: 'success'}
+    200: {description: 'success'},
+    409: {description: '이메일 또는 휴대폰번호 중복'}
   },
   handler: ctrl.postUsers
 })
@@ -32,7 +33,8 @@ const putUsers = new ApiRouter({
   tags: ['User'],
   schema: 'requests/web/users/PutUsers',
   responses: {
-    200: {description: 'success'}
+    200: {description: 'success'},
+    409: {description: '이메일 또는 휴대폰번호 중복'}
   },
   handler: ctrl.putUsers
 })

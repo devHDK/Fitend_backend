@@ -1,6 +1,4 @@
 import moment from 'moment-timezone'
-import {v4 as uuid} from 'uuid'
-import {PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {ITrainer, ITrainerFindOne} from '../interfaces/trainer'
 

@@ -1,0 +1,64 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "nameEn": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["resistance", "flexibility", "cardio"]
+    },
+    "trackingFieldId": {
+      "type": "integer"
+    },
+    "targetMuscleIds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["main", "sub"]
+          }
+        }
+      }
+    },
+    "description": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "videos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name",
+    "type",
+    "trackingFieldId",
+    "description",
+    "videos"
+  ],
+  "additionalProperties": false
+}
