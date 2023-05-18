@@ -56,12 +56,5 @@
       }
     }
   },
-  "required": [
-    "name",
-    "type",
-    "trackingFieldId",
-    "description",
-    "videos"
-  ],
   "additionalProperties": false
 }

@@ -13,31 +13,46 @@ const postExercises = new ApiRouter({
   handler: ctrl.postExercises
 })
 
-// const getUsers = new ApiRouter({
-//   name: '',
-//   method: 'get',
-//   summary: '회원목록',
-//   tags: ['User'],
-//   schema: 'requests/web/users/GetUsers',
-//   responses: {
-//     200: {schema: 'responses/web/users/GetUsers'}
-//   },
-//   handler: ctrl.getUsers
-// })
-//
-// const putUsers = new ApiRouter({
-//   name: '',
-//   method: 'put',
-//   summary: '회원수정',
-//   tags: ['User'],
-//   schema: 'requests/web/users/PutUsers',
-//   responses: {
-//     200: {description: 'success'},
-//     409: {description: '이메일 또는 휴대폰번호 중복'}
-//   },
-//   handler: ctrl.putUsers
-// })
+const getExercises = new ApiRouter({
+  name: '',
+  method: 'get',
+  summary: '운동 목록',
+  tags: ['Exercise'],
+  schema: 'requests/web/exercises/GetExercises',
+  responses: {
+    200: {schema: 'responses/web/exercises/GetExercises'}
+  },
+  handler: ctrl.getExercises
+})
+
+const getExercisesWithId = new ApiRouter({
+  name: ':id',
+  method: 'get',
+  paths: ['common/IdPath'],
+  summary: '운동 상세',
+  tags: ['Exercise'],
+  responses: {
+    200: {schema: 'responses/web/exercises/GetExercisesWithId'}
+  },
+  handler: ctrl.getExercisesWithId
+})
+
+const putExercises = new ApiRouter({
+  name: ':id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '운동 수정',
+  tags: ['Exercise'],
+  schema: 'requests/web/exercises/PutExercises',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putExercises
+})
 
 export {
-  postExercises
+  postExercises,
+  getExercises,
+  getExercisesWithId,
+  putExercises
 }

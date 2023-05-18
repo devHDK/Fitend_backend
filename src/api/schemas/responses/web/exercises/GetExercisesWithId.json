@@ -1,0 +1,71 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "videos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "trainerId": {
+      "type": "integer"
+    },
+    "trainerNickname": {
+      "type": "string"
+    },
+    "trainerProfileImage": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "targetMuscles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "muscleType": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["main", "sub"]
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "videos",
+    "trainerId",
+    "trainerNickname",
+    "trainerProfileImage",
+    "updatedAt",
+    "targetMuscles"
+  ],
+  "additionalProperties": false
+}
+

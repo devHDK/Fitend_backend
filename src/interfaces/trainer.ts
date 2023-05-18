@@ -7,6 +7,7 @@ export interface ITrainer {
     salt: string
   }
   salt?: string
+  profileImage?: string
   createdAt?: string
 }
 

@@ -24,15 +24,17 @@
     "gender": {
       "type": "string",
       "enum": ["male", "female"]
+    },
+    "job": {
+      "type": "string",
+      "enum": ["unemployed", "officeWorker"]
     }
   },
   "required": [
     "nickname",
     "password",
     "email",
-    "phone",
-    "birth",
-    "gender"
+    "phone"
   ],
   "additionalProperties": false
 }

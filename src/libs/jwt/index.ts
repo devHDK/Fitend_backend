@@ -36,7 +36,8 @@ async function createAccessToken(data: IUserPayload): Promise<string> {
     const payload: Dictionary = {sub: id, type}
     return await createToken(payload, {
       algorithm: 'RS256',
-      expiresIn: 60 * 60 * 2
+      expiresIn: 60 * 60 * 24 * 30
+      // expiresIn: 60 * 2
     })
   } catch (e) {
     throw e

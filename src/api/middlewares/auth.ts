@@ -14,8 +14,7 @@ function user() {
         }
       } else res.status(401).json({message: 'invalid_token'})
     } catch (e) {
-      if (e.message === 'forbidden') res.status(403).json({message: 'forbidden'})
-      else res.status(401).json({message: 'invalid_token'})
+      res.status(401).json({message: 'invalid_token'})
     }
   }
 }
@@ -32,8 +31,7 @@ function admin() {
         }
       } else res.status(401).json({message: 'invalid_token'})
     } catch (e) {
-      if (e.message === 'forbidden') res.status(403).json({message: 'forbidden'})
-      else res.status(401).json({message: 'invalid_token'})
+      res.status(401).json({message: 'invalid_token'})
     }
   }
 }
@@ -50,8 +48,7 @@ function web() {
         }
       } else res.status(401).json({message: 'invalid_token'})
     } catch (e) {
-      if (e.message === 'forbidden') res.status(403).json({message: 'forbidden'})
-      else res.status(401).json({message: 'invalid_token'})
+      res.status(401).json({message: 'invalid_token'})
     }
   }
 }

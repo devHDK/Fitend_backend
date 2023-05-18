@@ -13,7 +13,8 @@ export interface IUserCreateOne {
   email: string
   phone: string
   birth: string
-  gender: string
+  gender: 'male' | 'female',
+  job: 'unemployed' | 'officeWorker'
   password: string
 }
 

@@ -27,8 +27,9 @@ const getUsers = new ApiRouter({
 })
 
 const putUsers = new ApiRouter({
-  name: '',
+  name: ':id',
   method: 'put',
+  paths: ['common/IdPath'],
   summary: '회원수정',
   tags: ['User'],
   schema: 'requests/web/users/PutUsers',
