@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "startDate": {
+      "type": "string"
+    },
+    "perPage": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "startDate",
+    "perPage"
+  ],
+  "additionalProperties": false
+}
