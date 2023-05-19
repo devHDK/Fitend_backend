@@ -6,5 +6,7 @@ import * as Ticket from './ticket'
 import * as Exercise from './exercise'
 import * as Workout from './workout'
 import * as TargetMuscle from './targetMuscle'
+import * as WorkoutPlan from './workoutPlans'
+import * as WorkoutSchedule from './workoutSchedules'
 
-export {Administrator, User, UserDevice, Trainer, Ticket, Exercise, Workout, TargetMuscle}
+export {Administrator, User, UserDevice, Trainer, Ticket, Exercise, Workout, TargetMuscle, WorkoutPlan, WorkoutSchedule}
