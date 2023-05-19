@@ -3,6 +3,7 @@ import {v4 as uuid} from 'uuid'
 import {PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {IWorkoutPlan, IWorkoutPlanFind} from '../interfaces/workoutPlans'
+import {WorkoutSchedule} from './index'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -22,14 +23,16 @@ async function findOne(options: IWorkoutPlanFind): Promise<[IWorkoutPlan]> {
   }
 }
 
-async function findAllWorkoutsInDate(options: IWorkoutPlanFind): Promise<[IWorkoutPlan]> {
+async function findAllWorkoutScheduleInDate(options: IWorkoutPlanFind): Promise<[IWorkoutPlan]> {
   try {
-    const startDate = moment(options.date).format('YYYY-MM-DD')
+    const startDate = moment(options.startDate).format('YYYY-MM-DD')
+    const perPage = options.perPage
     const rows = await db.query({
       sql: `SELECT t.*
             FROM ?? t
-            WHERE DATE(??) <= t.date `,
-      values: [tableName, startDate]
+            JOIN ?? ws ON ws.id = t.workoutScheduleId
+            WHERE ws.date BETWEEN DATE(${startDate}) AND DATE_ADD(${startDate},INTERVAL ${perPage} DAY)`,
+      values: [tableName, WorkoutSchedule.tableName]
     })
     return rows
   } catch (e) {
@@ -37,4 +40,4 @@ async function findAllWorkoutsInDate(options: IWorkoutPlanFind): Promise<[IWorko
   }
 }
 
-export {tableName, findOne, findAllWorkoutsInDate}
+export {tableName, findOne, findAllWorkoutScheduleInDate}
