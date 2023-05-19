@@ -46,14 +46,11 @@ export interface IWorkoutDetail {
   }]
 }
 
-export interface IExerciseUpdate {
+export interface IWorkUpdate {
   id: number
-  name?: string
-  nameEn?: string
-  type?: 'resistance' | 'flexibility' | 'cardio'
-  trackingFieldId?: number
-  description?: string
-  videos?: string
+  title: string
+  subTitle: string
+  totalTime: string
 }
 
 export type IWorkoutList = IResponseList<IWorkout>

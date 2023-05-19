@@ -38,22 +38,22 @@ const getWorkoutsWithId = new ApiRouter({
   handler: ctrl.getWorkoutsWithId
 })
 
-// const putExercises = new ApiRouter({
-//   name: ':id',
-//   method: 'put',
-//   paths: ['common/IdPath'],
-//   summary: '운동 수정',
-//   tags: ['Exercise'],
-//   schema: 'requests/web/exercises/PutExercises',
-//   responses: {
-//     200: {description: 'success'}
-//   },
-//   handler: ctrl.putExercises
-// })
+const putWorkoutsWithId = new ApiRouter({
+  name: ':id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: 'workout 수정',
+  tags: ['Workout'],
+  schema: 'requests/web/workouts/PutWorkoutsWithId',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putWorkoutsWithId
+})
 
 export {
   postWorkouts,
   getWorkouts,
   getWorkoutsWithId,
-  // putExercises
+  putWorkoutsWithId
 }

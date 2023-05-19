@@ -43,13 +43,12 @@ async function getExercisesWithId(req: IRequest, res: Response, next: Function):
   }
 }
 
-async function putExercises(req: IRequest, res: Response, next: Function): Promise<void> {
+async function putExercisesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const { id, name, nameEn, type, trackingFieldId, targetMuscleIds, description, tags, videos } = req.options
+    const { id, name, type, trackingFieldId, targetMuscleIds, description, tags, videos } = req.options
     await ExerciseService.update({
       id,
       name,
-      nameEn,
       type,
       trackingFieldId,
       targetMuscleIds,
@@ -67,5 +66,5 @@ export {
   postExercises,
   getExercises,
   getExercisesWithId,
-  putExercises
+  putExercisesWithId
 }

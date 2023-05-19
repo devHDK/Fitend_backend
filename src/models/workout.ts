@@ -1,10 +1,11 @@
 import moment from "moment-timezone"
 import { db } from "../loaders"
 import {
-  IWorkoutCreate, IWorkoutDetail, IWorkoutFindAll, IWorkoutList
+  IWorkoutCreate, IWorkoutDetail, IWorkoutFindAll, IWorkoutList, IWorkUpdate
 } from "../interfaces/workout"
 import { PoolConnection } from "mysql"
 import {Trainer, Exercise} from "./"
+import {tableExerciseExerciseTag} from "./exercise"
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -108,42 +109,30 @@ async function findOneWithId(id: number): Promise<IWorkoutDetail> {
   }
 }
 
-// async function update(options: IExerciseUpdate, connection: PoolConnection): Promise<void> {
-//   const {id, ...data} = options
-//   try {
-//     await db.query({
-//       connection,
-//       sql: `UPDATE ?? SET ? WHERE ? `,
-//       values: [tableName, data, {id}]
-//     })
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
-// async function deleteRelationTargetMuscle(exerciseId: number, connection: PoolConnection): Promise<void> {
-//   try {
-//     await db.query({
-//       connection,
-//       sql: `DELETE FROM ?? WHERE ?`,
-//       values: [tableExerciseTargetMuscle, {exerciseId}]
-//     })
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
-// async function deleteRelationTag(exerciseId: number, connection: PoolConnection): Promise<void> {
-//   try {
-//     await db.query({
-//       connection,
-//       sql: `DELETE FROM ?? WHERE ?`,
-//       values: [tableExerciseExerciseTag, {exerciseId}]
-//     })
-//   } catch (e) {
-//     throw e
-//   }
-// }
+async function update(options: IWorkUpdate, connection: PoolConnection): Promise<void> {
+  const {id, ...data} = options
+  try {
+    await db.query({
+      connection,
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableName, data, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function deleteRelationExercise(workoutId: number, connection: PoolConnection): Promise<void> {
+  try {
+    await db.query({
+      connection,
+      sql: `DELETE FROM ?? WHERE ?`,
+      values: [tableWorkoutExercise, {workoutId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
 
 export {
   tableName,
@@ -151,5 +140,7 @@ export {
   create,
   createRelationExercises,
   findAll,
-  findOneWithId
+  findOneWithId,
+  update,
+  deleteRelationExercise
 }
