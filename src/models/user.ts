@@ -55,6 +55,21 @@ async function findOne(options: IUserFindOne): Promise<IUser> {
   }
 }
 
+async function findOneWithId(id: number): Promise<IUser> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.id, t.nickname, t.email, t.phone, DATE_FORMAT(t.birth, '%Y-%m-%d') as birth,
+            t.gender, t.job, t.createdAt
+            FROM ?? t
+            WHERE ?`,
+      values: [tableName, {id}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTrainer> {
   try {
     const {start, perPage} = options
@@ -111,4 +126,4 @@ async function updateOne(options: IUserUpdate): Promise<void> {
   }
 }
 
-export {tableName, verifyPassword, create, findOne, findAllForTrainer, updateOne, updatePassword}
+export {tableName, verifyPassword, create, findOne, findOneWithId, findAllForTrainer, updateOne, updatePassword}

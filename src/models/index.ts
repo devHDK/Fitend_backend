@@ -4,5 +4,6 @@ import * as UserDevice from './userDevice'
 import * as Trainer from './trainer'
 import * as Ticket from './ticket'
 import * as Exercise from './exercise'
+import * as Workout from './workout'
 
-export {Administrator, User, UserDevice, Trainer, Ticket, Exercise}
+export {Administrator, User, UserDevice, Trainer, Ticket, Exercise, Workout}

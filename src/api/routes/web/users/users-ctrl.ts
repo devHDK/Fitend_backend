@@ -22,10 +22,19 @@ async function getUsers(req: IRequest, res: Response, next: Function): Promise<v
   }
 }
 
+async function getUsersWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const ret = await UserService.findOneWithId(req.options.id)
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function putUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {id, nickname, email, password, phone, birth, gender} = req.options
-    await UserService.update({id, nickname, email, password, phone, birth, gender})
+    const {id, nickname, email, password, phone, birth, gender, job} = req.options
+    await UserService.update({id, nickname, email, password, phone, birth, gender, job})
     res.status(200).json()
   } catch (e) {
     if (e.message === 'already_in_use') e.status = 409
@@ -36,5 +45,6 @@ async function putUsers(req: IRequest, res: Response, next: Function): Promise<v
 export {
   postUsers,
   getUsers,
+  getUsersWithId,
   putUsers
 }

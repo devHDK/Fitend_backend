@@ -9,45 +9,17 @@
           "id": {
             "type": "integer"
           },
-          "name": {
+          "title": {
             "type": "string"
           },
-          "videos": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "url": {
-                  "type": "string"
-                },
-                "index": {
-                  "type": "integer"
-                },
-                "thumbnail": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "trackingFieldId": {
-            "type": "integer"
-          },
-          "type": {
+          "totalTime": {
             "type": "string",
-            "enum": ["resistance", "flexibility", "cardio"]
+            "example": "00:00:00"
           },
-          "targetMuscles": {
+          "primaryTypes": {
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "integer"
-                },
-                "name": {
-                  "type": "string"
-                }
-              }
+              "type": "string"
             }
           },
           "trainerId": {
@@ -63,9 +35,9 @@
         },
         "required": [
           "id",
-          "name",
-          "type",
-          "targetMuscles",
+          "title",
+          "totalTime",
+          "primaryTypes",
           "trainerId",
           "trainerNickname",
           "updatedAt"

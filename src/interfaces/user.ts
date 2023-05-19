@@ -54,4 +54,5 @@ export interface IUserUpdate {
   birth: string
   gender: string
   password: string
+  job: string
 }

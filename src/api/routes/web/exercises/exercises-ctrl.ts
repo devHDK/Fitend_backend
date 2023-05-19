@@ -24,8 +24,8 @@ async function postExercises(req: IRequest, res: Response, next: Function): Prom
 
 async function getExercises(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const { start, perPage } = req.options
-    const ret = await ExerciseService.findAll({start, perPage})
+    const { search, start, perPage } = req.options
+    const ret = await ExerciseService.findAll({search, start, perPage})
     res.status(200).json(ret)
   } catch (e) {
     if (e.message === "ER_DUP_ENTRY") e.status = 409

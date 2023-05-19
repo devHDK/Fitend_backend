@@ -41,6 +41,14 @@ async function findOne(options: IUserFindOne): Promise<IUser> {
   }
 }
 
+async function findOneWithId(id: number): Promise<IUser> {
+  try {
+    return await User.findOneWithId(id)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTrainer> {
   try {
     return await User.findAllForTrainer(options)
@@ -62,4 +70,4 @@ async function update(options: IUserUpdate): Promise<void> {
   }
 }
 
-export {create, getMe, findOne, findAllForTrainer, update}
+export {create, getMe, findOne, findOneWithId, findAllForTrainer, update}

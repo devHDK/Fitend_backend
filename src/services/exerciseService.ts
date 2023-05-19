@@ -11,7 +11,7 @@ async function create(options: {
   targetMuscleIds: [{id: number, type: 'main' | 'sub'}]
   description: string
   tags: string[]
-  videos: [{url: string, index: number}]
+  videos: [{url: string, index: number, thumbnail: string}]
 }): Promise<void> {
   const connection = await db.beginTransaction()
   try {

@@ -90,11 +90,12 @@ async function findTags(options: IExerciseTag): Promise<{id: number, name: strin
 }
 
 async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
-  const {start, perPage} = options
+  const {search, start, perPage} = options
   try {
     const where = []
+    if (search) where.push(`t.name like '%${search}%'`)
     const rows = await db.query({
-      sql: `SELECT t.id, t.name, t.type,
+      sql: `SELECT t.id, t.name, t.videos, t.type, t.trackingFieldId,
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name)) as targetMuscles,
             t.trainerId, tr.nickname as trainerNickname, t.updatedAt  
             FROM ?? t
@@ -105,7 +106,7 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
-      values: [tableName, tableExerciseTargetMuscle, tableTargetMuscle, Trainer.tableName, options]
+      values: [tableName, tableExerciseTargetMuscle, tableTargetMuscle, Trainer.tableName]
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM ?? t
@@ -176,6 +177,10 @@ async function deleteRelationTag(exerciseId: number, connection: PoolConnection)
 
 export {
   tableName,
+  tableExerciseTargetMuscle,
+  tableExerciseExerciseTag,
+  tableExerciseTag,
+  tableTargetMuscle,
   create,
   createRelationTargetMuscle,
   createRelationTag,

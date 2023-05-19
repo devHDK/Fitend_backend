@@ -17,6 +17,9 @@
           },
           "index": {
             "type": "integer"
+          },
+          "thumbnail": {
+            "type": "string"
           }
         }
       }
