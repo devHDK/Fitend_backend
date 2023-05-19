@@ -26,9 +26,22 @@ const getUsers = new ApiRouter({
   handler: ctrl.getUsers
 })
 
+const getUsersWithId = new ApiRouter({
+  name: ':id',
+  method: 'get',
+  paths: ['common/IdPath'],
+  summary: '회원상세',
+  tags: ['User'],
+  responses: {
+    200: {schema: 'responses/web/users/GetUsersWithId'}
+  },
+  handler: ctrl.getUsersWithId
+})
+
 const putUsers = new ApiRouter({
-  name: '',
+  name: ':id',
   method: 'put',
+  paths: ['common/IdPath'],
   summary: '회원수정',
   tags: ['User'],
   schema: 'requests/web/users/PutUsers',
@@ -39,8 +52,4 @@ const putUsers = new ApiRouter({
   handler: ctrl.putUsers
 })
 
-export {
-  getUsers,
-  postUsers,
-  putUsers
-}
+export {postUsers, getUsers, getUsersWithId, putUsers}

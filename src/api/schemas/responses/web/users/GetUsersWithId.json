@@ -13,11 +13,19 @@
     "phone": {
       "type": "string"
     },
-    "createdAt": {
+    "birth": {
       "type": "string",
-      "format": "date-time"
+      "format": "date"
     },
-    "deletedAt": {
+    "gender": {
+      "type": "string",
+      "enum": ["male", "female"]
+    },
+    "job": {
+      "type": "string",
+      "enum": ["unemployed", "officeWorker"]
+    },
+    "createdAt": {
       "type": "string",
       "format": "date-time"
     }
@@ -27,8 +35,10 @@
     "nickname",
     "email",
     "phone",
-    "createdAt",
-    "deletedAt"
+    "birth",
+    "gender",
+    "job",
+    "createdAt"
   ],
   "additionalProperties": false
 }

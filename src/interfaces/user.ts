@@ -13,15 +13,16 @@ export interface IUserCreateOne {
   email: string
   phone: string
   birth: string
-  gender: string
+  gender: 'male' | 'female'
+  job: 'unemployed' | 'officeWorker'
   password: string
 }
 
-export interface IUserData{
-  id: number,
-  nickname: string,
-  phone: string,
-  trainers: [{id: string, nickname: string}],
+export interface IUserData {
+  id: number
+  nickname: string
+  phone: string
+  trainers: [{id: string; nickname: string}]
   createdAt: Date
 }
 
@@ -53,4 +54,5 @@ export interface IUserUpdate {
   birth: string
   gender: string
   password: string
+  job: string
 }

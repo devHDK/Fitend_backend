@@ -13,7 +13,7 @@ async function getFilesUpload(req: IRequest, res: Response, next: Function): Pro
     if (type === 'video' && !mimeType.startsWith('video/')) {
       throw new Error('bad_mimeType')
     }
-    const key = `${type === 'image' ? `images` : `videos`}/${uuid()}.${extensions[0]}`
+    const key = `${type === 'image' ? `images` : `videos`}/trainer_${req.userId}/${uuid()}.${extensions[0]}`
     const ret = await aws.generatePreSignedUrl(key, mimeType)
     res.status(200).json(ret)
   } catch (e) {

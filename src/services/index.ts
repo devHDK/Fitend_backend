@@ -3,6 +3,15 @@ import * as AuthService from './authService'
 import * as UserService from './userService'
 import * as TrainerService from './trainerService'
 import * as ExerciseService from './exerciseService'
+import * as WorkoutService from './workoutService'
 import * as WorkoutPlanService from './workoutPlanService'
 
-export {AdministratorService, AuthService, UserService, TrainerService, ExerciseService, WorkoutPlanService}
+export {
+  AdministratorService,
+  AuthService,
+  UserService,
+  TrainerService,
+  ExerciseService,
+  WorkoutService,
+  WorkoutPlanService
+}

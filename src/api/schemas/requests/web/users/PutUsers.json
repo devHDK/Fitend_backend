@@ -1,9 +1,6 @@
 {
   "type": "object",
   "properties": {
-    "id": {
-      "type": "integer"
-    },
     "nickname": {
       "type": "string",
       "pattern": "^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,20}$"
@@ -27,15 +24,19 @@
     "gender": {
       "type": "string",
       "enum": ["male", "female"]
+    },
+    "job": {
+      "type": "string",
+      "enum": ["unemployed", "officeWorker"]
     }
   },
   "required": [
-    "id",
     "nickname",
     "email",
     "phone",
     "birth",
-    "gender"
+    "gender",
+    "job"
   ],
   "additionalProperties": false
 }

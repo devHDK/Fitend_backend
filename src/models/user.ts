@@ -12,9 +12,9 @@ import {
   IUserFindAll,
   IUserListForTrainer,
   IUserData
-} from "../interfaces/user";
+} from '../interfaces/user'
 import {Trainer, Ticket} from './'
-import { reduceNull } from "../loaders/mysql";
+import {reduceNull} from '../loaders/mysql'
 
 const utcTime = moment.utc()
 
@@ -30,7 +30,7 @@ function verifyPassword(password, hash, salt) {
   })
 }
 
-async function create(options: IUserCreateOne): Promise<void>  {
+async function create(options: IUserCreateOne): Promise<void> {
   try {
     await db.query({
       sql: `INSERT INTO ?? SET ?`,
@@ -48,6 +48,21 @@ async function findOne(options: IUserFindOne): Promise<IUser> {
             FROM ?? t
             WHERE ?`,
       values: [tableName, options]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findOneWithId(id: number): Promise<IUser> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.id, t.nickname, t.email, t.phone, DATE_FORMAT(t.birth, '%Y-%m-%d') as birth,
+            t.gender, t.job, t.createdAt
+            FROM ?? t
+            WHERE ?`,
+      values: [tableName, {id}]
     })
     return row
   } catch (e) {
@@ -111,4 +126,4 @@ async function updateOne(options: IUserUpdate): Promise<void> {
   }
 }
 
-export {tableName, verifyPassword, create, findOne, findAllForTrainer, updateOne, updatePassword}
+export {tableName, verifyPassword, create, findOne, findOneWithId, findAllForTrainer, updateOne, updatePassword}

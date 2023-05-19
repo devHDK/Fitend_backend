@@ -1,30 +1,18 @@
-export interface IExercise {
+export interface IWorkout {
   id: number
-  name: string
-  videos: {
-    url: string
-    index: number
-    thumbnail: string
-  }
-  trackingFieldId: number
-  type: 'resistance' | 'flexibility' | 'cardio'
-  targetMuscles: {
-    id: number
-    name: string
-  }
+  title: string
+  totalTime: string
+  primaryTypes: string[]
   trainerId: number
   trainerNickname: string
   updatedAt: Date
 }
 
-export interface IExerciseCreate {
+export interface IWorkoutCreate {
   trainerId: number
-  name: string
-  nameEn: string
-  type: 'resistance' | 'flexibility' | 'cardio'
-  trackingFieldId: number
-  description: string
-  videos: string
+  title: string
+  subTitle: string
+  totalTime: string
 }
 
 export interface IExerciseTag {
@@ -32,7 +20,7 @@ export interface IExerciseTag {
   name?: string
 }
 
-export interface IExerciseFindAll {
+export interface IWorkoutFindAll {
   search?: string
   start: number
   perPage: number
@@ -69,4 +57,4 @@ export interface IExerciseUpdate {
   videos?: string
 }
 
-export type IExerciseList = IResponseList<IExercise>
+export type IWorkoutList = IResponseList<IWorkout>

@@ -1,0 +1,65 @@
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 15
+    },
+    "subTitle": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 18
+    },
+    "totalTime": {
+      "type": "string",
+      "example": "00:00:00"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "setInfo": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 15
+                },
+                "reps": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "weight": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "seconds": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10800
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "title",
+    "subTitle",
+    "totalTime",
+    "exercises"
+  ],
+  "additionalProperties": false
+}

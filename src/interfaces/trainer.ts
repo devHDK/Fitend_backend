@@ -3,10 +3,11 @@ export interface ITrainer {
   nickname?: string
   email?: string
   password?: {
-    password: string,
+    password: string
     salt: string
   }
   salt?: string
+  profileImage?: string
   createdAt?: string
 }
 
@@ -17,7 +18,7 @@ export interface ITrainerFindOne {
 }
 
 export interface ITrainerFindOneForAuth {
-  email: number,
+  email: number
   password: string
 }
 

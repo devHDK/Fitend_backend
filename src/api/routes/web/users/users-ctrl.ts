@@ -3,11 +3,11 @@ import {UserService} from '../../../../services'
 
 async function postUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {nickname, email, password, phone, birth, gender} = req.options
-    await UserService.create({nickname, email, password, phone, birth, gender})
+    const {nickname, email, password, phone, birth, gender, job} = req.options
+    await UserService.create({nickname, email, password, phone, birth, gender, job})
     res.status(200).json()
   } catch (e) {
-    if (e.message === 'ER_DUP_ENTRY') e.status = 409
+    if (e.message === 'already_in_use') e.status = 409
     next(e)
   }
 }
@@ -22,19 +22,24 @@ async function getUsers(req: IRequest, res: Response, next: Function): Promise<v
   }
 }
 
-async function putUsers(req: IRequest, res: Response, next: Function): Promise<void> {
+async function getUsersWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {id, nickname, email, password, phone, birth, gender} = req.options
-    await UserService.update({id, nickname, email, password, phone, birth, gender})
-    res.status(200).json()
+    const ret = await UserService.findOneWithId(req.options.id)
+    res.status(200).json(ret)
   } catch (e) {
-    if (e.message === 'ER_DUP_ENTRY') e.status = 409
     next(e)
   }
 }
 
-export {
-  postUsers,
-  getUsers,
-  putUsers
+async function putUsers(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, nickname, email, password, phone, birth, gender, job} = req.options
+    await UserService.update({id, nickname, email, password, phone, birth, gender, job})
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'already_in_use') e.status = 409
+    next(e)
+  }
 }
+
+export {postUsers, getUsers, getUsersWithId, putUsers}

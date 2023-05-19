@@ -1,17 +1,10 @@
 import {PoolConnection} from 'mysql'
 import {User} from '../models'
-import {
-  IUser,
-  IUserFindOne,
-  IUserUpdate,
-  IUserFindAll,
-  IUserListForTrainer,
-  IUserCreateOne
-} from "../interfaces/user";
+import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserListForTrainer, IUserCreateOne} from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'
 
-async function create(options: IUserCreateOne): Promise<void>  {
+async function create(options: IUserCreateOne): Promise<void> {
   try {
     const {password, ...data} = options
     const passwordHash = Code.createPasswordHash(password, passwordIterations.mobile)
@@ -41,6 +34,14 @@ async function findOne(options: IUserFindOne): Promise<IUser> {
   }
 }
 
+async function findOneWithId(id: number): Promise<IUser> {
+  try {
+    return await User.findOneWithId(id)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTrainer> {
   try {
     return await User.findAllForTrainer(options)
@@ -51,7 +52,8 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
 
 async function update(options: IUserUpdate): Promise<void> {
   try {
-    if (options.password) options.password = JSON.stringify(Code.createPasswordHash(options.password, passwordIterations.mobile))
+    if (options.password)
+      options.password = JSON.stringify(Code.createPasswordHash(options.password, passwordIterations.mobile))
     else delete options.password
     await User.updateOne(options)
   } catch (e) {
@@ -62,4 +64,4 @@ async function update(options: IUserUpdate): Promise<void> {
   }
 }
 
-export {create, getMe, findOne, findAllForTrainer, update}
+export {create, getMe, findOne, findOneWithId, findAllForTrainer, update}
