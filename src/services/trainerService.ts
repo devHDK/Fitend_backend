@@ -1,12 +1,9 @@
 import {ITrainer} from '../interfaces/trainer'
-import { Trainer } from "../models/index"
-import { code as Code, jwt as JWT } from "../libs"
-import { passwordIterations } from "../libs/code"
+import {Trainer} from '../models/index'
+import {code as Code, jwt as JWT} from '../libs'
+import {passwordIterations} from '../libs/code'
 
-async function signIn(options: {
-  email: string
-  password: string
-}): Promise<{accessToken: string; trainer: ITrainer}> {
+async function signIn(options: {email: string; password: string}): Promise<{accessToken: string; trainer: ITrainer}> {
   try {
     const {email, password} = options
     const trainer = await Trainer.findOne({email})
@@ -17,7 +14,8 @@ async function signIn(options: {
       const accessToken = await JWT.createAccessToken({id: trainer.id, type: 'user'})
       delete trainer.password
       return {accessToken, trainer}
-    } else throw new Error('not_found')
+    }
+    throw new Error('not_found')
   } catch (e) {
     throw e
   }

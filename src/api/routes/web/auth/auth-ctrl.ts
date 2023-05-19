@@ -12,6 +12,4 @@ async function postAuth(req: IRequest, res: Response, next: Function): Promise<v
   }
 }
 
-export {
-  postAuth
-}
+export {postAuth}

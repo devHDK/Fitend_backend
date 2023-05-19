@@ -15,6 +15,4 @@ const postAuth = new ApiRouter({
   handler: ctrl.postAuth
 })
 
-export {
-  postAuth
-}
+export {postAuth}
