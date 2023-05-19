@@ -1,6 +1,6 @@
-import {IWorkoutFindAll, IWorkoutList} from '../interfaces/workout'
-import { Workout } from "../models/index"
-import { db } from "../loaders";
+import {IWorkoutFindAll, IWorkoutList, IWorkoutDetail} from "../interfaces/workout"
+import {Workout} from "../models/index"
+import {db} from "../loaders"
 
 async function create(options: {
   trainerId: number
@@ -11,7 +11,7 @@ async function create(options: {
     {
       id: number
       setInfo: [
-        {index: number, reps: number, weight: number, seconds: number}
+        { index: number, reps: number, weight: number, seconds: number }
       ]
     }
   ]
@@ -25,7 +25,7 @@ async function create(options: {
       subTitle,
       totalTime
     }, connection)
-    await Workout.createRelationExercises({ exercises, workoutId }, connection)
+    await Workout.createRelationExercises({exercises, workoutId}, connection)
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -41,14 +41,14 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
   }
 }
 
-// async function findOne(id: number): Promise<IExerciseFindOne> {
-//   try {
-//     return await Exercise.findOneWithId(id)
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
+async function findOneWithId(id: number): Promise<IWorkoutDetail> {
+  try {
+    return await Workout.findOneWithId(id)
+  } catch (e) {
+    throw e
+  }
+}
+
 // async function update(options: {
 //   id: number
 //   name?: string
@@ -90,4 +90,4 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
 //   }
 // }
 
-export {create, findAll}
+export {create, findAll, findOneWithId}

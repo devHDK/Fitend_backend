@@ -15,36 +15,35 @@ export interface IWorkoutCreate {
   totalTime: string
 }
 
-export interface IExerciseTag {
-  id?: string
-  name?: string
-}
-
 export interface IWorkoutFindAll {
   search?: string
   start: number
   perPage: number
 }
 
-export interface IExerciseFindOne {
+export interface IWorkoutDetail {
   id: number
-  name: string
-  videos: {
-    url: string
-    index: number
-    thumbnail: string
-  }
+  title: string
+  subTitle: string
+  primaryTypes: string[]
+  totalTime: string
   trainerId: number
   trainerNickname: string
   trainerProfileImage: string
   updatedAt: Date
-  description: string
-  targetMuscles: {
+  exercises: [{
     id: number
+    videos: [{
+      url: string
+      index: number
+      thumbnail: string
+    }]
     name: string
-    muscleType: string
-    type: string
-  }
+    trackingFieldId: number
+    setInfo: [
+      { index: number, reps: number, weight: number, seconds: number }
+    ]
+  }]
 }
 
 export interface IExerciseUpdate {

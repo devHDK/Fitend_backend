@@ -1,7 +1,7 @@
 import moment from "moment-timezone"
 import { db } from "../loaders"
 import {
-  IWorkoutCreate, IWorkoutFindAll, IWorkoutList
+  IWorkoutCreate, IWorkoutDetail, IWorkoutFindAll, IWorkoutList
 } from "../interfaces/workout"
 import { PoolConnection } from "mysql"
 import {Trainer, Exercise} from "./"
@@ -49,46 +49,6 @@ async function createRelationExercises(options: {
   }
 }
 
-// async function createRelationTag(options: {
-//   exerciseId: number
-//   exerciseTagId: number
-// }, connection: PoolConnection): Promise<void> {
-//   try {
-//     await db.query({
-//       connection,
-//       sql: `INSERT INTO ?? SET ?`,
-//       values: [tableExerciseExerciseTag, options]
-//     })
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
-// async function createExerciseTag(options: {name: string}, connection: PoolConnection): Promise<number> {
-//   try {
-//     const {insertId} = await db.query({
-//       connection,
-//       sql: `INSERT INTO ?? SET ?`,
-//       values: [tableExerciseTag, options]
-//     })
-//     return insertId
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
-// async function findTags(options: IExerciseTag): Promise<{id: number, name: string}> {
-//   try {
-//     const [row] = await db.query({
-//       sql: `SELECT id, name FROM ?? WHERE ?`,
-//       values: [tableExerciseTag, options]
-//     })
-//     return row
-//   } catch (e) {
-//     throw e
-//   }
-// }
-
 async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
   const {search, start, perPage} = options
   try {
@@ -120,25 +80,34 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
   }
 }
 
-// async function findOneWithId(id: number): Promise<IExerciseFindOne> {
-//   try {
-//     const [row] = await db.query({
-//       sql: `SELECT t.id, t.name, t.videos, t.trainerId, tr.nickname as trainerNickname,
-//             tr.profileImage as trainerProfileImage, t.updatedAt, t.description,
-//             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', et.type)) as targetMuscles
-//             FROM ?? t
-//             JOIN ?? tr ON tr.id = t.trainerId
-//             JOIN ?? et ON et.exerciseId = t.id
-//             JOIN ?? tm ON tm.id = et.targetMuscleId
-//             WHERE t.?`,
-//       values: [tableName, Trainer.tableName, tableExerciseTargetMuscle, tableTargetMuscle, {id}]
-//     })
-//     return row
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
+async function findOneWithId(id: number): Promise<IWorkoutDetail> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.id, t.title, t.subTitle, t.totalTime,
+            (SELECT JSON_ARRAYAGG(tm.type) 
+              FROM ?? we
+              JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
+              JOIN ?? tm ON tm.id = et.targetMuscleId
+              WHERE we.workoutId = t.id
+            ) as primaryTypes,
+            t.trainerId, tr.nickname as trainerNickname, tr.profileImage as trainerProfileImage, t.updatedAt,
+            JSON_ARRAYAGG(
+              JSON_OBJECT('id', e.id, 'videos', e.videos, 'name', e.name, 'trackingFieldId', e.trackingFieldId ,'setInfo', we.setInfo)
+            ) as exercises
+            FROM ?? t
+            JOIN ?? we ON we.workoutId = t.id
+            JOIN ?? e ON e.id = we.exerciseId
+            JOIN ?? tr ON tr.id = t.trainerId
+            WHERE t.?
+            GROUP BY t.id`,
+      values: [tableWorkoutExercise, Exercise.tableExerciseTargetMuscle, Exercise.tableTargetMuscle, tableName, tableWorkoutExercise, Exercise.tableName, Trainer.tableName, {id}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 // async function update(options: IExerciseUpdate, connection: PoolConnection): Promise<void> {
 //   const {id, ...data} = options
 //   try {
@@ -181,5 +150,6 @@ export {
   tableWorkoutExercise,
   create,
   createRelationExercises,
-  findAll
+  findAll,
+  findOneWithId
 }
