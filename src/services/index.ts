@@ -4,7 +4,7 @@ import * as UserService from './userService'
 import * as TrainerService from './trainerService'
 import * as ExerciseService from './exerciseService'
 import * as WorkoutService from './workoutService'
-import * as WorkoutPlanService from './workoutPlanService'
+import * as TargetMuscleService from './targetMuscleService'
 
 export {
   AdministratorService,
@@ -13,5 +13,5 @@ export {
   TrainerService,
   ExerciseService,
   WorkoutService,
-  WorkoutPlanService
+  TargetMuscleService
 }

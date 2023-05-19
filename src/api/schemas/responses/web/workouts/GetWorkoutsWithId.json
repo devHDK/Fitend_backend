@@ -1,0 +1,113 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string"
+    },
+    "subTitle": {
+      "type": "string"
+    },
+    "totalTime": {
+      "type": "string",
+      "example": "00:00:00"
+    },
+    "primaryTypes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "trainerId": {
+      "type": "integer"
+    },
+    "trainerNickname": {
+      "type": "string"
+    },
+    "trainerProfileImage": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "videos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "index": {
+                  "type": "integer"
+                },
+                "thumbnail": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "trackingFieldId": {
+            "type": "integer"
+          },
+          "setInfo": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 15
+                },
+                "reps": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "weight": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "seconds": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10800
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "subTitle",
+    "totalTime",
+    "primaryTypes",
+    "trainerId",
+    "trainerNickname",
+    "trainerProfileImage",
+    "updatedAt",
+    "exercises"
+  ],
+  "additionalProperties": false
+}
+

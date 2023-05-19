@@ -16,7 +16,7 @@ const postWorkouts = new ApiRouter({
 const getWorkouts = new ApiRouter({
   name: '',
   method: 'get',
-  summary: '운동 목록',
+  summary: 'workout 목록',
   tags: ['Workout'],
   schema: 'requests/web/workouts/GetWorkouts',
   responses: {
@@ -24,35 +24,31 @@ const getWorkouts = new ApiRouter({
   },
   handler: ctrl.getWorkouts
 })
-//
-// const getExercisesWithId = new ApiRouter({
-//   name: ':id',
-//   method: 'get',
-//   paths: ['common/IdPath'],
-//   summary: '운동 상세',
-//   tags: ['Exercise'],
-//   responses: {
-//     200: {schema: 'responses/web/exercises/GetExercisesWithId'}
-//   },
-//   handler: ctrl.getExercisesWithId
-// })
-//
-// const putExercises = new ApiRouter({
-//   name: ':id',
-//   method: 'put',
-//   paths: ['common/IdPath'],
-//   summary: '운동 수정',
-//   tags: ['Exercise'],
-//   schema: 'requests/web/exercises/PutExercises',
-//   responses: {
-//     200: {description: 'success'}
-//   },
-//   handler: ctrl.putExercises
-// })
 
-export {
-  postWorkouts,
-  getWorkouts
-  // getExercisesWithId,
-  // putExercises
-}
+const getWorkoutsWithId = new ApiRouter({
+  name: ':id',
+  method: 'get',
+  paths: ['common/IdPath'],
+  summary: 'workout 상세',
+  tags: ['Workout'],
+  responses: {
+    200: {schema: 'responses/web/workouts/GetWorkoutsWithId'},
+    404: {description: 'not_found'}
+  },
+  handler: ctrl.getWorkoutsWithId
+})
+
+const putWorkoutsWithId = new ApiRouter({
+  name: ':id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: 'workout 수정',
+  tags: ['Workout'],
+  schema: 'requests/web/workouts/PutWorkoutsWithId',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putWorkoutsWithId
+})
+
+export {postWorkouts, getWorkouts, getWorkoutsWithId, putWorkoutsWithId}

@@ -64,22 +64,17 @@ async function findOne(id: number): Promise<IExerciseFindOne> {
 
 async function update(options: {
   id: number
-  name?: string
-  nameEn?: string
-  type?: 'resistance' | 'flexibility' | 'cardio'
-  trackingFieldId?: number
+  name: string
+  type: 'resistance' | 'flexibility' | 'cardio'
+  trackingFieldId: number
   targetMuscleIds?: [{id: number; type: 'main' | 'sub'}]
-  description?: string
+  description: string
   tags?: string[]
-  videos?: string
+  videos: string
 }): Promise<void> {
   const connection = await db.beginTransaction()
   try {
     const {id, targetMuscleIds, tags, ...data} = options
-    Object.keys(data).forEach((key) => {
-      if (!data[key]) delete data[key]
-    })
-    console.log(data)
     await Exercise.update({id, ...data}, connection)
     if (targetMuscleIds && targetMuscleIds.length) {
       await Exercise.deleteRelationTargetMuscle(id, connection)

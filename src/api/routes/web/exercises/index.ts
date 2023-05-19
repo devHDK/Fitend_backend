@@ -37,17 +37,17 @@ const getExercisesWithId = new ApiRouter({
   handler: ctrl.getExercisesWithId
 })
 
-const putExercises = new ApiRouter({
+const putExercisesWithId = new ApiRouter({
   name: ':id',
   method: 'put',
   paths: ['common/IdPath'],
   summary: '운동 수정',
   tags: ['Exercise'],
-  schema: 'requests/web/exercises/PutExercises',
+  schema: 'requests/web/exercises/PutExercisesWithId',
   responses: {
     200: {description: 'success'}
   },
-  handler: ctrl.putExercises
+  handler: ctrl.putExercisesWithId
 })
 
-export {postExercises, getExercises, getExercisesWithId, putExercises}
+export {postExercises, getExercises, getExercisesWithId, putExercisesWithId}
