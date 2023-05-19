@@ -1,5 +1,5 @@
 import {Response} from 'express'
-import {UserService, WorkoutPlanService} from '../../../../services'
+import {WorkoutPlanService} from '../../../../services'
 
 async function getSchedules(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
