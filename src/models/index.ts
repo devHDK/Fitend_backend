@@ -8,5 +8,18 @@ import * as Workout from './workout'
 import * as TargetMuscle from './targetMuscle'
 import * as WorkoutPlan from './workoutPlans'
 import * as WorkoutSchedule from './workoutSchedules'
+import * as WorkoutFeedbacks from './workoutFeedbacks'
 
-export {Administrator, User, UserDevice, Trainer, Ticket, Exercise, Workout, TargetMuscle, WorkoutPlan, WorkoutSchedule}
+export {
+  Administrator,
+  User,
+  UserDevice,
+  Trainer,
+  Ticket,
+  Exercise,
+  Workout,
+  TargetMuscle,
+  WorkoutPlan,
+  WorkoutSchedule,
+  WorkoutFeedbacks
+}

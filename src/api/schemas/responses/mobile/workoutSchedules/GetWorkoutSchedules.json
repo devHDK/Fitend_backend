@@ -21,13 +21,23 @@
                 "seq": {
                   "type": "integer"
                 },
-                "workoutTitle": {
+                "title": {
                   "type": "string"
                 },
-                "workoutSubTitle": {
+                "subTitle": {
                   "type": "string"
+                },
+                "isComplete": {
+                  "type": "boolean"
                 }
-              }
+              },
+              "required": [
+                "scheduleId",
+                "seq",
+                "title",
+                "subTitle",
+                "isComplete"
+              ]
             }
           }
         },

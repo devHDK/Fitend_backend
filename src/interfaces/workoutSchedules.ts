@@ -1,9 +1,14 @@
 export interface IWorkoutScheduleList {
-  id: number
   startDate: Date
-  seq: number
-  workoutTitle: string
-  workoutSubTitle: string
+  workouts: [
+    {
+      scheduleId: number
+      seq: number
+      title: string
+      subTitle: string
+      isComplete: boolean
+    }
+  ]
 }
 
 export interface IWorkoutScheduleFindAll {
