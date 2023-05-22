@@ -13,4 +13,16 @@ const getWorkoutSchedules = new ApiRouter({
   handler: ctrl.getWorkoutSchedules
 })
 
-export {getWorkoutSchedules}
+const getWorkoutSchedulesWithId = new ApiRouter({
+  name: ':id',
+  paths: ['common/IdPath'],
+  method: 'get',
+  summary: '오늘의 운동',
+  tags: ['WorkoutSchedule'],
+  responses: {
+    200: {schema: 'responses/mobile/workoutSchedules/GetWorkoutSchedulesWithId'}
+  },
+  handler: ctrl.getWorkoutSchedulesWithId
+})
+
+export {getWorkoutSchedules, getWorkoutSchedulesWithId}

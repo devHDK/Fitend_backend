@@ -15,7 +15,7 @@
             "items": {
               "type": "object",
               "properties": {
-                "scheduleId": {
+                "workoutScheduleId": {
                   "type": "integer"
                 },
                 "seq": {

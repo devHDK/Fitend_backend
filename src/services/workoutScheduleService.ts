@@ -1,5 +1,5 @@
 import {WorkoutSchedule} from '../models'
-import {IWorkoutScheduleList, IWorkoutScheduleFindAll} from '../interfaces/workoutSchedules'
+import {IWorkoutScheduleList, IWorkoutScheduleFindAll, IWorkoutScheduleDetail} from '../interfaces/workoutSchedules'
 
 async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutScheduleList]> {
   try {
@@ -9,4 +9,12 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
   }
 }
 
-export {findAll}
+async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDetail]> {
+  try {
+    return await WorkoutSchedule.findOne(workoutScheduleId)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {findAll, findOne}

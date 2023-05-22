@@ -11,4 +11,13 @@ async function getWorkoutSchedules(req: IRequest, res: Response, next: Function)
   }
 }
 
-export {getWorkoutSchedules}
+async function getWorkoutSchedulesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const ret = await WorkoutScheduleService.findOne(req.options.id)
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
+export {getWorkoutSchedules, getWorkoutSchedulesWithId}

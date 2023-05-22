@@ -1,0 +1,133 @@
+{
+  "type": "object",
+  "properties": {
+    "workoutScheduleId": {
+      "type": "integer"
+    },
+    "startDate": {
+      "type": "string"
+    },
+    "workoutTitle": {
+      "type": "string"
+    },
+    "workoutSubTitle": {
+      "type": "string"
+    },
+    "targetMuscleTypes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "workoutTotalTime": {
+      "type": "string",
+      "example": "00:00:00"
+    },
+    "isWorkoutComplete": {
+      "type": "boolean"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "workoutPlanId": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "trackingFieldId": {
+            "type": "integer"
+          },
+          "targetMuscles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "muscleType": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["main", "sub"]
+                },
+                "image": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "videos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "index": {
+                  "type": "integer"
+                },
+                "thumbnail": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "setInfo": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 15
+                },
+                "reps": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "weight": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "seconds": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10800
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "workoutPlanId",
+          "name",
+          "description",
+          "trackingFieldId",
+          "targetMuscles",
+          "videos",
+          "setInfo"
+        ]
+      }
+    }
+  },
+  "required": [
+    "workoutScheduleId",
+    "workoutTitle",
+    "workoutSubTitle",
+    "targetMuscleTypes",
+    "workoutTotalTime",
+    "exercises"
+  ]
+}
