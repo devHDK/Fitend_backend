@@ -1,6 +1,4 @@
-import {PoolConnection} from 'mysql'
 import {db} from '../loaders'
-import {Trainer} from './index'
 
 const tableName = 'TargetMuscles'
 

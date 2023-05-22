@@ -3,14 +3,10 @@
   "properties": {
     "startDate": {
       "type": "string"
-    },
-    "perPage": {
-      "type": "number"
     }
   },
   "required": [
-    "startDate",
-    "perPage"
+    "startDate"
   ],
   "additionalProperties": false
 }
