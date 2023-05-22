@@ -14,8 +14,10 @@ async function getWorkoutSchedules(req: IRequest, res: Response, next: Function)
 async function getWorkoutSchedulesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const ret = await WorkoutScheduleService.findOne(req.options.id)
+    if (!ret) throw new Error('not_found')
     res.status(200).json(ret)
   } catch (e) {
+    if (e.message === 'not_found') e.status = 404
     next(e)
   }
 }

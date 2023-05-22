@@ -20,7 +20,8 @@ const getWorkoutSchedulesWithId = new ApiRouter({
   summary: '오늘의 운동',
   tags: ['WorkoutSchedule'],
   responses: {
-    200: {schema: 'responses/mobile/workoutSchedules/GetWorkoutSchedulesWithId'}
+    200: {schema: 'responses/mobile/workoutSchedules/GetWorkoutSchedulesWithId'},
+    404: {description: 'not_found'}
   },
   handler: ctrl.getWorkoutSchedulesWithId
 })

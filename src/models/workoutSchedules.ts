@@ -71,7 +71,7 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
         {id: workoutScheduleId}
       ]
     })
-    row.targetMuscleTypes = [...new Set(row.targetMuscleTypes)]
+    if (row) row.targetMuscleTypes = [...new Set(row.targetMuscleTypes)]
     return row
   } catch (e) {
     throw e
