@@ -37,6 +37,7 @@ export interface IUserFindOne {
 }
 
 export interface IUserFindAll {
+  franchiseId: number
   start: number
   perPage: number
 }

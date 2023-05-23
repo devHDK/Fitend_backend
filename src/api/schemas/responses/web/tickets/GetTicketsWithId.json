@@ -1,0 +1,62 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "type": {
+      "type": "string"
+    },
+    "users": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "nickname": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "totalSession": {
+      "type": "integer"
+    },
+    "startedAt": {
+      "type": "string"
+    },
+    "expiredAt": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "trainers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "nickname": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "users",
+    "totalSession",
+    "startedAt",
+    "createdAt",
+    "trainers"
+  ],
+  "additionalProperties": false
+}
+

@@ -25,30 +25,42 @@ const getTickets = new ApiRouter({
   handler: ctrl.getTickets
 })
 
-// const getWorkoutsWithId = new ApiRouter({
-//   name: ':id',
-//   method: 'get',
-//   paths: ['common/IdPath'],
-//   summary: 'workout 상세',
-//   tags: ['Workout'],
-//   responses: {
-//     200: {schema: 'responses/web/workouts/GetWorkoutsWithId'},
-//     404: {description: 'not_found'}
-//   },
-//   handler: ctrl.getWorkoutsWithId
-// })
-//
-// const putWorkoutsWithId = new ApiRouter({
-//   name: ':id',
-//   method: 'put',
-//   paths: ['common/IdPath'],
-//   summary: 'workout 수정',
-//   tags: ['Workout'],
-//   schema: 'requests/web/workouts/PutWorkoutsWithId',
-//   responses: {
-//     200: {description: 'success'}
-//   },
-//   handler: ctrl.putWorkoutsWithId
-// })
+const getTicketsWithId = new ApiRouter({
+  name: ':id',
+  method: 'get',
+  paths: ['common/IdPath'],
+  summary: '수강권 상세',
+  tags: ['Ticket'],
+  responses: {
+    200: {schema: 'responses/web/tickets/GetTicketsWithId'},
+    404: {description: 'not_found'}
+  },
+  handler: ctrl.getTicketsWithId
+})
 
-export {postTickets, getTickets}
+const putTicketsWithId = new ApiRouter({
+  name: ':id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '수강권 수정',
+  tags: ['Ticket'],
+  schema: 'requests/web/tickets/PutTicketsWithId',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putTicketsWithId
+})
+
+const deleteTicketsWithId = new ApiRouter({
+  name: ':id',
+  method: 'delete',
+  paths: ['common/IdPath'],
+  summary: '수강권 수정',
+  tags: ['Ticket'],
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.deleteTicketsWithId
+})
+
+export {postTickets, getTickets, getTicketsWithId, putTicketsWithId, deleteTicketsWithId}

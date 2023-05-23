@@ -1,15 +1,23 @@
-import {PoolConnection} from 'mysql'
 import {User} from '../models'
 import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserListForTrainer, IUserCreateOne} from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'
+import {db} from '../loaders'
 
-async function create(options: IUserCreateOne): Promise<void> {
+interface IUserCreateData extends IUserCreateOne {
+  franchiseId: number
+}
+
+async function create(options: IUserCreateData): Promise<void> {
+  const connection = await db.beginTransaction()
   try {
-    const {password, ...data} = options
+    const {password, franchiseId, ...data} = options
     const passwordHash = Code.createPasswordHash(password, passwordIterations.mobile)
-    await User.create({password: JSON.stringify(passwordHash), ...data})
+    const userId = await User.create({password: JSON.stringify(passwordHash), ...data}, connection)
+    await User.createRelationsFranchises({userId, franchiseId}, connection)
+    await db.commit(connection)
   } catch (e) {
+    if (connection) await db.rollback(connection)
     if (e.code === 'ER_DUP_ENTRY') {
       throw new Error('already_in_use')
     }

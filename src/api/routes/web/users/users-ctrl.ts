@@ -4,7 +4,7 @@ import {UserService} from '../../../../services'
 async function postUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {nickname, email, password, phone, birth, gender, job} = req.options
-    await UserService.create({nickname, email, password, phone, birth, gender, job})
+    await UserService.create({franchiseId: req.userId, nickname, email, password, phone, birth, gender, job})
     res.status(200).json()
   } catch (e) {
     if (e.message === 'already_in_use') e.status = 409
@@ -15,7 +15,7 @@ async function postUsers(req: IRequest, res: Response, next: Function): Promise<
 async function getUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {start, perPage} = req.options
-    const ret = await UserService.findAllForTrainer({start, perPage})
+    const ret = await UserService.findAllForTrainer({franchiseId: req.franchiseId, start, perPage})
     res.status(200).json(ret)
   } catch (e) {
     next(e)

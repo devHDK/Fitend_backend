@@ -1,14 +1,11 @@
 import moment from 'moment-timezone'
 import {PoolConnection} from 'mysql'
-import crypto from 'crypto'
 import {db} from '../loaders'
-import {passwordIterations} from '../libs/code'
 import {
   IUser,
   IUserCreateOne,
   IUserFindOne,
   IUserUpdate,
-  IUserUpdatePassword,
   IUserFindAll,
   IUserListForTrainer,
   IUserData
@@ -19,22 +16,33 @@ import {reduceNull} from '../loaders/mysql'
 const utcTime = moment.utc()
 
 const tableName = 'Users'
+const tableFranchiseUser = 'Franchises-Users'
 
-function verifyPassword(password, hash, salt) {
-  return new Promise((resolve, reject) => {
-    crypto.pbkdf2(password, salt, passwordIterations.mobile, 64, 'sha512', (err, key) => {
-      if (err) reject(err)
-      if (key.toString('base64') === hash) resolve(true)
-      else resolve(false)
-    })
-  })
-}
-
-async function create(options: IUserCreateOne): Promise<void> {
+async function create(options: IUserCreateOne, connection: PoolConnection): Promise<number> {
   try {
-    await db.query({
+    const {insertId} = await db.query({
+      connection,
       sql: `INSERT INTO ?? SET ?`,
       values: [tableName, options]
+    })
+    return insertId
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createRelationsFranchises(
+  options: {
+    userId: number
+    franchiseId: number
+  },
+  connection: PoolConnection
+): Promise<void> {
+  try {
+    await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableFranchiseUser, options]
     })
   } catch (e) {
     throw e
@@ -72,7 +80,7 @@ async function findOneWithId(id: number): Promise<IUser> {
 
 async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTrainer> {
   try {
-    const {start, perPage} = options
+    const {franchiseId, start, perPage} = options
     const where = []
 
     const currentTime = utcTime.format('YYYY-MM-DDTHH:mm:ss')
@@ -80,6 +88,7 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
       sql: `SELECT t.id, t.nickname, t.phone, t.createdAt,
             JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) as trainers
             FROM ?? t
+            JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
             LEFT JOIN ?? tr ON tr.userId = t.id
             LEFT JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt > '${currentTime}'
             LEFT JOIN ?? tra ON tra.id = tr.trainerId 
@@ -87,7 +96,14 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
-      values: [tableName, Ticket.tableTicketRelation, Ticket.tableName, Trainer.tableName]
+      values: [
+        tableName,
+        tableFranchiseUser,
+        franchiseId,
+        Ticket.tableTicketRelation,
+        Ticket.tableName,
+        Trainer.tableName
+      ]
     })
     rows = reduceNull(rows, 'trainers', 'id', null)
     const [rowTotal] = await db.query({
@@ -96,19 +112,6 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
       values: [tableName]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
-  } catch (e) {
-    throw e
-  }
-}
-
-async function updatePassword(options: IUserUpdatePassword, connection?: PoolConnection): Promise<void> {
-  try {
-    const {id, accountInfo} = options
-    await db.query({
-      connection,
-      sql: `UPDATE ?? SET ? WHERE ?`,
-      values: [tableName, {accountInfo: JSON.stringify(accountInfo)}, {id}]
-    })
   } catch (e) {
     throw e
   }
@@ -126,4 +129,4 @@ async function updateOne(options: IUserUpdate): Promise<void> {
   }
 }
 
-export {tableName, verifyPassword, create, findOne, findOneWithId, findAllForTrainer, updateOne, updatePassword}
+export {tableName, create, createRelationsFranchises, findOne, findOneWithId, findAllForTrainer, updateOne}

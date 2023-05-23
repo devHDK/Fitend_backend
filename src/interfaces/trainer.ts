@@ -11,7 +11,10 @@ export interface ITrainer {
   createdAt?: string
 }
 
-export type ITrainerList = IResponseList<ITrainer>
+export type ITrainerList = {
+  id: number
+  nickname: string
+}
 
 export interface ITrainerFindOne {
   email?: string

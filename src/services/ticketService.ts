@@ -1,6 +1,6 @@
 import {Ticket} from '../models/index'
 import {db} from '../loaders'
-import {ITicketFindAll, ITicketList} from '../interfaces/tickets'
+import {ITicketFindAll, ITicketList, ITicketDetail} from '../interfaces/tickets'
 
 async function create(options: {
   type: 'personal' | 'fitness'
@@ -39,39 +39,43 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   }
 }
 
-// async function findOneWithId(id: number): Promise<IWorkoutDetail> {
-//   try {
-//     return await Workout.findOneWithId(id)
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
-// async function update(options: {
-//   id: number
-//   title: string
-//   subTitle: string
-//   totalTime: string
-//   exercises: [
-//     {
-//       id: number
-//       setInfo: [{index: number; reps: number; weight: number; seconds: number}]
-//     }
-//   ]
-// }): Promise<void> {
-//   const connection = await db.beginTransaction()
-//   try {
-//     const {id, title, subTitle, totalTime, exercises} = options
-//     await Workout.update({id, title, subTitle, totalTime}, connection)
-//     if (exercises && exercises.length) {
-//       await Workout.deleteRelationExercise(id, connection)
-//       await Workout.createRelationExercises({exercises, workoutId: id}, connection)
-//     }
-//     await db.commit(connection)
-//   } catch (e) {
-//     if (connection) await db.rollback(connection)
-//     throw e
-//   }
-// }
+async function findOneWithId(id: number): Promise<ITicketDetail> {
+  try {
+    return await Ticket.findOneWithId(id)
+  } catch (e) {
+    throw e
+  }
+}
 
-export {create, findAll}
+async function update(options: {
+  id: number
+  type: 'personal' | 'fitness'
+  userId: number
+  trainerIds: number[]
+  franchiseId: number
+  totalSession: number
+  startedAt: string
+  expiredAt: string
+}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {id, type, userId, trainerIds, franchiseId, totalSession, startedAt, expiredAt} = options
+    await Ticket.update({id, type, totalSession, startedAt, expiredAt}, connection)
+    await Ticket.deleteRelations(id, connection)
+    await Ticket.createRelationExercises({userId, trainerIds, ticketId: id, franchiseId}, connection)
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
+async function deleteOne(id: number): Promise<void> {
+  try {
+    await Ticket.deleteOne(id)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {create, findAll, findOneWithId, update, deleteOne}

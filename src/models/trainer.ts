@@ -1,10 +1,24 @@
 import moment from 'moment-timezone'
 import {db} from '../loaders'
-import {ITrainer, ITrainerFindOne} from '../interfaces/trainer'
+import {ITrainer, ITrainerFindOne, ITrainerList} from '../interfaces/trainer'
 
 moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'Trainers'
+const tableFranchiseTrainer = 'Franchises-Trainers'
+
+async function findAll(franchiseId: number): Promise<[ITrainerList]> {
+  try {
+    return await db.query({
+      sql: `SELECT t.id, t.nickname
+            FROM ?? t
+            JOIN ?? ft ON ft.trainerId = t.id AND ft.franchiseId = ?`,
+      values: [tableName, tableFranchiseTrainer, franchiseId]
+    })
+  } catch (e) {
+    throw e
+  }
+}
 
 async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
   try {
@@ -20,7 +34,4 @@ async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
   }
 }
 
-export {
-  tableName,
-  findOne
-}
+export {tableName, findOne, findAll}

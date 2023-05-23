@@ -1,4 +1,4 @@
-import {ITrainer} from '../interfaces/trainer'
+import {ITrainer, ITrainerList} from '../interfaces/trainer'
 import {Trainer} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
 import {passwordIterations} from '../libs/code'
@@ -21,4 +21,12 @@ async function signIn(options: {email: string; password: string}): Promise<{acce
   }
 }
 
-export {signIn}
+async function findAll(franchiseId: number): Promise<[ITrainerList]> {
+  try {
+    return await Trainer.findAll(franchiseId)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {signIn, findAll}
