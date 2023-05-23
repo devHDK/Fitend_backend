@@ -13,16 +13,12 @@
     "platform": {
       "type": "string",
       "enum": ["android", "ios"]
-    },
-    "token": {
-      "type": "string"
     }
   },
   "required": [
     "email",
     "password",
-    "platform",
-    "token"
+    "platform"
   ],
   "additionalProperties": false
 }

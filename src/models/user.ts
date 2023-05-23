@@ -129,4 +129,25 @@ async function updateOne(options: IUserUpdate): Promise<void> {
   }
 }
 
-export {tableName, create, createRelationsFranchises, findOne, findOneWithId, findAllForTrainer, updateOne}
+async function updatePlatform(options: {id: number; platform: 'ios' | 'android'}): Promise<void> {
+  const {id, ...data} = options
+  try {
+    await db.query({
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableName, data, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+export {
+  tableName,
+  create,
+  createRelationsFranchises,
+  findOne,
+  findOneWithId,
+  findAllForTrainer,
+  updateOne,
+  updatePlatform
+}

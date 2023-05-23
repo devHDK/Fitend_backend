@@ -42,11 +42,6 @@ export interface IUserFindAll {
   perPage: number
 }
 
-export interface IUserUpdatePassword {
-  id: number
-  accountInfo: {password: string; salt: string}
-}
-
 export interface IUserUpdate {
   id: number
   nickname: string
