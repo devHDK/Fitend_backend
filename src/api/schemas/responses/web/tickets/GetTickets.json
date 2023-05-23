@@ -1,0 +1,57 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["personal", "fitness"]
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "totalSession": {
+            "type": "integer"
+          },
+          "startedAt": {
+            "type": "string"
+          },
+          "expiredAt": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "users",
+          "totalSession",
+          "startedAt",
+          "expiredAt",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "data",
+    "total"
+  ],
+  "additionalProperties": false
+}

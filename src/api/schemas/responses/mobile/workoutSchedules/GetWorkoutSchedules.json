@@ -32,7 +32,7 @@
                 }
               },
               "required": [
-                "scheduleId",
+                "workoutScheduleId",
                 "seq",
                 "title",
                 "subTitle",

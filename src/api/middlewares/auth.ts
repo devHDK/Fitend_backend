@@ -44,6 +44,7 @@ function web() {
         const jwtToken = await JWT.decodeToken(authorization.split(' ')[1], {algorithms: ['RS256']})
         if (jwtToken.sub) {
           req.userId = jwtToken.sub
+          req.franchiseId = jwtToken.franchiseId
           next()
         }
       } else res.status(401).json({message: 'invalid_token'})

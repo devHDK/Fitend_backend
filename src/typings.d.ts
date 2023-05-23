@@ -18,6 +18,7 @@ declare global {
     user: any
     userId: any
     userType?: any
+    franchiseId?: any
     role: string
     clientIp: string
     useragent: string
