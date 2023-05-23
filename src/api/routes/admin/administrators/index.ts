@@ -6,8 +6,8 @@ const postAdmins = new ApiRouter({
   method: 'post',
   summary: '관리자 추가',
   schema: 'requests/admin/administrators/PostAdministrators',
-  roles: ['master'],
   tags: ['Admins'],
+  isPublic: true,
   responses: {
     201: {schema: 'responses/admin/administrators/PostAdministrators'},
     409: {description: 'already added'}

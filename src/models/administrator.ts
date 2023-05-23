@@ -13,25 +13,13 @@ import {
 
 const tableName = 'Administrators'
 
-async function create(options: IAdministratorCreate, connection?: PoolConnection): Promise<IAdministrator> {
+async function create(options: IAdministratorCreate, connection?: PoolConnection): Promise<void> {
   try {
-    const {username, role, salt, password, enabled = true, createdAt = new Date()} = options
-
-    const {insertId} = await db.query({
+    await db.query({
       connection,
       sql: `INSERT INTO ?? SET ?`,
-      values: [
-        tableName,
-        {
-          username,
-          role,
-          password,
-          salt,
-          createdAt
-        }
-      ]
+      values: [tableName, options]
     })
-    return {id: insertId, username, role, enabled, createdAt}
   } catch (e) {
     throw e
   }

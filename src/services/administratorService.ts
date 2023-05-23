@@ -8,11 +8,30 @@ import {
   IAdministratorUpdate
 } from '../interfaces/administrator'
 import {createPasswordHash, passwordIterations} from '../libs/code'
+import {code as Code, jwt as JWT} from '../libs'
 
-async function create(username: string, password: string, role: 'master'): Promise<IAdministrator> {
+async function signIn(username: string, password: string): Promise<string> {
+  try {
+    const user = await Administrator.findOneSecret(null, username)
+    if (
+      user &&
+      Code.verifyPassword(password, user.password.password, user.password.salt, Code.passwordIterations.admin)
+    ) {
+      return await JWT.createAccessToken({id: user.id})
+    }
+    throw new Error('not_found')
+  } catch (e) {
+    if (e.code === 'ER_DUP_ENTRY') {
+      throw new Error('already_in_use')
+    }
+    throw e
+  }
+}
+
+async function create(username: string, password: string): Promise<void> {
   try {
     const passwordHash = createPasswordHash(password, passwordIterations.admin)
-    return await Administrator.create({username, role, ...passwordHash})
+    await Administrator.create({username, password: JSON.stringify(passwordHash)})
   } catch (e) {
     if (e.code === 'ER_DUP_ENTRY') {
       throw new Error('already_in_use')
@@ -65,4 +84,4 @@ async function deleteOne(options: IAdministratorDelete): Promise<void> {
   }
 }
 
-export {create, findAll, findOne, update, deleteOne}
+export {signIn, create, findAll, findOne, update, deleteOne}

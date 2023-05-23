@@ -32,8 +32,8 @@ async function decodeToken(token: string, options: VerifyOptions, secret: Secret
 
 async function createAccessToken(data: IUserPayload): Promise<string> {
   try {
-    const {id, type} = data
-    const payload: Dictionary = {sub: id, type}
+    const {id} = data
+    const payload: Dictionary = {sub: id}
     return await createToken(payload, {
       algorithm: 'RS256',
       expiresIn: 60 * 60 * 24 * 30

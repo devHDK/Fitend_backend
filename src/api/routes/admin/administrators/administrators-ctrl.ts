@@ -3,9 +3,9 @@ import {AdministratorService} from '../../../../services'
 
 async function postAdmins(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {username, password, role} = req.options
-    const ret = await AdministratorService.create(username, password, role)
-    res.status(201).json(ret)
+    const {username, password} = req.options
+    await AdministratorService.create(username, password)
+    res.status(200).json()
   } catch (e) {
     if (e.message === 'already_in_use') e.status = 409
     next(e)

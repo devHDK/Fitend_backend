@@ -1,26 +1,12 @@
 {
   "type": "object",
   "properties": {
-    "id": {
-      "type": "integer"
-    },
-    "username": {
+    "accessToken": {
       "type": "string"
-    },
-    "role":{
-      "type": "string",
-      "enum": ["master"]
-    },
-    "createdAt": {
-      "type": "string",
-      "format": "date-time"
     }
   },
   "required": [
-    "id",
-    "username",
-    "role",
-    "createdAt"
+    "accessToken"
   ],
   "additionalProperties": false
 }
