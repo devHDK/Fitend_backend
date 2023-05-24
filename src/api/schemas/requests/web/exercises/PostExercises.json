@@ -6,9 +6,6 @@
       "minLength": 1,
       "maxLength": 21
     },
-    "nameEn": {
-      "type": "string"
-    },
     "type": {
       "type": "string",
       "enum": ["resistance", "flexibility", "cardio"]

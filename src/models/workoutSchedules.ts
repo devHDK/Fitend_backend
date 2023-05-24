@@ -17,7 +17,7 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
               JOIN ?? wp ON wp.workoutScheduleId = ws.id
               JOIN ?? w ON w.id = wp.workoutId
               LEFT JOIN ?? wf ON wf.workoutScheduleId = ws.id
-              WHERE ws.startDate BETWEEN '${startDate}' AND DATE_ADD('${startDate}', INTERVAL 31 DAY) AND ws.?
+              WHERE ws.startDate BETWEEN '${startDate}' AND DATE_ADD('${startDate}', INTERVAL 30 DAY) AND ws.?
               GROUP BY ws.id
               ORDER BY ws.seq
             ) t
