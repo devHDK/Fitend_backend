@@ -51,6 +51,7 @@ export interface IExerciseFindOne {
   trainerProfileImage: string
   updatedAt: Date
   description: string
+  type: string
   targetMuscles: {
     id: number
     name: string

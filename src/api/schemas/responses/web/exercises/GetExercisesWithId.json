@@ -7,6 +7,10 @@
     "name": {
       "type": "string"
     },
+    "type": {
+      "type": "string",
+      "enum": ["resistance", "flexibility", "cardio"]
+    },
     "videos": {
       "type": "array",
       "items": {
@@ -23,6 +27,12 @@
           }
         }
       }
+    },
+    "trackingFieldId": {
+      "type": "integer"
+    },
+    "description": {
+      "type": "string"
     },
     "trainerId": {
       "type": "integer"
@@ -57,17 +67,27 @@
           }
         }
       }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": [
     "id",
     "name",
+    "type",
     "videos",
+    "trackingFieldId",
+    "description",
     "trainerId",
     "trainerNickname",
     "trainerProfileImage",
     "updatedAt",
-    "targetMuscles"
+    "targetMuscles",
+    "tags"
   ],
   "additionalProperties": false
 }
