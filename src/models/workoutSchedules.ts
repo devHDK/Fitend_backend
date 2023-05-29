@@ -15,13 +15,12 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
     const {userId, startDate} = options
     return await db.query({
       sql: `SELECT DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
-            JSON_ARRAYAGG(JSON_OBJECT('workoutScheduleId', t.id , 'seq', t.seq, 'title', t.title, 'subTitle', t.subTitle,
+            JSON_ARRAYAGG(JSON_OBJECT('workoutScheduleId', t.id , 'seq', t.seq, 'title', t.workoutTitle, 'subTitle', t.workoutSubTitle,
             'isComplete', t.isComplete)) as workouts
             FROM (
-              SELECT ws.startDate, ws.id, ws.seq, w.title, w.subTitle, IF(wf.workoutScheduleId, true, false) as isComplete
+              SELECT ws.startDate, ws.id, ws.seq, ws.workoutTitle, ws.workoutSubTitle, IF(wf.workoutScheduleId, true, false) as isComplete
               FROM ?? ws
               JOIN ?? wp ON wp.workoutScheduleId = ws.id
-              JOIN ?? w ON w.id = wp.workoutId
               LEFT JOIN ?? wf ON wf.workoutScheduleId = ws.id
               WHERE ws.startDate BETWEEN '${startDate}' AND DATE_ADD('${startDate}', INTERVAL 30 DAY) AND ws.?
               GROUP BY ws.id
@@ -29,7 +28,7 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
             ) t
             GROUP BY t.startDate
             ORDER BY t.startDate`,
-      values: [tableName, WorkoutPlan.tableName, Workout.tableName, WorkoutFeedbacks.tableName, {userId}]
+      values: [tableName, WorkoutPlan.tableName, WorkoutFeedbacks.tableName, {userId}]
     })
   } catch (e) {
     throw e
@@ -40,7 +39,7 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
   try {
     const [row] = await db.query({
       sql: `SELECT t.id as workoutScheduleId, DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
-            w.title as workoutTitle, w.subTitle as workoutSubTitle, 
+            t.workoutTitle, t.workoutSubTitle, 
             (
               SELECT JSON_ARRAYAGG(tm.type) 
               FROM ?? tm
@@ -66,7 +65,6 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
             ) exercises
             FROM ?? t
             JOIN ?? wp ON wp.workoutScheduleId = t.id
-            JOIN ?? w ON w.id = wp.workoutId
             LEFT JOIN ?? wf ON wf.workoutScheduleId = t.id
             WHERE t.?
             GROUP BY t.id`,
@@ -81,7 +79,6 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
         Trainer.tableName,
         tableName,
         WorkoutPlan.tableName,
-        Workout.tableName,
         WorkoutFeedbacks.tableName,
         {id: workoutScheduleId}
       ]
