@@ -1,0 +1,71 @@
+{
+  "type": "object",
+  "properties": {
+    "startDate": {
+      "type": "string"
+    },
+    "strengthIndex": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "issueIndex": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "contents": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "workoutRecords": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "exerciseName": {
+            "type": "string"
+          },
+          "targetMuscles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "setInfo": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 15
+                },
+                "reps": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "weight": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "seconds": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10800
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+  ],
+  "additionalProperties": false
+}

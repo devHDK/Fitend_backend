@@ -9,6 +9,7 @@ import * as TargetMuscle from './targetMuscle'
 import * as WorkoutPlan from './workoutPlans'
 import * as WorkoutSchedule from './workoutSchedules'
 import * as WorkoutFeedbacks from './workoutFeedbacks'
+import * as WorkoutRecords from './workoutRecords'
 
 export {
   Administrator,
@@ -21,5 +22,6 @@ export {
   TargetMuscle,
   WorkoutPlan,
   WorkoutSchedule,
-  WorkoutFeedbacks
+  WorkoutFeedbacks,
+  WorkoutRecords
 }

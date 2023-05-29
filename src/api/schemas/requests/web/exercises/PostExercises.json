@@ -59,6 +59,7 @@
   "required": [
     "name",
     "type",
+    "targetMuscleIds",
     "trackingFieldId",
     "description",
     "videos"

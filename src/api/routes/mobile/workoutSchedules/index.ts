@@ -1,6 +1,19 @@
 import {ApiRouter} from '../../default'
 import * as ctrl from './workoutSchedules-ctrl'
 
+const postWorkoutSchedulesFeedbacks = new ApiRouter({
+  name: ':id/feedbacks',
+  paths: ['common/IdPath'],
+  method: 'post',
+  summary: '오늘의 운동 평가',
+  tags: ['WorkoutSchedule'],
+  schema: 'requests/mobile/workoutSchedules/PostWorkoutSchedulesFeedbacks',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.postWorkoutSchedulesFeedbacks
+})
+
 const getWorkoutSchedules = new ApiRouter({
   name: '',
   method: 'get',
@@ -26,4 +39,4 @@ const getWorkoutSchedulesWithId = new ApiRouter({
   handler: ctrl.getWorkoutSchedulesWithId
 })
 
-export {getWorkoutSchedules, getWorkoutSchedulesWithId}
+export {postWorkoutSchedulesFeedbacks, getWorkoutSchedules, getWorkoutSchedulesWithId}

@@ -1,6 +1,24 @@
 import {Response} from 'express'
 import {WorkoutScheduleService} from '../../../../services'
 
+async function postWorkoutSchedulesFeedbacks(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id: workoutScheduleId, strengthIndex, issueIndex, contents} = req.options
+    await WorkoutScheduleService.createFeedbacks({
+      userId: req.userId,
+      workoutScheduleId,
+      strengthIndex,
+      issueIndex,
+      contents
+    })
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'not_allowed') e.status = 403
+    if (e.message === 'duplicate_feedback') e.status = 409
+    next(e)
+  }
+}
+
 async function getWorkoutSchedules(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {startDate} = req.options
@@ -22,4 +40,4 @@ async function getWorkoutSchedulesWithId(req: IRequest, res: Response, next: Fun
   }
 }
 
-export {getWorkoutSchedules, getWorkoutSchedulesWithId}
+export {postWorkoutSchedulesFeedbacks, getWorkoutSchedules, getWorkoutSchedulesWithId}

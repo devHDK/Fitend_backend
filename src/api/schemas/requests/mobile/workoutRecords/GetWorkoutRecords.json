@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "workoutScheduleId": {
+      "type": "integer"
+    },
+    "workoutPlanId": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "workoutScheduleId",
+    "workoutPlanId"
+  ],
+  "additionalProperties": false
+}

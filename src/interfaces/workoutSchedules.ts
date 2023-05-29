@@ -1,3 +1,13 @@
+export interface IWorkoutSchedule {
+  id: number
+  userId: number
+  trainer: number
+  startDate: string
+  seq: number
+  totalTime: string
+  createdAt: Date
+}
+
 export interface IWorkoutScheduleList {
   startDate: Date
   workouts: [

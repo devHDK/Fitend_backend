@@ -1,4 +1,9 @@
-import {IWorkoutScheduleList, IWorkoutScheduleFindAll, IWorkoutScheduleDetail} from '../interfaces/workoutSchedules'
+import {
+  IWorkoutScheduleList,
+  IWorkoutScheduleFindAll,
+  IWorkoutScheduleDetail,
+  IWorkoutSchedule
+} from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
 import {WorkoutPlan, Workout, WorkoutFeedbacks, Exercise, Trainer} from './index'
 
@@ -87,4 +92,33 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
   }
 }
 
-export {tableName, findAll, findOne}
+async function findOneWithId(id: number): Promise<IWorkoutSchedule> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.*
+            FROM ?? t
+            WHERE t.?`,
+      values: [tableName, {id}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findOneWithWorkoutPlanId(workoutPlanId: number): Promise<IWorkoutSchedule> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.*
+            FROM ?? t
+            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.id = ?
+            GROUP BY t.id`,
+      values: [tableName, WorkoutPlan.tableName, workoutPlanId]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
+export {tableName, findAll, findOne, findOneWithId, findOneWithWorkoutPlanId}
