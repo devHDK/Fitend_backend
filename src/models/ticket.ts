@@ -1,9 +1,8 @@
 import moment from 'moment-timezone'
-import {PoolConnection} from 'mysql'
+import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
-import {ITicket, ITicketDetail, ITicketFindAll, ITicketList} from '../interfaces/tickets'
+import {ITicketDetail, ITicketFindAll, ITicketList} from '../interfaces/tickets'
 import {Trainer, User} from './index'
-import {tableWorkoutExercise} from './workout'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -142,6 +141,39 @@ async function findOneWithId(id: number): Promise<ITicketDetail> {
   }
 }
 
+async function findCounts(
+  userId: number
+): Promise<{personalCount: number; fitnessCount: number; expiredCount: number}> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT 
+            (SELECT COUNT(t.id) 
+            FROM ?? t 
+            WHERE t.type = 'personal' AND EXISTS (
+             SELECT 1
+             FROM ?? tr
+             WHERE tr.ticketId = t.id AND tr.userId = ${escape(userId)}
+            )) as personalCount,
+            (SELECT COUNT(t.id) 
+            FROM ?? t 
+            WHERE t.type = 'fitness' AND EXISTS (
+             SELECT 1
+             FROM ?? tr
+             WHERE tr.ticketId = t.id AND tr.userId = ${escape(userId)}
+            )) as fitnessCount,
+            (SELECT COUNT(t.id) 
+            FROM ?? t 
+            JOIN ?? tr ON tr.ticketId = t.id AND tr.userId = ${escape(userId)}
+            WHERE t.expiredAt < NOW()
+            GROUP BY t.id) as expiredCount`,
+      values: [tableName, tableTicketRelation, tableName, tableTicketRelation, tableName, tableTicketRelation]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function update(
   options: {
     id: number
@@ -195,6 +227,7 @@ export {
   createRelationExercises,
   findAll,
   findOneWithId,
+  findCounts,
   update,
   deleteOne,
   deleteRelations

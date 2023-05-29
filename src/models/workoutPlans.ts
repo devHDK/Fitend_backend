@@ -23,21 +23,4 @@ async function findOne(options: IWorkoutPlanFind): Promise<[IWorkoutPlan]> {
   }
 }
 
-async function findAllWorkoutScheduleInDate(options: IWorkoutPlanFind): Promise<[IWorkoutPlan]> {
-  try {
-    const startDate = moment(options.startDate).format('YYYY-MM-DD')
-    const perPage = options.perPage
-    const rows = await db.query({
-      sql: `SELECT t.*
-            FROM ?? t
-            JOIN ?? ws ON ws.id = t.workoutScheduleId
-            WHERE ws.date BETWEEN DATE(${startDate}) AND DATE_ADD(${startDate},INTERVAL ${perPage} DAY)`,
-      values: [tableName, WorkoutSchedule.tableName]
-    })
-    return rows
-  } catch (e) {
-    throw e
-  }
-}
-
-export {tableName, findOne, findAllWorkoutScheduleInDate}
+export {tableName, findOne}

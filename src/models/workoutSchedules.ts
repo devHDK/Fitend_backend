@@ -1,3 +1,4 @@
+import {escape} from 'mysql'
 import {
   IWorkoutScheduleList,
   IWorkoutScheduleFindAll,
@@ -5,7 +6,7 @@ import {
   IWorkoutSchedule
 } from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
-import {WorkoutPlan, Workout, WorkoutFeedbacks, Exercise, Trainer} from './index'
+import {WorkoutPlan, Workout, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords} from './index'
 
 const tableName = 'WorkoutSchedules'
 
@@ -121,4 +122,54 @@ async function findOneWithWorkoutPlanId(workoutPlanId: number): Promise<IWorkout
   }
 }
 
-export {tableName, findAll, findOne, findOneWithId, findOneWithWorkoutPlanId}
+async function findCounts(
+  userId: number
+): Promise<{
+  thisMonthCount: number
+  asOfTodayCount: number
+  doneCount: number
+  recentDate: string
+}> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT 
+            (SELECT COUNT(t.id) FROM ?? t WHERE t.userId = ${escape(userId)} AND 
+            t.startDate BETWEEN 
+              (LAST_DAY(NOW() - interval 1 month) + interval 1 DAY) 
+              AND (LAST_DAY(NOW()))) as thisMonthCount,
+            (SELECT COUNT(t.id) FROM ?? t WHERE t.userId = ${escape(userId)} AND
+            t.startDate < NOW()) as asOfTodayCount,
+            (SELECT COUNT(t.id) FROM ?? t
+            JOIN ?? wp ON wp.workoutScheduleId = t.id
+            JOIN ?? wr ON wr.workoutPlanId = wp.id
+            WHERE t.id = t.id 
+            GROUP BY t.id) as doneCount,
+            (SELECT DATE_FORMAT(t.startDate, '%Y-%m-%d') 
+            FROM ?? t
+            JOIN ?? wp ON wp.workoutScheduleId = t.id
+            JOIN ?? wr ON wr.workoutPlanId = wp.id
+            WHERE t.userId = ${escape(userId)} 
+            GROUP BY t.id 
+            ORDER BY t.startDate DESC
+            LIMIT 1) as recentDate
+            `,
+      values: [
+        tableName,
+        tableName,
+        tableName,
+        WorkoutPlan.tableName,
+        WorkoutRecords.tableName,
+        tableName,
+        WorkoutPlan.tableName,
+        WorkoutRecords.tableName,
+        tableName,
+        userId
+      ]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
+export {tableName, findAll, findOne, findOneWithId, findOneWithWorkoutPlanId, findCounts}

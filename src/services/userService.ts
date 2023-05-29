@@ -1,4 +1,4 @@
-import {User} from '../models'
+import {Ticket, User, Workout, WorkoutPlan, WorkoutSchedule} from '../models'
 import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserListForTrainer, IUserCreateOne} from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'
@@ -6,6 +6,20 @@ import {db} from '../loaders'
 
 interface IUserCreateData extends IUserCreateOne {
   franchiseId: number
+}
+
+interface IUserDetail extends IUser {
+  tickets: {
+    personalCount: number
+    fitnessCount: number
+    expiredCount: number
+  }
+  workouts: {
+    thisMonthCount: number
+    asOfTodayCount: number
+    doneCount: number
+    recentDate: string
+  }
 }
 
 async function create(options: IUserCreateData): Promise<void> {
@@ -42,9 +56,12 @@ async function findOne(options: IUserFindOne): Promise<IUser> {
   }
 }
 
-async function findOneWithId(id: number): Promise<IUser> {
+async function findOneWithId(id: number): Promise<IUserDetail> {
   try {
-    return await User.findOneWithId(id)
+    const user = await User.findOneWithId(id)
+    const tickets = await Ticket.findCounts(id)
+    const workouts = await WorkoutSchedule.findCounts(id)
+    return {...user, tickets, workouts}
   } catch (e) {
     throw e
   }

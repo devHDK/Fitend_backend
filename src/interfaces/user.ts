@@ -4,6 +4,9 @@ export interface IUser {
   password?: any
   email?: string
   phone?: string
+  gender?: 'male' | 'female'
+  birth?: string
+  job?: string
   createdAt?: string
   deletedAt?: Date | string
 }

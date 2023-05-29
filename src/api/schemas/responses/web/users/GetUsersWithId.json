@@ -28,6 +28,37 @@
     "createdAt": {
       "type": "string",
       "format": "date-time"
+    },
+    "tickets": {
+      "type": "object",
+      "properties": {
+        "personalCount": {
+          "type": "integer"
+        },
+        "fitnessCount": {
+          "type": "integer"
+        },
+        "expiredCount": {
+          "type": "integer"
+        }
+      }
+    },
+    "workouts": {
+      "type": "object",
+      "properties": {
+        "thisMonthCount": {
+          "type": "integer"
+        },
+        "asOfTodayCount": {
+          "type": "integer"
+        },
+        "doneCount": {
+          "type": "integer"
+        },
+        "recentDate": {
+          "type": "string"
+        }
+      }
     }
   },
   "required": [
