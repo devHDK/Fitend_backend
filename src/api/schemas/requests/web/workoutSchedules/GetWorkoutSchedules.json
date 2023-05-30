@@ -3,10 +3,14 @@
   "properties": {
     "startDate": {
       "type": "string"
+    },
+    "userId": {
+      "type": "integer"
     }
   },
   "required": [
-    "startDate"
+    "startDate",
+    "userId"
   ],
   "additionalProperties": false
 }

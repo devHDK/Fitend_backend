@@ -34,4 +34,15 @@ async function findOne(options: IWorkoutPlanFind): Promise<[IWorkoutPlan]> {
   }
 }
 
-export {tableName, create, findOne}
+async function deleteAllWithWorkoutScheduleId(workoutScheduleId: number, connection?: PoolConnection): Promise<void> {
+  try {
+    await db.query({
+      sql: `DELETE FROM ?? WHERE ?`,
+      values: [tableName, {workoutScheduleId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+export {tableName, create, findOne, deleteAllWithWorkoutScheduleId}

@@ -16,7 +16,7 @@ const postWorkoutSchedules = new ApiRouter({
 const getWorkoutSchedules = new ApiRouter({
   name: '',
   method: 'get',
-  summary: '메인 스케줄',
+  summary: 'workout 스케줄',
   tags: ['WorkoutSchedule'],
   schema: 'requests/web/workoutSchedules/GetWorkoutSchedules',
   responses: {
@@ -29,7 +29,7 @@ const getWorkoutSchedulesWithId = new ApiRouter({
   name: ':id',
   paths: ['common/IdPath'],
   method: 'get',
-  summary: '오늘의 운동',
+  summary: 'workout 스케줄 상세',
   tags: ['WorkoutSchedule'],
   responses: {
     200: {schema: 'responses/web/workoutSchedules/GetWorkoutSchedulesWithId'},
@@ -38,4 +38,36 @@ const getWorkoutSchedulesWithId = new ApiRouter({
   handler: ctrl.getWorkoutSchedulesWithId
 })
 
-export {postWorkoutSchedules, getWorkoutSchedules, getWorkoutSchedulesWithId}
+const putWorkoutSchedulesWithId = new ApiRouter({
+  name: ':id',
+  paths: ['common/IdPath'],
+  method: 'put',
+  summary: 'workout 스케줄 수정',
+  tags: ['WorkoutSchedule'],
+  schema: 'requests/web/workoutSchedules/PutWorkoutSchedulesWithId',
+  responses: {
+    200: {description: 'success'},
+    403: {description: 'not_allowed'}
+  },
+  handler: ctrl.putWorkoutSchedulesWithId
+})
+
+const deleteWorkoutSchedulesWithId = new ApiRouter({
+  name: ':id',
+  paths: ['common/IdPath'],
+  method: 'delete',
+  summary: 'workout 스케줄 삭제',
+  tags: ['WorkoutSchedule'],
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.deleteWorkoutSchedulesWithId
+})
+
+export {
+  postWorkoutSchedules,
+  getWorkoutSchedules,
+  getWorkoutSchedulesWithId,
+  putWorkoutSchedulesWithId,
+  deleteWorkoutSchedulesWithId
+}

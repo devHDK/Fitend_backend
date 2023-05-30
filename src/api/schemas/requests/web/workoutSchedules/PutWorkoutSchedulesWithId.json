@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "properties": {
+    "workoutTitle": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 15
+    },
+    "workoutSubTitle": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 18
+    },
+    "totalTime": {
+      "type": "string",
+      "example": "00:00:00"
+    },
+    "startDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "seq": {
+      "type": "integer"
+    },
+    "workoutPlans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "exerciseId": {
+            "type": "integer"
+          },
+          "setInfo": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 15
+                },
+                "reps": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                },
+                "weight": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "seconds": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10800
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "workoutTitle",
+    "workoutSubTitle",
+    "totalTime",
+    "startDate"
+  ],
+  "additionalProperties": false
+}

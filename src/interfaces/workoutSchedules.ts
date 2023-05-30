@@ -37,6 +37,15 @@ export interface IWorkoutScheduleCreate {
   totalTime: string
 }
 
+export interface IWorkoutScheduleUpdate {
+  id: number
+  workoutTitle: string
+  workoutSubTitle: string
+  startDate: string
+  seq: number
+  totalTime: string
+}
+
 export interface IWorkoutScheduleDetail {
   workoutScheduleId: number
   workoutTitle: string

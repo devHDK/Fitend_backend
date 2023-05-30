@@ -4,7 +4,7 @@ import {WorkoutScheduleService} from '../../../../services'
 async function postWorkoutSchedules(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {userId, workoutId, workoutTitle, workoutSubTitle, startDate, seq, totalTime, workoutPlans} = req.options
-    const ret = await WorkoutScheduleService.create({
+    await WorkoutScheduleService.create({
       userId,
       trainerId: req.userId,
       workoutId,
@@ -15,7 +15,7 @@ async function postWorkoutSchedules(req: IRequest, res: Response, next: Function
       totalTime,
       workoutPlans
     })
-    res.status(200).json({data: ret})
+    res.status(200).json()
   } catch (e) {
     next(e)
   }
@@ -23,8 +23,8 @@ async function postWorkoutSchedules(req: IRequest, res: Response, next: Function
 
 async function getWorkoutSchedules(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {startDate} = req.options
-    const ret = await WorkoutScheduleService.findAll({userId: req.userId, startDate})
+    const {startDate, userId} = req.options
+    const ret = await WorkoutScheduleService.findAllForTrainer({userId, startDate})
     res.status(200).json({data: ret})
   } catch (e) {
     next(e)
@@ -33,7 +33,7 @@ async function getWorkoutSchedules(req: IRequest, res: Response, next: Function)
 
 async function getWorkoutSchedulesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const ret = await WorkoutScheduleService.findOne(req.options.id)
+    const ret = await WorkoutScheduleService.findOneForTrainer(req.options.id)
     if (!ret) throw new Error('not_found')
     res.status(200).json(ret)
   } catch (e) {
@@ -42,4 +42,38 @@ async function getWorkoutSchedulesWithId(req: IRequest, res: Response, next: Fun
   }
 }
 
-export {postWorkoutSchedules, getWorkoutSchedules, getWorkoutSchedulesWithId}
+async function putWorkoutSchedulesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, workoutTitle, workoutSubTitle, startDate, seq, totalTime, workoutPlans} = req.options
+    await WorkoutScheduleService.update({
+      id,
+      workoutTitle,
+      workoutSubTitle,
+      startDate,
+      seq,
+      totalTime,
+      workoutPlans
+    })
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'not_allowed') e.status = 403
+    next(e)
+  }
+}
+
+async function deleteWorkoutSchedulesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    await WorkoutScheduleService.deleteOne(req.options.id)
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+export {
+  postWorkoutSchedules,
+  getWorkoutSchedules,
+  getWorkoutSchedulesWithId,
+  putWorkoutSchedulesWithId,
+  deleteWorkoutSchedulesWithId
+}
