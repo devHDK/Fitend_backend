@@ -26,6 +26,17 @@ export interface IWorkoutScheduleFindAll {
   startDate: Date
 }
 
+export interface IWorkoutScheduleCreate {
+  userId: number
+  trainerId: number
+  workoutId: number
+  workoutTitle: string
+  workoutSubTitle: string
+  startDate: string
+  seq: number
+  totalTime: string
+}
+
 export interface IWorkoutScheduleDetail {
   workoutScheduleId: number
   workoutTitle: string

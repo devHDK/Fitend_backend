@@ -1,14 +1,28 @@
-import {escape} from 'mysql'
+import {PoolConnection, escape} from 'mysql'
 import {
   IWorkoutScheduleList,
   IWorkoutScheduleFindAll,
   IWorkoutScheduleDetail,
-  IWorkoutSchedule
+  IWorkoutSchedule,
+  IWorkoutScheduleCreate
 } from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
-import {WorkoutPlan, Workout, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords} from './index'
+import {WorkoutPlan, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords} from './index'
 
 const tableName = 'WorkoutSchedules'
+
+async function create(options: IWorkoutScheduleCreate, connection?: PoolConnection): Promise<number> {
+  try {
+    const {insertId} = await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableName, options]
+    })
+    return insertId
+  } catch (e) {
+    throw e
+  }
+}
 
 async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutScheduleList]> {
   try {
@@ -169,4 +183,4 @@ async function findCounts(
   }
 }
 
-export {tableName, findAll, findOne, findOneWithId, findOneWithWorkoutPlanId, findCounts}
+export {tableName, create, findAll, findOne, findOneWithId, findOneWithWorkoutPlanId, findCounts}

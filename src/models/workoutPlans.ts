@@ -1,13 +1,24 @@
 import moment from 'moment-timezone'
-import {v4 as uuid} from 'uuid'
 import {PoolConnection} from 'mysql'
 import {db} from '../loaders'
-import {IWorkoutPlan, IWorkoutPlanFind} from '../interfaces/workoutPlans'
-import {WorkoutSchedule} from './index'
+import {IWorkoutPlan, IWorkoutPlanFind, IWorkoutPlanCreate} from '../interfaces/workoutPlans'
 
 moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'WorkoutPlans'
+
+async function create(options: IWorkoutPlanCreate, connection?: PoolConnection): Promise<number> {
+  try {
+    const {insertId} = await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableName, options]
+    })
+    return insertId
+  } catch (e) {
+    throw e
+  }
+}
 
 async function findOne(options: IWorkoutPlanFind): Promise<[IWorkoutPlan]> {
   try {
@@ -23,4 +34,4 @@ async function findOne(options: IWorkoutPlanFind): Promise<[IWorkoutPlan]> {
   }
 }
 
-export {tableName, findOne}
+export {tableName, create, findOne}
