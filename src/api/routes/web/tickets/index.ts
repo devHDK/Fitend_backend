@@ -55,7 +55,7 @@ const deleteTicketsWithId = new ApiRouter({
   name: ':id',
   method: 'delete',
   paths: ['common/IdPath'],
-  summary: '수강권 수정',
+  summary: '수강권 삭제',
   tags: ['Ticket'],
   responses: {
     200: {description: 'success'}

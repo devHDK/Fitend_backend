@@ -69,7 +69,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
     const rows = await db.query({
       sql: `SELECT t.id, t.type, t.totalSession, DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
-            JSON_ARRAYAGG(u.nickname) as users
+            JSON_ARRAY(u.nickname) as users
             FROM ?? t
             JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ?
             JOIN ?? u ON u.id = tr.userId ${
