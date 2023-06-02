@@ -121,6 +121,18 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
   }
 }
 
+async function updateStartDate(options: {id: number; startDate: string; seq: number}): Promise<void> {
+  try {
+    const workoutSchedule = await WorkoutSchedule.findOneWithId(options.id)
+    const today = moment().unix()
+    const workoutStartDate = moment(workoutSchedule.startDate).unix()
+    if (workoutStartDate <= today) throw new Error('not_allowed')
+    await WorkoutSchedule.update(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function deleteOne(id: number): Promise<void> {
   try {
     await WorkoutSchedule.deleteOne(id)
@@ -129,4 +141,14 @@ async function deleteOne(id: number): Promise<void> {
   }
 }
 
-export {create, createFeedbacks, findAll, findAllForTrainer, findOne, findOneForTrainer, update, deleteOne}
+export {
+  create,
+  createFeedbacks,
+  findAll,
+  findAllForTrainer,
+  findOne,
+  findOneForTrainer,
+  update,
+  updateStartDate,
+  deleteOne
+}

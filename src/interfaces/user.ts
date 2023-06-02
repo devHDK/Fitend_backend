@@ -47,11 +47,11 @@ export interface IUserFindAll {
 
 export interface IUserUpdate {
   id: number
-  nickname: string
-  email: string
-  phone: string
-  birth: string
-  gender: string
-  password: string
-  job: string
+  nickname?: string
+  email?: string
+  phone?: string
+  birth?: string
+  gender?: string
+  password?: string
+  job?: string
 }

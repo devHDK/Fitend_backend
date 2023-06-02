@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "startDate": {
+      "type": "string",
+      "format": "date"
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": [
+    "startDate",
+    "seq"
+  ],
+  "additionalProperties": false
+}

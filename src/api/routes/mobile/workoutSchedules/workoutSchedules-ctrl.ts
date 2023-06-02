@@ -40,4 +40,19 @@ async function getWorkoutSchedulesWithId(req: IRequest, res: Response, next: Fun
   }
 }
 
-export {postWorkoutSchedulesFeedbacks, getWorkoutSchedules, getWorkoutSchedulesWithId}
+async function putWorkoutSchedulesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, startDate, seq} = req.options
+    await WorkoutScheduleService.updateStartDate({
+      id,
+      startDate,
+      seq
+    })
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'not_allowed') e.status = 403
+    next(e)
+  }
+}
+
+export {postWorkoutSchedulesFeedbacks, getWorkoutSchedules, getWorkoutSchedulesWithId, putWorkoutSchedulesWithId}

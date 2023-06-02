@@ -39,4 +39,18 @@ const getWorkoutSchedulesWithId = new ApiRouter({
   handler: ctrl.getWorkoutSchedulesWithId
 })
 
-export {postWorkoutSchedulesFeedbacks, getWorkoutSchedules, getWorkoutSchedulesWithId}
+const putWorkoutSchedulesWithId = new ApiRouter({
+  name: ':id',
+  paths: ['common/IdPath'],
+  method: 'put',
+  summary: 'workout 스케줄 수정',
+  tags: ['WorkoutSchedule'],
+  schema: 'requests/mobile/workoutSchedules/PutWorkoutSchedulesWithId',
+  responses: {
+    200: {description: 'success'},
+    403: {description: 'not_allowed'}
+  },
+  handler: ctrl.putWorkoutSchedulesWithId
+})
+
+export {postWorkoutSchedulesFeedbacks, getWorkoutSchedules, getWorkoutSchedulesWithId, putWorkoutSchedulesWithId}

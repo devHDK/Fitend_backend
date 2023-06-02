@@ -1,3 +1,4 @@
+import {options} from 'superagent'
 import {Ticket, User, Workout, WorkoutPlan, WorkoutSchedule} from '../models'
 import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserListForTrainer, IUserCreateOne} from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
@@ -35,6 +36,20 @@ async function create(options: IUserCreateData): Promise<void> {
     if (e.code === 'ER_DUP_ENTRY') {
       throw new Error('already_in_use')
     }
+    throw e
+  }
+}
+
+async function confirmPassword(options: {id: number; password: string}): Promise<void> {
+  const {id, password} = options
+  try {
+    const user = await User.findOne({id})
+    if (
+      !user ||
+      !Code.verifyPassword(password, user.password.password, user.password.salt, Code.passwordIterations.mobile)
+    )
+      throw new Error('not_found')
+  } catch (e) {
     throw e
   }
 }
@@ -89,4 +104,20 @@ async function update(options: IUserUpdate): Promise<void> {
   }
 }
 
-export {create, getMe, findOne, findOneWithId, findAllForTrainer, update}
+async function updatePassword(options: {id: number; password: string; newPassword: string}): Promise<void> {
+  const {id, password, newPassword} = options
+  try {
+    const user = await User.findOne({id})
+    if (
+      user &&
+      Code.verifyPassword(password, user.password.password, user.password.salt, Code.passwordIterations.mobile)
+    ) {
+      const passwordHash = Code.createPasswordHash(newPassword, passwordIterations.mobile)
+      await User.updateOne({id, password: JSON.stringify(passwordHash)})
+    } else throw new Error('not_found')
+  } catch (e) {
+    throw e
+  }
+}
+
+export {create, confirmPassword, getMe, findOne, findOneWithId, findAllForTrainer, update, updatePassword}
