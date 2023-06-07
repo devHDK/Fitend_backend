@@ -17,6 +17,7 @@ export interface IWorkoutScheduleList {
       title: string
       subTitle: string
       isComplete: boolean
+      isRecord: boolean
     }
   ]
 }

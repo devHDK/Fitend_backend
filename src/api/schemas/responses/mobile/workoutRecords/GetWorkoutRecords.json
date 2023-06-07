@@ -38,6 +38,12 @@
               "type": "string"
             }
           },
+          "trackingFieldId": {
+            "type": "integer"
+          },
+          "workoutPlanId": {
+            "type": "integer"
+          },
           "setInfo": {
             "type": "array",
             "items": {
@@ -51,17 +57,20 @@
                 "reps": {
                   "type": "integer",
                   "minimum": 1,
-                  "maximum": 100
+                  "maximum": 100,
+                  "nullable": true
                 },
                 "weight": {
                   "type": "integer",
                   "minimum": 1,
-                  "maximum": 500
+                  "maximum": 500,
+                  "nullable": true
                 },
                 "seconds": {
                   "type": "integer",
                   "minimum": 1,
-                  "maximum": 10800
+                  "maximum": 10800,
+                  "nullable": true
                 }
               }
             }

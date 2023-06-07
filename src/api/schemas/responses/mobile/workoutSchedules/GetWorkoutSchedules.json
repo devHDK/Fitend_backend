@@ -29,6 +29,9 @@
                 },
                 "isComplete": {
                   "type": "boolean"
+                },
+                "isRecord": {
+                  "type": "boolean"
                 }
               },
               "required": [
@@ -36,7 +39,8 @@
                 "seq",
                 "title",
                 "subTitle",
-                "isComplete"
+                "isComplete",
+                "isRecord"
               ]
             }
           }

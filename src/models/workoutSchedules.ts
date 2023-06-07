@@ -31,19 +31,22 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
     return await db.query({
       sql: `SELECT DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
             JSON_ARRAYAGG(JSON_OBJECT('workoutScheduleId', t.id , 'seq', t.seq, 'title', t.workoutTitle, 'subTitle', t.workoutSubTitle,
-            'isComplete', t.isComplete)) as workouts
+            'isComplete', t.isComplete, 'isRecord', t.isRecord)) as workouts
             FROM (
-              SELECT ws.startDate, ws.id, ws.seq, ws.workoutTitle, ws.workoutSubTitle, IF(wf.workoutScheduleId, true, false) as isComplete
+              SELECT ws.startDate, ws.id, ws.seq, ws.workoutTitle, ws.workoutSubTitle, 
+              IF(wf.workoutScheduleId, true, false) as isComplete,
+              IF(wr.workoutPlanId, true, false) as isRecord
               FROM ?? ws
               JOIN ?? wp ON wp.workoutScheduleId = ws.id
               LEFT JOIN ?? wf ON wf.workoutScheduleId = ws.id
+              LEFT JOIN ?? wr ON wr.workoutPlanId = wp.id
               WHERE ws.startDate BETWEEN '${startDate}' AND DATE_ADD('${startDate}', INTERVAL 30 DAY) AND ws.?
               GROUP BY ws.id
               ORDER BY ws.seq
             ) t
             GROUP BY t.startDate
             ORDER BY t.startDate`,
-      values: [tableName, WorkoutPlan.tableName, WorkoutFeedbacks.tableName, {userId}]
+      values: [tableName, WorkoutPlan.tableName, WorkoutFeedbacks.tableName, WorkoutRecords.tableName, {userId}]
     })
   } catch (e) {
     throw e
