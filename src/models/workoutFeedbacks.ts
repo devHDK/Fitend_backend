@@ -56,4 +56,11 @@ async function findOneWithWorkoutScheduleId(workoutScheduleId: number): Promise<
   }
 }
 
-export {tableName, create, createRelationIssues, findOneWithWorkoutScheduleId}
+export {
+  tableName,
+  tableWorkoutFeedbackWorkoutIssue,
+  tableWorkoutIssue,
+  create,
+  createRelationIssues,
+  findOneWithWorkoutScheduleId
+}

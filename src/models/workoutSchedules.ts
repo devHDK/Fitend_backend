@@ -117,7 +117,12 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<[IWorkoutSc
               JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = et.exerciseId
             ) as targetMuscleTypes,
             t.totalTime as workoutTotalTime, IF(wf.workoutScheduleId, true, false) as isWorkoutComplete,
-            wf.strengthIndex, wf.issueIndex, wf.contents,
+            wf.strengthIndex, wf.contents,
+            (
+              SELECT JSON_ARRAYAGG(wi.id) 
+              FROM ?? wi
+              JOIN ?? fi ON fi.workoutFeedbackId = wf.id AND fi.workoutIssueId = wi.id
+            ) as issueIndexes,
             tra.nickname as trainerNickname, tra.profileImage as trainerProfileImage,
             (
               SELECT JSON_ARRAYAGG(
@@ -146,6 +151,8 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<[IWorkoutSc
         Exercise.tableTargetMuscle,
         Exercise.tableExerciseTargetMuscle,
         WorkoutPlan.tableName,
+        WorkoutFeedbacks.tableWorkoutIssue,
+        WorkoutFeedbacks.tableWorkoutFeedbackWorkoutIssue,
         Exercise.tableTargetMuscle,
         Exercise.tableExerciseTargetMuscle,
         Exercise.tableName,
