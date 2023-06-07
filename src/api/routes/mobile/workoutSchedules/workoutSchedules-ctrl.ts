@@ -3,12 +3,12 @@ import {WorkoutScheduleService} from '../../../../services'
 
 async function postWorkoutSchedulesFeedbacks(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {id: workoutScheduleId, strengthIndex, issueIndex, contents} = req.options
+    const {id: workoutScheduleId, strengthIndex, issueIndexes, contents} = req.options
     await WorkoutScheduleService.createFeedbacks({
       userId: req.userId,
       workoutScheduleId,
       strengthIndex,
-      issueIndex,
+      issueIndexes,
       contents
     })
     res.status(200).json()

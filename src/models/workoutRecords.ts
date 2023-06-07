@@ -29,25 +29,24 @@ async function findOneWithWorkoutPlanId(workoutPlanId: number): Promise<IWorkout
   }
 }
 
-async function findAllWithWorkoutPlanId(workoutPlanId: number): Promise<IWorkoutRecordDetail> {
+async function findAllWithWorkoutScheduleId(workoutScheduleId: number): Promise<IWorkoutRecordDetail> {
   try {
     return await db.query({
       sql: `SELECT e.name as exerciseName, JSON_ARRAYAGG(tm.name) as targetMuscles,
             t.setInfo 
             FROM ?? t
-            JOIN ?? wp ON wp.id = t.workoutPlanId
+            JOIN ?? wp ON wp.id = t.workoutPlanId AND wp.workoutScheduleId = ?
             JOIN ?? e ON e.id = wp.exerciseId 
             JOIN ?? etm ON etm.exerciseId = e.id
             JOIN ?? tm ON tm.id = etm.targetMuscleId 
-            WHERE t.workoutPlanId = ?
             GROUP BY t.id`,
       values: [
         tableName,
         WorkoutPlan.tableName,
+        workoutScheduleId,
         Exercise.tableName,
         Exercise.tableExerciseTargetMuscle,
-        Exercise.tableTargetMuscle,
-        workoutPlanId
+        Exercise.tableTargetMuscle
       ]
     })
   } catch (e) {
@@ -55,4 +54,4 @@ async function findAllWithWorkoutPlanId(workoutPlanId: number): Promise<IWorkout
   }
 }
 
-export {tableName, create, findOneWithWorkoutPlanId, findAllWithWorkoutPlanId}
+export {tableName, create, findOneWithWorkoutPlanId, findAllWithWorkoutScheduleId}

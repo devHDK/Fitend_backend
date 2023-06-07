@@ -15,8 +15,8 @@ async function postWorkoutSchedulesRecords(req: IRequest, res: Response, next: F
 
 async function getWorkoutRecords(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {workoutScheduleId, workoutPlanId} = req.options
-    const ret = await WorkoutRecordService.findOne(workoutScheduleId, workoutPlanId)
+    const {workoutScheduleId} = req.options
+    const ret = await WorkoutRecordService.findOne(workoutScheduleId)
     res.status(200).json(ret)
   } catch (e) {
     next(e)

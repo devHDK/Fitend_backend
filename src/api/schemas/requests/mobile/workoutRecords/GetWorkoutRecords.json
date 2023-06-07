@@ -3,14 +3,10 @@
   "properties": {
     "workoutScheduleId": {
       "type": "integer"
-    },
-    "workoutPlanId": {
-      "type": "integer"
     }
   },
   "required": [
-    "workoutScheduleId",
-    "workoutPlanId"
+    "workoutScheduleId"
   ],
   "additionalProperties": false
 }

@@ -1,7 +1,6 @@
 export interface IWorkoutPlanFind {
-  id: number
-  startDate: Date
-  perPage: number
+  id?: number
+  workoutScheduleId?: number
 }
 
 export interface IWorkoutPlan {

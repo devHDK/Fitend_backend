@@ -1,6 +1,6 @@
 import moment from 'moment-timezone'
 import {db} from '../loaders'
-import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks} from '../models'
+import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutPlan} from '../models'
 import {IWorkoutRecordCreate, IWorkoutRecordDetail} from '../interfaces/workoutRecords'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -31,12 +31,12 @@ async function createRecords(userId: number, options: IWorkoutRecordCreate[]): P
   }
 }
 
-async function findOne(workoutScheduleId: number, workoutPlanId: number): Promise<IWorkoutRecordDetailData> {
+async function findOne(workoutScheduleId: number): Promise<IWorkoutRecordDetailData> {
   try {
     const workoutSchedule = await WorkoutSchedule.findOneWithId(workoutScheduleId)
     const workoutFeedbacks = await WorkoutFeedbacks.findOneWithWorkoutScheduleId(workoutScheduleId)
     delete workoutFeedbacks.createdAt
-    const workoutRecords = await WorkoutRecords.findAllWithWorkoutPlanId(workoutPlanId)
+    const workoutRecords = await WorkoutRecords.findAllWithWorkoutScheduleId(workoutScheduleId)
     return {startDate: moment(workoutSchedule.startDate).format('YYYY-MM-DD'), ...workoutFeedbacks, workoutRecords}
   } catch (e) {
     throw e

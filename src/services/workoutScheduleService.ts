@@ -1,4 +1,5 @@
 import moment from 'moment-timezone'
+import {PoolConnection} from 'mysql'
 import {WorkoutSchedule, WorkoutFeedbacks, WorkoutPlan} from '../models'
 import {
   IWorkoutScheduleList,
@@ -9,11 +10,13 @@ import {
 } from '../interfaces/workoutSchedules'
 import {IWorkoutFeedbackCreate} from '../interfaces/workoutFeedbacks'
 import {db} from '../loaders'
+import {tableExerciseTargetMuscle} from '../models/exercise'
 
 moment.tz.setDefault('Asia/Seoul')
 
 interface IWorkoutFeedbackData extends IWorkoutFeedbackCreate {
   userId: number
+  issueIndexes: number[]
 }
 
 interface IWorkoutScheduleCreateData extends IWorkoutScheduleCreate {
@@ -51,14 +54,20 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
 }
 
 async function createFeedbacks(options: IWorkoutFeedbackData): Promise<void> {
+  const connection = await db.beginTransaction()
   try {
-    const {userId, ...data} = options
+    const {userId, issueIndexes, ...data} = options
     const workoutSchedule = await WorkoutSchedule.findOneWithId(data.workoutScheduleId)
     if (!workoutSchedule || workoutSchedule.userId !== userId) throw new Error('not_allowed')
     const workoutFeedback = await WorkoutFeedbacks.findOneWithWorkoutScheduleId(data.workoutScheduleId)
     if (workoutFeedback) throw new Error('duplicate_feedback')
-    await WorkoutFeedbacks.create(data)
+    const workoutFeedbackId = await WorkoutFeedbacks.create(data)
+    if (issueIndexes && issueIndexes.length > 0) {
+      await WorkoutFeedbacks.createRelationIssues({workoutFeedbackId, issueIndexes}, connection)
+    }
+    await db.commit(connection)
   } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }

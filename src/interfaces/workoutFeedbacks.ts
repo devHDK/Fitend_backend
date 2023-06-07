@@ -9,6 +9,5 @@ export interface IWorkoutFeedback {
 export interface IWorkoutFeedbackCreate {
   workoutScheduleId: number
   strengthIndex: number
-  issueIndex: number
   contents: string
 }

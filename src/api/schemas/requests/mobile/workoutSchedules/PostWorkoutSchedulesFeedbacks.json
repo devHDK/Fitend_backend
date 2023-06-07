@@ -6,10 +6,13 @@
       "minimum": 1,
       "maximum": 5
     },
-    "issueIndex": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 5
+    "issueIndexes": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5
+      }
     },
     "contents": {
       "type": "string",
