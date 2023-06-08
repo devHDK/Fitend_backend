@@ -71,7 +71,7 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
                 'workoutPlanId', wp.id, 'name', e.name, 'description', e.description,
                 'trackingFieldId', e.trackingFieldId,
                 'targetMuscles', 
-                (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', tm.name, 'muscleType', tm.type, 'type', et.type, 'image', tm.image))
+                (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', et.type))
                 FROM ?? tm
                 JOIN ?? et ON et.exerciseId = e.id AND et.targetMuscleId = tm.id),
                 'videos', e.videos, 'setInfo', wp.setInfo, 'trainerNickname', tra.nickname, 'trainerProfileImage', tra.profileImage

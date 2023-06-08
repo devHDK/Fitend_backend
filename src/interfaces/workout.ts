@@ -44,6 +44,7 @@ export interface IWorkoutDetail {
       name: string
       trackingFieldId: number
       setInfo: [{index: number; reps: number; weight: number; seconds: number}]
+      targetMuscles: string[]
     }
   ]
 }

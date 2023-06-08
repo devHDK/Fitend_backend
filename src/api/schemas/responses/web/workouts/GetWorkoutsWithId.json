@@ -64,6 +64,12 @@
           "trackingFieldId": {
             "type": "integer"
           },
+          "targetMuscles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "setInfo": {
             "type": "array",
             "items": {

@@ -91,15 +91,28 @@ async function findOneWithId(id: number): Promise<IWorkoutDetail> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id, t.title, t.subTitle, t.totalTime,
-            (SELECT JSON_ARRAYAGG(tm.type) 
-              FROM ?? we
-              JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
-              JOIN ?? tm ON tm.id = et.targetMuscleId
-              WHERE we.workoutId = t.id
+            (SELECT JSON_ARRAYAGG(t.type) 
+              FROM (
+                SELECT DISTINCT tm.type
+                FROM ?? we
+                JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
+                JOIN ?? tm ON tm.id = et.targetMuscleId
+                WHERE we.workoutId = t.id
+              ) t
             ) as primaryTypes,
             t.trainerId, tr.nickname as trainerNickname, tr.profileImage as trainerProfileImage, t.updatedAt,
             JSON_ARRAYAGG(
-              JSON_OBJECT('id', e.id, 'videos', e.videos, 'name', e.name, 'trackingFieldId', e.trackingFieldId ,'setInfo', we.setInfo)
+              JSON_OBJECT('id', e.id, 'videos', e.videos, 'name', e.name, 'trackingFieldId', e.trackingFieldId ,'setInfo', we.setInfo,
+              'targetMuscles', (SELECT JSON_ARRAYAGG(t.name) 
+                FROM (
+                  SELECT DISTINCT tm.name
+                  FROM ?? we
+                  JOIN ?? et ON et.exerciseId = e.id
+                  JOIN ?? tm ON tm.id = et.targetMuscleId
+                  WHERE we.workoutId = t.id
+                ) t
+               ) 
+              )
             ) as exercises
             FROM ?? t
             JOIN ?? we ON we.workoutId = t.id
@@ -108,6 +121,9 @@ async function findOneWithId(id: number): Promise<IWorkoutDetail> {
             WHERE t.?
             GROUP BY t.id`,
       values: [
+        tableWorkoutExercise,
+        Exercise.tableExerciseTargetMuscle,
+        Exercise.tableTargetMuscle,
         tableWorkoutExercise,
         Exercise.tableExerciseTargetMuscle,
         Exercise.tableTargetMuscle,
