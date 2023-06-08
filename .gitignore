@@ -107,6 +107,9 @@ typings/
 
 # dotenv environment variables file
 .env
+.env.test
+.env.dev
+.env.prod
 
 # .idea directories
 .idea

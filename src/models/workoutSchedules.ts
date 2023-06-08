@@ -224,8 +224,7 @@ async function findCounts(
             (SELECT COUNT(t.id) FROM ?? t
             JOIN ?? wp ON wp.workoutScheduleId = t.id
             JOIN ?? wr ON wr.workoutPlanId = wp.id
-            WHERE t.id = t.id 
-            GROUP BY t.id) as doneCount,
+            WHERE t.userId = ${escape(userId)}) as doneCount,
             (SELECT DATE_FORMAT(t.startDate, '%Y-%m-%d') 
             FROM ?? t
             JOIN ?? wp ON wp.workoutScheduleId = t.id
