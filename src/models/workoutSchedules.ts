@@ -5,7 +5,8 @@ import {
   IWorkoutScheduleDetail,
   IWorkoutSchedule,
   IWorkoutScheduleCreate,
-  IWorkoutScheduleUpdate
+  IWorkoutScheduleUpdate,
+  IWorkoutScheduleListForTrainer
 } from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
 import {WorkoutPlan, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords} from './index'
@@ -46,6 +47,28 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
             ) t
             GROUP BY t.startDate
             ORDER BY t.startDate`,
+      values: [tableName, WorkoutPlan.tableName, WorkoutFeedbacks.tableName, WorkoutRecords.tableName, {userId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWorkoutScheduleListForTrainer]> {
+  try {
+    const {userId, startDate} = options
+    return await db.query({
+      sql: `SELECT DATE_FORMAT(ws.startDate, '%Y-%m-%d') as startDate, ws.id as workoutScheduleId, 
+              ws.seq, ws.workoutTitle as title, ws.workoutSubTitle as subTitle, 
+              IF(wf.workoutScheduleId, true, false) as isComplete,
+              IF(wr.workoutPlanId, true, false) as isRecord
+              FROM ?? ws
+              JOIN ?? wp ON wp.workoutScheduleId = ws.id
+              LEFT JOIN ?? wf ON wf.workoutScheduleId = ws.id
+              LEFT JOIN ?? wr ON wr.workoutPlanId = wp.id
+              WHERE ws.startDate BETWEEN '${startDate}' AND DATE_ADD('${startDate}', INTERVAL 30 DAY) AND ws.?
+              GROUP BY ws.id
+              ORDER BY ws.seq`,
       values: [tableName, WorkoutPlan.tableName, WorkoutFeedbacks.tableName, WorkoutRecords.tableName, {userId}]
     })
   } catch (e) {
@@ -281,6 +304,7 @@ export {
   tableName,
   create,
   findAll,
+  findAllForTrainer,
   findOne,
   findOneForTrainer,
   findOneWithId,

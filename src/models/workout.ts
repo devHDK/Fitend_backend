@@ -56,7 +56,7 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
     const where = []
     if (search) where.push(`t.title like '%${search}%'`)
     const rows = await db.query({
-      sql: `SELECT t.id, t.title, t.totalTime, 
+      sql: `SELECT t.id, t.title, t.subTitle, t.totalTime, 
             JSON_ARRAYAGG(tm.type) as primaryTypes,
             t.trainerId, tr.nickname as trainerNickname, t.updatedAt
             FROM ?? t

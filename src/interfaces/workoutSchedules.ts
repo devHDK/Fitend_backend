@@ -22,6 +22,16 @@ export interface IWorkoutScheduleList {
   ]
 }
 
+export interface IWorkoutScheduleListForTrainer {
+  workoutScheduleId: number
+  seq: number
+  title: string
+  subTitle: string
+  isComplete: boolean
+  isRecord: boolean
+  startDate: string
+}
+
 export interface IWorkoutScheduleFindAll {
   userId: number
   startDate: Date

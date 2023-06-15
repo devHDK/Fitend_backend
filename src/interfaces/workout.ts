@@ -1,6 +1,7 @@
 export interface IWorkout {
   id: number
   title: string
+  subTitle: string
   totalTime: string
   primaryTypes: string[]
   trainerId: number

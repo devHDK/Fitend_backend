@@ -6,7 +6,8 @@ import {
   IWorkoutScheduleFindAll,
   IWorkoutScheduleDetail,
   IWorkoutScheduleCreate,
-  IWorkoutScheduleUpdate
+  IWorkoutScheduleUpdate,
+  IWorkoutScheduleListForTrainer
 } from '../interfaces/workoutSchedules'
 import {IWorkoutFeedbackCreate} from '../interfaces/workoutFeedbacks'
 import {db} from '../loaders'
@@ -80,9 +81,9 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
   }
 }
 
-async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWorkoutScheduleList]> {
+async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWorkoutScheduleListForTrainer]> {
   try {
-    return await WorkoutSchedule.findAll(options)
+    return await WorkoutSchedule.findAllForTrainer(options)
   } catch (e) {
     throw e
   }

@@ -12,6 +12,9 @@
           "title": {
             "type": "string"
           },
+          "subTitle": {
+            "type": "string"
+          },
           "totalTime": {
             "type": "string",
             "example": "00:00:00"

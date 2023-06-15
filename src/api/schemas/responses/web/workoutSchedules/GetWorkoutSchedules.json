@@ -6,44 +6,36 @@
       "items": {
         "type": "object",
         "properties": {
-          "startDate": {
-            "type": "string",
-            "format": "date"
+          "workoutScheduleId": {
+            "type": "integer"
           },
-          "workouts": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "workoutScheduleId": {
-                  "type": "integer"
-                },
-                "seq": {
-                  "type": "integer"
-                },
-                "title": {
-                  "type": "string"
-                },
-                "subTitle": {
-                  "type": "string"
-                },
-                "isComplete": {
-                  "type": "boolean"
-                }
-              },
-              "required": [
-                "workoutScheduleId",
-                "seq",
-                "title",
-                "subTitle",
-                "isComplete"
-              ]
-            }
+          "seq": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subTitle": {
+            "type": "string"
+          },
+          "isComplete": {
+            "type": "boolean"
+          },
+          "isRecord": {
+            "type": "boolean"
+          },
+          "startDate": {
+            "type": "string"
           }
         },
         "required": [
-          "startDate",
-          "workouts"
+          "workoutScheduleId",
+          "seq",
+          "title",
+          "subTitle",
+          "isComplete",
+          "isRecord",
+          "startDate"
         ],
         "additionalProperties": false
       }
@@ -54,3 +46,4 @@
   ],
   "additionalProperties": false
 }
+
