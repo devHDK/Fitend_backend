@@ -94,12 +94,12 @@
                 "reps": {
                   "type": "integer",
                   "minimum": 1,
-                  "maximum": 100
+                  "maximum": 99
                 },
                 "weight": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 500
+                  "type": "number",
+                  "minimum": 0.1,
+                  "maximum": 999
                 },
                 "seconds": {
                   "type": "integer",
