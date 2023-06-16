@@ -66,6 +66,7 @@ export interface IWorkoutScheduleDetail {
   exercises: [
     {
       workoutPlanId: number
+      exerciseId: number
       name: string
       description: string
       trackingFieldId: number

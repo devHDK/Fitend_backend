@@ -43,6 +43,8 @@ export interface IUserFindAll {
   franchiseId: number
   start: number
   perPage: number
+  search?: string
+  status?: string
 }
 
 export interface IUserUpdate {

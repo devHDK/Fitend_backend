@@ -11,7 +11,6 @@ import {
   IUserData
 } from '../interfaces/user'
 import {Trainer, Ticket} from './'
-import {reduceNull} from '../loaders/mysql'
 
 const utcTime = moment.utc()
 
@@ -80,36 +79,59 @@ async function findOneWithId(id: number): Promise<IUser> {
 
 async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTrainer> {
   try {
-    const {franchiseId, start, perPage} = options
+    const {franchiseId, start, perPage, search, status} = options
     const where = []
 
+    if (search) where.push(`(t.nickname like '%${search}%' OR t.phone like '%${search}%')`)
     const currentTime = utcTime.format('YYYY-MM-DDTHH:mm:ss')
-    let rows: IUserData[] = await db.query({
+    const rows: IUserData[] = await db.query({
       sql: `SELECT t.id, t.nickname, t.phone, t.createdAt,
-            JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) as trainers
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
+            JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
+            JOIN ?? tra ON tra.id = tr.trainerId
+            WHERE ti.expiredAt > '${currentTime}'
+            LIMIT 1
+            ) as trainers
             FROM ?? t
             JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
-            LEFT JOIN ?? tr ON tr.userId = t.id
-            LEFT JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt > '${currentTime}'
-            LEFT JOIN ?? tra ON tra.id = tr.trainerId 
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
+            ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
       values: [
+        Ticket.tableName,
+        Ticket.tableTicketRelation,
+        Trainer.tableName,
         tableName,
         tableFranchiseUser,
-        franchiseId,
-        Ticket.tableTicketRelation,
-        Ticket.tableName,
-        Trainer.tableName
+        franchiseId
       ]
     })
-    rows = reduceNull(rows, 'trainers', 'id', null)
     const [rowTotal] = await db.query({
-      sql: `SELECT COUNT(1) as total FROM ?? t
-      ${where.length ? `WHERE ${where.join(' AND ')}` : ''}`,
-      values: [tableName]
+      sql: `SELECT COUNT(1) as total FROM (
+              SELECT t.id, t.nickname, t.phone, t.createdAt,
+              (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
+              JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
+              JOIN ?? tra ON tra.id = tr.trainerId
+              WHERE ti.expiredAt > '${currentTime}'
+              LIMIT 1
+              ) as trainers
+              FROM ?? t
+              JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
+              ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+              GROUP BY t.id
+              ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
+            ) t
+            `,
+      values: [
+        Ticket.tableName,
+        Ticket.tableTicketRelation,
+        Trainer.tableName,
+        tableName,
+        tableFranchiseUser,
+        franchiseId
+      ]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {

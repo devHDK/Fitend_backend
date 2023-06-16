@@ -153,7 +153,7 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<[IWorkoutSc
             (
               SELECT JSON_ARRAYAGG(
                 JSON_OBJECT(
-                'workoutPlanId', wp.id, 'name', e.name, 'description', e.description,
+                'workoutPlanId', wp.id, 'exerciseId', wp.exerciseId, 'name', e.name, 'description', e.description,
                 'trackingFieldId', e.trackingFieldId,
                 'targetMuscles', 
                 (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', tm.name, 'type', et.type))

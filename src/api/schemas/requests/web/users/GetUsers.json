@@ -1,6 +1,12 @@
 {
   "type": "object",
   "properties": {
+    "search": {
+      "type": "string"
+    },
+    "status": {
+      "type": "boolean"
+    },
     "start": {
       "type": "integer",
       "minimum": 0,

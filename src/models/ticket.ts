@@ -59,10 +59,10 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
     if (status !== undefined) {
       const currentTime = moment().format('YYYY-MM-DD')
       if (status) {
-        where.push(`t.startedAt <= ${currentTime}`)
+        // where.push(`t.startedAt <= ${currentTime}`)
         where.push(`t.expiredAt >= ${currentTime}`)
       } else {
-        where.push(`t.startedAt >= ${currentTime}`)
+        // where.push(`t.startedAt >= ${currentTime}`)
         where.push(`t.expiredAt <= ${currentTime}`)
       }
     }
@@ -73,7 +73,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             FROM ?? t
             JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ?
             JOIN ?? u ON u.id = tr.userId ${
-              search ? `AND (u.nickname like '%${search}%' OR u.phone = '%${search}%'` : ``
+              search ? `AND (u.nickname like '%${search}%' OR u.phone = '%${search}%')` : ``
             }
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
@@ -87,7 +87,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
               FROM ?? t
               JOIN ?? tr ON tr.ticketId = t.id
               JOIN ?? u ON u.id = tr.userId ${
-                search ? `AND (u.nickname like '%${search}%' OR u.phone = '%${search}%'` : ``
+                search ? `AND (u.nickname like '%${search}%' OR u.phone = '%${search}%')` : ``
               }
               ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
               GROUP BY t.id

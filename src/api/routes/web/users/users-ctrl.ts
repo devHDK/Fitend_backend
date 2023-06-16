@@ -14,8 +14,8 @@ async function postUsers(req: IRequest, res: Response, next: Function): Promise<
 
 async function getUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {start, perPage} = req.options
-    const ret = await UserService.findAllForTrainer({franchiseId: req.franchiseId, start, perPage})
+    const {search, status, start, perPage} = req.options
+    const ret = await UserService.findAllForTrainer({franchiseId: req.franchiseId, start, perPage, search, status})
     res.status(200).json(ret)
   } catch (e) {
     next(e)

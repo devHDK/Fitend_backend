@@ -110,9 +110,9 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
   try {
     const {workoutPlans, ...data} = options
     const workoutSchedule = await WorkoutSchedule.findOneWithId(data.id)
-    const today = moment().unix()
+    const today = moment().startOf('day').unix()
     const workoutStartDate = moment(workoutSchedule.startDate).unix()
-    if (workoutStartDate <= today) throw new Error('not_allowed')
+    if (workoutStartDate < today) throw new Error('not_allowed')
 
     await WorkoutSchedule.update(data, connection)
 

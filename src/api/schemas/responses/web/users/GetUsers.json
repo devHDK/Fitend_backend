@@ -27,7 +27,8 @@
                   "type": "string"
                 }
               }
-            }
+            },
+            "nullable": true
           },
           "createdAt": {
             "type": "string",

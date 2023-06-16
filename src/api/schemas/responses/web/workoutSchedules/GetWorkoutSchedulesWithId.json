@@ -61,6 +61,9 @@
           "workoutPlanId": {
             "type": "integer"
           },
+          "exerciseId": {
+            "type": "integer"
+          },
           "name": {
             "type": "string"
           },
@@ -148,12 +151,14 @@
                 "weight": {
                   "type": "number",
                   "minimum": 0.1,
-                  "maximum": 999
+                  "maximum": 999,
+                  "nullable": true
                 },
                 "seconds": {
                   "type": "integer",
                   "minimum": 1,
-                  "maximum": 10800
+                  "maximum": 10800,
+                  "nullable": true
                 }
               }
             },
@@ -162,6 +167,7 @@
         },
         "required": [
           "workoutPlanId",
+          "exerciseId",
           "name",
           "description",
           "trackingFieldId",
