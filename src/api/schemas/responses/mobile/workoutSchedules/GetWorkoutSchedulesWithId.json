@@ -26,6 +26,9 @@
     "isWorkoutComplete": {
       "type": "boolean"
     },
+    "isRecord": {
+      "type": "boolean"
+    },
     "exercises": {
       "type": "array",
       "items": {

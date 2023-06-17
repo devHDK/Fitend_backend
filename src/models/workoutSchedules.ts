@@ -87,7 +87,9 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
               JOIN ?? et ON et.targetMuscleId = tm.id AND et.type = 'main'
               JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = et.exerciseId
             ) as targetMuscleTypes,
-            t.totalTime as workoutTotalTime, IF(wf.workoutScheduleId, true, false) as isWorkoutComplete,
+            t.totalTime as workoutTotalTime, 
+            IF(wf.workoutScheduleId, true, false) as isWorkoutComplete,
+            IF(wr.workoutPlanId, true, false) as isRecord,
             (
               SELECT JSON_ARRAYAGG(
                 JSON_OBJECT(
@@ -107,6 +109,7 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
             FROM ?? t
             JOIN ?? wp ON wp.workoutScheduleId = t.id
             LEFT JOIN ?? wf ON wf.workoutScheduleId = t.id
+            LEFT JOIN ?? wr ON wr.workoutPlanId = wp.id
             WHERE t.?
             GROUP BY t.id`,
       values: [
@@ -121,6 +124,7 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
         tableName,
         WorkoutPlan.tableName,
         WorkoutFeedbacks.tableName,
+        WorkoutRecords.tableName,
         {id: workoutScheduleId}
       ]
     })
