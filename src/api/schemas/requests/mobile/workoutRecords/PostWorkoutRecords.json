@@ -22,12 +22,14 @@
                 "reps": {
                   "type": "integer",
                   "minimum": 1,
-                  "maximum": 99
+                  "maximum": 99,
+                  "nullable": true
                 },
                 "weight": {
                   "type": "number",
                   "minimum": 0.1,
-                  "maximum": 999
+                  "maximum": 999,
+                  "nullable": true
                 },
                 "seconds": {
                   "type": "integer",
