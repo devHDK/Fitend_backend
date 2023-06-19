@@ -71,7 +71,7 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
     const rows = await db.query({
       sql: `SELECT t.id, t.title, t.subTitle, t.totalTime, 
             JSON_ARRAYAGG(tm.type) as primaryTypes,
-            t.trainerId, tr.nickname as trainerNickname, t.updatedAt
+            t.trainerId, tr.nickname as trainerNickname, t.updatedAt, IF(tw.trainerId, true, false) as isBookmark
             FROM ?? t
             JOIN ?? we ON we.workoutId = t.id
             JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'

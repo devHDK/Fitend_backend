@@ -35,6 +35,7 @@ export interface IWorkoutDetail {
   trainerNickname: string
   trainerProfileImage: string
   updatedAt: Date
+  isBookmark: boolean
   exercises: [
     {
       id: number

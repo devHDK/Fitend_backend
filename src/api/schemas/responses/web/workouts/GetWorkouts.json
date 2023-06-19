@@ -34,6 +34,9 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "isBookmark": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -43,7 +46,8 @@
           "primaryTypes",
           "trainerId",
           "trainerNickname",
-          "updatedAt"
+          "updatedAt",
+          "isBookmark"
         ],
         "additionalProperties": false
       }
