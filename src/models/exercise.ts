@@ -17,6 +17,7 @@ const tableName = 'Exercises'
 const tableExerciseTargetMuscle = 'Exercises-TargetMuscles'
 const tableExerciseExerciseTag = 'Exercises-ExerciseTags'
 const tableExerciseTag = 'ExerciseTags'
+const tableTrainerExercise = 'Trainers-Exercises'
 const tableTargetMuscle = 'TargetMuscles'
 
 async function create(options: IExerciseCreate, connection: PoolConnection): Promise<number> {
@@ -72,6 +73,17 @@ async function createRelationTag(
   }
 }
 
+async function createRelationBookmark(exerciseId: number, trainerId: number): Promise<void> {
+  try {
+    await db.query({
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableTrainerExercise, {exerciseId, trainerId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function createExerciseTag(options: {name: string}, connection: PoolConnection): Promise<number> {
   try {
     const {insertId} = await db.query({
@@ -97,29 +109,44 @@ async function findTags(options: IExerciseTag): Promise<{id: number; name: strin
   }
 }
 
+async function findBookmark(exerciseId: number, trainerId: number): Promise<{id: number; name: string}> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT * FROM ?? WHERE ? AND ?`,
+      values: [tableTrainerExercise, {exerciseId}, {trainerId}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
-  const {search, start, perPage} = options
+  const {search, trainerId, isMe, isBookmark, start, perPage} = options
   try {
     const where = []
     if (search) where.push(`t.name like '%${search}%'`)
+    if (isMe) where.push(`t.trainerId = ${trainerId}`)
     const rows = await db.query({
       sql: `SELECT t.id, t.name, t.videos, t.type, t.trackingFieldId,
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name)) as targetMuscles,
-            t.trainerId, tr.nickname as trainerNickname, t.updatedAt  
+            t.trainerId, tr.nickname as trainerNickname, t.updatedAt, IF(te.trainerId, true, false) as isBookmark  
             FROM ?? t
             JOIN ?? et ON et.exerciseId = t.id
             JOIN ?? tm ON tm.id = et.targetMuscleId
             JOIN ?? tr ON tr.id = t.trainerId
+            ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.exerciseId = t.id AND te.trainerId = t.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
-      values: [tableName, tableExerciseTargetMuscle, tableTargetMuscle, Trainer.tableName]
+      values: [tableName, tableExerciseTargetMuscle, tableTargetMuscle, Trainer.tableName, tableTrainerExercise]
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM ?? t
-      ${where.length ? `WHERE ${where.join(' AND ')}` : ''}`,
-      values: [tableName]
+            ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.exerciseId = t.id AND te.trainerId = t.trainerId
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}`,
+      values: [tableName, tableTrainerExercise]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
@@ -192,20 +219,35 @@ async function deleteRelationTag(exerciseId: number, connection: PoolConnection)
   }
 }
 
+async function deleteRelationBookmark(exerciseId: number, trainerId: number): Promise<void> {
+  try {
+    await db.query({
+      sql: `DELETE FROM ?? WHERE ? AND ?`,
+      values: [tableTrainerExercise, {exerciseId}, {trainerId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   tableName,
   tableExerciseTargetMuscle,
   tableExerciseExerciseTag,
   tableExerciseTag,
   tableTargetMuscle,
+  tableTrainerExercise,
   create,
   createRelationTargetMuscle,
   createRelationTag,
+  createRelationBookmark,
   createExerciseTag,
   findTags,
+  findBookmark,
   findAll,
   findOneWithId,
   update,
   deleteRelationTargetMuscle,
-  deleteRelationTag
+  deleteRelationTag,
+  deleteRelationBookmark
 }

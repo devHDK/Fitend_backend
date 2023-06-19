@@ -50,4 +50,16 @@ const putExercisesWithId = new ApiRouter({
   handler: ctrl.putExercisesWithId
 })
 
-export {postExercises, getExercises, getExercisesWithId, putExercisesWithId}
+const putExercisesBookmark = new ApiRouter({
+  name: ':id/bookmark',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '운동 Bookmark',
+  tags: ['Exercise'],
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putExercisesBookmark
+})
+
+export {postExercises, getExercises, getExercisesWithId, putExercisesWithId, putExercisesBookmark}

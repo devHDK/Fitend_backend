@@ -4,6 +4,12 @@
     "search": {
       "type": "string"
     },
+    "isMe": {
+      "type": "boolean"
+    },
+    "isBookmark": {
+      "type": "boolean"
+    },
     "start": {
       "type": "integer",
       "minimum": 0,

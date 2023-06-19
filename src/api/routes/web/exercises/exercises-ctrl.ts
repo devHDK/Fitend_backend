@@ -24,8 +24,8 @@ async function postExercises(req: IRequest, res: Response, next: Function): Prom
 
 async function getExercises(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {search, start, perPage} = req.options
-    const ret = await ExerciseService.findAll({search, start, perPage})
+    const {search, isMe, isBookmark, start, perPage} = req.options
+    const ret = await ExerciseService.findAll({search, trainerId: req.userId, isMe, isBookmark, start, perPage})
     res.status(200).json(ret)
   } catch (e) {
     if (e.message === 'ER_DUP_ENTRY') e.status = 409
@@ -62,4 +62,14 @@ async function putExercisesWithId(req: IRequest, res: Response, next: Function):
   }
 }
 
-export {postExercises, getExercises, getExercisesWithId, putExercisesWithId}
+async function putExercisesBookmark(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id} = req.options
+    await ExerciseService.updateBookmark({exerciseId: id, trainerId: req.userId})
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+export {postExercises, getExercises, getExercisesWithId, putExercisesWithId, putExercisesBookmark}

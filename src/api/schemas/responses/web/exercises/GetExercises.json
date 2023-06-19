@@ -59,6 +59,9 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "isBookmark": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -68,7 +71,8 @@
           "targetMuscles",
           "trainerId",
           "trainerNickname",
-          "updatedAt"
+          "updatedAt",
+          "isBookmark"
         ],
         "additionalProperties": false
       }

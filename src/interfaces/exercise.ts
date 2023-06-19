@@ -34,6 +34,9 @@ export interface IExerciseTag {
 
 export interface IExerciseFindAll {
   search?: string
+  isMe?: boolean
+  isBookmark?: boolean
+  trainerId: number
   start: number
   perPage: number
 }

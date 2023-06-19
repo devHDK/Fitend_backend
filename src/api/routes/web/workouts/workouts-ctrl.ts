@@ -13,8 +13,8 @@ async function postWorkouts(req: IRequest, res: Response, next: Function): Promi
 
 async function getWorkouts(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {search, start, perPage} = req.options
-    const ret = await WorkoutService.findAll({search, start, perPage})
+    const {search, isMe, isBookmark, start, perPage} = req.options
+    const ret = await WorkoutService.findAll({search, trainerId: req.userId, isMe, isBookmark, start, perPage})
     res.status(200).json(ret)
   } catch (e) {
     next(e)
@@ -48,4 +48,17 @@ async function putWorkoutsWithId(req: IRequest, res: Response, next: Function): 
   }
 }
 
-export {postWorkouts, getWorkouts, getWorkoutsWithId, putWorkoutsWithId}
+async function putWorkoutsBookmark(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id} = req.options
+    await WorkoutService.updateBookmark({
+      workoutId: id,
+      trainerId: req.userId
+    })
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+export {postWorkouts, getWorkouts, getWorkoutsWithId, putWorkoutsWithId, putWorkoutsBookmark}

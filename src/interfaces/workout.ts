@@ -18,6 +18,9 @@ export interface IWorkoutCreate {
 
 export interface IWorkoutFindAll {
   search?: string
+  isMe?: boolean
+  isBookmark?: boolean
+  trainerId: number
   start: number
   perPage: number
 }

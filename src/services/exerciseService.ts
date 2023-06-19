@@ -98,4 +98,15 @@ async function update(options: {
   }
 }
 
-export {create, findAll, findOne, update}
+async function updateBookmark(options: {exerciseId: number; trainerId: number}): Promise<void> {
+  try {
+    const {exerciseId, trainerId} = options
+    const isBookmark = await Exercise.findBookmark(exerciseId, trainerId)
+    if (isBookmark) await Exercise.deleteRelationBookmark(exerciseId, trainerId)
+    else await Exercise.createRelationBookmark(exerciseId, trainerId)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {create, findAll, findOne, update, updateBookmark}
