@@ -60,10 +60,10 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
       const currentTime = moment().format('YYYY-MM-DD')
       if (status) {
         // where.push(`t.startedAt <= ${currentTime}`)
-        where.push(`t.expiredAt >= ${currentTime}`)
+        where.push(`t.expiredAt >= '${currentTime}'`)
       } else {
         // where.push(`t.startedAt >= ${currentTime}`)
-        where.push(`t.expiredAt <= ${currentTime}`)
+        where.push(`t.expiredAt <= '${currentTime}'`)
       }
     }
     const rows = await db.query({

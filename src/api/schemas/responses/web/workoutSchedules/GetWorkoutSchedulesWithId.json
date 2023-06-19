@@ -50,6 +50,9 @@
     "trainerNickname": {
       "type": "string"
     },
+    "seq": {
+      "type": "integer"
+    },
     "trainerProfileImage": {
       "type": "string"
     },
