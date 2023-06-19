@@ -63,6 +63,7 @@ export interface IWorkoutScheduleDetail {
   workoutSubTitle: string
   targetMuscleTypes: string[]
   workoutTotalTime: string
+  seq: number
   exercises: [
     {
       workoutPlanId: number
