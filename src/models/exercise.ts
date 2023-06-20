@@ -1,5 +1,5 @@
 import moment from 'moment-timezone'
-import {PoolConnection} from 'mysql'
+import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
 import {
   IExerciseCreate,
@@ -125,8 +125,8 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
   const {search, trainerId, isMe, isBookmark, start, perPage} = options
   try {
     const where = []
-    if (search) where.push(`t.name like '%${search}%'`)
-    if (isMe) where.push(`t.trainerId = ${trainerId}`)
+    if (search) where.push(`t.name like ${escape(`%${search}%`)}`)
+    if (isMe) where.push(`t.trainerId = ${escape(trainerId)}`)
     const rows = await db.query({
       sql: `SELECT t.id, t.name, t.videos, t.type, t.trackingFieldId,
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name)) as targetMuscles,
@@ -135,7 +135,7 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
             JOIN ?? et ON et.exerciseId = t.id
             JOIN ?? tm ON tm.id = et.targetMuscleId
             JOIN ?? tr ON tr.id = t.trainerId
-            ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.exerciseId = t.id AND te.trainerId = t.trainerId
+            ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.exerciseId = t.id AND te.trainerId = ${escape(trainerId)}
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.createdAt DESC

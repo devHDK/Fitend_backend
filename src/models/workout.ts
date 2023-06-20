@@ -1,5 +1,5 @@
 import moment from 'moment-timezone'
-import {PoolConnection} from 'mysql'
+import {escape, PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {IWorkoutCreate, IWorkoutDetail, IWorkoutFindAll, IWorkoutList, IWorkUpdate} from '../interfaces/workout'
 import {Trainer, Exercise} from './'
@@ -66,7 +66,7 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
   const {search, trainerId, isMe, isBookmark, start, perPage} = options
   try {
     const where = []
-    if (search) where.push(`t.title like '%${search}%'`)
+    if (search) where.push(`t.title like ${escape(`%${search}%`)}`)
     if (isMe) where.push(`t.trainerId = ${trainerId}`)
     const rows = await db.query({
       sql: `SELECT t.id, t.title, t.subTitle, t.totalTime, 
@@ -77,7 +77,7 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
             JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
             JOIN ?? tm ON tm.id = et.targetMuscleId
             JOIN ?? tr ON tr.id = t.trainerId
-            ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? tw ON tw.workoutId = t.id AND tw.trainerId = t.trainerId
+            ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? tw ON tw.workoutId = t.id AND tw.trainerId = ${escape(trainerId)}
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.createdAt DESC
