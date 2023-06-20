@@ -1,10 +1,10 @@
 #!/bin/bash
 AWS_PROFILE=$1
-IMAGE_NAME=fitend-backend
-STACK_NAME=fitend
+IMAGE_NAME=fitend-backend-prod
+STACK_NAME=fitend-backend-prod
 TARGET=backend
-REGISTRY_URL=731176863212.dkr.ecr.ap-northeast-2.amazonaws.com/${IMAGE_NAME}:latest
-HOST=ubuntu@api-dev.fit-end.com
+REGISTRY_URL=310950945477.dkr.ecr.ap-northeast-2.amazonaws.com/${IMAGE_NAME}:latest
+HOST=ubuntu@api-prod.fit-end.com
 APP_PATH=/home/ubuntu/${STACK_NAME}
 DOCKER_COMPOSE=docker-compose-production.yml
 PEM_FILE=~/.ssh/raid.pem

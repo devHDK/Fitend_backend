@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   backend:
-    image: 091144939942.dkr.ecr.ap-northeast-2.amazonaws.com/fitend-backend:latest
+    image: 310950945477.dkr.ecr.ap-northeast-2.amazonaws.com/fitend-backend-prod:latest
     environment:
       - NODE_ENV=production
     networks:
@@ -22,7 +22,7 @@ services:
         - traefik.enable=true
         - traefik.docker.lbswarm=true
         - traefik.docker.network=inbound
-        - traefik.http.routers.fitend-backend.rule=Host(`api.fit-end.com`)
+        - traefik.http.routers.fitend-backend.rule=Host(`api-prod.fit-end.com`)
         - traefik.http.routers.fitend-backend.entrypoints=websecure
         - traefik.http.routers.fitend-backend.tls=true
         - traefik.http.routers.fitend-backend.tls.certresolver=fitend
