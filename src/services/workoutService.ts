@@ -42,9 +42,9 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
   }
 }
 
-async function findOneWithId(id: number): Promise<IWorkoutDetail> {
+async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDetail> {
   try {
-    return await Workout.findOneWithId(id)
+    return await Workout.findOneWithId(id, trainerId)
   } catch (e) {
     throw e
   }

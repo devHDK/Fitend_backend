@@ -35,7 +35,7 @@ async function getExercises(req: IRequest, res: Response, next: Function): Promi
 
 async function getExercisesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const ret = await ExerciseService.findOne(req.options.id)
+    const ret = await ExerciseService.findOne(req.options.id, req.userId)
     res.status(200).json(ret)
   } catch (e) {
     if (e.message === 'ER_DUP_ENTRY') e.status = 409

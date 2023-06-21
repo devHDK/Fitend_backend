@@ -154,17 +154,19 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
   }
 }
 
-async function findOneWithId(id: number): Promise<IExerciseFindOne> {
+async function findOneWithId(id: number, trainerId: number): Promise<IExerciseFindOne> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id, t.name, t.type, t.videos, t.trainerId, tr.nickname as trainerNickname,
             tr.profileImage as trainerProfileImage, t.updatedAt, t.description, t.trackingFieldId,
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', et.type)) as targetMuscles,
-            (SELECT JSON_ARRAYAGG(ta.name) FROM ?? ta JOIN ?? eet ON eet.exerciseTagId = ta.id AND eet.exerciseId = t.id) as tags
+            (SELECT JSON_ARRAYAGG(ta.name) FROM ?? ta JOIN ?? eet ON eet.exerciseTagId = ta.id AND eet.exerciseId = t.id) as tags,
+            IF(te.trainerId, true, false) as isBookmark
             FROM ?? t
             JOIN ?? tr ON tr.id = t.trainerId
             JOIN ?? et ON et.exerciseId = t.id
             JOIN ?? tm ON tm.id = et.targetMuscleId 
+            LEFT JOIN ?? te ON te.exerciseId = t.id AND te.trainerId = ${escape(trainerId)}
             WHERE t.?`,
       values: [
         tableExerciseTag,
@@ -173,6 +175,7 @@ async function findOneWithId(id: number): Promise<IExerciseFindOne> {
         Trainer.tableName,
         tableExerciseTargetMuscle,
         tableTargetMuscle,
+        tableTrainerExercise,
         {id}
       ]
     })

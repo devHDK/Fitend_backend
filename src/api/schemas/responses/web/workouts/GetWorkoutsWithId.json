@@ -33,6 +33,9 @@
       "type": "string",
       "format": "date-time"
     },
+    "isBookmark": {
+      "type": "boolean"
+    },
     "exercises": {
       "type": "array",
       "items": {
@@ -112,6 +115,7 @@
     "trainerNickname",
     "trainerProfileImage",
     "updatedAt",
+    "isBookmark",
     "exercises"
   ],
   "additionalProperties": false

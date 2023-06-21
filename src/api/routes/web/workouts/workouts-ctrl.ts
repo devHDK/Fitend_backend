@@ -23,7 +23,7 @@ async function getWorkouts(req: IRequest, res: Response, next: Function): Promis
 
 async function getWorkoutsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const ret = await WorkoutService.findOneWithId(req.options.id)
+    const ret = await WorkoutService.findOneWithId(req.options.id, req.userId)
     if (!ret) throw new Error('not_found')
     res.status(200).json(ret)
   } catch (e) {

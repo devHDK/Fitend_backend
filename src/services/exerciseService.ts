@@ -54,9 +54,9 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
   }
 }
 
-async function findOne(id: number): Promise<IExerciseFindOne> {
+async function findOne(id: number, trainerId: number): Promise<IExerciseFindOne> {
   try {
-    return await Exercise.findOneWithId(id)
+    return await Exercise.findOneWithId(id, trainerId)
   } catch (e) {
     throw e
   }

@@ -47,6 +47,9 @@
       "type": "string",
       "format": "date-time"
     },
+    "isBookmark": {
+      "type": "boolean"
+    },
     "targetMuscles": {
       "type": "array",
       "items": {
@@ -86,6 +89,7 @@
     "trainerNickname",
     "trainerProfileImage",
     "updatedAt",
+    "isBookmark",
     "targetMuscles",
     "tags"
   ],

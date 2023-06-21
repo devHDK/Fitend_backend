@@ -104,7 +104,7 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
   }
 }
 
-async function findOneWithId(id: number): Promise<IWorkoutDetail> {
+async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDetail> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id, t.title, t.subTitle, t.totalTime,
@@ -130,11 +130,12 @@ async function findOneWithId(id: number): Promise<IWorkoutDetail> {
                 ) t
                ) 
               )
-            ) as exercises
+            ) as exercises, IF(tw.trainerId, true, false) as isBookmark
             FROM ?? t
             JOIN ?? we ON we.workoutId = t.id
             JOIN ?? e ON e.id = we.exerciseId
             JOIN ?? tr ON tr.id = t.trainerId
+            LEFT JOIN ?? tw ON tw.workoutId = t.id AND tw.trainerId = ${escape(trainerId)}
             WHERE t.?
             GROUP BY t.id`,
       values: [
@@ -148,6 +149,7 @@ async function findOneWithId(id: number): Promise<IWorkoutDetail> {
         tableWorkoutExercise,
         Exercise.tableName,
         Trainer.tableName,
+        tableTrainerWorkout,
         {id}
       ]
     })
