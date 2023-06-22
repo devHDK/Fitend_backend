@@ -45,6 +45,7 @@ export interface IUserFindAll {
   perPage: number
   search?: string
   status?: string
+  trainerId?: number
 }
 
 export interface IUserUpdate {

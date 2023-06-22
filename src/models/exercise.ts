@@ -122,11 +122,42 @@ async function findBookmark(exerciseId: number, trainerId: number): Promise<{id:
 }
 
 async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
-  const {search, trainerId, isMe, isBookmark, start, perPage} = options
+  const {
+    search,
+    trainerId,
+    isMe,
+    isBookmark,
+    tagIds,
+    trainerFilterId,
+    types,
+    trackingFieldIds,
+    targetMuscleIds,
+    start,
+    perPage
+  } = options
   try {
     const where = []
+    const values = [tableName, tableExerciseTargetMuscle, tableTargetMuscle, Trainer.tableName, tableTrainerExercise]
+    const totalValues = [tableName, tableTrainerExercise]
+    const join = []
+
     if (search) where.push(`t.name like ${escape(`%${search}%`)}`)
     if (isMe) where.push(`t.trainerId = ${escape(trainerId)}`)
+    else if (trainerFilterId) where.push(`t.trainerId = ${escape(trainerFilterId)}`)
+    if (types && types.length > 0) where.push(`t.type IN ('${types.join(`','`)}')`)
+    if (trackingFieldIds && trackingFieldIds.length > 0)
+      where.push(`t.trackingFieldId IN (${trackingFieldIds.join(`,`)})`)
+    if (tagIds && tagIds.length > 0) {
+      join.push(`JOIN ?? eet ON eet.exerciseId = t.id AND eet.exerciseTagId IN (${tagIds.join(',')})`)
+      values.push(tableExerciseExerciseTag)
+      totalValues.push(tableExerciseExerciseTag)
+    }
+    if (targetMuscleIds && targetMuscleIds.length > 0) {
+      join.push(`JOIN ?? etm ON etm.exerciseId = t.id AND etm.targetMuscleId IN (${targetMuscleIds.join(',')})`)
+      values.push(tableExerciseTargetMuscle)
+      totalValues.push(tableExerciseTargetMuscle)
+    }
+
     const rows = await db.query({
       sql: `SELECT t.id, t.name, t.videos, t.type, t.trackingFieldId,
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name)) as targetMuscles,
@@ -136,19 +167,32 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
             JOIN ?? tm ON tm.id = et.targetMuscleId
             JOIN ?? tr ON tr.id = t.trainerId
             ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.exerciseId = t.id AND te.trainerId = ${escape(trainerId)}
+            ${join.length ? `${join.join(' ')}` : ''}
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
-      values: [tableName, tableExerciseTargetMuscle, tableTargetMuscle, Trainer.tableName, tableTrainerExercise]
+      values
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM ?? t
             ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.exerciseId = t.id AND te.trainerId = t.trainerId
+            ${join.length ? `${join.join(' ')}` : ''}
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}`,
-      values: [tableName, tableTrainerExercise]
+      values: totalValues
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllTags(search: string): Promise<[{id: number; name: string}]> {
+  try {
+    return await db.query({
+      sql: `SELECT * FROM ?? WHERE name like ${escape(`%${search}%`)}`,
+      values: [tableExerciseTag]
+    })
   } catch (e) {
     throw e
   }
@@ -248,6 +292,7 @@ export {
   findTags,
   findBookmark,
   findAll,
+  findAllTags,
   findOneWithId,
   update,
   deleteRelationTargetMuscle,

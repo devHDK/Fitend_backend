@@ -24,6 +24,7 @@ export interface IWorkoutScheduleList {
 
 export interface IWorkoutScheduleListForTrainer {
   workoutScheduleId: number
+  workoutId: number
   seq: number
   title: string
   subTitle: string

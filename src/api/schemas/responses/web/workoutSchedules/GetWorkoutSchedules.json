@@ -9,6 +9,9 @@
           "workoutScheduleId": {
             "type": "integer"
           },
+          "workoutId": {
+            "type": "integer"
+          },
           "seq": {
             "type": "integer"
           },

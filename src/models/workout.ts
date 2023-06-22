@@ -63,7 +63,7 @@ async function createRelationBookmark(workoutId: number, trainerId: number): Pro
 }
 
 async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
-  const {search, trainerId, isMe, isBookmark, start, perPage} = options
+  const {search, trainerId, isMe, isBookmark, types, start, perPage} = options
   try {
     const where = []
     if (search) where.push(`t.title like ${escape(`%${search}%`)}`)
@@ -75,7 +75,9 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
             FROM ?? t
             JOIN ?? we ON we.workoutId = t.id
             JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
-            JOIN ?? tm ON tm.id = et.targetMuscleId
+            JOIN ?? tm ON tm.id = et.targetMuscleId ${
+              types && types.length > 0 ? `AND tm.type IN ('${types.join(`','`)}')` : ``
+            }
             JOIN ?? tr ON tr.id = t.trainerId
             ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? tw ON tw.workoutId = t.id AND tw.trainerId = ${escape(trainerId)}
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
@@ -94,9 +96,24 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM ?? t
             ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? tw ON tw.workoutId = t.id AND tw.trainerId = t.trainerId
+            ${
+              types && types.length > 0
+                ? `
+                  JOIN ?? we ON we.workoutId = t.id
+                  JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
+                  JOIN ?? tm ON tm.id = et.targetMuscleId AND tm.type IN ('${types.join(`','`)}')
+                  `
+                : ``
+            }
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
       `,
-      values: [tableName, tableTrainerWorkout]
+      values: [
+        tableName,
+        tableTrainerWorkout,
+        tableWorkoutExercise,
+        Exercise.tableExerciseTargetMuscle,
+        Exercise.tableTargetMuscle
+      ]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {

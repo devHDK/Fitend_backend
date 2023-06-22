@@ -58,8 +58,8 @@ async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWo
   try {
     const {userId, startDate} = options
     return await db.query({
-      sql: `SELECT DATE_FORMAT(ws.startDate, '%Y-%m-%d') as startDate, ws.id as workoutScheduleId, 
-              ws.seq, ws.workoutTitle as title, ws.workoutSubTitle as subTitle, 
+      sql: `SELECT DATE_FORMAT(ws.startDate, '%Y-%m-%d') as startDate, ws.id as workoutScheduleId, ws.workoutId,
+              ws.seq, ws.workoutTitle as title, ws.workoutSubTitle as subTitle,
               IF(wf.workoutScheduleId, true, false) as isComplete,
               IF(wr.workoutPlanId, true, false) as isRecord
               FROM ?? ws

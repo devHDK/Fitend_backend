@@ -54,6 +54,14 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
   }
 }
 
+async function findAllTags(search: string): Promise<[{id: number; name: string}]> {
+  try {
+    return await Exercise.findAllTags(search)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOne(id: number, trainerId: number): Promise<IExerciseFindOne> {
   try {
     return await Exercise.findOneWithId(id, trainerId)
@@ -109,4 +117,4 @@ async function updateBookmark(options: {exerciseId: number; trainerId: number}):
   }
 }
 
-export {create, findAll, findOne, update, updateBookmark}
+export {create, findAll, findAllTags, findOne, update, updateBookmark}

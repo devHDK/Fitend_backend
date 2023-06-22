@@ -10,6 +10,13 @@
     "isBookmark": {
       "type": "boolean"
     },
+    "types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["whole", "chest", "back", "shoulders", "arms", "abs", "lowerBack", "glutes", "leg"]
+      }
+    },
     "start": {
       "type": "integer",
       "minimum": 0,

@@ -36,6 +36,11 @@ export interface IExerciseFindAll {
   search?: string
   isMe?: boolean
   isBookmark?: boolean
+  tagIds?: number[]
+  trainerFilterId?: number
+  types: string[]
+  trackingFieldIds: number[]
+  targetMuscleIds: number[]
   trainerId: number
   start: number
   perPage: number

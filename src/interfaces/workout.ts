@@ -20,6 +20,7 @@ export interface IWorkoutFindAll {
   search?: string
   isMe?: boolean
   isBookmark?: boolean
+  types?: string[]
   trainerId: number
   start: number
   perPage: number

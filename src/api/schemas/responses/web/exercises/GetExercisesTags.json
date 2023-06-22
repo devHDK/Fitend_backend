@@ -11,15 +11,11 @@
           },
           "name": {
             "type": "string"
-          },
-          "type": {
-            "type": "string"
           }
         },
         "required": [
           "id",
-          "name",
-          "type"
+          "name"
         ]
       }
     }

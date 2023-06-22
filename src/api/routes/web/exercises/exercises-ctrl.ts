@@ -24,9 +24,42 @@ async function postExercises(req: IRequest, res: Response, next: Function): Prom
 
 async function getExercises(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {search, isMe, isBookmark, start, perPage} = req.options
-    const ret = await ExerciseService.findAll({search, trainerId: req.userId, isMe, isBookmark, start, perPage})
+    const {
+      search,
+      isMe,
+      isBookmark,
+      tagIds,
+      trainerId,
+      types,
+      trackingFieldIds,
+      targetMuscleIds,
+      start,
+      perPage
+    } = req.options
+    const ret = await ExerciseService.findAll({
+      search,
+      trainerId: req.userId,
+      isMe,
+      isBookmark,
+      tagIds,
+      trainerFilterId: trainerId,
+      types,
+      trackingFieldIds,
+      targetMuscleIds,
+      start,
+      perPage
+    })
     res.status(200).json(ret)
+  } catch (e) {
+    if (e.message === 'ER_DUP_ENTRY') e.status = 409
+    next(e)
+  }
+}
+
+async function getExercisesTags(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const ret = await ExerciseService.findAllTags(req.options.search)
+    res.status(200).json({data: ret})
   } catch (e) {
     if (e.message === 'ER_DUP_ENTRY') e.status = 409
     next(e)
@@ -72,4 +105,4 @@ async function putExercisesBookmark(req: IRequest, res: Response, next: Function
   }
 }
 
-export {postExercises, getExercises, getExercisesWithId, putExercisesWithId, putExercisesBookmark}
+export {postExercises, getExercises, getExercisesTags, getExercisesWithId, putExercisesWithId, putExercisesBookmark}

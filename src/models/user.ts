@@ -1,5 +1,5 @@
 import moment from 'moment-timezone'
-import {PoolConnection} from 'mysql'
+import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
 import {
   IUser,
@@ -79,7 +79,7 @@ async function findOneWithId(id: number): Promise<IUser> {
 
 async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTrainer> {
   try {
-    const {franchiseId, start, perPage, search, status} = options
+    const {franchiseId, start, perPage, search, status, trainerId} = options
     const where = []
 
     if (search) where.push(`(t.nickname like '%${search}%' OR t.phone like '%${search}%')`)
@@ -94,6 +94,12 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
             ) as trainers
             FROM ?? t
             JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
+            ${
+              trainerId
+                ? `JOIN TicketsRelations tr ON tr.trainerId = ${escape(trainerId)} AND tr.userId = t.id
+                   JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt > '${currentTime}'`
+                : ''
+            }
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
@@ -119,6 +125,12 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
               ) as trainers
               FROM ?? t
               JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
+              ${
+                trainerId
+                  ? `JOIN TicketsRelations tr ON tr.trainerId = ${escape(trainerId)} AND tr.userId = t.id
+                   JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt > '${currentTime}'`
+                  : ''
+              }
               ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
               GROUP BY t.id
               ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}

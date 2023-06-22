@@ -25,6 +25,18 @@ const getExercises = new ApiRouter({
   handler: ctrl.getExercises
 })
 
+const getExercisesTags = new ApiRouter({
+  name: 'tags',
+  method: 'get',
+  summary: '운동 태그 검색',
+  tags: ['Exercise'],
+  schema: 'requests/web/exercises/GetExercisesTags',
+  responses: {
+    200: {schema: 'responses/web/exercises/GetExercisesTags'}
+  },
+  handler: ctrl.getExercisesTags
+})
+
 const getExercisesWithId = new ApiRouter({
   name: ':id',
   method: 'get',
@@ -62,4 +74,4 @@ const putExercisesBookmark = new ApiRouter({
   handler: ctrl.putExercisesBookmark
 })
 
-export {postExercises, getExercises, getExercisesWithId, putExercisesWithId, putExercisesBookmark}
+export {postExercises, getExercises, getExercisesTags, getExercisesWithId, putExercisesWithId, putExercisesBookmark}

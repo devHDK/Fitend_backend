@@ -10,6 +10,36 @@
     "isBookmark": {
       "type": "boolean"
     },
+    "tagIds": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    },
+    "trainerId": {
+      "type": "integer"
+    },
+    "types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["resistance", "flexibility", "cardio"]
+      }
+    },
+    "trackingFieldIds": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 4
+      }
+    },
+    "targetMuscleIds": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
     "start": {
       "type": "integer",
       "minimum": 0,
