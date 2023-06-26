@@ -153,7 +153,11 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
       totalValues.push(tableExerciseExerciseTag)
     }
     if (targetMuscleIds && targetMuscleIds.length > 0) {
-      join.push(`JOIN ?? etm ON etm.exerciseId = t.id AND etm.targetMuscleId IN (${targetMuscleIds.join(',')})`)
+      join.push(
+        `JOIN ?? etm ON etm.exerciseId = t.id AND etm.targetMuscleId IN (${targetMuscleIds.join(
+          ','
+        )}) AND etm.type = 'main'`
+      )
       values.push(tableExerciseTargetMuscle)
       totalValues.push(tableExerciseTargetMuscle)
     }

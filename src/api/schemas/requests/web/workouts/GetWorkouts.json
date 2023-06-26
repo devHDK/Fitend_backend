@@ -10,6 +10,9 @@
     "isBookmark": {
       "type": "boolean"
     },
+    "trainerId": {
+      "type": "integer"
+    },
     "types": {
       "type": "array",
       "items": {

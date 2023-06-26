@@ -63,11 +63,12 @@ async function createRelationBookmark(workoutId: number, trainerId: number): Pro
 }
 
 async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
-  const {search, trainerId, isMe, isBookmark, types, start, perPage} = options
+  const {search, trainerId, isMe, isBookmark, types, trainerFilterId, start, perPage} = options
   try {
     const where = []
     if (search) where.push(`t.title like ${escape(`%${search}%`)}`)
     if (isMe) where.push(`t.trainerId = ${trainerId}`)
+    else if (trainerFilterId) where.push(`t.trainerId = ${trainerFilterId}`)
     const rows = await db.query({
       sql: `SELECT t.id, t.title, t.subTitle, t.totalTime, 
             JSON_ARRAYAGG(tm.type) as primaryTypes,

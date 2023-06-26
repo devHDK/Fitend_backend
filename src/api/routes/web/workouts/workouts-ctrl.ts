@@ -13,8 +13,17 @@ async function postWorkouts(req: IRequest, res: Response, next: Function): Promi
 
 async function getWorkouts(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {search, isMe, isBookmark, types, start, perPage} = req.options
-    const ret = await WorkoutService.findAll({search, trainerId: req.userId, isMe, isBookmark, types, start, perPage})
+    const {search, isMe, isBookmark, types, trainerId, start, perPage} = req.options
+    const ret = await WorkoutService.findAll({
+      search,
+      trainerId: req.userId,
+      isMe,
+      isBookmark,
+      trainerFilterId: trainerId,
+      types,
+      start,
+      perPage
+    })
     res.status(200).json(ret)
   } catch (e) {
     next(e)

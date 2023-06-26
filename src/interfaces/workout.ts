@@ -22,6 +22,7 @@ export interface IWorkoutFindAll {
   isBookmark?: boolean
   types?: string[]
   trainerId: number
+  trainerFilterId?: number
   start: number
   perPage: number
 }
