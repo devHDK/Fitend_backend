@@ -1,6 +1,6 @@
 import moment from 'moment-timezone'
 import {db} from '../loaders'
-import {ITrainer, ITrainerFindOne, ITrainerList} from '../interfaces/trainer'
+import {ITrainer, ITrainerFindOne, ITrainerList, ITrainerUpdate} from '../interfaces/trainer'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -34,4 +34,16 @@ async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
   }
 }
 
-export {tableName, findOne, findAll}
+async function updateOne(options: ITrainerUpdate): Promise<void> {
+  const {id, ...data} = options
+  try {
+    await db.query({
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableName, data, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+export {tableName, findOne, findAll, updateOne}

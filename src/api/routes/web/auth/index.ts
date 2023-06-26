@@ -15,4 +15,16 @@ const postAuth = new ApiRouter({
   handler: ctrl.postAuth
 })
 
-export {postAuth}
+const putAuthPassword = new ApiRouter({
+  name: 'password',
+  method: 'put',
+  summary: '비밀번호 변경',
+  tags: ['Auth'],
+  schema: 'requests/web/auth/PutAuthPassword',
+  responses: {
+    200: {description: 'Success'}
+  },
+  handler: ctrl.putAuthPassword
+})
+
+export {postAuth, putAuthPassword}

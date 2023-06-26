@@ -18,4 +18,10 @@ export type ITrainerList = {
 
 export interface ITrainerFindOne {
   email?: string
+  id?: number
+}
+
+export interface ITrainerUpdate {
+  id: number
+  password?: string
 }
