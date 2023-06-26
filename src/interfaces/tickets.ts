@@ -11,6 +11,7 @@ export interface ITicketFindAll {
   franchiseId: number
   search?: string
   status?: boolean
+  trainerId?: number
   start: number
   perPage: number
 }

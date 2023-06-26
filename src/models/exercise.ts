@@ -190,7 +190,7 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
 async function findAllTags(search: string): Promise<[{id: number; name: string}]> {
   try {
     return await db.query({
-      sql: `SELECT * FROM ?? WHERE name like ${escape(`%${search}%`)}`,
+      sql: `SELECT * FROM ?? WHERE name like ${escape(`%${search}%`)} LIMIT 20`,
       values: [tableExerciseTag]
     })
   } catch (e) {

@@ -54,7 +54,7 @@ async function createRelationExercises(
 
 async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   try {
-    const {franchiseId, search, status, start, perPage} = options
+    const {franchiseId, search, status, trainerId, start, perPage} = options
     const where = []
     if (status !== undefined) {
       const currentTime = moment().format('YYYY-MM-DD')
@@ -71,7 +71,9 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
             JSON_ARRAY(u.nickname) as users
             FROM ?? t
-            JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ?
+            JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ? ${
+              trainerId ? `AND tr.trainerId = ${trainerId}` : ``
+            }
             JOIN ?? u ON u.id = tr.userId ${
               search ? `AND (u.nickname like '%${search}%' OR u.phone = '%${search}%')` : ``
             }
@@ -134,6 +136,23 @@ async function findOneWithId(id: number): Promise<ITicketDetail> {
             WHERE t.?
             GROUP BY t.id`,
       values: [User.tableName, tableTicketRelation, Trainer.tableName, tableTicketRelation, tableName, {id}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findOneWithUserId(userId: number): Promise<number | null> {
+  const currentTime = moment().format('YYYY-MM-DD')
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.id
+            FROM ?? t
+            JOIN ?? tr ON tr.userId = ${escape(userId)} AND tr.ticketId = t.id
+            WHERE t.expiredAt > ${escape(currentTime)}
+            LIMIT 1`,
+      values: [tableName, tableTicketRelation]
     })
     return row
   } catch (e) {
@@ -227,6 +246,7 @@ export {
   createRelationExercises,
   findAll,
   findOneWithId,
+  findOneWithUserId,
   findCounts,
   update,
   deleteOne,

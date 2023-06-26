@@ -1,6 +1,6 @@
 import {code as Code, jwt as JWT} from '../libs'
 import {IUser} from '../interfaces/user'
-import {User} from '../models'
+import {User, Ticket} from '../models'
 
 async function signIn(options: {
   email: string
@@ -15,6 +15,8 @@ async function signIn(options: {
       user &&
       Code.verifyPassword(password, user.password.password, user.password.salt, Code.passwordIterations.mobile)
     ) {
+      const isActive = await Ticket.findOneWithUserId(user.id)
+      if (!isActive) throw new Error('not_allowed')
       const accessToken = await JWT.createAccessToken({id: user.id, type: 'user'})
       const refreshToken = await JWT.createRefreshToken({id: user.id, type: 'user'}, user.password.salt)
       await User.updatePlatform({id: user.id, platform})

@@ -1,6 +1,7 @@
 import {Response} from 'express'
 import {UserService} from '../../../../services'
 import {jwt as JWT} from '../../../../libs'
+import {Ticket} from '../../../../models'
 
 async function postUsersPasswordConfirm(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
@@ -23,9 +24,9 @@ async function getMe(req: IRequest, res: Response, next: Function): Promise<void
       }
     }
     const user = await UserService.getMe({id: req.userId})
-
+    const isActive = await Ticket.findOneWithUserId(user.id)
+    if (!isActive) throw new Error('not_allowed')
     delete user.password
-
     res.status(200).json({user})
   } catch (e) {
     next(e)

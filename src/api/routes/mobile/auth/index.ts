@@ -10,6 +10,7 @@ const postAuth = new ApiRouter({
   isPublic: true,
   responses: {
     200: {schema: 'responses/mobile/auth/PostAuth'},
+    403: {description: '접근 권한이 없는 회원입니다.'},
     404: {description: '이메일 또는 비밀번호를 확인해주세요.'}
   },
   handler: ctrl.postAuth

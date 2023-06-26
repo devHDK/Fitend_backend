@@ -9,8 +9,11 @@ async function postAuth(req: IRequest, res: Response, next: Function): Promise<v
   } catch (e) {
     if (e.message === 'not_found') {
       e.status = 404
-      e.code = 1001
       e.message = '이메일 또는 비밀번호를 확인해주세요.'
+    }
+    if (e.message === 'not_allowed') {
+      e.status = 403
+      e.message = '접근 권한이 없는 회원입니다.'
     }
     next(e)
   }
@@ -24,14 +27,10 @@ async function postAuthRefresh(req: IRequest, res: Response, next: Function): Pr
   } catch (e) {
     if (e.message === 'invalid_token') {
       e.status = 401
-      e.code = 1000
       e.message = '유효하지 않은 토큰입니다.'
     }
     next(e)
   }
 }
 
-export {
-  postAuth,
-  postAuthRefresh
-}
+export {postAuth, postAuthRefresh}
