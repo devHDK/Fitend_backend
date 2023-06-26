@@ -8,6 +8,7 @@ import * as TargetMuscleService from './targetMuscleService'
 import * as WorkoutScheduleService from './workoutScheduleService'
 import * as TicketService from './ticketService'
 import * as WorkoutRecordService from './workoutRecordService'
+import * as DashboardService from './dashboardService'
 
 export {
   AdministratorService,
@@ -19,5 +20,6 @@ export {
   TargetMuscleService,
   WorkoutScheduleService,
   TicketService,
-  WorkoutRecordService
+  WorkoutRecordService,
+  DashboardService
 }

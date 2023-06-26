@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer"
+          },
+          "userNickname": {
+            "type": "string"
+          },
+          "trainerNickname": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId",
+          "userNickname",
+          "trainerNickname",
+          "createdAt"
+        ]
+      }
+    }
+  },
+  "required": [
+    "data"
+  ],
+  "additionalProperties": false
+}
+

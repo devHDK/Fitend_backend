@@ -46,4 +46,4 @@ async function updateOne(options: ITrainerUpdate): Promise<void> {
   }
 }
 
-export {tableName, findOne, findAll, updateOne}
+export {tableName, tableFranchiseTrainer, findOne, findAll, updateOne}

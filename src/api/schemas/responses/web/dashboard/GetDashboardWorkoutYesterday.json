@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "userNickname": {
+            "type": "string"
+          },
+          "trainerNickname": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userNickname",
+          "trainerNickname"
+        ]
+      }
+    }
+  },
+  "required": [
+    "data"
+  ],
+  "additionalProperties": false
+}
+
