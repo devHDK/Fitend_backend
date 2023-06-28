@@ -4,7 +4,7 @@ import * as ctrl from './dashboard-ctrl'
 const getDashboardWorkoutToday = new ApiRouter({
   name: 'workout/today',
   method: 'get',
-  summary: '대시보드 정보 조회',
+  summary: '대시보드 > 오늘 운동한 회원 목록',
   tags: ['Dashboard'],
   schema: 'requests/web/dashboard/GetDashboardWorkoutToday',
   responses: {
@@ -16,7 +16,7 @@ const getDashboardWorkoutToday = new ApiRouter({
 const getDashboardWorkoutYesterday = new ApiRouter({
   name: 'workout/yesterday',
   method: 'get',
-  summary: '대시보드 정보 조회',
+  summary: '대시보드 > 어제 운동 안한 회원 목록',
   tags: ['Dashboard'],
   schema: 'requests/web/dashboard/GetDashboardWorkoutYesterday',
   responses: {
@@ -25,4 +25,15 @@ const getDashboardWorkoutYesterday = new ApiRouter({
   handler: ctrl.getDashboardWorkoutYesterday
 })
 
-export {getDashboardWorkoutToday, getDashboardWorkoutYesterday}
+const getDashboardActiveUsers = new ApiRouter({
+  name: 'active/users',
+  method: 'get',
+  summary: '대시보드 > 활성화 회원수(PT/FC)',
+  tags: ['Dashboard'],
+  responses: {
+    200: {schema: 'responses/web/dashboard/GetDashboardActiveUsers'}
+  },
+  handler: ctrl.getDashboardActiveUsers
+})
+
+export {getDashboardWorkoutToday, getDashboardWorkoutYesterday, getDashboardActiveUsers}

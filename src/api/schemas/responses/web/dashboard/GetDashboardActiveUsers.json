@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "properties": {
+    "personalActiveUsers": {
+      "type": "object",
+      "properties": {
+        "thisMonthCount": {
+          "type": "integer"
+        },
+        "lastMonthCount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "thisMonthCount",
+        "lastMonthCount"
+      ]
+    },
+    "fitnessActiveUsers": {
+      "type": "object",
+      "properties": {
+        "thisMonthCount": {
+          "type": "integer"
+        },
+        "lastMonthCount": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "thisMonthCount",
+        "lastMonthCount"
+      ]
+    }
+  },
+  "required": [
+    "personalActiveUsers",
+    "fitnessActiveUsers"
+  ],
+  "additionalProperties": false
+}
+

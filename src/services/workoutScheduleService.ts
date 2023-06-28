@@ -1,5 +1,4 @@
 import moment from 'moment-timezone'
-import {PoolConnection} from 'mysql'
 import {WorkoutSchedule, WorkoutFeedbacks, WorkoutPlan} from '../models'
 import {
   IWorkoutScheduleList,
@@ -11,7 +10,6 @@ import {
 } from '../interfaces/workoutSchedules'
 import {IWorkoutFeedbackCreate} from '../interfaces/workoutFeedbacks'
 import {db} from '../loaders'
-import {tableExerciseTargetMuscle} from '../models/exercise'
 
 moment.tz.setDefault('Asia/Seoul')
 
