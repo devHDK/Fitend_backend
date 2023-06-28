@@ -17,7 +17,9 @@ async function createRecords(userId: number, options: IWorkoutRecordCreate[]): P
   const connection = await db.beginTransaction()
   try {
     const workoutSchedule = await WorkoutSchedule.findOneWithWorkoutPlanId(options[0].workoutPlanId)
-    if (!workoutSchedule || workoutSchedule.userId !== userId) throw new Error('not_allowed')
+    const today = moment().format('YYYY-MM-DD')
+    const startDate = moment(workoutSchedule.startDate).format('YYYY-MM-DD')
+    if (!workoutSchedule || workoutSchedule.userId !== userId || today !== startDate) throw new Error('not_allowed')
     const workoutRecord = await WorkoutRecords.findOneWithWorkoutPlanId(options[0].workoutPlanId)
     if (workoutRecord) throw new Error('duplicate_record')
     for (let i = 0; i < options.length; i++) {
