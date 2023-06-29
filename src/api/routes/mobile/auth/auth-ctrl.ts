@@ -7,13 +7,17 @@ async function postAuth(req: IRequest, res: Response, next: Function): Promise<v
     const ret = await AuthService.signIn({email, password, platform, token})
     res.status(200).json(ret)
   } catch (e) {
-    if (e.message === 'not_found') {
-      e.status = 404
-      e.message = '이메일 또는 비밀번호를 확인해주세요.'
-    }
     if (e.message === 'not_allowed') {
       e.status = 403
       e.message = '접근 권한이 없는 회원입니다.'
+    }
+    if (e.message === 'not_found') {
+      e.status = 404
+      e.message = '이메일을 확인해주세요.'
+    }
+    if (e.message === 'invalid_password') {
+      e.status = 409
+      e.message = '비밀번호를 확인해주세요.'
     }
     next(e)
   }

@@ -11,6 +11,7 @@ async function signIn(options: {
   try {
     const {email, password, platform} = options
     const user = await User.findOne({email})
+    if (!user) throw new Error('not_found')
     if (
       user &&
       Code.verifyPassword(password, user.password.password, user.password.salt, Code.passwordIterations.mobile)
@@ -23,7 +24,7 @@ async function signIn(options: {
       delete user.password
       return {accessToken, refreshToken, user}
     }
-    throw new Error('not_found')
+    throw new Error('invalid_password')
   } catch (e) {
     throw e
   }
