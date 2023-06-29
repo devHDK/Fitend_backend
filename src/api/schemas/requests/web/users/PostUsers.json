@@ -25,9 +25,8 @@
       "type": "string",
       "enum": ["male", "female"]
     },
-    "job": {
-      "type": "string",
-      "enum": ["unemployed", "officeWorker"]
+    "memo": {
+      "type": "string"
     }
   },
   "required": [

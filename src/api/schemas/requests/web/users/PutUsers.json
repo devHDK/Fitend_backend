@@ -25,18 +25,15 @@
       "type": "string",
       "enum": ["male", "female"]
     },
-    "job": {
-      "type": "string",
-      "enum": ["unemployed", "officeWorker"]
+    "memo": {
+      "type": "string"
     }
   },
   "required": [
     "nickname",
     "email",
     "phone",
-    "birth",
-    "gender",
-    "job"
+    "gender"
   ],
   "additionalProperties": false
 }

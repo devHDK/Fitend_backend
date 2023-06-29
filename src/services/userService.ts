@@ -1,5 +1,4 @@
-import {options} from 'superagent'
-import {Ticket, User, Workout, WorkoutPlan, WorkoutSchedule} from '../models'
+import {Ticket, User, WorkoutSchedule} from '../models'
 import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserListForTrainer, IUserCreateOne} from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'

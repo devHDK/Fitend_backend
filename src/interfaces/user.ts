@@ -7,6 +7,7 @@ export interface IUser {
   gender?: 'male' | 'female'
   birth?: string
   job?: string
+  memo?: string
   createdAt?: string
   deletedAt?: Date | string
 }
@@ -15,9 +16,9 @@ export interface IUserCreateOne {
   nickname: string
   email: string
   phone: string
-  birth: string
+  birth?: string
   gender: 'male' | 'female'
-  job: 'unemployed' | 'officeWorker'
+  memo?: string
   password: string
 }
 
@@ -56,5 +57,5 @@ export interface IUserUpdate {
   birth?: string
   gender?: string
   password?: string
-  job?: string
+  memo?: string
 }

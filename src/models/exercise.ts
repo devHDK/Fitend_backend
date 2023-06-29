@@ -167,7 +167,7 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name)) as targetMuscles,
             t.trainerId, tr.nickname as trainerNickname, t.updatedAt, IF(te.trainerId, true, false) as isBookmark  
             FROM ?? t
-            JOIN ?? et ON et.exerciseId = t.id
+            JOIN ?? et ON et.exerciseId = t.id AND et.type = 'main'
             JOIN ?? tm ON tm.id = et.targetMuscleId
             JOIN ?? tr ON tr.id = t.trainerId
             ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.exerciseId = t.id AND te.trainerId = ${escape(trainerId)}

@@ -3,7 +3,6 @@ import {escape, PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {IWorkoutCreate, IWorkoutDetail, IWorkoutFindAll, IWorkoutList, IWorkUpdate} from '../interfaces/workout'
 import {Trainer, Exercise} from './'
-import {tableTrainerExercise} from './exercise'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -142,7 +141,7 @@ async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDet
                 FROM (
                   SELECT DISTINCT tm.name
                   FROM ?? we
-                  JOIN ?? et ON et.exerciseId = e.id
+                  JOIN ?? et ON et.exerciseId = e.id AND et.type = 'main'
                   JOIN ?? tm ON tm.id = et.targetMuscleId
                   WHERE we.workoutId = t.id
                 ) t

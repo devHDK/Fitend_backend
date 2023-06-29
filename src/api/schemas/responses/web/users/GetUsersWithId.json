@@ -15,15 +15,16 @@
     },
     "birth": {
       "type": "string",
-      "format": "date"
+      "format": "date",
+      "nullable": true
     },
     "gender": {
       "type": "string",
       "enum": ["male", "female"]
     },
-    "job": {
+    "memo": {
       "type": "string",
-      "enum": ["unemployed", "officeWorker"]
+      "nullable": true
     },
     "createdAt": {
       "type": "string",
@@ -66,9 +67,7 @@
     "nickname",
     "email",
     "phone",
-    "birth",
     "gender",
-    "job",
     "createdAt"
   ],
   "additionalProperties": false

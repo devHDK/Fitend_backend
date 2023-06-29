@@ -3,8 +3,8 @@ import {UserService} from '../../../../services'
 
 async function postUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {nickname, email, password, phone, birth, gender, job} = req.options
-    await UserService.create({franchiseId: req.userId, nickname, email, password, phone, birth, gender, job})
+    const {nickname, email, password, phone, birth, gender, memo} = req.options
+    await UserService.create({franchiseId: req.userId, nickname, email, password, phone, birth, gender, memo})
     res.status(200).json()
   } catch (e) {
     if (e.message === 'already_in_use') e.status = 409
@@ -40,8 +40,8 @@ async function getUsersWithId(req: IRequest, res: Response, next: Function): Pro
 
 async function putUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {id, nickname, email, password, phone, birth, gender, job} = req.options
-    await UserService.update({id, nickname, email, password, phone, birth, gender, job})
+    const {id, nickname, email, password, phone, birth, gender, memo} = req.options
+    await UserService.update({id, nickname, email, password, phone, birth, gender, memo})
     res.status(200).json()
   } catch (e) {
     if (e.message === 'already_in_use') e.status = 409
