@@ -25,10 +25,11 @@ async function getMe(req: IRequest, res: Response, next: Function): Promise<void
     }
     const user = await UserService.getMe({id: req.userId})
     const isActive = await Ticket.findOneWithUserId(user.id)
-    if (!isActive) throw new Error('not_allowed')
+    if (!isActive) throw new Error('ticket_expired')
     delete user.password
     res.status(200).json({user})
   } catch (e) {
+    if (e.message === 'ticket_expired') e.status = 401
     next(e)
   }
 }
