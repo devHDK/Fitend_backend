@@ -63,7 +63,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
         where.push(`t.expiredAt >= '${currentTime}'`)
       } else {
         // where.push(`t.startedAt >= ${currentTime}`)
-        where.push(`t.expiredAt <= '${currentTime}'`)
+        where.push(`t.expiredAt < '${currentTime}'`)
       }
     }
     const rows = await db.query({
@@ -150,7 +150,7 @@ async function findOneWithUserId(userId: number): Promise<number | null> {
       sql: `SELECT t.id
             FROM ?? t
             JOIN ?? tr ON tr.userId = ${escape(userId)} AND tr.ticketId = t.id
-            WHERE t.expiredAt > ${escape(currentTime)}
+            WHERE t.expiredAt >= ${escape(currentTime)}
             LIMIT 1`,
       values: [tableName, tableTicketRelation]
     })
@@ -163,6 +163,7 @@ async function findOneWithUserId(userId: number): Promise<number | null> {
 async function findCounts(
   userId: number
 ): Promise<{personalCount: number; fitnessCount: number; expiredCount: number}> {
+  const currentTime = moment().format('YYYY-MM-DD')
   try {
     const [row] = await db.query({
       sql: `SELECT 
@@ -171,19 +172,19 @@ async function findCounts(
             WHERE t.type = 'personal' AND EXISTS (
              SELECT 1
              FROM ?? tr
-             WHERE tr.ticketId = t.id AND tr.userId = ${escape(userId)}
+             WHERE tr.ticketId = t.id AND tr.userId = ${escape(userId)} AND t.expiredAt >= ${escape(currentTime)}
             )) as personalCount,
             (SELECT COUNT(t.id) 
             FROM ?? t 
             WHERE t.type = 'fitness' AND EXISTS (
              SELECT 1
              FROM ?? tr
-             WHERE tr.ticketId = t.id AND tr.userId = ${escape(userId)}
+             WHERE tr.ticketId = t.id AND tr.userId = ${escape(userId)} AND t.expiredAt >= ${escape(currentTime)}
             )) as fitnessCount,
             (SELECT COUNT(t.id) 
             FROM ?? t 
             JOIN ?? tr ON tr.ticketId = t.id AND tr.userId = ${escape(userId)}
-            WHERE t.expiredAt < NOW()
+            WHERE t.expiredAt < ${escape(currentTime)}
             GROUP BY t.id) as expiredCount`,
       values: [tableName, tableTicketRelation, tableName, tableTicketRelation, tableName, tableTicketRelation]
     })

@@ -1,6 +1,5 @@
 import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
-import {end} from 'fluent-logger'
 import {db} from '../loaders'
 import {
   IUser,
@@ -13,7 +12,7 @@ import {
 } from '../interfaces/user'
 import {Trainer, Ticket} from './'
 
-const utcTime = moment.utc()
+moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'Users'
 const tableFranchiseUser = 'Franchises-Users'
@@ -55,13 +54,13 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
     const where = []
 
     if (search) where.push(`(t.nickname like '%${search}%' OR t.phone like '%${search}%')`)
-    const currentTime = utcTime.format('YYYY-MM-DDTHH:mm:ss')
+    const currentTime = moment().format('YYYY-MM-DD')
     const rows: IUserData[] = await db.query({
       sql: `SELECT t.id, t.nickname, t.phone, t.createdAt,
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
             JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
             JOIN ?? tra ON tra.id = tr.trainerId
-            WHERE ti.expiredAt > '${currentTime}'
+            WHERE ti.expiredAt >= '${currentTime}'
             LIMIT 1
             ) as trainers
             FROM ?? t
