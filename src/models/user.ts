@@ -145,9 +145,8 @@ async function findActivePersonalUsers(franchiseId: number, startDate: string, e
             FROM ?? u
             JOIN ?? fu ON fu.userId = u.id AND fu.franchiseId = ?
             JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ?
-            JOIN ?? ti ON ti.id = tr.ticketId AND (ti.expiredAt > ${escape(endDate)} 
-            OR ti.expiredAt BETWEEN ${escape(startDate)} AND ${escape(endDate)})
-            AND ti.type = 'personal'
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= ${escape(startDate)} 
+            AND ti.startedAt < ${escape(endDate)} AND ti.type = 'personal'
             GROUP BY u.id) t`,
       values: [tableName, tableFranchiseUser, franchiseId, Ticket.tableTicketRelation, franchiseId, Ticket.tableName]
     })
@@ -166,9 +165,8 @@ async function findActiveFitnessUsers(franchiseId: number, startDate: string, en
             FROM ?? u
             JOIN ?? fu ON fu.userId = u.id AND fu.franchiseId = ?
             JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ?
-            JOIN ?? ti ON ti.id = tr.ticketId AND (ti.expiredAt > ${escape(endDate)} 
-            OR ti.expiredAt BETWEEN ${escape(startDate)} AND ${escape(endDate)})
-            AND ti.type = 'fitness'
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= ${escape(startDate)} 
+            AND ti.startedAt < ${escape(endDate)} AND ti.type = 'fitness'
             GROUP BY u.id) t`,
       values: [tableName, tableFranchiseUser, franchiseId, Ticket.tableTicketRelation, franchiseId, Ticket.tableName]
     })
