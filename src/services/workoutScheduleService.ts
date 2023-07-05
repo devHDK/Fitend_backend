@@ -1,5 +1,5 @@
 import moment from 'moment-timezone'
-import {WorkoutSchedule, WorkoutFeedbacks, WorkoutPlan} from '../models'
+import {WorkoutSchedule, WorkoutFeedbacks, WorkoutPlan, Exercise} from '../models'
 import {
   IWorkoutScheduleList,
   IWorkoutScheduleFindAll,
@@ -87,15 +87,17 @@ async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWo
   }
 }
 
-async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDetail]> {
+async function findOne(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
   try {
-    return await WorkoutSchedule.findOne(workoutScheduleId)
+    const schedule = await WorkoutSchedule.findOne(workoutScheduleId)
+    const exercises = await Exercise.findOneWithWorkoutScheduleId(workoutScheduleId)
+    return {...schedule, exercises}
   } catch (e) {
     throw e
   }
 }
 
-async function findOneForTrainer(workoutScheduleId: number): Promise<[IWorkoutScheduleDetail]> {
+async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
   try {
     return await WorkoutSchedule.findOneForTrainer(workoutScheduleId)
   } catch (e) {

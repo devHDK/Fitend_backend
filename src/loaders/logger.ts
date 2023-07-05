@@ -1,13 +1,13 @@
 const {addColors, createLogger, log, format, transports} = require('winston')
-const fluentLogger = require('fluent-logger')
-
-const fluentTag = 'service.cashfi.backend'
-const fluentConfig = {
-  host: 'fluentd',
-  port: 24224,
-  timeout: 3.0,
-  requireAckResponse: false
-}
+// const fluentLogger = require('fluent-logger')
+//
+// const fluentTag = 'service.fitend.backend'
+// const fluentConfig = {
+//   host: 'fluentd',
+//   port: 24224,
+//   timeout: 3.0,
+//   requireAckResponse: false
+// }
 const loggerLevels = {
   levels: {
     fatal: 0,
@@ -25,7 +25,6 @@ const loggerLevels = {
 }
 addColors(loggerLevels.colors)
 const colorize = format.colorize()
-let logger
 
 const consoleLoggerFormat = format.printf(({level, message, timestamp, stack, reqId}) => {
   let logMessage = ''
@@ -34,40 +33,51 @@ const consoleLoggerFormat = format.printf(({level, message, timestamp, stack, re
   return `${colorize.colorize(level, `[${timestamp}][${level.toUpperCase()}]`)} - ${logMessage}`
 })
 
-if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') {
-  const loggerFormat = format.printf((info) => {
-    const {level, message, stack} = info
-    return JSON.stringify({
-      log: {...info, message: `[${level.toUpperCase()}] - ${stack || message}`}
+const logger = createLogger({
+  levels: loggerLevels.levels,
+  format: format.combine(format.timestamp(), format.errors({stack: true}), consoleLoggerFormat),
+  transports: [
+    new transports.Console({
+      level: 'debug',
+      handleExceptions: true
     })
-  })
-  const FluentTransport = fluentLogger.support.winstonTransport({
-    level: 'info',
-    format: format.combine(format.timestamp(), format.errors({stack: true}), format.splat(), loggerFormat)
-  })
-  logger = createLogger({
-    levels: loggerLevels.levels,
-    transports: [
-      new FluentTransport(fluentTag, fluentConfig),
-      new transports.Console({
-        level: 'info',
-        format: format.combine(format.timestamp(), format.errors({stack: true}), consoleLoggerFormat),
-        handleExceptions: true
-      })
-    ]
-  })
-} else {
-  logger = createLogger({
-    levels: loggerLevels.levels,
-    format: format.combine(format.timestamp(), format.errors({stack: true}), consoleLoggerFormat),
-    transports: [
-      new transports.Console({
-        level: 'debug',
-        handleExceptions: true
-      })
-    ]
-  })
-}
+  ]
+})
+
+// if (process.env.NODE_ENV === 'development') {
+//   const loggerFormat = format.printf((info) => {
+//     const {level, message, stack} = info
+//     return JSON.stringify({
+//       log: {...info, message: `[${level.toUpperCase()}] - ${stack || message}`}
+//     })
+//   })
+//   const FluentTransport = fluentLogger.support.winstonTransport({
+//     level: 'info',
+//     format: format.combine(format.timestamp(), format.errors({stack: true}), format.splat(), loggerFormat)
+//   })
+//   logger = createLogger({
+//     levels: loggerLevels.levels,
+//     transports: [
+//       new FluentTransport(fluentTag, fluentConfig),
+//       new transports.Console({
+//         level: 'info',
+//         format: format.combine(format.timestamp(), format.errors({stack: true}), consoleLoggerFormat),
+//         handleExceptions: true
+//       })
+//     ]
+//   })
+// } else {
+//   logger = createLogger({
+//     levels: loggerLevels.levels,
+//     format: format.combine(format.timestamp(), format.errors({stack: true}), consoleLoggerFormat),
+//     transports: [
+//       new transports.Console({
+//         level: 'debug',
+//         handleExceptions: true
+//       })
+//     ]
+//   })
+// }
 
 function parseHttpLog(text: string) {
   try {

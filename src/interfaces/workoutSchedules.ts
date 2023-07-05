@@ -65,36 +65,36 @@ export interface IWorkoutScheduleDetail {
   targetMuscleTypes: string[]
   workoutTotalTime: string
   seq: number
-  exercises: [
+  exercises: IWorkoutScheduleExercise[]
+}
+
+export interface IWorkoutScheduleExercise {
+  workoutPlanId: number
+  exerciseId: number
+  name: string
+  description: string
+  trackingFieldId: number
+  targetMuscles: [
     {
-      workoutPlanId: number
-      exerciseId: number
       name: string
-      description: string
-      trackingFieldId: number
-      targetMuscles: [
-        {
-          name: string
-          muscleType: string
-          type: string
-          image: string
-        }
-      ]
-      videos: [
-        {
-          url: string
-          index: number
-          thumbnail: string
-        }
-      ]
-      setInfo: [
-        {
-          index: number
-          reps: number
-          weight: number
-          seconds: number
-        }
-      ]
+      muscleType: string
+      type: string
+      image: string
+    }
+  ]
+  videos: [
+    {
+      url: string
+      index: number
+      thumbnail: string
+    }
+  ]
+  setInfo: [
+    {
+      index: number
+      reps: number
+      weight: number
+      seconds: number
     }
   ]
 }

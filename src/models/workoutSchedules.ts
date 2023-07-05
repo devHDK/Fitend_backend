@@ -76,7 +76,7 @@ async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWo
   }
 }
 
-async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDetail]> {
+async function findOne(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id as workoutScheduleId, DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
@@ -89,23 +89,7 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
             ) as targetMuscleTypes,
             t.totalTime as workoutTotalTime, 
             IF(wf.workoutScheduleId, true, false) as isWorkoutComplete,
-            IF(wr.workoutPlanId, true, false) as isRecord,
-            (
-              SELECT JSON_ARRAYAGG(
-                JSON_OBJECT(
-                'workoutPlanId', wp.id, 'name', e.name, 'description', e.description,
-                'trackingFieldId', e.trackingFieldId,
-                'targetMuscles', 
-                (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', et.type))
-                FROM ?? tm
-                JOIN ?? et ON et.exerciseId = e.id AND et.targetMuscleId = tm.id),
-                'videos', e.videos, 'setInfo', wp.setInfo, 'trainerNickname', tra.nickname, 'trainerProfileImage', tra.profileImage
-                )
-              )
-              FROM ?? e
-              JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = e.id
-              JOIN ?? tra ON tra.id = e.trainerId
-            ) exercises
+            IF(wr.workoutPlanId, true, false) as isRecord
             FROM ?? t
             JOIN ?? wp ON wp.workoutScheduleId = t.id
             LEFT JOIN ?? wf ON wf.workoutScheduleId = t.id
@@ -116,11 +100,6 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
         Exercise.tableTargetMuscle,
         Exercise.tableExerciseTargetMuscle,
         WorkoutPlan.tableName,
-        Exercise.tableTargetMuscle,
-        Exercise.tableExerciseTargetMuscle,
-        Exercise.tableName,
-        WorkoutPlan.tableName,
-        Trainer.tableName,
         tableName,
         WorkoutPlan.tableName,
         WorkoutFeedbacks.tableName,
@@ -135,7 +114,7 @@ async function findOne(workoutScheduleId: number): Promise<[IWorkoutScheduleDeta
   }
 }
 
-async function findOneForTrainer(workoutScheduleId: number): Promise<[IWorkoutScheduleDetail]> {
+async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id as workoutScheduleId, DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
