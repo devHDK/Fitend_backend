@@ -149,9 +149,15 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
     if (trackingFieldIds && trackingFieldIds.length > 0)
       where.push(`t.trackingFieldId IN (${trackingFieldIds.join(`,`)})`)
     if (tagIds && tagIds.length > 0) {
-      join.push(`JOIN ?? eet ON eet.exerciseId = t.id AND eet.exerciseTagId IN (${tagIds.join(',')})`)
-      values.push(tableExerciseExerciseTag)
-      totalValues.push(tableExerciseExerciseTag)
+      for (let i = 0; i < tagIds.length; i++) {
+        join.push(
+          `JOIN ?? eet${escape(i)} ON eet${escape(i)}.exerciseId = t.id AND eet${escape(i)}.exerciseTagId = ${escape(
+            tagIds[i]
+          )}`
+        )
+        values.push(tableExerciseExerciseTag)
+        totalValues.push(tableExerciseExerciseTag)
+      }
     }
     if (targetMuscleIds && targetMuscleIds.length > 0) {
       join.push(

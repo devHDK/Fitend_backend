@@ -23,8 +23,8 @@ async function postWorkoutSchedules(req: IRequest, res: Response, next: Function
 
 async function getWorkoutSchedules(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {startDate, userId} = req.options
-    const ret = await WorkoutScheduleService.findAllForTrainer({userId, startDate})
+    const {startDate, endDate, userId} = req.options
+    const ret = await WorkoutScheduleService.findAllForTrainer({userId, startDate, endDate})
     res.status(200).json({data: ret})
   } catch (e) {
     next(e)
