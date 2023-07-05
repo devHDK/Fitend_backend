@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {
   IWorkoutScheduleList,
@@ -10,6 +11,8 @@ import {
 } from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
 import {WorkoutPlan, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords} from './index'
+
+moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'WorkoutSchedules'
 
@@ -56,7 +59,7 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
 
 async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWorkoutScheduleListForTrainer]> {
   try {
-    const {userId, startDate} = options
+    const {userId, startDate, endDate} = options
     return await db.query({
       sql: `SELECT DATE_FORMAT(ws.startDate, '%Y-%m-%d') as startDate, ws.id as workoutScheduleId, ws.workoutId,
               ws.seq, ws.workoutTitle as title, ws.workoutSubTitle as subTitle,
@@ -66,9 +69,12 @@ async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWo
               JOIN ?? wp ON wp.workoutScheduleId = ws.id
               LEFT JOIN ?? wf ON wf.workoutScheduleId = ws.id
               LEFT JOIN ?? wr ON wr.workoutPlanId = wp.id
-              WHERE ws.startDate BETWEEN '${startDate}' AND DATE_ADD('${startDate}', INTERVAL 30 DAY) AND ws.?
+              WHERE ws.startDate BETWEEN 
+              ${escape(startDate)} AND 
+              ${endDate ? escape(endDate) : escape(moment(startDate).add(30, 'day').format('YYYY-MM-DD'))}
+              AND ws.?
               GROUP BY ws.id
-              ORDER BY ws.seq`,
+              ORDER BY ws.startDate`,
       values: [tableName, WorkoutPlan.tableName, WorkoutFeedbacks.tableName, WorkoutRecords.tableName, {userId}]
     })
   } catch (e) {

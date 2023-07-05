@@ -4,6 +4,9 @@
     "startDate": {
       "type": "string"
     },
+    "endDate": {
+      "type": "string"
+    },
     "userId": {
       "type": "integer"
     }

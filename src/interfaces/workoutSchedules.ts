@@ -36,6 +36,7 @@ export interface IWorkoutScheduleListForTrainer {
 export interface IWorkoutScheduleFindAll {
   userId: number
   startDate: Date
+  endDate?: Date
 }
 
 export interface IWorkoutScheduleCreate {
