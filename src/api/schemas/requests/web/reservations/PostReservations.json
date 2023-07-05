@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "ticketId": {
+      "type": "integer"
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endTime": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "ticketId",
+    "startTime",
+    "endTime"
+  ],
+  "additionalProperties": false
+}
