@@ -202,10 +202,9 @@ async function findOneWithTime({
     const [row] = await db.query({
       sql: `SELECT count(id) as count FROM ??
             WHERE (status != 'cancel') AND trainerId = ${escape(trainerId)}
-            AND (((startTime < ${escape(startTime)} AND '${escape(startTime)}' < endTime) OR (startTime < '${escape(
-        endTime
-      )}' AND '${escape(endTime)}'< endTime))
-            OR (startTime >= ${escape(startTime)} AND endTime <= '${escape(endTime)}'))
+            AND (((startTime < ${escape(startTime)} AND ${escape(startTime)} < endTime) 
+            OR (startTime < ${escape(endTime)} AND ${escape(endTime)}< endTime))
+            OR (startTime >= ${escape(startTime)} AND endTime <= ${escape(endTime)}))
             `,
       values: [tableName]
     })

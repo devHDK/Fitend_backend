@@ -21,13 +21,13 @@ const postReservations = new ApiRouter({
 //   method: 'get',
 //   summary: '예약 목록',
 //   tags: ['Reservation'],
-//   schema: 'requests/web/reservations/GetWorkouts',
+//   schema: 'requests/web/reservations/GetReservations',
 //   responses: {
 //     200: {schema: 'responses/web/reservations/GetReservations'}
 //   },
 //   handler: ctrl.getReservations
 // })
-//
+
 // const getReservationsWithId = new ApiRouter({
 //   name: ':id',
 //   method: 'get',

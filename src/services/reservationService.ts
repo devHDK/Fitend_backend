@@ -1,6 +1,6 @@
-import {IReservationFindAll, IReservationList, IReservationDetail} from '../interfaces/reservation'
+// import {IReservationFindAll, IReservationList, IReservationDetail} from '../interfaces/reservation'
 import {Reservation, Ticket} from '../models/index'
-import {db} from '../loaders'
+// import {db} from '../loaders'
 
 async function create(options: {
   trainerId: number
