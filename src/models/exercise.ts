@@ -240,11 +240,12 @@ async function findOneWithWorkoutScheduleId(workoutScheduleId: number): Promise<
       sql: `SELECT wp.id as workoutPlanId, e.name, e.description, e.trackingFieldId, e.videos, wp.setInfo,
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', et.type))
             FROM ?? tm
-            JOIN ?? et ON et.exerciseId = e.id AND et.targetMuscleId = tm.id) as targetMuscles
+            JOIN ?? et ON et.exerciseId = e.id AND et.targetMuscleId = tm.id) as targetMuscles,
+            tra.nickname as trainerNickname, tra.profileImage as trainerProfileImage
             FROM ?? e
             JOIN ?? wp ON wp.workoutScheduleId = ${escape(workoutScheduleId)} AND wp.exerciseId = e.id
             JOIN ?? tra ON tra.id = e.trainerId
-            ORDER BY e.id`,
+            ORDER BY wp.id`,
       values: [tableTargetMuscle, tableExerciseTargetMuscle, tableName, WorkoutPlan.tableName, Trainer.tableName]
     })
   } catch (e) {
