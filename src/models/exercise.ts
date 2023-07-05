@@ -237,7 +237,7 @@ async function findOneWithId(id: number, trainerId: number): Promise<IExerciseFi
 async function findOneWithWorkoutScheduleId(workoutScheduleId: number): Promise<IWorkoutScheduleExercise[]> {
   try {
     return await db.query({
-      sql: `SELECT wp.id as workoutPlanId, e.name, e.description, e.trackingFieldId, e.videos, wp.setInfo, tra.nickname, tra.profileImage,
+      sql: `SELECT wp.id as workoutPlanId, e.name, e.description, e.trackingFieldId, e.videos, wp.setInfo,
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', et.type))
             FROM ?? tm
             JOIN ?? et ON et.exerciseId = e.id AND et.targetMuscleId = tm.id) as targetMuscles
