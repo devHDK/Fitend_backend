@@ -16,6 +16,9 @@
         "nickname": {
           "type": "string"
         },
+        "profileImage": {
+          "type": "string"
+        },
         "createdAt": {
           "type": "string"
         }
