@@ -1,4 +1,4 @@
-// import {IReservationFindAll, IReservationList, IReservationDetail} from '../interfaces/reservation'
+import {IReservationFindAll, IReservationList, IReservationDetail} from '../interfaces/reservation'
 import {Reservation, Ticket} from '../models/index'
 // import {db} from '../loaders'
 
@@ -24,14 +24,14 @@ async function create(options: {
   }
 }
 
-// async function findAll(options: IReservationFindAll): Promise<IReservationList> {
-//   try {
-//     return await Reservation.findAll(options)
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
+async function findAll(options: IReservationFindAll): Promise<IReservationList> {
+  try {
+    return await Reservation.findAll(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 // async function findOneWithId(id: number, trainerId: number): Promise<IReservationDetail> {
 //   try {
 //     return await Reservation.findOneWithId(id, trainerId)
@@ -78,4 +78,4 @@ async function create(options: {
 //   }
 // }
 
-export {create}
+export {create, findAll}

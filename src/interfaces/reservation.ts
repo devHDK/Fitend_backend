@@ -18,14 +18,9 @@ export interface IReservationCreate {
 }
 
 export interface IReservationFindAll {
-  search?: string
-  isMe?: boolean
-  isBookmark?: boolean
-  types?: string[]
-  trainerId: number
-  trainerFilterId?: number
-  start: number
-  perPage: number
+  franchiseId: string
+  startDate: string
+  endDate: string
 }
 
 export interface IReservationDetail {

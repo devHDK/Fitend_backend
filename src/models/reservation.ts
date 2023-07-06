@@ -57,69 +57,34 @@ async function create(options: IReservationCreate, connection?: PoolConnection):
 //     throw e
 //   }
 // }
-//
-// async function findAll(options: IReservationFindAll): Promise<IReservationList> {
-//   const {search, trainerId, isMe, isBookmark, types, trainerFilterId, start, perPage} = options
-//   try {
-//     const where = []
-//     if (search) where.push(`t.title like ${escape(`%${search}%`)}`)
-//     if (isMe) where.push(`t.trainerId = ${trainerId}`)
-//     else if (trainerFilterId) where.push(`t.trainerId = ${trainerFilterId}`)
-//     const rows = await db.query({
-//       sql: `SELECT t.id, t.title, t.subTitle, t.totalTime,
-//             JSON_ARRAYAGG(tm.type) as primaryTypes,
-//             t.trainerId, tr.nickname as trainerNickname, t.updatedAt, IF(tw.trainerId, true, false) as isBookmark
-//             FROM ?? t
-//             JOIN ?? we ON we.ReservationId = t.id
-//             JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
-//             JOIN ?? tm ON tm.id = et.targetMuscleId ${
-//               types && types.length > 0 ? `AND tm.type IN ('${types.join(`','`)}')` : ``
-//             }
-//             JOIN ?? tr ON tr.id = t.trainerId
-//             ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? tw ON tw.ReservationId = t.id AND tw.trainerId = ${escape(
-//         trainerId
-//       )}
-//             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
-//             GROUP BY t.id
-//             ORDER BY t.createdAt DESC
-//             LIMIT ${start}, ${perPage}`,
-//       values: [
-//         tableName,
-//         tableReservationExercise,
-//         Exercise.tableExerciseTargetMuscle,
-//         Exercise.tableTargetMuscle,
-//         Trainer.tableName,
-//         tableTrainerReservation
-//       ]
-//     })
-//     const [rowTotal] = await db.query({
-//       sql: `SELECT COUNT(1) as total FROM ?? t
-//             ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? tw ON tw.ReservationId = t.id AND tw.trainerId = t.trainerId
-//             ${
-//               types && types.length > 0
-//                 ? `
-//                   JOIN ?? we ON we.ReservationId = t.id
-//                   JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
-//                   JOIN ?? tm ON tm.id = et.targetMuscleId AND tm.type IN ('${types.join(`','`)}')
-//                   `
-//                 : ``
-//             }
-//             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
-//       `,
-//       values: [
-//         tableName,
-//         tableTrainerReservation,
-//         tableReservationExercise,
-//         Exercise.tableExerciseTargetMuscle,
-//         Exercise.tableTargetMuscle
-//       ]
-//     })
-//     return {data: rows, total: rowTotal ? rowTotal.total : 0}
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
+
+async function findAll(options: IReservationFindAll): Promise<IReservationList> {
+  const {franchiseId, startDate, endDate} = options
+  try {
+    const where = []
+    const rows = await db.query({
+      sql: `SELECT t.id, t.title, t.subTitle, t.totalTime,
+            JSON_ARRAYAGG(tm.type) as primaryTypes,
+            t.trainerId, tr.nickname as trainerNickname, t.updatedAt, IF(tw.trainerId, true, false) as isBookmark
+            FROM ?? t
+            JOIN ?? we ON we.ReservationId = t.id
+            JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY t.id
+            ORDER BY t.createdAt DESC`,
+      values: [tableName]
+    })
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total FROM ?? t
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}`,
+      values: [tableName]
+    })
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
 // async function findOneWithId(id: number, trainerId: number): Promise<IReservationDetail> {
 //   try {
 //     const [row] = await db.query({
@@ -255,7 +220,7 @@ export {
   create,
   // createRelationExercises,
   // createRelationBookmark,
-  // findAll,
+  findAll,
   // findOneWithId,
   findLastReservation,
   findOneWithTime

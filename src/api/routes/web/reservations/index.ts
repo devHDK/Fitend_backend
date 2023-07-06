@@ -16,17 +16,17 @@ const postReservations = new ApiRouter({
   handler: ctrl.postReservations
 })
 
-// const getReservations = new ApiRouter({
-//   name: '',
-//   method: 'get',
-//   summary: '예약 목록',
-//   tags: ['Reservation'],
-//   schema: 'requests/web/reservations/GetReservations',
-//   responses: {
-//     200: {schema: 'responses/web/reservations/GetReservations'}
-//   },
-//   handler: ctrl.getReservations
-// })
+const getReservations = new ApiRouter({
+  name: '',
+  method: 'get',
+  summary: '예약 목록',
+  tags: ['Reservation'],
+  schema: 'requests/web/reservations/GetReservations',
+  responses: {
+    200: {schema: 'responses/web/reservations/GetReservations'}
+  },
+  handler: ctrl.getReservations
+})
 
 // const getReservationsWithId = new ApiRouter({
 //   name: ':id',
@@ -66,4 +66,4 @@ const postReservations = new ApiRouter({
 //   handler: ctrl.deleteReservationsWithId
 // })
 
-export {postReservations}
+export {postReservations, getReservations}

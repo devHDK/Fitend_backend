@@ -19,25 +19,20 @@ async function postReservations(req: IRequest, res: Response, next: Function): P
   }
 }
 
-// async function getReservations(req: IRequest, res: Response, next: Function): Promise<void> {
-//   try {
-//     const {search, isMe, isBookmark, types, trainerId, start, perPage} = req.options
-//     const ret = await ReservationService.findAll({
-//       search,
-//       trainerId: req.userId,
-//       isMe,
-//       isBookmark,
-//       trainerFilterId: trainerId,
-//       types,
-//       start,
-//       perPage
-//     })
-//     res.status(200).json(ret)
-//   } catch (e) {
-//     next(e)
-//   }
-// }
-//
+async function getReservations(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {startDate, endDate} = req.options
+    const ret = await ReservationService.findAll({
+      franchiseId: req.franchiseId,
+      startDate,
+      endDate
+    })
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
 // async function getReservationsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
 //   try {
 //     const ret = await ReservationService.findOneWithId(req.options.id, req.userId)
@@ -78,4 +73,4 @@ async function postReservations(req: IRequest, res: Response, next: Function): P
 //   }
 // }
 
-export {postReservations}
+export {postReservations, getReservations}
