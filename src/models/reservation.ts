@@ -2,6 +2,7 @@ import moment from 'moment-timezone'
 import {escape, PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {IReservationCreate, IReservationDetail, IReservationFindAll, IReservationList} from '../interfaces/reservation'
+import {Ticket, Trainer, User} from './index'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -20,125 +21,60 @@ async function create(options: IReservationCreate, connection?: PoolConnection):
   }
 }
 
-// async function createRelationExercises(
-//   options: {
-//     exercises: [
-//       {
-//         id: number
-//         setInfo: [{index: number; reps: number; weight: number; seconds: number}]
-//       }
-//     ]
-//     ReservationId: number
-//   },
-//   connection: PoolConnection
-// ): Promise<void> {
-//   const {exercises, ReservationId} = options
-//   const values = exercises
-//     .map((exercise) => `(${ReservationId}, '${exercise.id}', '${JSON.stringify(exercise.setInfo)}')`)
-//     .join(',')
-//   try {
-//     await db.query({
-//       connection,
-//       sql: `INSERT INTO ?? (ReservationId, exerciseId, setInfo) VALUES ${values}`,
-//       values: [tableReservationExercise]
-//     })
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
-// async function createRelationBookmark(ReservationId: number, trainerId: number): Promise<void> {
-//   try {
-//     await db.query({
-//       sql: `INSERT INTO ?? SET ?`,
-//       values: [tableTrainerReservation, {ReservationId, trainerId}]
-//     })
-//   } catch (e) {
-//     throw e
-//   }
-// }
-
-async function findAll(options: IReservationFindAll): Promise<IReservationList> {
+async function findAll(options: IReservationFindAll): Promise<[IReservationList]> {
   const {franchiseId, startDate, endDate} = options
   try {
-    const where = []
-    const rows = await db.query({
-      sql: `SELECT t.id, t.title, t.subTitle, t.totalTime,
-            JSON_ARRAYAGG(tm.type) as primaryTypes,
-            t.trainerId, tr.nickname as trainerNickname, t.updatedAt, IF(tw.trainerId, true, false) as isBookmark
+    const where = [`t.status != 'cancel'`, `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`]
+    return await db.query({
+      sql: `SELECT t.id, t.startTime, t.endTime, t.status, ti.type as ticketType,
+            u.nickname as userNickname, t.seq, ti.totalSession,
+            JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer
             FROM ?? t
-            JOIN ?? we ON we.ReservationId = t.id
-            JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
+            JOIN ?? ti ON ti.id = t.ticketId
+            JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)}
+            JOIN ?? u ON u.id = tr.userId
+            JOIN ?? tra ON tra.id = tr.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
-            GROUP BY t.id
-            ORDER BY t.createdAt DESC`,
-      values: [tableName]
+            GROUP BY t.id`,
+      values: [tableName, Ticket.tableName, Ticket.tableTicketRelation, User.tableName, Trainer.tableName]
     })
-    const [rowTotal] = await db.query({
-      sql: `SELECT COUNT(1) as total FROM ?? t
-            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}`,
-      values: [tableName]
-    })
-    return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
     throw e
   }
 }
 
-// async function findOneWithId(id: number, trainerId: number): Promise<IReservationDetail> {
-//   try {
-//     const [row] = await db.query({
-//       sql: `SELECT t.id, t.title, t.subTitle, t.totalTime,
-//             (SELECT JSON_ARRAYAGG(t.type)
-//               FROM (
-//                 SELECT DISTINCT tm.type
-//                 FROM ?? we
-//                 JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
-//                 JOIN ?? tm ON tm.id = et.targetMuscleId
-//                 WHERE we.ReservationId = t.id
-//               ) t
-//             ) as primaryTypes,
-//             t.trainerId, tr.nickname as trainerNickname, tr.profileImage as trainerProfileImage, t.updatedAt,
-//             JSON_ARRAYAGG(
-//               JSON_OBJECT('id', e.id, 'videos', e.videos, 'name', e.name, 'trackingFieldId', e.trackingFieldId ,'setInfo', we.setInfo,
-//               'targetMuscles', (SELECT JSON_ARRAYAGG(t.name)
-//                 FROM (
-//                   SELECT DISTINCT tm.name
-//                   FROM ?? we
-//                   JOIN ?? et ON et.exerciseId = e.id AND et.type = 'main'
-//                   JOIN ?? tm ON tm.id = et.targetMuscleId
-//                   WHERE we.ReservationId = t.id
-//                 ) t
-//                )
-//               )
-//             ) as exercises, IF(tw.trainerId, true, false) as isBookmark
-//             FROM ?? t
-//             JOIN ?? we ON we.ReservationId = t.id
-//             JOIN ?? e ON e.id = we.exerciseId
-//             JOIN ?? tr ON tr.id = t.trainerId
-//             LEFT JOIN ?? tw ON tw.ReservationId = t.id AND tw.trainerId = ${escape(trainerId)}
-//             WHERE t.?
-//             GROUP BY t.id`,
-//       values: [
-//         tableReservationExercise,
-//         Exercise.tableExerciseTargetMuscle,
-//         Exercise.tableTargetMuscle,
-//         tableReservationExercise,
-//         Exercise.tableExerciseTargetMuscle,
-//         Exercise.tableTargetMuscle,
-//         tableName,
-//         tableReservationExercise,
-//         Exercise.tableName,
-//         Trainer.tableName,
-//         tableTrainerReservation,
-//         {id}
-//       ]
-//     })
-//     return row
-//   } catch (e) {
-//     throw e
-//   }
-// }
+async function findOneWithId(id: number): Promise<IReservationDetail> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.id, t.startTime, t.endTime, t.status, ti.type as ticketType,
+            u.nickname as userNickname, t.seq, ti.totalSession, ti.startedAt, ti.expiredAt, 
+            JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer
+            FROM ?? t
+            JOIN ?? ti ON ti.id = t.ticketId
+            JOIN ?? tr ON tr.ticketId = ti.id
+            JOIN ?? u ON u.id = tr.userId
+            JOIN ?? tra ON tra.id = tr.trainerId
+            WHERE t.id = ${escape(id)}
+            GROUP BY t.id`,
+      values: [tableName, Ticket.tableName, Ticket.tableTicketRelation, User.tableName, Trainer.tableName]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findOne(id: number): Promise<IReservationDetail> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.* FROM ?? t WHERE t.id = ${escape(id)}`,
+      values: [tableName]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
 
 async function findLastReservation(ticketId: number): Promise<number> {
   try {
@@ -221,7 +157,8 @@ export {
   // createRelationExercises,
   // createRelationBookmark,
   findAll,
-  // findOneWithId,
+  findOneWithId,
+  findOne,
   findLastReservation,
   findOneWithTime
   // update,

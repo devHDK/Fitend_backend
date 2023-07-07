@@ -28,32 +28,32 @@ const getReservations = new ApiRouter({
   handler: ctrl.getReservations
 })
 
-// const getReservationsWithId = new ApiRouter({
-//   name: ':id',
-//   method: 'get',
-//   paths: ['common/IdPath'],
-//   summary: '예약 상세',
-//   tags: ['Reservation'],
-//   responses: {
-//     200: {schema: 'responses/web/reservations/GetReservationsWithId'},
-//     404: {description: 'not_found'}
-//   },
-//   handler: ctrl.getReservationsWithId
-// })
-//
-// const putReservationsWithId = new ApiRouter({
-//   name: ':id',
-//   method: 'put',
-//   paths: ['common/IdPath'],
-//   summary: '예약 수정',
-//   tags: ['Reservation'],
-//   schema: 'requests/web/reservations/PutWorkoutsWithId',
-//   responses: {
-//     200: {description: 'success'}
-//   },
-//   handler: ctrl.putReservationsWithId
-// })
-//
+const getReservationsWithId = new ApiRouter({
+  name: ':id',
+  method: 'get',
+  paths: ['common/IdPath'],
+  summary: '예약 상세',
+  tags: ['Reservation'],
+  responses: {
+    200: {schema: 'responses/web/reservations/GetReservationsWithId'},
+    404: {description: 'not_found'}
+  },
+  handler: ctrl.getReservationsWithId
+})
+
+const putReservationsWithId = new ApiRouter({
+  name: ':id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '예약 수정',
+  tags: ['Reservation'],
+  schema: 'requests/web/reservations/PutReservationsWithId',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putReservationsWithId
+})
+
 // const deleteReservationsWithId = new ApiRouter({
 //   name: ':id',
 //   method: 'delete',
@@ -66,4 +66,4 @@ const getReservations = new ApiRouter({
 //   handler: ctrl.deleteReservationsWithId
 // })
 
-export {postReservations, getReservations}
+export {postReservations, getReservations, getReservationsWithId, putReservationsWithId}

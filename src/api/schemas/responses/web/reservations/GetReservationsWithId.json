@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["complete", "attendance", "cancel"]
+    },
+    "ticketType": {
+      "type": "string"
+    },
+    "startedAt": {
+      "type": "string"
+    },
+    "expiredAt": {
+      "type": "string"
+    },
+    "userNickname": {
+      "type": "string"
+    },
+    "trainer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "profileImage": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "nickname",
+        "profileImage"
+      ],
+      "additionalProperties": false
+    },
+    "seq": {
+      "type": "integer"
+    },
+    "totalSession": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "startTime",
+    "endTime",
+    "ticketType",
+    "startedAt",
+    "expiredAt",
+    "userNickname",
+    "trainer",
+    "seq",
+    "totalSession"
+  ],
+  "additionalProperties": false
+}
+

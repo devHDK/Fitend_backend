@@ -25,31 +25,34 @@ export interface IReservationFindAll {
 
 export interface IReservationDetail {
   id: number
-  title: string
-  subTitle: string
-  primaryTypes: string[]
-  totalTime: string
-  trainerId: number
-  trainerNickname: string
-  trainerProfileImage: string
-  updatedAt: Date
-  isBookmark: boolean
-  exercises: [
-    {
-      id: number
-      videos: [
-        {
-          url: string
-          index: number
-          thumbnail: string
-        }
-      ]
-      name: string
-      trackingFieldId: number
-      setInfo: [{index: number; reps: number; weight: number; seconds: number}]
-      targetMuscles: string[]
-    }
-  ]
+  startTime: string
+  endTime: string
+  status: string
+  ticketType: string
+  ticketStartedAt: string
+  ticketExpiredAt: string
+  userNickname: string
+  trainer: {
+    id: number
+    nickname: string
+    profileImage: string
+  }
+  seq: number
+  totalSession: number
 }
 
-export type IReservationList = IResponseList<IReservation>
+export interface IReservationList {
+  id: number
+  startTime: string
+  endTime: string
+  status: string
+  ticketType: string
+  userNickname: string
+  trainer: {
+    id: number
+    nickname: string
+    profileImage: string
+  }
+  seq: number
+  totalSession: number
+}
