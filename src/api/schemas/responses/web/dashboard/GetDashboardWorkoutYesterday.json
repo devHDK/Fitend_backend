@@ -6,6 +6,9 @@
       "items": {
         "type": "object",
         "properties": {
+          "userId": {
+            "type": "integer"
+          },
           "userNickname": {
             "type": "string"
           },
@@ -14,9 +17,11 @@
           }
         },
         "required": [
+          "userId",
           "userNickname",
           "trainerNickname"
-        ]
+        ],
+        "additionalProperties": false
       }
     }
   },
