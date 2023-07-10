@@ -6,7 +6,8 @@ import {
   IReservationDetail,
   IReservationFindAll,
   IReservationList,
-  IReservationUpdate
+  IReservationUpdate,
+  IReservationFindOne
 } from '../interfaces/reservation'
 import {Ticket, Trainer, User} from './index'
 
@@ -70,7 +71,7 @@ async function findOneWithId(id: number): Promise<IReservationDetail> {
   }
 }
 
-async function findOne(id: number): Promise<IReservationDetail> {
+async function findOne(id: number): Promise<IReservationFindOne> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.* FROM ?? t WHERE t.id = ${escape(id)}`,
@@ -82,10 +83,14 @@ async function findOne(id: number): Promise<IReservationDetail> {
   }
 }
 
-async function findCountByTicketIdAndPrevStartTime(options: {startTime: string; ticketId: number}): Promise<number> {
+async function findCountByTicketIdAndPrevStartTime(
+  options: {startTime: string; ticketId: number},
+  connection?: PoolConnection
+): Promise<number> {
   const {startTime, ticketId} = options
   try {
     const [row] = await db.query({
+      connection,
       sql: `SELECT COUNT(*) as prevOrderNum FROM ?? WHERE ? 
                 AND startTime < ${escape(startTime)} 
                 AND times != 0`,
@@ -98,11 +103,14 @@ async function findCountByTicketIdAndPrevStartTime(options: {startTime: string; 
   }
 }
 
-async function findBetweenReservation(options: {
-  startTime: string
-  endTime: string
-  ticketId: number
-}): Promise<[{id: number; startTime: string}]> {
+async function findBetweenReservation(
+  options: {
+    startTime: string
+    endTime: string
+    ticketId: number
+  },
+  connection?: PoolConnection
+): Promise<[{id: number; startTime: string}]> {
   const {startTime, endTime, ticketId} = options
   try {
     return await db.query({
@@ -117,10 +125,13 @@ async function findBetweenReservation(options: {
   }
 }
 
-async function findAllByTicketIdAndLaterStartTime(options: {
-  startTime: string
-  ticketId: number
-}): Promise<[{id: number; startTime: string}]> {
+async function findAllByTicketIdAndLaterStartTime(
+  options: {
+    startTime: string
+    ticketId: number
+  },
+  connection?: PoolConnection
+): Promise<[{id: number; startTime: string}]> {
   const {startTime, ticketId} = options
   try {
     return await db.query({

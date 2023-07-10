@@ -15,8 +15,8 @@
     }
   },
   "required": [
-    "ticketId",
     "startTime",
+    "endTime",
     "status"
   ],
   "additionalProperties": false

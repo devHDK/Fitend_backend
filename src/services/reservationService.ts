@@ -38,10 +38,6 @@ async function create(options: {
       if (reservationDuplicate > 0) throw new Error('reservation_duplicate')
     }
 
-    const reservationIds = []
-    const betweenReservationIds = []
-    const laterReservationIds = []
-
     const prevOrderNum = await Reservation.findCountByTicketIdAndPrevStartTime({
       startTime: renewReservations[0].startTime,
       ticketId
@@ -70,14 +66,10 @@ async function create(options: {
             },
             connection
           )
-          betweenReservationIds.push({
-            reservationId: betweenReservations[betweenCount].id,
-            seq: prevOrderNum + betweenCount + i + 1
-          })
           betweenCount++
         }
       }
-      const reservationId = await Reservation.create(
+      await Reservation.create(
         {
           ticketId,
           trainerId,
@@ -87,7 +79,6 @@ async function create(options: {
         },
         connection
       )
-      reservationIds.push({reservationId, seq: prevOrderNum + betweenCount + i + 1})
     }
 
     const laterReservation = await Reservation.findAllByTicketIdAndLaterStartTime({
@@ -109,7 +100,6 @@ async function create(options: {
           },
           connection
         )
-        laterReservationIds.push({reservationId: laterReservation[j].id, seq: laterOrderNum + 1 + j})
       }
     }
     await db.commit(connection)
@@ -136,29 +126,97 @@ async function findOneWithId(id: number): Promise<IReservationDetail> {
 }
 
 async function update(options: {id: number; startTime: string; endTime: string; status: string}): Promise<void> {
-  // const connection = await db.beginTransaction()
+  const connection = await db.beginTransaction()
   try {
     const {id, startTime, endTime, status} = options
-    const prevReservation = await Reservation.findOne(id)
-    if (status === 'cancel' && prevReservation.status !== 'cancel') {
-    } else {
-    }
-    // await db.commit(connection)
+    const reservedReservation = await Reservation.findOne(id)
+    if (!reservedReservation) throw new Error('not_found')
+    const {status: reservedStatus, startTime: reservedStartTime, ticketId, times: reservedTimes} = reservedReservation
+
+    await Reservation.update({id, status, startTime, endTime, times: status === 'cancel' ? 0 : 1}, connection)
+
+    if (reservedStatus === 'complete') {
+      if (status === 'cancel') {
+        const prevSeq = await Reservation.findCountByTicketIdAndPrevStartTime(
+          {
+            startTime: moment(reservedStartTime).utc().format('YYYY-MM-DDThh:mm:ss'),
+            ticketId
+          },
+          connection
+        )
+        const laterReservation = await Reservation.findAllByTicketIdAndLaterStartTime(
+          {
+            startTime: moment(reservedStartTime).utc().format('YYYY-MM-DDThh:mm:ss'),
+            ticketId
+          },
+          connection
+        )
+        if (laterReservation && laterReservation.length > 0) {
+          for (let j = 0; j < laterReservation.length; j++) {
+            await Reservation.update(
+              {
+                id: laterReservation[j].id,
+                seq: prevSeq + 1 + j
+              },
+              connection
+            )
+          }
+        }
+      } else if (status === 'complete') {
+        const isAfter = moment(reservedStartTime).isBefore(moment(startTime), 'minute')
+        const betweenReservations = await Reservation.findBetweenReservation(
+          {
+            ticketId,
+            startTime: moment(isAfter ? reservedStartTime : startTime)
+              .utc()
+              .format('YYYY-MM-DDTHH:mm:ss'),
+            endTime: moment(isAfter ? startTime : reservedStartTime)
+              .utc()
+              .format('YYYY-MM-DDTHH:mm:ss')
+          },
+          connection
+        )
+        if (betweenReservations && betweenReservations.length > 0) {
+          const prevReservedSeq = await Reservation.findCountByTicketIdAndPrevStartTime(
+            {
+              ticketId,
+              startTime: moment(reservedStartTime).utc().subtract(1, 'second').format('YYYY-MM-DDTHH:mm:ss')
+            },
+            connection
+          )
+          const prevSeq = await Reservation.findCountByTicketIdAndPrevStartTime(
+            {
+              ticketId,
+              startTime: moment(startTime).utc().format('YYYY-MM-DDTHH:mm:ss')
+            },
+            connection
+          )
+          await Reservation.update(
+            {
+              id,
+              seq: prevSeq + 1
+            },
+            connection
+          )
+          for (let j = 0; j < betweenReservations.length; j++) {
+            await Reservation.update(
+              {
+                id: betweenReservations[j].id,
+                seq: isAfter ? prevReservedSeq + j + 1 : prevSeq + 2 + j
+              },
+              connection
+            )
+          }
+        }
+      }
+    } else if (reservedStatus === 'attendance' || (reservedStatus === 'cancel' && reservedTimes === 1)) {
+      if (status !== 'complete') throw new Error('not_allowed')
+    } else throw new Error('not_allowed')
+    await db.commit(connection)
   } catch (e) {
-    // if (connection) await db.rollback(connection)
+    if (connection) await db.rollback(connection)
     throw e
   }
 }
-
-// async function updateBookmark(options: {ReservationId: number; trainerId: number}): Promise<void> {
-//   try {
-//     const {ReservationId, trainerId} = options
-//     const isBookmark = await Reservation.findBookmark(ReservationId, trainerId)
-//     if (isBookmark) await Reservation.deleteRelationBookmark(ReservationId, trainerId)
-//     else await Reservation.createRelationBookmark(ReservationId, trainerId)
-//   } catch (e) {
-//     throw e
-//   }
-// }
 
 export {create, findAll, findOneWithId, update}

@@ -39,6 +39,18 @@ export interface IReservationDetail {
   totalSession: number
 }
 
+export interface IReservationFindOne {
+  id: number
+  ticketId: number
+  startTime: string
+  endTime: string
+  status: string
+  startedAt: string
+  expiredAt: string
+  seq: number
+  times: number
+}
+
 export interface IReservationList {
   id: number
   startTime: string
@@ -62,4 +74,6 @@ export interface IReservationUpdate {
   startTime?: string
   endTime?: string
   seq?: number
+  status?: string
+  times?: number
 }
