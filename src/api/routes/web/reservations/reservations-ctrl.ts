@@ -3,16 +3,16 @@ import {ReservationService} from '../../../../services'
 
 async function postReservations(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {ticketId, startTime, endTime} = req.options
+    const {ticketId, reservations} = req.options
     await ReservationService.create({
       trainerId: req.userId,
       ticketId,
-      startTime,
-      endTime
+      reservations
     })
     res.status(200).json()
   } catch (e) {
     if (e.message === 'not_allowed') e.status = 403
+    if (e.message === 'expired_ticket') e.status = 403
     if (e.message === 'not_found') e.status = 404
     if (e.message === 'reservation_duplicate') e.status = 409
     next(e)

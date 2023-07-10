@@ -1,12 +1,10 @@
 export interface IReservation {
   id: number
-  title: string
-  subTitle: string
-  totalTime: string
-  primaryTypes: string[]
+  ticketId: number
   trainerId: number
-  trainerNickname: string
-  updatedAt: Date
+  startTime: string
+  endTime: string
+  seq: number
 }
 
 export interface IReservationCreate {
@@ -55,4 +53,13 @@ export interface IReservationList {
   }
   seq: number
   totalSession: number
+}
+
+export interface IReservationUpdate {
+  id: number
+  ticketId?: number
+  trainerId?: number
+  startTime?: string
+  endTime?: string
+  seq?: number
 }

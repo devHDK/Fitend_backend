@@ -1,7 +1,13 @@
 import moment from 'moment-timezone'
 import {escape, PoolConnection} from 'mysql'
 import {db} from '../loaders'
-import {IReservationCreate, IReservationDetail, IReservationFindAll, IReservationList} from '../interfaces/reservation'
+import {
+  IReservationCreate,
+  IReservationDetail,
+  IReservationFindAll,
+  IReservationList,
+  IReservationUpdate
+} from '../interfaces/reservation'
 import {Ticket, Trainer, User} from './index'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -76,6 +82,59 @@ async function findOne(id: number): Promise<IReservationDetail> {
   }
 }
 
+async function findCountByTicketIdAndPrevStartTime(options: {startTime: string; ticketId: number}): Promise<number> {
+  const {startTime, ticketId} = options
+  try {
+    const [row] = await db.query({
+      sql: `SELECT COUNT(*) as prevOrderNum FROM ?? WHERE ? 
+                AND startTime < ${escape(startTime)} 
+                AND times != 0`,
+      values: [tableName, {ticketId}]
+    })
+
+    return row ? row.prevOrderNum : 0
+  } catch (err) {
+    throw err
+  }
+}
+
+async function findBetweenReservation(options: {
+  startTime: string
+  endTime: string
+  ticketId: number
+}): Promise<[{id: number; startTime: string}]> {
+  const {startTime, endTime, ticketId} = options
+  try {
+    return await db.query({
+      sql: `SELECT id, startTime FROM ?? WHERE ? 
+                AND startTime > ${escape(startTime)} AND startTime < ${escape(endTime)}
+                AND times != 0
+                ORDER BY startTime ASC`,
+      values: [tableName, {ticketId}]
+    })
+  } catch (err) {
+    throw err
+  }
+}
+
+async function findAllByTicketIdAndLaterStartTime(options: {
+  startTime: string
+  ticketId: number
+}): Promise<[{id: number; startTime: string}]> {
+  const {startTime, ticketId} = options
+  try {
+    return await db.query({
+      sql: `SELECT id, startTime FROM ?? WHERE ? 
+                AND startTime > ${escape(startTime)} 
+                AND times != 0
+                ORDER BY startTime ASC`,
+      values: [tableName, {ticketId}]
+    })
+  } catch (err) {
+    throw err
+  }
+}
+
 async function findLastReservation(ticketId: number): Promise<number> {
   try {
     const [row] = await db.query({
@@ -115,19 +174,19 @@ async function findOneWithTime({
   }
 }
 
-// async function update(options: IWorkUpdate, connection: PoolConnection): Promise<void> {
-//   const {id, ...data} = options
-//   try {
-//     await db.query({
-//       connection,
-//       sql: `UPDATE ?? SET ? WHERE ? `,
-//       values: [tableName, data, {id}]
-//     })
-//   } catch (e) {
-//     throw e
-//   }
-// }
-//
+async function update(options: IReservationUpdate, connection: PoolConnection): Promise<void> {
+  const {id, ...data} = options
+  try {
+    await db.query({
+      connection,
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableName, data, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 // async function deleteRelationExercise(ReservationId: number, connection: PoolConnection): Promise<void> {
 //   try {
 //     await db.query({
@@ -160,8 +219,11 @@ export {
   findOneWithId,
   findOne,
   findLastReservation,
-  findOneWithTime
-  // update,
+  findOneWithTime,
+  findCountByTicketIdAndPrevStartTime,
+  findBetweenReservation,
+  findAllByTicketIdAndLaterStartTime,
+  update
   // deleteRelationExercise,
   // deleteRelationBookmark
 }

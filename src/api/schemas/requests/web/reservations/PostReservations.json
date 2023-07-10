@@ -1,22 +1,33 @@
 {
   "type": "object",
   "properties": {
+    "reservations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "startTime",
+          "endTime"
+        ]
+      }
+    },
     "ticketId": {
       "type": "integer"
-    },
-    "startTime": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "endTime": {
-      "type": "string",
-      "format": "date-time"
     }
   },
   "required": [
-    "ticketId",
-    "startTime",
-    "endTime"
+    "reservations",
+    "ticketId"
   ],
   "additionalProperties": false
 }

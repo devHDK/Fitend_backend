@@ -9,7 +9,7 @@ const postReservations = new ApiRouter({
   schema: 'requests/web/reservations/PostReservations',
   responses: {
     200: {description: 'success'},
-    403: {description: '타 트레이너의 수강권'},
+    403: {description: 'not_allowed(타 트레이너의 수강권)/expired_ticket'},
     404: {description: '수강권 id 오류'},
     409: {description: '중복된 예약 있음'}
   },
