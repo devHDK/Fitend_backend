@@ -4,7 +4,7 @@ import {UserService} from '../../../../services'
 async function postUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {nickname, email, password, phone, birth, gender, memo} = req.options
-    await UserService.create({franchiseId: req.userId, nickname, email, password, phone, birth, gender, memo})
+    await UserService.create({franchiseId: req.franchiseId, nickname, email, password, phone, birth, gender, memo})
     res.status(200).json()
   } catch (e) {
     if (e.message === 'already_in_use') e.status = 409
