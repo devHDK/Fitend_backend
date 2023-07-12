@@ -21,9 +21,10 @@ async function postReservations(req: IRequest, res: Response, next: Function): P
 
 async function getReservations(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {startDate, endDate} = req.options
+    const {userId, startDate, endDate} = req.options
     const ret = await ReservationService.findAll({
       franchiseId: req.franchiseId,
+      userId,
       startDate,
       endDate
     })

@@ -1,6 +1,11 @@
 import _ from 'lodash'
 import moment from 'moment-timezone'
-import {IReservationFindAll, IReservationList, IReservationDetail} from '../interfaces/reservation'
+import {
+  IReservationFindAll,
+  IReservationList,
+  IReservationDetail,
+  IReservationFindAllForUser
+} from '../interfaces/reservation'
 import {Reservation, Ticket} from '../models/index'
 import {db} from '../loaders'
 
@@ -22,7 +27,7 @@ async function create(options: {
     if (tickets) {
       const isMyTicket = tickets.trainers.findIndex((trainer) => trainer.id === trainerId)
       if (isMyTicket === -1) throw new Error('not_allowed')
-      if (tickets.expiredAt < moment().add(9, 'hour').format('YYYY-MM-DD')) throw new Error('expired_ticket')
+      if (tickets.expiredAt < moment().utc().add(9, 'hour').format('YYYY-MM-DD')) throw new Error('expired_ticket')
     } else throw new Error('not_found')
 
     const renewReservations = _.uniqWith(reservations, _.isEqual)
@@ -112,6 +117,14 @@ async function create(options: {
 async function findAll(options: IReservationFindAll): Promise<[IReservationList]> {
   try {
     return await Reservation.findAll(options)
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllForUser(options: IReservationFindAllForUser): Promise<[IReservationList]> {
+  try {
+    return await Reservation.findAllForUser(options)
   } catch (e) {
     throw e
   }
@@ -219,4 +232,4 @@ async function update(options: {id: number; startTime: string; endTime: string; 
   }
 }
 
-export {create, findAll, findOneWithId, update}
+export {create, findAll, findAllForUser, findOneWithId, update}

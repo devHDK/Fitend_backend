@@ -16,9 +16,15 @@ export interface IReservationCreate {
 }
 
 export interface IReservationFindAll {
-  franchiseId: string
+  franchiseId: number
+  userId?: number
   startDate: string
   endDate: string
+}
+
+export interface IReservationFindAllForUser {
+  userId: number
+  startDate: string
 }
 
 export interface IReservationDetail {

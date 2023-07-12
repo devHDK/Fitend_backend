@@ -7,11 +7,10 @@ import {
   IReservationFindAll,
   IReservationList,
   IReservationUpdate,
-  IReservationFindOne
+  IReservationFindOne,
+  IReservationFindAllForUser
 } from '../interfaces/reservation'
 import {Ticket, Trainer, User} from './index'
-
-moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'Reservations'
 
@@ -29,7 +28,7 @@ async function create(options: IReservationCreate, connection?: PoolConnection):
 }
 
 async function findAll(options: IReservationFindAll): Promise<[IReservationList]> {
-  const {franchiseId, startDate, endDate} = options
+  const {franchiseId, userId, startDate, endDate} = options
   try {
     const where = [`t.status != 'cancel'`, `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`]
     return await db.query({
@@ -39,7 +38,34 @@ async function findAll(options: IReservationFindAll): Promise<[IReservationList]
             FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)}
-            JOIN ?? u ON u.id = tr.userId
+            ${userId ? `AND tr.userId = ${escape(userId)}` : ``}
+            JOIN ?? u ON u.id = tr.userId 
+            JOIN ?? tra ON tra.id = tr.trainerId
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY t.id`,
+      values: [tableName, Ticket.tableName, Ticket.tableTicketRelation, User.tableName, Trainer.tableName]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllForUser(options: IReservationFindAllForUser): Promise<[IReservationList]> {
+  const {userId, startDate} = options
+  try {
+    const startDateUtc = moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss')
+    const where = [
+      `t.status != 'cancel'`,
+      `t.startTime BETWEEN ${escape(startDateUtc)} AND DATE_ADD('${startDateUtc}', INTERVAL 30 DAY)`
+    ]
+    return await db.query({
+      sql: `SELECT t.id, t.startTime, t.endTime, t.status, ti.type as ticketType,
+            u.nickname as userNickname, t.seq, ti.totalSession, ti.startedAt as ticketStartedAt, ti.expiredAt as ticketExpiredAt,
+            JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer
+            FROM ?? t
+            JOIN ?? ti ON ti.id = t.ticketId
+            JOIN ?? tr ON tr.ticketId = ti.id AND tr.userId = ${escape(userId)}
+            JOIN ?? u ON u.id = tr.userId 
             JOIN ?? tra ON tra.id = tr.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id`,
@@ -146,20 +172,6 @@ async function findAllByTicketIdAndLaterStartTime(
   }
 }
 
-async function findLastReservation(ticketId: number): Promise<number> {
-  try {
-    const [row] = await db.query({
-      sql: `SELECT seq FROM ??
-            WHERE ? AND times = 1
-            ORDER BY seq DESC`,
-      values: [tableName, {ticketId}]
-    })
-    return row ? row.seq : 0
-  } catch (e) {
-    throw e
-  }
-}
-
 async function findOneWithTime({
   trainerId,
   startTime,
@@ -209,32 +221,18 @@ async function update(options: IReservationUpdate, connection: PoolConnection): 
 //     throw e
 //   }
 // }
-//
-// async function deleteRelationBookmark(ReservationId: number, trainerId: number): Promise<void> {
-//   try {
-//     await db.query({
-//       sql: `DELETE FROM ?? WHERE ? AND ?`,
-//       values: [tableTrainerReservation, {ReservationId}, {trainerId}]
-//     })
-//   } catch (e) {
-//     throw e
-//   }
-// }
 
 export {
   tableName,
   create,
-  // createRelationExercises,
-  // createRelationBookmark,
   findAll,
+  findAllForUser,
   findOneWithId,
   findOne,
-  findLastReservation,
   findOneWithTime,
   findCountByTicketIdAndPrevStartTime,
   findBetweenReservation,
   findAllByTicketIdAndLaterStartTime,
   update
-  // deleteRelationExercise,
-  // deleteRelationBookmark
+  // deleteRelationExercise
 }
