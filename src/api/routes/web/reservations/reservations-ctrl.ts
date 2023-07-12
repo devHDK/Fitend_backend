@@ -15,6 +15,7 @@ async function postReservations(req: IRequest, res: Response, next: Function): P
     if (e.message === 'expired_ticket') e.status = 403
     if (e.message === 'not_found') e.status = 404
     if (e.message === 'reservation_duplicate') e.status = 409
+    if (e.message === 'over_sessions') e.status = 409
     next(e)
   }
 }
@@ -58,10 +59,7 @@ async function putReservationsWithId(req: IRequest, res: Response, next: Functio
 // async function deleteReservationsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
 //   try {
 //     const {id} = req.options
-//     await ReservationService.updateBookmark({
-//       workoutId: id,
-//       trainerId: req.userId
-//     })
+//     await ReservationService.deleteOne(id)
 //     res.status(200).json()
 //   } catch (e) {
 //     next(e)

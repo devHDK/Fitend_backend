@@ -28,6 +28,8 @@ async function create(options: {
       const isMyTicket = tickets.trainers.findIndex((trainer) => trainer.id === trainerId)
       if (isMyTicket === -1) throw new Error('not_allowed')
       if (tickets.expiredAt < moment().utc().add(9, 'hour').format('YYYY-MM-DD')) throw new Error('expired_ticket')
+      const validReservationCount = await Reservation.findValidCount(ticketId)
+      if (tickets.totalSession - validReservationCount < 1) throw new Error('over_sessions')
     } else throw new Error('not_found')
 
     const renewReservations = _.uniqWith(reservations, _.isEqual)
@@ -231,5 +233,15 @@ async function update(options: {id: number; startTime: string; endTime: string; 
     throw e
   }
 }
+
+// async function deleteOne(id: number): Promise<void> {
+//   const connection = await db.beginTransaction()
+//   try {
+//     await db.commit(connection)
+//   } catch (e) {
+//     if (connection) await db.rollback(connection)
+//     throw e
+//   }
+// }
 
 export {create, findAll, findAllForUser, findOneWithId, update}

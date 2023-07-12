@@ -109,6 +109,20 @@ async function findOne(id: number): Promise<IReservationFindOne> {
   }
 }
 
+async function findValidCount(ticketId: number): Promise<number> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT COUNT(*) as count 
+            FROM ?? 
+            WHERE ticketId = ${escape(ticketId)} AND times = 1`,
+      values: [tableName]
+    })
+    return row ? row.count : 0
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findCountByTicketIdAndPrevStartTime(
   options: {startTime: string; ticketId: number},
   connection?: PoolConnection
@@ -140,6 +154,7 @@ async function findBetweenReservation(
   const {startTime, endTime, ticketId} = options
   try {
     return await db.query({
+      connection,
       sql: `SELECT id, startTime FROM ?? WHERE ? 
                 AND startTime > ${escape(startTime)} AND startTime < ${escape(endTime)}
                 AND times != 0
@@ -229,6 +244,7 @@ export {
   findAllForUser,
   findOneWithId,
   findOne,
+  findValidCount,
   findOneWithTime,
   findCountByTicketIdAndPrevStartTime,
   findBetweenReservation,
