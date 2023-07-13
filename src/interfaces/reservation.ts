@@ -18,6 +18,7 @@ export interface IReservationCreate {
 export interface IReservationFindAll {
   franchiseId: number
   userId?: number
+  trainerId?: number
   startDate: string
   endDate: string
 }

@@ -39,11 +39,12 @@ async function create(options: {
       return 0
     })
 
-    for (let i = 0; i < renewReservations.length; i++) {
-      const {startTime, endTime} = renewReservations[i]
-      const reservationDuplicate = await Reservation.findOneWithTime({trainerId, startTime, endTime})
-      if (reservationDuplicate > 0) throw new Error('reservation_duplicate')
-    }
+    // 겹치는 일정 validation
+    // for (let i = 0; i < renewReservations.length; i++) {
+    //   const {startTime, endTime} = renewReservations[i]
+    //   const reservationDuplicate = await Reservation.findOneWithTime({trainerId, startTime, endTime})
+    //   if (reservationDuplicate > 0) throw new Error('reservation_duplicate')
+    // }
 
     const prevOrderNum = await Reservation.findCountByTicketIdAndPrevStartTime({
       startTime: renewReservations[0].startTime,

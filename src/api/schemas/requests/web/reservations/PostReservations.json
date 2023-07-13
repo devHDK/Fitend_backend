@@ -1,6 +1,12 @@
 {
   "type": "object",
   "properties": {
+    "trainerId": {
+      "type": "integer"
+    },
+    "ticketId": {
+      "type": "integer"
+    },
     "reservations": {
       "type": "array",
       "items": {
@@ -20,14 +26,12 @@
           "endTime"
         ]
       }
-    },
-    "ticketId": {
-      "type": "integer"
     }
   },
   "required": [
-    "reservations",
-    "ticketId"
+    "trainerId",
+    "ticketId",
+    "reservations"
   ],
   "additionalProperties": false
 }

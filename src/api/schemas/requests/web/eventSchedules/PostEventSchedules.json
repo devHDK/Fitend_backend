@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "properties": {
+    "trainerId": {
+      "type": "integer"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["cs", "etc"]
+    },
+    "title": {
+      "type": "string"
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endTime": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "startTime",
+    "endTime"
+  ],
+  "additionalProperties": false
+}

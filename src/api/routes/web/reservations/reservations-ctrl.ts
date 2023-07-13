@@ -3,9 +3,9 @@ import {ReservationService} from '../../../../services'
 
 async function postReservations(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {ticketId, reservations} = req.options
+    const {trainerId, ticketId, reservations} = req.options
     await ReservationService.create({
-      trainerId: req.userId,
+      trainerId,
       ticketId,
       reservations
     })
@@ -22,10 +22,11 @@ async function postReservations(req: IRequest, res: Response, next: Function): P
 
 async function getReservations(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {userId, startDate, endDate} = req.options
+    const {userId, trainerId, startDate, endDate} = req.options
     const ret = await ReservationService.findAll({
       franchiseId: req.franchiseId,
       userId,
+      trainerId,
       startDate,
       endDate
     })

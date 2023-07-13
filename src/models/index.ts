@@ -11,6 +11,7 @@ import * as WorkoutSchedule from './workoutSchedules'
 import * as WorkoutFeedbacks from './workoutFeedbacks'
 import * as WorkoutRecords from './workoutRecords'
 import * as Reservation from './reservation'
+import * as EventSchedule from './eventSchedule'
 
 export {
   Administrator,
@@ -25,5 +26,6 @@ export {
   WorkoutSchedule,
   WorkoutFeedbacks,
   WorkoutRecords,
-  Reservation
+  Reservation,
+  EventSchedule
 }

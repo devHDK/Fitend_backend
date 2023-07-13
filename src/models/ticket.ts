@@ -1,7 +1,7 @@
 import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
-import {ITicketDetail, ITicketFindAll, ITicketList} from '../interfaces/tickets'
+import {ITicket, ITicketDetail, ITicketFindAll, ITicketList, ITicketFindOne} from '../interfaces/tickets'
 import {Trainer, User} from './index'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -98,6 +98,20 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
       values: [tableName, tableTicketRelation, User.tableName]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findOne(options: ITicketFindOne): Promise<ITicket> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.*
+            FROM ?? t
+            WHERE ?`,
+      values: [tableName, options]
+    })
+    return row
   } catch (e) {
     throw e
   }
@@ -246,6 +260,7 @@ export {
   create,
   createRelationExercises,
   findAll,
+  findOne,
   findOneWithId,
   findOneWithUserId,
   findCounts,

@@ -28,9 +28,10 @@ async function create(options: IReservationCreate, connection?: PoolConnection):
 }
 
 async function findAll(options: IReservationFindAll): Promise<[IReservationList]> {
-  const {franchiseId, userId, startDate, endDate} = options
+  const {franchiseId, userId, trainerId, startDate, endDate} = options
   try {
     const where = [`t.status != 'cancel'`, `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`]
+    if (trainerId) where.push(`t.trainerId = ${escape(trainerId)}`)
     return await db.query({
       sql: `SELECT t.id, t.startTime, t.endTime, t.status, ti.type as ticketType,
             u.nickname as userNickname, t.seq, ti.totalSession,
@@ -176,6 +177,7 @@ async function findAllByTicketIdAndLaterStartTime(
   const {startTime, ticketId} = options
   try {
     return await db.query({
+      connection,
       sql: `SELECT id, startTime FROM ?? WHERE ? 
                 AND startTime > ${escape(startTime)} 
                 AND times != 0

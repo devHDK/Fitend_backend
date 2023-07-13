@@ -7,6 +7,14 @@ export interface ITicket {
   createdAt: string
 }
 
+export interface ITicketFindOne {
+  id?: number
+  type?: 'personal' | 'fitness'
+  totalSession?: string
+  startedAt?: string
+  expiredAt?: string
+}
+
 export interface ITicketFindAll {
   franchiseId: number
   search?: string

@@ -1,9 +1,6 @@
 {
   "type": "object",
   "properties": {
-    "userId": {
-      "type": "integer"
-    },
     "trainerId": {
       "type": "integer"
     },
