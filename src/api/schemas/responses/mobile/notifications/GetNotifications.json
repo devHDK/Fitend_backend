@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["reservation", "workoutSchedule"]
+          },
+          "contents": {
+            "type": "string"
+          },
+          "info": {
+            "type": "object"
+          },
+          "isConfirm": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "contents",
+          "info",
+          "isConfirm",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "data",
+    "total"
+  ],
+  "additionalProperties": false
+}

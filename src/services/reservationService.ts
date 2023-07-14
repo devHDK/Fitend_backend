@@ -6,8 +6,10 @@ import {
   IReservationDetail,
   IReservationFindAllForUser
 } from '../interfaces/reservation'
-import {Reservation, Ticket} from '../models/index'
+import {Reservation, Ticket, Notification} from '../models/index'
 import {db} from '../loaders'
+import {util} from '../libs'
+import {reservationSubscriber} from '../subscribers'
 
 async function create(options: {
   trainerId: number
@@ -38,6 +40,8 @@ async function create(options: {
       if (a.startTime < b.startTime) return -1
       return 0
     })
+
+    let reservationId = 0
 
     // 겹치는 일정 validation
     // for (let i = 0; i < renewReservations.length; i++) {
@@ -77,7 +81,7 @@ async function create(options: {
           betweenCount++
         }
       }
-      await Reservation.create(
+      reservationId = await Reservation.create(
         {
           ticketId,
           trainerId,
@@ -110,6 +114,19 @@ async function create(options: {
         )
       }
     }
+
+    const userId = tickets.users[0].id
+    const contents = `새로운 예약이 있어요 😊\n${util.defaultTimeFormatForPush(renewReservations[0].startTime)}`
+    await Notification.create(
+      {
+        userId,
+        type: 'reservation',
+        contents,
+        info: JSON.stringify({reservationId})
+      },
+      connection
+    )
+    reservationSubscriber.publishReservationPushEvent({userId, contents})
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
