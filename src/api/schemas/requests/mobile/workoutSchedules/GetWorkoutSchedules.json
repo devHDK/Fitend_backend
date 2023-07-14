@@ -3,6 +3,9 @@
   "properties": {
     "startDate": {
       "type": "string"
+    },
+    "interval": {
+      "type": "integer"
     }
   },
   "required": [

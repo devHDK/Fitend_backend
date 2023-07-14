@@ -31,7 +31,7 @@ async function create(options: IWorkoutScheduleCreate, connection?: PoolConnecti
 
 async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutScheduleList]> {
   try {
-    const {userId, startDate} = options
+    const {userId, startDate, interval} = options
     return await db.query({
       sql: `SELECT DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
             JSON_ARRAYAGG(JSON_OBJECT('workoutScheduleId', t.id , 'seq', t.seq, 'title', t.workoutTitle, 'subTitle', t.workoutSubTitle,
@@ -44,8 +44,9 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
               JOIN ?? wp ON wp.workoutScheduleId = ws.id
               LEFT JOIN ?? wf ON wf.workoutScheduleId = ws.id
               LEFT JOIN ?? wr ON wr.workoutPlanId = wp.id
-              WHERE ws.startDate BETWEEN '${startDate}' AND DATE_ADD('${startDate}', INTERVAL 30 DAY) AND ws.?
-              GROUP BY ws.id
+              WHERE ws.startDate BETWEEN '${startDate}' AND 
+              DATE_ADD('${startDate}', INTERVAL ${interval ? escape(interval) : 30} DAY) AND ws.?
+              GROUP BY ws.id 
               ORDER BY ws.seq
             ) t
             GROUP BY t.startDate

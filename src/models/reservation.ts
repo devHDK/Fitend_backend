@@ -52,24 +52,30 @@ async function findAll(options: IReservationFindAll): Promise<[IReservationList]
 }
 
 async function findAllForUser(options: IReservationFindAllForUser): Promise<[IReservationList]> {
-  const {userId, startDate} = options
+  const {userId, startDate, interval} = options
   try {
     const startDateUtc = moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss')
     const where = [
       `t.status != 'cancel'`,
-      `t.startTime BETWEEN ${escape(startDateUtc)} AND DATE_ADD('${startDateUtc}', INTERVAL 30 DAY)`
+      `t.startTime BETWEEN ${escape(startDateUtc)} AND DATE_ADD('${startDateUtc}', 
+      INTERVAL ${interval ? escape(interval) : 30} DAY)`
     ]
     return await db.query({
-      sql: `SELECT t.id, t.startTime, t.endTime, t.status, ti.type as ticketType,
-            u.nickname as userNickname, t.seq, ti.totalSession, ti.startedAt as ticketStartedAt, ti.expiredAt as ticketExpiredAt,
-            JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer
+      sql: `SELECT DATE_FORMAT(DATE_ADD(t.startTime, INTERVAL 9 HOUR), '%Y-%m-%d') as startDate,
+            JSON_ARRAYAGG(JSON_OBJECT(
+            'id', t.id, 'startTime', DATE_FORMAT(t.startTime, '%Y-%m-%dT%h:%i:%s.000Z'), 
+            'endTime', DATE_FORMAT(t.endTime, '%Y-%m-%dT%h:%i:%s.000Z'), 'status', t.status,
+            'ticketType', ti.type, 'userNickname', u.nickname, 'seq', t.seq, 'totalSession', ti.totalSession,
+            'ticketStartedAt', ti.startedAt, 'ticketExpiredAt', ti.expiredAt, 
+            'trainer', JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage)
+            )) as reservations
             FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.userId = ${escape(userId)}
             JOIN ?? u ON u.id = tr.userId 
             JOIN ?? tra ON tra.id = tr.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
-            GROUP BY t.id`,
+            GROUP BY startDate`,
       values: [tableName, Ticket.tableName, Ticket.tableTicketRelation, User.tableName, Trainer.tableName]
     })
   } catch (e) {

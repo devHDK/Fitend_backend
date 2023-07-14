@@ -26,6 +26,7 @@ export interface IReservationFindAll {
 export interface IReservationFindAllForUser {
   userId: number
   startDate: string
+  interval?: string
 }
 
 export interface IReservationDetail {
@@ -59,19 +60,24 @@ export interface IReservationFindOne {
 }
 
 export interface IReservationList {
-  id: number
-  startTime: string
-  endTime: string
-  status: string
-  ticketType: string
-  userNickname: string
-  trainer: {
-    id: number
-    nickname: string
-    profileImage: string
-  }
-  seq: number
-  totalSession: number
+  startDate: string
+  reservations: [
+    {
+      id: number
+      startTime: string
+      endTime: string
+      status: string
+      ticketType: string
+      userNickname: string
+      trainer: {
+        id: number
+        nickname: string
+        profileImage: string
+      }
+      seq: number
+      totalSession: number
+    }
+  ]
 }
 
 export interface IReservationUpdate {
