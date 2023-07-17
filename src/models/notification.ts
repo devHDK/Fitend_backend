@@ -9,7 +9,7 @@ async function create(
     userId: number
     type: string
     contents: string
-    info: string
+    info?: string
   },
   connection: PoolConnection
 ): Promise<number> {

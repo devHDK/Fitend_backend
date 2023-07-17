@@ -1,5 +1,5 @@
 import moment from 'moment-timezone'
-import {WorkoutSchedule, WorkoutFeedbacks, WorkoutPlan, Exercise} from '../models'
+import {WorkoutSchedule, WorkoutFeedbacks, WorkoutPlan, Exercise, Notification} from '../models'
 import {
   IWorkoutScheduleList,
   IWorkoutScheduleFindAll,
@@ -10,6 +10,9 @@ import {
 } from '../interfaces/workoutSchedules'
 import {IWorkoutFeedbackCreate} from '../interfaces/workoutFeedbacks'
 import {db} from '../loaders'
+import {util} from '../libs'
+import {reservationSubscriber} from '../subscribers'
+import {defaultWorkoutTimeFormatForPush} from '../libs/utils'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -45,6 +48,21 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
       const {exerciseId, setInfo} = workoutPlans[i]
       await WorkoutPlan.create({exerciseId, workoutScheduleId, setInfo: JSON.stringify(setInfo)}, connection)
     }
+    const contents = `새로운 운동플랜이 있어요 🏋\n${util.defaultWorkoutTimeFormatForPush(
+      data.startDate,
+      data.totalTime,
+      data.workoutTitle
+    )}`
+    await Notification.create(
+      {
+        userId: data.userId,
+        type: 'workoutSchedule',
+        contents,
+        info: JSON.stringify({workoutScheduleId})
+      },
+      connection
+    )
+    reservationSubscriber.publishReservationPushEvent({userId: data.userId, contents})
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -56,7 +74,7 @@ async function createFeedbacks(options: IWorkoutFeedbackData): Promise<void> {
   const connection = await db.beginTransaction()
   try {
     const {userId, issueIndexes, ...data} = options
-    const workoutSchedule = await WorkoutSchedule.findOneWithId(data.workoutScheduleId)
+    const workoutSchedule = await WorkoutSchedule.findOne(data.workoutScheduleId)
     if (!workoutSchedule || workoutSchedule.userId !== userId) throw new Error('not_allowed')
     const workoutFeedback = await WorkoutFeedbacks.findOneWithWorkoutScheduleId(data.workoutScheduleId)
     if (workoutFeedback) throw new Error('duplicate_feedback')
@@ -89,7 +107,7 @@ async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWo
 
 async function findOne(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
   try {
-    const schedule = await WorkoutSchedule.findOne(workoutScheduleId)
+    const schedule = await WorkoutSchedule.findOneWithId(workoutScheduleId)
     const exercises = await Exercise.findOneWithWorkoutScheduleId(workoutScheduleId)
     return {...schedule, exercises}
   } catch (e) {
@@ -109,7 +127,7 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
   const connection = await db.beginTransaction()
   try {
     const {workoutPlans, ...data} = options
-
+    const workoutSchedule = await WorkoutSchedule.findOne(data.id)
     await WorkoutSchedule.update(data, connection)
 
     if (workoutPlans && workoutPlans.length > 0) {
@@ -120,6 +138,21 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
       }
     }
 
+    const contents = `운동플랜이 수정 되었어요 📝\n${util.defaultWorkoutTimeFormatForPush(
+      data.startDate,
+      data.totalTime,
+      data.workoutTitle
+    )}`
+    await Notification.create(
+      {
+        userId: workoutSchedule.userId,
+        type: 'workoutSchedule',
+        contents,
+        info: JSON.stringify({workoutScheduleId: data.id})
+      },
+      connection
+    )
+    reservationSubscriber.publishReservationPushEvent({userId: workoutSchedule.userId, contents})
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -129,7 +162,7 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
 
 async function updateStartDate(options: {id: number; startDate: string; seq: number}): Promise<void> {
   try {
-    const workoutSchedule = await WorkoutSchedule.findOneWithId(options.id)
+    const workoutSchedule = await WorkoutSchedule.findOne(options.id)
     const today = moment().startOf('day').unix()
     const workoutStartDate = moment(workoutSchedule.startDate).unix()
     if (workoutStartDate < today) throw new Error('not_allowed')

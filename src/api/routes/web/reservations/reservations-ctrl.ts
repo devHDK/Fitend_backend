@@ -53,6 +53,7 @@ async function putReservationsWithId(req: IRequest, res: Response, next: Functio
     await ReservationService.update({id, startTime, endTime, status})
     res.status(200).json()
   } catch (e) {
+    if (e.message === 'not_allowed') e.status = 403
     next(e)
   }
 }

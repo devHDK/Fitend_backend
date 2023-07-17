@@ -83,7 +83,7 @@ async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWo
   }
 }
 
-async function findOne(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
+async function findOneWithId(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id as workoutScheduleId, DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
@@ -115,6 +115,18 @@ async function findOne(workoutScheduleId: number): Promise<IWorkoutScheduleDetai
       ]
     })
     if (row) row.targetMuscleTypes = [...new Set(row.targetMuscleTypes)]
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findOne(workoutScheduleId: number): Promise<IWorkoutSchedule> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.* FROM ?? t WHERE t.?`,
+      values: [tableName, {id: workoutScheduleId}]
+    })
     return row
   } catch (e) {
     throw e
@@ -182,20 +194,6 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutSch
       ]
     })
     if (row) row.targetMuscleTypes = [...new Set(row.targetMuscleTypes)]
-    return row
-  } catch (e) {
-    throw e
-  }
-}
-
-async function findOneWithId(id: number): Promise<IWorkoutSchedule> {
-  try {
-    const [row] = await db.query({
-      sql: `SELECT t.*
-            FROM ?? t
-            WHERE t.?`,
-      values: [tableName, {id}]
-    })
     return row
   } catch (e) {
     throw e
@@ -295,9 +293,9 @@ export {
   create,
   findAll,
   findAllForTrainer,
+  findOneWithId,
   findOne,
   findOneForTrainer,
-  findOneWithId,
   findOneWithWorkoutPlanId,
   findCounts,
   update,

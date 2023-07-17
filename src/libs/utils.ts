@@ -13,4 +13,11 @@ function changeTimeFormatForPush(beforeTime: string, changeTime: string): string
   return `${convertBeforeTime} → ${convertChangeTime}`
 }
 
-export {defaultTimeFormatForPush, changeTimeFormatForPush}
+function defaultWorkoutTimeFormatForPush(startDate: string, totalTime: string, title: string): string {
+  const date = moment(startDate).format('M월 D일 (ddd)')
+  const totalTimeArr = totalTime.split(':')
+  const minute = moment().startOf('day').add(totalTimeArr[0], 'hour').add(totalTimeArr[1], 'minute').format('m분')
+  return `${date} | ${minute} ${title}`
+}
+
+export {defaultTimeFormatForPush, changeTimeFormatForPush, defaultWorkoutTimeFormatForPush}

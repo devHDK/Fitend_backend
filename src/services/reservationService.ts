@@ -116,7 +116,7 @@ async function create(options: {
     }
 
     const userId = tickets.users[0].id
-    const contents = `새로운 예약이 있어요 😊\n${util.defaultTimeFormatForPush(renewReservations[0].startTime)}`
+    const contents = `예약이 확정 되었어요 😊\n${util.defaultTimeFormatForPush(renewReservations[0].startTime)}`
     await Notification.create(
       {
         userId,
@@ -165,36 +165,53 @@ async function update(options: {id: number; startTime: string; endTime: string; 
     const reservedReservation = await Reservation.findOne(id)
     if (!reservedReservation) throw new Error('not_found')
     const {status: reservedStatus, startTime: reservedStartTime, ticketId, times: reservedTimes} = reservedReservation
+    const tickets = await Ticket.findOneWithId(reservedReservation.ticketId)
+    const userId = tickets.users[0].id
 
-    await Reservation.update({id, status, startTime, endTime, times: status === 'cancel' ? 0 : 1}, connection)
+    await Reservation.update(
+      {id, status: status === 'noShow' ? 'cancel' : status, startTime, endTime, times: status === 'cancel' ? 0 : 1},
+      connection
+    )
 
     if (reservedStatus === 'complete') {
-      if (status === 'cancel') {
-        const prevSeq = await Reservation.findCountByTicketIdAndPrevStartTime(
-          {
-            startTime: moment(reservedStartTime).utc().format('YYYY-MM-DDThh:mm:ss'),
-            ticketId
-          },
-          connection
-        )
-        const laterReservation = await Reservation.findAllByTicketIdAndLaterStartTime(
-          {
-            startTime: moment(reservedStartTime).utc().format('YYYY-MM-DDThh:mm:ss'),
-            ticketId
-          },
-          connection
-        )
-        if (laterReservation && laterReservation.length > 0) {
-          for (let j = 0; j < laterReservation.length; j++) {
-            await Reservation.update(
-              {
-                id: laterReservation[j].id,
-                seq: prevSeq + 1 + j
-              },
-              connection
-            )
+      if (status === 'cancel' || status === 'noShow') {
+        if (status === 'cancel') {
+          const prevSeq = await Reservation.findCountByTicketIdAndPrevStartTime(
+            {
+              startTime: moment(reservedStartTime).utc().format('YYYY-MM-DDThh:mm:ss'),
+              ticketId
+            },
+            connection
+          )
+          const laterReservation = await Reservation.findAllByTicketIdAndLaterStartTime(
+            {
+              startTime: moment(reservedStartTime).utc().format('YYYY-MM-DDThh:mm:ss'),
+              ticketId
+            },
+            connection
+          )
+          if (laterReservation && laterReservation.length > 0) {
+            for (let j = 0; j < laterReservation.length; j++) {
+              await Reservation.update(
+                {
+                  id: laterReservation[j].id,
+                  seq: prevSeq + 1 + j
+                },
+                connection
+              )
+            }
           }
         }
+        const contents = `예약이 취소 되었어요 🥺\n${util.defaultTimeFormatForPush(reservedStartTime)}`
+        await Notification.create(
+          {
+            userId,
+            type: 'reservation',
+            contents
+          },
+          connection
+        )
+        reservationSubscriber.publishReservationPushEvent({userId, contents})
       } else if (status === 'complete') {
         const isAfter = moment(reservedStartTime).isBefore(moment(startTime), 'minute')
         const betweenReservations = await Reservation.findBetweenReservation(
@@ -241,6 +258,29 @@ async function update(options: {id: number; startTime: string; endTime: string; 
             )
           }
         }
+        const contents = `예약이 변경 되었어요 ✍️\n${util.changeTimeFormatForPush(reservedStartTime, startTime)}`
+        await Notification.create(
+          {
+            userId,
+            type: 'reservation',
+            contents,
+            info: JSON.stringify({reservationId: id})
+          },
+          connection
+        )
+        reservationSubscriber.publishReservationPushEvent({userId, contents})
+      } else if (status === 'attendance') {
+        const contents = `출석이 완료 되었어요 ✅️\n${util.defaultTimeFormatForPush(reservedStartTime)}`
+        await Notification.create(
+          {
+            userId,
+            type: 'reservation',
+            contents,
+            info: JSON.stringify({reservationId: id})
+          },
+          connection
+        )
+        reservationSubscriber.publishReservationPushEvent({userId, contents})
       }
     } else if (reservedStatus === 'attendance' || (reservedStatus === 'cancel' && reservedTimes === 1)) {
       if (status !== 'complete') throw new Error('not_allowed')

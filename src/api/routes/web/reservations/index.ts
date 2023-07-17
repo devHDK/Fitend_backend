@@ -49,7 +49,8 @@ const putReservationsWithId = new ApiRouter({
   tags: ['Reservation'],
   schema: 'requests/web/reservations/PutReservationsWithId',
   responses: {
-    200: {description: 'success'}
+    200: {description: 'success'},
+    403: {description: 'not_allowed'}
   },
   handler: ctrl.putReservationsWithId
 })
