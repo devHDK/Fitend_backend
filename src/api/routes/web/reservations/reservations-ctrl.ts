@@ -3,9 +3,10 @@ import {ReservationService} from '../../../../services'
 
 async function postReservations(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {trainerId, ticketId, reservations} = req.options
+    const {trainerId, userId, ticketId, reservations} = req.options
     await ReservationService.create({
       trainerId,
+      userId,
       ticketId,
       reservations
     })

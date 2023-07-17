@@ -34,6 +34,7 @@ export interface ITicketDetail {
     }
   ]
   totalSession: number
+  restSession: number
   startedAt: string
   expiredAt: string
   trainers: [
@@ -49,5 +50,8 @@ export type ITicketList = IResponseList<{
   type: 'personal' | 'fitness'
   userNickname: string
   totalSession: number
+  validSession: number
+  startedAt: string
+  expiredAt: string
   createdAt: string
 }>

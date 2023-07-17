@@ -2,7 +2,7 @@ import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
 import {ITicket, ITicketDetail, ITicketFindAll, ITicketList, ITicketFindOne} from '../interfaces/tickets'
-import {Trainer, User} from './index'
+import {Reservation, Trainer, User} from './index'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -67,7 +67,11 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
       }
     }
     const rows = await db.query({
-      sql: `SELECT t.id, t.type, t.totalSession, DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
+      sql: `SELECT t.id, t.type, t.totalSession,
+            (t.totalSession - (SELECT COUNT(*) FROM ?? r
+            WHERE r.ticketId = t.id AND 
+            (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession,
+            DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
             JSON_ARRAY(u.nickname) as users
             FROM ?? t
@@ -81,7 +85,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
-      values: [tableName, tableTicketRelation, franchiseId, User.tableName]
+      values: [Reservation.tableName, tableName, tableTicketRelation, franchiseId, User.tableName]
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM (
@@ -120,7 +124,11 @@ async function findOne(options: ITicketFindOne): Promise<ITicket> {
 async function findOneWithId(id: number): Promise<ITicketDetail> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.type, t.totalSession, DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
+      sql: `SELECT t.id, t.type, t.totalSession,
+            (t.totalSession - (SELECT COUNT(*) FROM ?? r
+            WHERE r.ticketId = t.id AND 
+            (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession, 
+            DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
             (
               SELECT JSON_ARRAYAGG(
@@ -149,7 +157,15 @@ async function findOneWithId(id: number): Promise<ITicketDetail> {
             FROM ?? t
             WHERE t.?
             GROUP BY t.id`,
-      values: [User.tableName, tableTicketRelation, Trainer.tableName, tableTicketRelation, tableName, {id}]
+      values: [
+        Reservation.tableName,
+        User.tableName,
+        tableTicketRelation,
+        Trainer.tableName,
+        tableTicketRelation,
+        tableName,
+        {id}
+      ]
     })
     return row
   } catch (e) {

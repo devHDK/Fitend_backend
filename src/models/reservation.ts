@@ -8,7 +8,8 @@ import {
   IReservationList,
   IReservationUpdate,
   IReservationFindOne,
-  IReservationFindAllForUser
+  IReservationFindAllForUser,
+  IReservationListForTicket
 } from '../interfaces/reservation'
 import {Ticket, Trainer, User} from './index'
 
@@ -77,6 +78,23 @@ async function findAllForUser(options: IReservationFindAllForUser): Promise<[IRe
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY startDate`,
       values: [tableName, Ticket.tableName, Ticket.tableTicketRelation, User.tableName, Trainer.tableName]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllWithTicketId(ticketId: number): Promise<[IReservationListForTicket]> {
+  try {
+    return await db.query({
+      sql: `SELECT r.id, r.seq, r.startTime, r.endTime, ru.nickname as userNickname,
+            rt.nickname as trainerNickname, r.status, r.times
+            FROM ?? r
+            JOIN ?? ru ON ru.id = r.userId
+            JOIN ?? rt ON rt.id = r.trainerId
+            WHERE r.ticketId = ${escape(ticketId)}
+            ORDER BY r.startTime`,
+      values: [tableName, User.tableName, Trainer.tableName]
     })
   } catch (e) {
     throw e
@@ -250,6 +268,7 @@ export {
   create,
   findAll,
   findAllForUser,
+  findAllWithTicketId,
   findOneWithId,
   findOne,
   findValidCount,

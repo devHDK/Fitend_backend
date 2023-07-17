@@ -4,6 +4,9 @@
     "trainerId": {
       "type": "integer"
     },
+    "userId": {
+      "type": "integer"
+    },
     "ticketId": {
       "type": "integer"
     },

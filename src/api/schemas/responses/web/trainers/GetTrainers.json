@@ -11,11 +11,15 @@
           },
           "nickname": {
             "type": "string"
+          },
+          "profileImage": {
+            "type": "string"
           }
         },
         "required": [
           "id",
-          "nickname"
+          "nickname",
+          "profileImage"
         ]
       }
     }

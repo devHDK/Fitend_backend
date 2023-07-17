@@ -13,6 +13,7 @@ import {reservationSubscriber} from '../subscribers'
 
 async function create(options: {
   trainerId: number
+  userId: number
   ticketId: number
   reservations: [
     {
@@ -23,7 +24,7 @@ async function create(options: {
 }): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {trainerId, ticketId, reservations} = options
+    const {trainerId, userId, ticketId, reservations} = options
     const tickets = await Ticket.findOneWithId(ticketId)
 
     if (tickets) {
@@ -85,6 +86,7 @@ async function create(options: {
         {
           ticketId,
           trainerId,
+          userId,
           startTime,
           seq: prevOrderNum + betweenCount + i + 1,
           endTime
@@ -115,7 +117,6 @@ async function create(options: {
       }
     }
 
-    const userId = tickets.users[0].id
     const contents = `예약이 확정 되었어요 😊\n${util.defaultTimeFormatForPush(renewReservations[0].startTime)}`
     await Notification.create(
       {
@@ -164,12 +165,25 @@ async function update(options: {id: number; startTime: string; endTime: string; 
     const {id, startTime, endTime, status} = options
     const reservedReservation = await Reservation.findOne(id)
     if (!reservedReservation) throw new Error('not_found')
-    const {status: reservedStatus, startTime: reservedStartTime, ticketId, times: reservedTimes} = reservedReservation
+    const {
+      status: reservedStatus,
+      startTime: reservedStartTime,
+      ticketId,
+      times: reservedTimes,
+      seq: reservedSeq
+    } = reservedReservation
     const tickets = await Ticket.findOneWithId(reservedReservation.ticketId)
     const userId = tickets.users[0].id
 
     await Reservation.update(
-      {id, status: status === 'noShow' ? 'cancel' : status, startTime, endTime, times: status === 'cancel' ? 0 : 1},
+      {
+        id,
+        status: status === 'noShow' ? 'cancel' : status,
+        startTime,
+        endTime,
+        times: status === 'cancel' ? 0 : 1,
+        seq: status === 'cancel' ? null : reservedSeq
+      },
       connection
     )
 
