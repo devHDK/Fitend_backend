@@ -1,5 +1,13 @@
 import moment from 'moment-timezone'
-import {WorkoutSchedule, WorkoutFeedbacks, WorkoutPlan, Exercise, Notification} from '../models'
+import {
+  WorkoutSchedule,
+  WorkoutFeedbacks,
+  WorkoutPlan,
+  Exercise,
+  Notification,
+  WorkoutStat,
+  WorkoutRecords
+} from '../models'
 import {
   IWorkoutScheduleList,
   IWorkoutScheduleFindAll,
@@ -48,6 +56,15 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
       const {exerciseId, setInfo} = workoutPlans[i]
       await WorkoutPlan.create({exerciseId, workoutScheduleId, setInfo: JSON.stringify(setInfo)}, connection)
     }
+    await WorkoutStat.upsertOne(
+      {
+        userId: data.userId,
+        franchiseId: data.franchiseId,
+        month: moment().startOf('month').format('YYYY-MM-DD'),
+        monthCount: 1
+      },
+      connection
+    )
     const contents = `새로운 운동플랜이 있어요 🏋\n${util.defaultWorkoutTimeFormatForPush(
       data.startDate,
       data.totalTime,
@@ -138,6 +155,29 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
       }
     }
 
+    const originMonth = moment(workoutSchedule.startDate).startOf('month').format('YYYY-MM-DD')
+    const changeMonth = moment(data.startDate).startOf('month').format('YYYY-MM-DD')
+    if (originMonth !== changeMonth) {
+      await WorkoutStat.upsertOne(
+        {
+          userId: workoutSchedule.userId,
+          franchiseId: workoutSchedule.franchiseId,
+          month: originMonth,
+          monthCount: -1
+        },
+        connection
+      )
+      await WorkoutStat.upsertOne(
+        {
+          userId: workoutSchedule.userId,
+          franchiseId: workoutSchedule.franchiseId,
+          month: changeMonth,
+          monthCount: 1
+        },
+        connection
+      )
+    }
+
     const contents = `운동플랜이 수정 되었어요 📝\n${util.defaultWorkoutTimeFormatForPush(
       data.startDate,
       data.totalTime,
@@ -173,9 +213,24 @@ async function updateStartDate(options: {id: number; startDate: string; seq: num
 }
 
 async function deleteOne(id: number): Promise<void> {
+  const connection = await db.beginTransaction()
   try {
-    await WorkoutSchedule.deleteOne(id)
+    const workoutSchedule = await WorkoutSchedule.findOne(id)
+    const workoutRecord = await WorkoutRecords.findAllWithWorkoutScheduleId(id)
+    if (workoutRecord && workoutRecord.length > 0) throw new Error('not_allowed')
+    await WorkoutSchedule.deleteOne(id, connection)
+    await WorkoutStat.upsertOne(
+      {
+        userId: workoutSchedule.userId,
+        franchiseId: workoutSchedule.franchiseId,
+        month: moment(workoutSchedule.startDate).startOf('month').format('YYYY-MM-DD'),
+        monthCount: -1
+      },
+      connection
+    )
+    await db.commit(connection)
   } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }

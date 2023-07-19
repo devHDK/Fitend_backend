@@ -277,9 +277,10 @@ async function update(options: IWorkoutScheduleUpdate, connection?: PoolConnecti
   }
 }
 
-async function deleteOne(id: number): Promise<void> {
+async function deleteOne(id: number, connection: PoolConnection): Promise<void> {
   try {
     await db.query({
+      connection,
       sql: `DELETE FROM ?? WHERE ?`,
       values: [tableName, {id}]
     })

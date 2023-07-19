@@ -66,4 +66,23 @@ async function findActiveUsers(
   }
 }
 
-export {findAllWorkoutToday, findAllWorkoutYesterday, findActiveUsers}
+async function findAllWorkoutUsers(
+  franchiseId: number,
+  today: string
+): Promise<
+  [
+    {
+      userId: number
+      memberNickname: string
+      trainerNickname: string
+    }
+  ]
+> {
+  try {
+    return await WorkoutRecords.findAllUsers(franchiseId, today)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {findAllWorkoutToday, findAllWorkoutYesterday, findActiveUsers, findAllWorkoutUsers}

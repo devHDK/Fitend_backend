@@ -1,6 +1,6 @@
 import moment from 'moment-timezone'
 import {db} from '../loaders'
-import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutPlan} from '../models'
+import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat} from '../models'
 import {IWorkoutRecordCreate, IWorkoutRecordDetail} from '../interfaces/workoutRecords'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -10,7 +10,7 @@ interface IWorkoutRecordDetailData {
   strengthIndex: number
   issueIndex: number
   contents: string
-  workoutRecords: IWorkoutRecordDetail
+  workoutRecords: [IWorkoutRecordDetail]
 }
 
 async function createRecords(userId: number, options: IWorkoutRecordCreate[]): Promise<void> {
@@ -26,6 +26,15 @@ async function createRecords(userId: number, options: IWorkoutRecordCreate[]): P
       const {workoutPlanId, setInfo} = options[i]
       await WorkoutRecords.create({workoutPlanId, setInfo: JSON.stringify(setInfo)}, connection)
     }
+    await WorkoutStat.upsertOne(
+      {
+        userId,
+        franchiseId: workoutSchedule.franchiseId,
+        month: moment().startOf('month').format('YYYY-MM-DD'),
+        doneCount: 1
+      },
+      connection
+    )
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)

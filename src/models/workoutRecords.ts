@@ -32,7 +32,7 @@ async function findOneWithWorkoutPlanId(workoutPlanId: number): Promise<IWorkout
   }
 }
 
-async function findAllWithWorkoutScheduleId(workoutScheduleId: number): Promise<IWorkoutRecordDetail> {
+async function findAllWithWorkoutScheduleId(workoutScheduleId: number): Promise<[IWorkoutRecordDetail]> {
   try {
     return await db.query({
       sql: `SELECT e.name as exerciseName, JSON_ARRAYAGG(tm.name) as targetMuscles,
@@ -138,4 +138,54 @@ async function findAllYesterday(
   }
 }
 
-export {tableName, create, findOneWithWorkoutPlanId, findAllWithWorkoutScheduleId, findAllToday, findAllYesterday}
+async function findAllUsers(
+  franchiseId: number,
+  today: string
+): Promise<
+  [
+    {
+      userId: number
+      memberNickname: string
+      trainerNickname: string
+    }
+  ]
+> {
+  try {
+    const todayStart = moment(today).startOf('month').format('YYYY-MM-DDTHH:mm:ss')
+    const todayEnd = moment(today).endOf('month').format('YYYY-MM-DDTHH:mm:ss')
+    return await db.query({
+      sql: `SELECT u.id as userId, u.nickname as userNickname, tra.nickname as trainerNickname,
+            wf.id as workoutFeedbackId
+            FROM ?? t
+            JOIN ?? wp ON wp.workoutScheduleId = t.id
+            JOIN ?? ws ON ws.workoutPlanId = wp.id
+            JOIN ?? ft ON ft.trainerId = t.trainerId AND ft.franchiseId = ?
+            JOIN ?? tra ON tra.id = ft.trainerId 
+            JOIN ?? u ON u.id = t.userId
+            LEFT JOIN ?? wf ON wf.workoutScheduleId = t.id
+            WHERE t.startDate BETWEEN ${escape(todayStart)} AND ${escape(todayEnd)}
+            GROUP BY t.id
+            HAVING workoutFeedbackId is null`,
+      values: [
+        WorkoutSchedule.tableName,
+        Trainer.tableFranchiseTrainer,
+        franchiseId,
+        Trainer.tableName,
+        User.tableName,
+        WorkoutFeedbacks.tableName
+      ]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+export {
+  tableName,
+  create,
+  findOneWithWorkoutPlanId,
+  findAllWithWorkoutScheduleId,
+  findAllToday,
+  findAllYesterday,
+  findAllUsers
+}

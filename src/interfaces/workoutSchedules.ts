@@ -2,6 +2,7 @@ export interface IWorkoutSchedule {
   id: number
   userId: number
   trainer: number
+  franchiseId: number
   startDate: string
   seq: number
   totalTime: string
@@ -43,6 +44,7 @@ export interface IWorkoutScheduleFindAll {
 export interface IWorkoutScheduleCreate {
   userId: number
   trainerId: number
+  franchiseId: number
   workoutId: number
   workoutTitle: string
   workoutSubTitle: string

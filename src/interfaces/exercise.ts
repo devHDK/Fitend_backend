@@ -19,6 +19,7 @@ export interface IExercise {
 
 export interface IExerciseCreate {
   trainerId: number
+  franchiseId: number
   name: string
   nameEn: string
   type: 'resistance' | 'flexibility' | 'cardio'

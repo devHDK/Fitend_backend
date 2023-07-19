@@ -1,0 +1,51 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer"
+          },
+          "userNickname": {
+            "type": "string"
+          },
+          "thisMonth": {
+            "type": "integer"
+          },
+          "asOfToday": {
+            "type": "integer"
+          },
+          "done": {
+            "type": "integer"
+          },
+          "recentDate": {
+            "type": "string"
+          },
+          "trainers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "userId",
+          "userNickname",
+          "thisMonth",
+          "asOfToday",
+          "done",
+          "recentDate",
+          "trainers"
+        ]
+      }
+    }
+  },
+  "required": [
+    "data"
+  ],
+  "additionalProperties": false
+}
+
