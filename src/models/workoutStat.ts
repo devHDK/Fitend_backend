@@ -18,8 +18,8 @@ async function upsertOne(
     await db.query({
       connection,
       sql: `INSERT INTO ?? 
-            SET ? ${monthCount ? `,monthCount = monthCount + ${monthCount}` : ``} 
-            ${doneCount ? `,doneCount = doneCount + ${doneCount}` : ``}
+            SET ? ${monthCount && monthCount > 0 ? `,monthCount = monthCount + ${monthCount}` : ``} 
+            ${doneCount && doneCount > 0 ? `,doneCount = doneCount + ${doneCount}` : ``}
             ON DUPLICATE KEY UPDATE 
             ${monthCount ? `monthCount = monthCount + ${monthCount}` : ``} 
             ${doneCount ? `doneCount = doneCount + ${doneCount}` : ``}`,
