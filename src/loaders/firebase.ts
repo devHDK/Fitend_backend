@@ -22,16 +22,17 @@ const sendToTopic = async (topic: string, payload: admin.messaging.MessagingPayl
     // const result = await admin.messaging().sendToTopic(topic, payload, {priority: 'high', contentAvailable: true})
     const result = await admin.messaging().send({
       token:
-        'ej4J-HlxIUxPpQukCslRxj:APA91bGWxrfBvltb6VyZtovl-KPE-1wny8CiJSVNGk-52bhsM7_ZO2thkYxOAGJ2kB0l6lS1oMK8YkWyY0g17e848jIKdnObQfCmxym8GBGFzEI--uQnsFroS_bP0-5m3n8uaaba0FxG',
+        'eHReJFiKWEjVu5_9yYBGIo:APA91bFxeS2Ym6ywTmEtrOw74gvgzijeJvFvEXgeseWSdIKGSQf-0AkBcj6jGW2fPIuQOrX2zxgpRoSWlMZo6ykepUSS8j78Gg1lCb4Wohw-v1IxX8ILpJLYaonuf9Ewt1uRi_Lzo4Td',
       data: payload.data,
       notification: payload.notification,
       apns: {
-        // headers: {
-        //   'apns-push-type': 'background',
-        //   'apns-priority': '5'
-        // },
+        headers: {
+          messageType: 'background'
+          // 'apns-push-type': 'background',
+          // 'apns-priority': '5'
+        },
         payload: {
-          aps: {contentAvailable: true, badge: 3}
+          aps: {contentAvailable: true, badge: 3, sound: 'default'}
         }
       }
     })

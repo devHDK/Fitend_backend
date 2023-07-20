@@ -44,7 +44,8 @@ async function findAll(options: IReservationFindAll): Promise<[IReservationList]
             JOIN ?? u ON u.id = tr.userId 
             JOIN ?? tra ON tra.id = tr.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
-            GROUP BY t.id`,
+            GROUP BY t.id
+            ORDER BY t.seq`,
       values: [tableName, Ticket.tableName, Ticket.tableTicketRelation, User.tableName, Trainer.tableName]
     })
   } catch (e) {
