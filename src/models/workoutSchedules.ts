@@ -233,10 +233,15 @@ async function findCounts(
               AND (LAST_DAY(NOW()))) as thisMonthCount,
             (SELECT COUNT(t.id) FROM ?? t WHERE t.userId = ${escape(userId)} AND
             t.startDate < NOW()) as asOfTodayCount,
-            (SELECT COUNT(t.id) FROM ?? t
-            JOIN ?? wp ON wp.workoutScheduleId = t.id
-            JOIN ?? wr ON wr.workoutPlanId = wp.id
-            WHERE t.userId = ${escape(userId)}) as doneCount,
+            (SELECT COUNT(t.id)
+              FROM (SELECT t.id
+              FROM ?? t
+              JOIN ?? wp ON wp.workoutScheduleId = t.id
+              JOIN ?? wr ON wr.workoutPlanId = wp.id
+              WHERE t.userId = ${escape(userId)}
+              GROUP BY t.id
+              ) t 
+            ) as doneCount,
             (SELECT DATE_FORMAT(t.startDate, '%Y-%m-%d') 
             FROM ?? t
             JOIN ?? wp ON wp.workoutScheduleId = t.id
