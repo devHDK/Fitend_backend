@@ -167,7 +167,7 @@ async function findAllUsers(
     const month = moment(today).startOf('month').format('YYYY-MM-DD')
     return await db.query({
       sql: `SELECT t.id as userId, t.nickname as userNickname, wst.monthCount, wst.doneCount,
-            (SELECT ws.startDate FROM ?? ws 
+            (SELECT DATE_FORMAT(ws.startDate, '%Y-%m-%d') FROM ?? ws 
             JOIN ?? wp ON wp.workoutScheduleId = ws.id
             JOIN ?? wr ON wr.workoutPlanId = wp.id
             WHERE ws.userId = t.id AND ws.franchiseId = ${escape(franchiseId)} 
