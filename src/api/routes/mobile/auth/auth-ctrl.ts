@@ -3,8 +3,8 @@ import {AuthService} from '../../../../services'
 
 async function postAuth(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {email, password, platform, token} = req.options
-    const ret = await AuthService.signIn({email, password, platform, token})
+    const {email, password, deviceId, platform, token} = req.options
+    const ret = await AuthService.signIn({email, password, deviceId, platform, token})
     res.status(200).json(ret)
   } catch (e) {
     if (e.message === 'not_allowed') {

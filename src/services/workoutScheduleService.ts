@@ -1,5 +1,15 @@
 import moment from 'moment-timezone'
-import {WorkoutSchedule, WorkoutFeedbacks, WorkoutPlan, Exercise} from '../models'
+import {
+  WorkoutSchedule,
+  WorkoutFeedbacks,
+  WorkoutPlan,
+  Exercise,
+  Notification,
+  WorkoutStat,
+  WorkoutRecords,
+  User,
+  UserDevice
+} from '../models'
 import {
   IWorkoutScheduleList,
   IWorkoutScheduleFindAll,
@@ -10,6 +20,9 @@ import {
 } from '../interfaces/workoutSchedules'
 import {IWorkoutFeedbackCreate} from '../interfaces/workoutFeedbacks'
 import {db} from '../loaders'
+import {util} from '../libs'
+import {workoutScheduleSubscriber} from '../subscribers'
+import {IUserDevice} from '../interfaces/userDevice'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -45,6 +58,43 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
       const {exerciseId, setInfo} = workoutPlans[i]
       await WorkoutPlan.create({exerciseId, workoutScheduleId, setInfo: JSON.stringify(setInfo)}, connection)
     }
+    await WorkoutStat.upsertOne(
+      {
+        userId: data.userId,
+        franchiseId: data.franchiseId,
+        month: moment().startOf('month').format('YYYY-MM-DD'),
+        monthCount: 1
+      },
+      connection
+    )
+    const user = await User.findOne({id: data.userId})
+    const userDevices = await UserDevice.findAllWithUserId(user.id, user.platform)
+    const contents = `새로운 운동플랜이 있어요 🏋\n${util.defaultWorkoutTimeFormatForPush(
+      data.startDate,
+      data.totalTime,
+      data.workoutTitle
+    )}`
+    await Notification.create(
+      {
+        userId: user.id,
+        type: 'workoutSchedule',
+        contents,
+        info: JSON.stringify({workoutScheduleId})
+      },
+      connection
+    )
+    if (userDevices && userDevices.length > 0) {
+      await User.updateBadgeCount(user.id, connection)
+      workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'workoutScheduleCreate',
+        contents,
+        badge: user.badgeCount + 1,
+        data: JSON.stringify({
+          startTime: data.startDate
+        })
+      })
+    }
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -56,7 +106,7 @@ async function createFeedbacks(options: IWorkoutFeedbackData): Promise<void> {
   const connection = await db.beginTransaction()
   try {
     const {userId, issueIndexes, ...data} = options
-    const workoutSchedule = await WorkoutSchedule.findOneWithId(data.workoutScheduleId)
+    const workoutSchedule = await WorkoutSchedule.findOne(data.workoutScheduleId)
     if (!workoutSchedule || workoutSchedule.userId !== userId) throw new Error('not_allowed')
     const workoutFeedback = await WorkoutFeedbacks.findOneWithWorkoutScheduleId(data.workoutScheduleId)
     if (workoutFeedback) throw new Error('duplicate_feedback')
@@ -89,7 +139,7 @@ async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWo
 
 async function findOne(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
   try {
-    const schedule = await WorkoutSchedule.findOne(workoutScheduleId)
+    const schedule = await WorkoutSchedule.findOneWithId(workoutScheduleId)
     const exercises = await Exercise.findOneWithWorkoutScheduleId(workoutScheduleId)
     return {...schedule, exercises}
   } catch (e) {
@@ -109,7 +159,7 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
   const connection = await db.beginTransaction()
   try {
     const {workoutPlans, ...data} = options
-
+    const workoutSchedule = await WorkoutSchedule.findOne(data.id)
     await WorkoutSchedule.update(data, connection)
 
     if (workoutPlans && workoutPlans.length > 0) {
@@ -120,6 +170,56 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
       }
     }
 
+    const originMonth = moment(workoutSchedule.startDate).startOf('month').format('YYYY-MM-DD')
+    const changeMonth = moment(data.startDate).startOf('month').format('YYYY-MM-DD')
+    if (originMonth !== changeMonth) {
+      await WorkoutStat.upsertOne(
+        {
+          userId: workoutSchedule.userId,
+          franchiseId: workoutSchedule.franchiseId,
+          month: originMonth,
+          monthCount: -1
+        },
+        connection
+      )
+      await WorkoutStat.upsertOne(
+        {
+          userId: workoutSchedule.userId,
+          franchiseId: workoutSchedule.franchiseId,
+          month: changeMonth,
+          monthCount: 1
+        },
+        connection
+      )
+    }
+    const user = await User.findOne({id: workoutSchedule.userId})
+    const userDevices = await UserDevice.findAllWithUserId(user.id, user.platform)
+    const contents = `운동플랜이 수정 되었어요 📝\n${util.defaultWorkoutTimeFormatForPush(
+      data.startDate,
+      data.totalTime,
+      data.workoutTitle
+    )}`
+    await Notification.create(
+      {
+        userId: user.id,
+        type: 'workoutSchedule',
+        contents,
+        info: JSON.stringify({workoutScheduleId: workoutSchedule.id})
+      },
+      connection
+    )
+    if (userDevices && userDevices.length > 0) {
+      await User.updateBadgeCount(user.id, connection)
+      workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'workoutScheduleChangeDate',
+        contents,
+        badge: user.badgeCount + 1,
+        data: JSON.stringify({
+          startTime: data.startDate
+        })
+      })
+    }
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -129,7 +229,7 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
 
 async function updateStartDate(options: {id: number; startDate: string; seq: number}): Promise<void> {
   try {
-    const workoutSchedule = await WorkoutSchedule.findOneWithId(options.id)
+    const workoutSchedule = await WorkoutSchedule.findOne(options.id)
     const today = moment().startOf('day').unix()
     const workoutStartDate = moment(workoutSchedule.startDate).unix()
     if (workoutStartDate < today) throw new Error('not_allowed')
@@ -140,9 +240,24 @@ async function updateStartDate(options: {id: number; startDate: string; seq: num
 }
 
 async function deleteOne(id: number): Promise<void> {
+  const connection = await db.beginTransaction()
   try {
-    await WorkoutSchedule.deleteOne(id)
+    const workoutSchedule = await WorkoutSchedule.findOne(id)
+    const workoutRecord = await WorkoutRecords.findAllWithWorkoutScheduleId(id)
+    if (workoutRecord && workoutRecord.length > 0) throw new Error('not_allowed')
+    await WorkoutSchedule.deleteOne(id, connection)
+    await WorkoutStat.upsertOne(
+      {
+        userId: workoutSchedule.userId,
+        franchiseId: workoutSchedule.franchiseId,
+        month: moment(workoutSchedule.startDate).startOf('month').format('YYYY-MM-DD'),
+        monthCount: -1
+      },
+      connection
+    )
+    await db.commit(connection)
   } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }

@@ -36,4 +36,16 @@ const getDashboardActiveUsers = new ApiRouter({
   handler: ctrl.getDashboardActiveUsers
 })
 
-export {getDashboardWorkoutToday, getDashboardWorkoutYesterday, getDashboardActiveUsers}
+const getDashboardWorkoutUsers = new ApiRouter({
+  name: 'workout/users',
+  method: 'get',
+  summary: '대시보드 > workouts overview',
+  tags: ['Dashboard'],
+  schema: 'requests/web/dashboard/GetDashboardWorkoutUsers',
+  responses: {
+    200: {schema: 'responses/web/dashboard/GetDashboardWorkoutUsers'}
+  },
+  handler: ctrl.getDashboardWorkoutUsers
+})
+
+export {getDashboardWorkoutToday, getDashboardWorkoutYesterday, getDashboardActiveUsers, getDashboardWorkoutUsers}

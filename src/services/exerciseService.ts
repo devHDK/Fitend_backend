@@ -4,6 +4,7 @@ import {db} from '../loaders'
 
 async function create(options: {
   trainerId: number
+  franchiseId: number
   name: string
   nameEn: string
   type: 'resistance' | 'flexibility' | 'cardio'
@@ -15,10 +16,22 @@ async function create(options: {
 }): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {trainerId, name, nameEn, type, trackingFieldId, targetMuscleIds, description, tags, videos} = options
+    const {
+      trainerId,
+      franchiseId,
+      name,
+      nameEn,
+      type,
+      trackingFieldId,
+      targetMuscleIds,
+      description,
+      tags,
+      videos
+    } = options
     const exerciseId = await Exercise.create(
       {
         trainerId,
+        franchiseId,
         name,
         nameEn,
         type,

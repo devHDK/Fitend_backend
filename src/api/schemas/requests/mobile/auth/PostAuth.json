@@ -12,7 +12,13 @@
     },
     "platform": {
       "type": "string",
-      "enum": ["android", "ios"]
+      "enum": ["ios", "android"]
+    },
+    "deviceId": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string"
     }
   },
   "required": [

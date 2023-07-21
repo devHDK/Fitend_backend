@@ -2,6 +2,7 @@ export interface IWorkoutSchedule {
   id: number
   userId: number
   trainer: number
+  franchiseId: number
   startDate: string
   seq: number
   totalTime: string
@@ -37,11 +38,13 @@ export interface IWorkoutScheduleFindAll {
   userId: number
   startDate: Date
   endDate?: Date
+  interval?: Date
 }
 
 export interface IWorkoutScheduleCreate {
   userId: number
   trainerId: number
+  franchiseId: number
   workoutId: number
   workoutTitle: string
   workoutSubTitle: string
@@ -61,6 +64,7 @@ export interface IWorkoutScheduleUpdate {
 
 export interface IWorkoutScheduleDetail {
   workoutScheduleId: number
+  startDate: number
   workoutTitle: string
   workoutSubTitle: string
   targetMuscleTypes: string[]
@@ -98,4 +102,12 @@ export interface IWorkoutScheduleExercise {
       seconds: number
     }
   ]
+}
+
+export interface IWorkoutSchedulePushType {
+  tokens: string[]
+  badge: number
+  type: 'workoutScheduleCreate' | 'workoutScheduleDelete' | 'workoutScheduleChangeDate' | 'workoutScheduleChangeInfo'
+  contents: string
+  data?: any
 }

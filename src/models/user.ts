@@ -191,10 +191,11 @@ async function findOneWithId(id: number): Promise<IUser> {
   }
 }
 
-async function updateOne(options: IUserUpdate): Promise<void> {
+async function updateOne(options: IUserUpdate, connection?: PoolConnection): Promise<void> {
   const {id, ...data} = options
   try {
     await db.query({
+      connection,
       sql: `UPDATE ?? SET ? WHERE ? `,
       values: [tableName, data, {id}]
     })
@@ -203,12 +204,12 @@ async function updateOne(options: IUserUpdate): Promise<void> {
   }
 }
 
-async function updatePlatform(options: {id: number; platform: 'ios' | 'android'}): Promise<void> {
-  const {id, ...data} = options
+async function updateBadgeCount(id: number, connection?: PoolConnection): Promise<void> {
   try {
     await db.query({
-      sql: `UPDATE ?? SET ? WHERE ? `,
-      values: [tableName, data, {id}]
+      connection,
+      sql: `UPDATE ?? SET badgeCount = badgeCount + 1 WHERE ? `,
+      values: [tableName, {id}]
     })
   } catch (e) {
     throw e
@@ -225,5 +226,5 @@ export {
   findActivePersonalUsers,
   findActiveFitnessUsers,
   updateOne,
-  updatePlatform
+  updateBadgeCount
 }

@@ -22,6 +22,9 @@
           "totalSession": {
             "type": "integer"
           },
+          "restSession": {
+            "type": "integer"
+          },
           "startedAt": {
             "type": "string"
           },
@@ -37,6 +40,7 @@
           "type",
           "users",
           "totalSession",
+          "restSession",
           "startedAt",
           "expiredAt",
           "createdAt"

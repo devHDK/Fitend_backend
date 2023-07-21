@@ -28,4 +28,13 @@ async function getDashboardActiveUsers(req: IRequest, res: Response, next: Funct
   }
 }
 
-export {getDashboardWorkoutToday, getDashboardWorkoutYesterday, getDashboardActiveUsers}
+async function getDashboardWorkoutUsers(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const ret = await DashboardService.findAllWorkoutUsers(req.franchiseId, req.options.today)
+    res.status(200).json({data: ret})
+  } catch (e) {
+    next(e)
+  }
+}
+
+export {getDashboardWorkoutToday, getDashboardWorkoutYesterday, getDashboardActiveUsers, getDashboardWorkoutUsers}

@@ -1,6 +1,11 @@
-import {Ticket} from '../models/index'
+import {Reservation, Ticket} from '../models/index'
 import {db} from '../loaders'
 import {ITicketFindAll, ITicketList, ITicketDetail} from '../interfaces/tickets'
+import {IReservationListForTicket} from '../interfaces/reservation'
+
+interface ITicketDetailWithReservations extends ITicketDetail {
+  reservations: IReservationListForTicket[]
+}
 
 async function create(options: {
   type: 'personal' | 'fitness'
@@ -39,9 +44,11 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   }
 }
 
-async function findOneWithId(id: number): Promise<ITicketDetail> {
+async function findOneWithId(id: number): Promise<ITicketDetailWithReservations> {
   try {
-    return await Ticket.findOneWithId(id)
+    const ticket = await Ticket.findOneWithId(id)
+    const reservations = await Reservation.findAllWithTicketId(id)
+    return {...ticket, reservations}
   } catch (e) {
     throw e
   }

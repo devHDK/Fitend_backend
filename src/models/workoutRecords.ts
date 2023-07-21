@@ -2,7 +2,17 @@ import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {IWorkoutRecord, IWorkoutRecordCreate, IWorkoutRecordDetail} from '../interfaces/workoutRecords'
 import {db} from '../loaders'
-import {Exercise, Trainer, User, WorkoutFeedbacks, WorkoutPlan, WorkoutSchedule} from './index'
+import {
+  Exercise,
+  Ticket,
+  Trainer,
+  User,
+  WorkoutFeedbacks,
+  WorkoutPlan,
+  WorkoutRecords,
+  WorkoutSchedule,
+  WorkoutStat
+} from './index'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -32,7 +42,7 @@ async function findOneWithWorkoutPlanId(workoutPlanId: number): Promise<IWorkout
   }
 }
 
-async function findAllWithWorkoutScheduleId(workoutScheduleId: number): Promise<IWorkoutRecordDetail> {
+async function findAllWithWorkoutScheduleId(workoutScheduleId: number): Promise<[IWorkoutRecordDetail]> {
   try {
     return await db.query({
       sql: `SELECT e.name as exerciseName, JSON_ARRAYAGG(tm.name) as targetMuscles,
@@ -138,4 +148,59 @@ async function findAllYesterday(
   }
 }
 
-export {tableName, create, findOneWithWorkoutPlanId, findAllWithWorkoutScheduleId, findAllToday, findAllYesterday}
+async function findAllUsers(
+  franchiseId: number,
+  today: string
+): Promise<
+  [
+    {
+      userId: number
+      userNickname: string
+      monthCount: number
+      doneCount: number
+      recentDate: string
+      trainers: string[]
+    }
+  ]
+> {
+  try {
+    const month = moment(today).startOf('month').format('YYYY-MM-DD')
+    return await db.query({
+      sql: `SELECT t.id as userId, t.nickname as userNickname, wst.monthCount, wst.doneCount,
+            (SELECT ws.startDate FROM ?? ws 
+            JOIN ?? wp ON wp.workoutScheduleId = ws.id
+            JOIN ?? wr ON wr.workoutPlanId = wp.id
+            WHERE ws.userId = t.id AND ws.franchiseId = ${escape(franchiseId)} 
+            ORDER BY ws.startDate DESC
+            LIMIT 1) as recentDate,
+            JSON_ARRAYAGG(tra.nickname) as trainers
+            FROM ?? t
+            JOIN ?? wst ON wst.userId = t.id AND wst.franchiseId = ${escape(franchiseId)} 
+            AND wst.month = ${escape(month)}
+            LEFT JOIN ?? tr ON tr.userId = t.id
+            LEFT JOIN ?? tra ON tra.id = tr.trainerId 
+            GROUP BY t.id`,
+      values: [
+        WorkoutSchedule.tableName,
+        WorkoutPlan.tableName,
+        WorkoutRecords.tableName,
+        User.tableName,
+        WorkoutStat.tableName,
+        Ticket.tableTicketRelation,
+        Trainer.tableName
+      ]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+export {
+  tableName,
+  create,
+  findOneWithWorkoutPlanId,
+  findAllWithWorkoutScheduleId,
+  findAllToday,
+  findAllYesterday,
+  findAllUsers
+}

@@ -7,6 +7,7 @@ async function postWorkoutSchedules(req: IRequest, res: Response, next: Function
     await WorkoutScheduleService.create({
       userId,
       trainerId: req.userId,
+      franchiseId: req.franchiseId,
       workoutId,
       workoutTitle,
       workoutSubTitle,
@@ -66,6 +67,7 @@ async function deleteWorkoutSchedulesWithId(req: IRequest, res: Response, next: 
     await WorkoutScheduleService.deleteOne(req.options.id)
     res.status(200).json()
   } catch (e) {
+    if (e.message === 'not_allowed') e.status = 403
     next(e)
   }
 }

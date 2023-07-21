@@ -6,6 +6,7 @@ async function postExercises(req: IRequest, res: Response, next: Function): Prom
     const {name, nameEn, type, trackingFieldId, targetMuscleIds, description, tags, videos} = req.options
     await ExerciseService.create({
       trainerId: req.userId,
+      franchiseId: req.franchiseId,
       name,
       nameEn,
       type,

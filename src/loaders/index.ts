@@ -8,10 +8,4 @@ export async function init(): Promise<void> {
   await Promise.all([mysql.init(), firebase.init()])
 }
 
-export {
-  aws,
-  logger,
-  mysql as db,
-  firebase,
-  express
-}
+export {aws, logger, mysql as db, firebase, express}

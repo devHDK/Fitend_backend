@@ -24,6 +24,9 @@
     "totalSession": {
       "type": "integer"
     },
+    "restSession": {
+      "type": "integer"
+    },
     "startedAt": {
       "type": "string"
     },
@@ -46,6 +49,35 @@
           }
         }
       }
+    },
+    "reservations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "seq": {
+            "type": "integer"
+          },
+          "startTime": {
+            "type": "string"
+          },
+          "endTime": {
+            "type": "string"
+          },
+          "userNickname": {
+            "type": "string"
+          },
+          "trainerNickname": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "required": [
@@ -53,9 +85,11 @@
     "type",
     "users",
     "totalSession",
+    "restSession",
     "startedAt",
     "createdAt",
-    "trainers"
+    "trainers",
+    "reservations"
   ],
   "additionalProperties": false
 }

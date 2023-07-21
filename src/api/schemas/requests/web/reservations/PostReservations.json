@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "trainerId": {
+      "type": "integer"
+    },
+    "userId": {
+      "type": "integer"
+    },
+    "ticketId": {
+      "type": "integer"
+    },
+    "reservations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "startTime",
+          "endTime"
+        ]
+      }
+    }
+  },
+  "required": [
+    "trainerId",
+    "ticketId",
+    "reservations"
+  ],
+  "additionalProperties": false
+}

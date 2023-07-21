@@ -12,6 +12,6 @@ export = {
     region: 'ap-northeast-2',
     cloudfront: 'https://djt0uuz3ub045.cloudfront.net/',
     bucket: 'fitend-prod',
-    firebase: 'firebase/prod'
+    firebase: 'fitend/firebase/prod'
   }
 }

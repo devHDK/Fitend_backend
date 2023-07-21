@@ -9,6 +9,9 @@ import * as WorkoutScheduleService from './workoutScheduleService'
 import * as TicketService from './ticketService'
 import * as WorkoutRecordService from './workoutRecordService'
 import * as DashboardService from './dashboardService'
+import * as ReservationService from './reservationService'
+import * as EventScheduleService from './eventScheduleService'
+import * as NotificationService from './notificationService'
 
 export {
   AdministratorService,
@@ -21,5 +24,8 @@ export {
   WorkoutScheduleService,
   TicketService,
   WorkoutRecordService,
-  DashboardService
+  DashboardService,
+  ReservationService,
+  EventScheduleService,
+  NotificationService
 }

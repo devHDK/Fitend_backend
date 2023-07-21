@@ -1,6 +1,8 @@
 import admin from 'firebase-admin'
 import config from 'config'
 import {aws, logger} from './'
+import {IReservationPushType} from '../interfaces/reservation'
+import {IWorkoutSchedulePushType} from '../interfaces/workoutSchedules'
 
 const awsSecrets: string = config.get('aws.firebase')
 
@@ -17,111 +19,51 @@ async function init(): Promise<void> {
   logger.debug('Firebase loaded')
 }
 
-const sendToTopic = async (topic: string, payload: admin.messaging.MessagingPayload): Promise<void> => {
+const sendPush = async (tokens: string[], badge: number, payload: admin.messaging.MessagingPayload): Promise<void> => {
   try {
-    const result = await admin.messaging().sendToTopic(topic, payload)
+    const result = await admin.messaging().sendMulticast({
+      tokens,
+      data: payload.data,
+      notification: payload.notification,
+      apns: {
+        headers: {
+          messageType: 'background'
+        },
+        payload: {
+          aps: {contentAvailable: true, badge, sound: 'default'}
+        }
+      }
+    })
     logger.info(`[FCM] sendToTopic result : ${JSON.stringify(result)}`)
   } catch (e) {
     throw e
   }
 }
 
-const sendClubMessage = async (
-  userId: number,
-  userType: 'presenter' | 'student',
-  title: string,
-  body: string,
-  presenterId: number
-): Promise<void> => {
+const sendReservationMessage = async (options: IReservationPushType): Promise<void> => {
+  const {tokens, type, data, badge, contents} = options
   try {
     const payload = {
-      notification: {title, body},
-      data: {type: 'club', presenterId: presenterId.toString()}
+      notification: {title: '', body: contents},
+      data: {type, ...data}
     }
-    await sendToTopic(`${userType}_users_${userId}`, payload)
+    await sendPush(tokens, badge, payload)
   } catch (e) {
     throw e
   }
 }
 
-const sendMatchMessage = async (
-  userId: number,
-  userType: 'presenter' | 'student',
-  title: string,
-  body: string,
-  presenterId: number
-): Promise<void> => {
+const sendWorkoutScheduleMessage = async (options: IWorkoutSchedulePushType): Promise<void> => {
+  const {tokens, type, data, badge, contents} = options
   try {
     const payload = {
-      notification: {title, body},
-      data: {type: 'match', presenterId: presenterId.toString()}
+      notification: {title: '', body: contents},
+      data: {type, ...data}
     }
-    await sendToTopic(`${userType}_users_${userId}`, payload)
+    await sendPush(tokens, badge, payload)
   } catch (e) {
     throw e
   }
 }
 
-const sendMatchLinkMessage = async (
-  userId: number,
-  userType: 'presenter' | 'student',
-  title: string,
-  body: string,
-  studentId: number
-): Promise<void> => {
-  try {
-    const payload = {
-      notification: {title, body},
-      data: {type: 'match', studentId: studentId.toString()}
-    }
-    await sendToTopic(`${userType}_users_${userId}`, payload)
-  } catch (e) {
-    throw e
-  }
-}
-
-const sendScheduleMessage = async (
-  userId: number,
-  userType: 'presenter' | 'student',
-  title: string,
-  body: string,
-  startTime: string
-): Promise<void> => {
-  try {
-    const payload = {
-      notification: {title, body},
-      data: {type: 'match', startTime: startTime.toString()}
-    }
-    await sendToTopic(`${userType}_users_${userId}`, payload)
-  } catch (e) {
-    throw e
-  }
-}
-
-const sendTicketMessage = async (
-  userId: number,
-  userType: 'presenter' | 'student',
-  title: string,
-  body: string,
-  presenterId: number
-): Promise<void> => {
-  try {
-    const payload = {
-      notification: {title, body},
-      data: {type: 'ticket', studentId: userId.toString(), presenterId: presenterId.toString()}
-    }
-    await sendToTopic(`${userType}_users_${userId}`, payload)
-  } catch (e) {
-    throw e
-  }
-}
-
-export {
-  init,
-  sendToTopic,
-  sendClubMessage,
-  sendMatchMessage,
-  sendMatchLinkMessage,
-  sendScheduleMessage,
-  sendTicketMessage
-}
+export {init, sendPush, sendReservationMessage, sendWorkoutScheduleMessage}
