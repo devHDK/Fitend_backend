@@ -12,17 +12,15 @@
           "userNickname": {
             "type": "string"
           },
-          "thisMonth": {
+          "monthCount": {
             "type": "integer"
           },
-          "asOfToday": {
-            "type": "integer"
-          },
-          "done": {
+          "doneCount": {
             "type": "integer"
           },
           "recentDate": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "trainers": {
             "type": "array",
@@ -34,9 +32,8 @@
         "required": [
           "userId",
           "userNickname",
-          "thisMonth",
-          "asOfToday",
-          "done",
+          "monthCount",
+          "doneCount",
           "recentDate",
           "trainers"
         ]

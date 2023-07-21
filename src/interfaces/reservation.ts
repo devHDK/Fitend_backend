@@ -35,9 +35,11 @@ export interface IReservationDetail {
   startTime: string
   endTime: string
   status: string
+  ticketId: number
   ticketType: string
   ticketStartedAt: string
   ticketExpiredAt: string
+  userId: number
   userNickname: string
   trainer: {
     id: number
@@ -100,4 +102,17 @@ export interface IReservationUpdate {
   seq?: number
   status?: string
   times?: number
+}
+
+export interface IReservationPushType {
+  tokens: string[]
+  badge: number
+  type:
+    | 'reservationCreate'
+    | 'reservationCancel'
+    | 'reservationNoShow'
+    | 'reservationChangeDate'
+    | 'reservationChangeInfo'
+  contents: string
+  data?: any
 }

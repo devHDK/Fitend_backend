@@ -103,3 +103,11 @@ export interface IWorkoutScheduleExercise {
     }
   ]
 }
+
+export interface IWorkoutSchedulePushType {
+  tokens: string[]
+  badge: number
+  type: 'workoutScheduleCreate' | 'workoutScheduleDelete' | 'workoutScheduleChangeDate' | 'workoutScheduleChangeInfo'
+  contents: string
+  data?: any
+}

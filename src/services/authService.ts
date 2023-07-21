@@ -1,15 +1,18 @@
 import {code as Code, jwt as JWT} from '../libs'
 import {IUser} from '../interfaces/user'
-import {User, Ticket} from '../models'
+import {User, Ticket, UserDevice} from '../models'
+import {db} from '../loaders'
 
 async function signIn(options: {
   email: string
   password: string
   platform: 'android' | 'ios'
+  deviceId: string
   token: string
 }): Promise<{accessToken: string; refreshToken: string; user: IUser}> {
+  const connection = await db.beginTransaction()
   try {
-    const {email, password, platform} = options
+    const {email, password, deviceId, platform, token} = options
     const user = await User.findOne({email})
     if (!user) throw new Error('not_found')
     if (
@@ -20,12 +23,17 @@ async function signIn(options: {
       if (!isActive) throw new Error('not_allowed')
       const accessToken = await JWT.createAccessToken({id: user.id, type: 'user'})
       const refreshToken = await JWT.createRefreshToken({id: user.id, type: 'user'}, user.password.salt)
-      await User.updatePlatform({id: user.id, platform})
+      await User.updateOne({id: user.id, deviceId, platform}, connection)
+      if (token) {
+        await UserDevice.upsertOne({userId: user.id, platform, deviceId, token}, connection)
+      }
       delete user.password
+      await db.commit(connection)
       return {accessToken, refreshToken, user}
     }
     throw new Error('invalid_password')
   } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }

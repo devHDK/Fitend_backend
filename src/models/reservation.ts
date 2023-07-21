@@ -31,7 +31,10 @@ async function create(options: IReservationCreate, connection?: PoolConnection):
 async function findAll(options: IReservationFindAll): Promise<[IReservationList]> {
   const {franchiseId, userId, trainerId, startDate, endDate} = options
   try {
-    const where = [`t.status != 'cancel'`, `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`]
+    const where = [
+      `t.status != 'cancel' AND t.times = 1`,
+      `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`
+    ]
     if (trainerId) where.push(`t.trainerId = ${escape(trainerId)}`)
     return await db.query({
       sql: `SELECT t.id, t.startTime, t.endTime, t.status, ti.type as ticketType,
@@ -58,7 +61,7 @@ async function findAllForUser(options: IReservationFindAllForUser): Promise<[IRe
   try {
     const startDateUtc = moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss')
     const where = [
-      `t.status != 'cancel'`,
+      `t.status != 'cancel' AND t.times = 1`,
       `t.startTime BETWEEN ${escape(startDateUtc)} AND DATE_ADD('${startDateUtc}', 
       INTERVAL ${interval ? escape(interval) : 30} DAY)`
     ]
@@ -105,8 +108,8 @@ async function findAllWithTicketId(ticketId: number): Promise<[IReservationListF
 async function findOneWithId(id: number): Promise<IReservationDetail> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.startTime, t.endTime, t.status, ti.type as ticketType,
-            u.nickname as userNickname, t.seq, ti.totalSession, ti.startedAt, ti.expiredAt, 
+      sql: `SELECT t.id, t.startTime, t.endTime, t.status, t.times, ti.id as ticketId, ti.type as ticketType,
+            u.id as userId, u.nickname as userNickname, t.seq, ti.totalSession, ti.startedAt, ti.expiredAt, 
             JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer
             FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId

@@ -8,6 +8,9 @@ export interface IUser {
   birth?: string
   job?: string
   memo?: string
+  platform?: 'android' | 'ios'
+  deviceId?: string
+  badgeCount?: number
   createdAt?: string
   deletedAt?: Date | string
 }
@@ -58,4 +61,6 @@ export interface IUserUpdate {
   gender?: string
   password?: string
   memo?: string
+  platform?: string
+  deviceId?: string
 }

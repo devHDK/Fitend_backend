@@ -2,7 +2,17 @@ import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {IWorkoutRecord, IWorkoutRecordCreate, IWorkoutRecordDetail} from '../interfaces/workoutRecords'
 import {db} from '../loaders'
-import {Exercise, Trainer, User, WorkoutFeedbacks, WorkoutPlan, WorkoutSchedule} from './index'
+import {
+  Exercise,
+  Ticket,
+  Trainer,
+  User,
+  WorkoutFeedbacks,
+  WorkoutPlan,
+  WorkoutRecords,
+  WorkoutSchedule,
+  WorkoutStat
+} from './index'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -145,34 +155,39 @@ async function findAllUsers(
   [
     {
       userId: number
-      memberNickname: string
-      trainerNickname: string
+      userNickname: string
+      monthCount: number
+      doneCount: number
+      recentDate: string
+      trainers: string[]
     }
   ]
 > {
   try {
-    const todayStart = moment(today).startOf('month').format('YYYY-MM-DDTHH:mm:ss')
-    const todayEnd = moment(today).endOf('month').format('YYYY-MM-DDTHH:mm:ss')
+    const month = moment(today).startOf('month').format('YYYY-MM-DD')
     return await db.query({
-      sql: `SELECT u.id as userId, u.nickname as userNickname, tra.nickname as trainerNickname,
-            wf.id as workoutFeedbackId
+      sql: `SELECT t.id as userId, t.nickname as userNickname, wst.monthCount, wst.doneCount,
+            (SELECT ws.startDate FROM ?? ws 
+            JOIN ?? wp ON wp.workoutScheduleId = ws.id
+            JOIN ?? wr ON wr.workoutPlanId = wp.id
+            WHERE ws.userId = t.id AND ws.franchiseId = ${escape(franchiseId)} 
+            ORDER BY ws.startDate DESC
+            LIMIT 1) as recentDate,
+            JSON_ARRAYAGG(tra.nickname) as trainers
             FROM ?? t
-            JOIN ?? wp ON wp.workoutScheduleId = t.id
-            JOIN ?? ws ON ws.workoutPlanId = wp.id
-            JOIN ?? ft ON ft.trainerId = t.trainerId AND ft.franchiseId = ?
-            JOIN ?? tra ON tra.id = ft.trainerId 
-            JOIN ?? u ON u.id = t.userId
-            LEFT JOIN ?? wf ON wf.workoutScheduleId = t.id
-            WHERE t.startDate BETWEEN ${escape(todayStart)} AND ${escape(todayEnd)}
-            GROUP BY t.id
-            HAVING workoutFeedbackId is null`,
+            JOIN ?? wst ON wst.userId = t.id AND wst.franchiseId = ${escape(franchiseId)} 
+            AND wst.month = ${escape(month)}
+            LEFT JOIN ?? tr ON tr.userId = t.id
+            LEFT JOIN ?? tra ON tra.id = tr.trainerId 
+            GROUP BY t.id`,
       values: [
         WorkoutSchedule.tableName,
-        Trainer.tableFranchiseTrainer,
-        franchiseId,
-        Trainer.tableName,
+        WorkoutPlan.tableName,
+        WorkoutRecords.tableName,
         User.tableName,
-        WorkoutFeedbacks.tableName
+        WorkoutStat.tableName,
+        Ticket.tableTicketRelation,
+        Trainer.tableName
       ]
     })
   } catch (e) {

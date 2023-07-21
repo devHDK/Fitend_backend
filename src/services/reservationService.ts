@@ -6,10 +6,11 @@ import {
   IReservationDetail,
   IReservationFindAllForUser
 } from '../interfaces/reservation'
-import {Reservation, Ticket, Notification} from '../models/index'
+import {Reservation, Ticket, Notification, User, UserDevice} from '../models/index'
 import {db} from '../loaders'
 import {util} from '../libs'
 import {reservationSubscriber} from '../subscribers'
+import {IUserDevice} from '../interfaces/userDevice'
 
 async function create(options: {
   trainerId: number
@@ -117,6 +118,8 @@ async function create(options: {
       }
     }
 
+    const user = await User.findOne({id: userId})
+    const userDevices = await UserDevice.findAllWithUserId(user.id, user.platform)
     const contents = `예약이 확정 되었어요 😊\n${util.defaultTimeFormatForPush(renewReservations[0].startTime)}`
     await Notification.create(
       {
@@ -127,7 +130,19 @@ async function create(options: {
       },
       connection
     )
-    reservationSubscriber.publishReservationPushEvent({userId, contents})
+    if (userDevices && userDevices.length > 0) {
+      await User.updateBadgeCount(userId, connection)
+      reservationSubscriber.publishReservationPushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'reservationCreate',
+        contents,
+        badge: user.badgeCount + 1,
+        data: JSON.stringify({
+          startTime: moment(renewReservations[0].startTime).tz('Asia/Seoul').format('YYYY-MM-DD')
+        })
+      })
+    }
+
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -187,8 +202,12 @@ async function update(options: {id: number; startTime: string; endTime: string; 
       connection
     )
 
+    const user = await User.findOne({id: userId})
+    const userDevices = await UserDevice.findAllWithUserId(user.id, user.platform)
+
     if (reservedStatus === 'complete') {
       if (status === 'cancel' || status === 'noShow') {
+        const contents = `예약이 취소 되었어요 🥺\n${util.defaultTimeFormatForPush(reservedStartTime)}`
         if (status === 'cancel') {
           const prevSeq = await Reservation.findCountByTicketIdAndPrevStartTime(
             {
@@ -215,17 +234,48 @@ async function update(options: {id: number; startTime: string; endTime: string; 
               )
             }
           }
+
+          await Notification.create(
+            {
+              userId,
+              type: 'reservation',
+              contents,
+              info: JSON.stringify({reservationId: id})
+            },
+            connection
+          )
+          if (userDevices && userDevices.length > 0) {
+            await User.updateBadgeCount(userId, connection)
+            reservationSubscriber.publishReservationPushEvent({
+              tokens: userDevices.map((device: IUserDevice) => device.token),
+              type: 'reservationCancel',
+              contents,
+              badge: user.badgeCount + 1,
+              data: JSON.stringify({
+                startTime: moment(startTime).tz('Asia/Seoul').format('YYYY-MM-DD')
+              })
+            })
+          }
+        } else {
+          await Notification.create(
+            {
+              userId,
+              type: 'reservationNoShow',
+              contents,
+              info: JSON.stringify({reservationId: id})
+            },
+            connection
+          )
+          if (userDevices && userDevices.length > 0) {
+            await User.updateBadgeCount(userId, connection)
+            reservationSubscriber.publishReservationPushEvent({
+              tokens: userDevices.map((device: IUserDevice) => device.token),
+              type: 'reservationNoShow',
+              contents,
+              badge: user.badgeCount + 1
+            })
+          }
         }
-        const contents = `예약이 취소 되었어요 🥺\n${util.defaultTimeFormatForPush(reservedStartTime)}`
-        await Notification.create(
-          {
-            userId,
-            type: 'reservation',
-            contents
-          },
-          connection
-        )
-        reservationSubscriber.publishReservationPushEvent({userId, contents})
       } else if (status === 'complete') {
         const isAfter = moment(reservedStartTime).isBefore(moment(startTime), 'minute')
         const betweenReservations = await Reservation.findBetweenReservation(
@@ -282,7 +332,15 @@ async function update(options: {id: number; startTime: string; endTime: string; 
           },
           connection
         )
-        reservationSubscriber.publishReservationPushEvent({userId, contents})
+        if (userDevices && userDevices.length > 0) {
+          await User.updateBadgeCount(userId, connection)
+          reservationSubscriber.publishReservationPushEvent({
+            tokens: userDevices.map((device: IUserDevice) => device.token),
+            type: 'reservationChangeDate',
+            contents,
+            badge: user.badgeCount + 1
+          })
+        }
       } else if (status === 'attendance') {
         const contents = `출석이 완료 되었어요 ✅️\n${util.defaultTimeFormatForPush(reservedStartTime)}`
         await Notification.create(
@@ -294,7 +352,15 @@ async function update(options: {id: number; startTime: string; endTime: string; 
           },
           connection
         )
-        reservationSubscriber.publishReservationPushEvent({userId, contents})
+        if (userDevices && userDevices.length > 0) {
+          await User.updateBadgeCount(userId, connection)
+          reservationSubscriber.publishReservationPushEvent({
+            tokens: userDevices.map((device: IUserDevice) => device.token),
+            type: 'reservationChangeInfo',
+            contents,
+            badge: user.badgeCount + 1
+          })
+        }
       }
     } else if (reservedStatus === 'attendance' || (reservedStatus === 'cancel' && reservedTimes === 1)) {
       if (status !== 'complete') throw new Error('not_allowed')

@@ -73,8 +73,11 @@ async function findAllWorkoutUsers(
   [
     {
       userId: number
-      memberNickname: string
-      trainerNickname: string
+      userNickname: string
+      monthCount: number
+      doneCount: number
+      recentDate: string
+      trainers: string[]
     }
   ]
 > {

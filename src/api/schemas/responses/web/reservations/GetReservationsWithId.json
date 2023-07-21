@@ -16,6 +16,12 @@
       "type": "string",
       "enum": ["complete", "attendance", "cancel"]
     },
+    "times": {
+      "type": "integer"
+    },
+    "ticketId": {
+      "type": "integer"
+    },
     "ticketType": {
       "type": "string"
     },
@@ -24,6 +30,9 @@
     },
     "expiredAt": {
       "type": "string"
+    },
+    "userId": {
+      "type": "integer"
     },
     "userNickname": {
       "type": "string"
