@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "properties": {
+    "burnRate": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer"
+        },
+        "used": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total",
+        "used"
+      ]
+    },
+    "thisMonth": {
+      "type": "object",
+      "properties": {
+        "attendance": {
+          "type": "integer"
+        },
+        "noShow": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "attendance",
+        "noShow"
+      ]
+    }
+  },
+  "required": [
+    "burnRate",
+    "thisMonth"
+  ],
+  "additionalProperties": false
+}
+

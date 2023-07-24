@@ -1,6 +1,28 @@
 import {ApiRouter} from '../../default'
 import * as ctrl from './dashboard-ctrl'
 
+const getDashboardActiveUsers = new ApiRouter({
+  name: 'active/users',
+  method: 'get',
+  summary: '대시보드 > 활성화 회원수(PT/FC)',
+  tags: ['Dashboard'],
+  responses: {
+    200: {schema: 'responses/web/dashboard/GetDashboardActiveUsers'}
+  },
+  handler: ctrl.getDashboardActiveUsers
+})
+
+const getDashboardSessions = new ApiRouter({
+  name: 'sessions',
+  method: 'get',
+  summary: '대시보드 > 세션(전체/이번달)',
+  tags: ['Dashboard'],
+  responses: {
+    200: {schema: 'responses/web/dashboard/GetDashboardSessions'}
+  },
+  handler: ctrl.getDashboardSessions
+})
+
 const getDashboardWorkoutToday = new ApiRouter({
   name: 'workout/today',
   method: 'get',
@@ -25,17 +47,6 @@ const getDashboardWorkoutYesterday = new ApiRouter({
   handler: ctrl.getDashboardWorkoutYesterday
 })
 
-const getDashboardActiveUsers = new ApiRouter({
-  name: 'active/users',
-  method: 'get',
-  summary: '대시보드 > 활성화 회원수(PT/FC)',
-  tags: ['Dashboard'],
-  responses: {
-    200: {schema: 'responses/web/dashboard/GetDashboardActiveUsers'}
-  },
-  handler: ctrl.getDashboardActiveUsers
-})
-
 const getDashboardWorkoutUsers = new ApiRouter({
   name: 'workout/users',
   method: 'get',
@@ -48,4 +59,10 @@ const getDashboardWorkoutUsers = new ApiRouter({
   handler: ctrl.getDashboardWorkoutUsers
 })
 
-export {getDashboardWorkoutToday, getDashboardWorkoutYesterday, getDashboardActiveUsers, getDashboardWorkoutUsers}
+export {
+  getDashboardActiveUsers,
+  getDashboardSessions,
+  getDashboardWorkoutToday,
+  getDashboardWorkoutYesterday,
+  getDashboardWorkoutUsers
+}

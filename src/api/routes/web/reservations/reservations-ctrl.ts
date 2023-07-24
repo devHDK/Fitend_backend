@@ -55,6 +55,7 @@ async function putReservationsWithId(req: IRequest, res: Response, next: Functio
     res.status(200).json()
   } catch (e) {
     if (e.message === 'not_allowed') e.status = 403
+    if (e.message === 'reservation_duplicate') e.status = 409
     next(e)
   }
 }

@@ -1,6 +1,24 @@
 import {Response} from 'express'
 import {DashboardService} from '../../../../services'
 
+async function getDashboardActiveUsers(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const ret = await DashboardService.findActiveUsers(req.franchiseId)
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
+async function getDashboardSessions(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const ret = await DashboardService.findSessions(req.franchiseId)
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function getDashboardWorkoutToday(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const ret = await DashboardService.findAllWorkoutToday(req.franchiseId, req.options.today)
@@ -19,15 +37,6 @@ async function getDashboardWorkoutYesterday(req: IRequest, res: Response, next: 
   }
 }
 
-async function getDashboardActiveUsers(req: IRequest, res: Response, next: Function): Promise<void> {
-  try {
-    const ret = await DashboardService.findActiveUsers(req.franchiseId)
-    res.status(200).json(ret)
-  } catch (e) {
-    next(e)
-  }
-}
-
 async function getDashboardWorkoutUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const ret = await DashboardService.findAllWorkoutUsers(req.franchiseId, req.options.today)
@@ -37,4 +46,10 @@ async function getDashboardWorkoutUsers(req: IRequest, res: Response, next: Func
   }
 }
 
-export {getDashboardWorkoutToday, getDashboardWorkoutYesterday, getDashboardActiveUsers, getDashboardWorkoutUsers}
+export {
+  getDashboardActiveUsers,
+  getDashboardSessions,
+  getDashboardWorkoutToday,
+  getDashboardWorkoutYesterday,
+  getDashboardWorkoutUsers
+}

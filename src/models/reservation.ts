@@ -152,6 +152,40 @@ async function findValidCount(ticketId: number): Promise<number> {
   }
 }
 
+async function findAttendanceNoShowCount(
+  franchiseId: number,
+  thisMonthStart: string,
+  thisMonthEnd: string
+): Promise<{attendance: number; noShow: number}> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT 
+            (SELECT COUNT(*) FROM ?? t
+            JOIN ?? ti ON ti.id = t.ticketId
+            JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)}
+            WHERE t.status = 'attendance' AND t.ticketId = ti.id
+            AND t.startTime BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}) as attendance,
+            (SELECT COUNT(*) FROM ?? t
+            JOIN ?? ti ON ti.id = t.ticketId
+            JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)}
+            WHERE t.status = 'cancel' AND t.times = 1 AND t.ticketId = ti.id
+            AND t.startTime BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}) as noShow
+            `,
+      values: [
+        tableName,
+        Ticket.tableName,
+        Ticket.tableTicketRelation,
+        tableName,
+        Ticket.tableName,
+        Ticket.tableTicketRelation
+      ]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findCountByTicketIdAndPrevStartTime(
   options: {startTime: string; ticketId: number},
   connection?: PoolConnection
@@ -217,28 +251,47 @@ async function findAllByTicketIdAndLaterStartTime(
   }
 }
 
-async function findOneWithTime({
-  trainerId,
-  startTime,
-  endTime
-}: {
-  trainerId: number
-  startTime: string
-  endTime: string
-}): Promise<number> {
+async function findBurnRate(franchiseId: number): Promise<{total: number; used: number}> {
   try {
     const [row] = await db.query({
-      sql: `SELECT count(id) as count FROM ??
-            WHERE (status != 'cancel') AND trainerId = ${escape(trainerId)}
-            AND (((startTime < ${escape(startTime)} AND ${escape(startTime)} < endTime) 
-            OR (startTime < ${escape(endTime)} AND ${escape(endTime)}< endTime))
-            OR (startTime >= ${escape(startTime)} AND endTime <= ${escape(endTime)}))
-            `,
-      values: [tableName]
+      sql: `SELECT 
+            (
+            SELECT SUM(t.totalSession) FROM ?? t 
+            JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ${escape(franchiseId)}
+            WHERE t.expiredAt > NOW()
+            ) total,
+            (
+            SELECT COUNT(t.id) FROM ?? t
+            JOIN ?? ti ON ti.id = t.ticketId
+            JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)} 
+            AND ti.expiredAt > NOW()
+            WHERE t.status = 'attendance' OR (t.status = 'cancel' AND t.times = 1)
+            ) used`,
+      values: [Ticket.tableName, Ticket.tableTicketRelation, tableName, Ticket.tableName, Ticket.tableTicketRelation]
     })
-    return row && row.count
-  } catch (e) {
-    throw e
+    return row
+  } catch (err) {
+    throw err
+  }
+}
+
+async function findOneWithTime(options: {ticketId: number; startTime: string; endTime: string}): Promise<number> {
+  const {ticketId, startTime, endTime} = options
+  try {
+    const [row] = await db.query(
+      {
+        sql: `SELECT count(id) as count FROM ??  
+            WHERE times != 0 AND ticketId = ${escape(ticketId)}
+            AND (((startTime < '${startTime}' AND '${startTime}' < endTime) OR (startTime < '${endTime}' AND '${endTime}'< endTime))
+            OR (startTime >= '${startTime}' AND endTime <= '${endTime}'))
+            `,
+        values: [this.tableName]
+      },
+      '*'
+    )
+    return row.count
+  } catch (err) {
+    throw err
   }
 }
 
@@ -276,10 +329,12 @@ export {
   findOneWithId,
   findOne,
   findValidCount,
-  findOneWithTime,
   findCountByTicketIdAndPrevStartTime,
   findBetweenReservation,
   findAllByTicketIdAndLaterStartTime,
+  findBurnRate,
+  findAttendanceNoShowCount,
+  findOneWithTime,
   update
   // deleteRelationExercise
 }

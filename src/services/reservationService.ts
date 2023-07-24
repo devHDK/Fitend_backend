@@ -43,14 +43,13 @@ async function create(options: {
       return 0
     })
 
-    let reservationId = 0
+    for (let i = 0; i < renewReservations.length; i++) {
+      const {startTime, endTime} = renewReservations[i]
+      const reservationDuplicate = await Reservation.findOneWithTime({ticketId, startTime, endTime})
+      if (reservationDuplicate > 0) throw new Error('reservation_duplicate')
+    }
 
-    // 겹치는 일정 validation
-    // for (let i = 0; i < renewReservations.length; i++) {
-    //   const {startTime, endTime} = renewReservations[i]
-    //   const reservationDuplicate = await Reservation.findOneWithTime({trainerId, startTime, endTime})
-    //   if (reservationDuplicate > 0) throw new Error('reservation_duplicate')
-    // }
+    let reservationId = 0
 
     const prevOrderNum = await Reservation.findCountByTicketIdAndPrevStartTime({
       startTime: renewReservations[0].startTime,
@@ -223,6 +222,7 @@ async function update(options: {id: number; startTime: string; endTime: string; 
             },
             connection
           )
+
           if (laterReservation && laterReservation.length > 0) {
             for (let j = 0; j < laterReservation.length; j++) {
               await Reservation.update(
@@ -277,6 +277,8 @@ async function update(options: {id: number; startTime: string; endTime: string; 
           }
         }
       } else if (status === 'complete') {
+        const reservationDuplicate = await Reservation.findOneWithTime({ticketId: tickets.id, startTime, endTime})
+        if (reservationDuplicate > 0) throw new Error('reservation_duplicate')
         const isAfter = moment(reservedStartTime).isBefore(moment(startTime), 'minute')
         const betweenReservations = await Reservation.findBetweenReservation(
           {
