@@ -31,10 +31,7 @@ async function create(options: IReservationCreate, connection?: PoolConnection):
 async function findAll(options: IReservationFindAll): Promise<[IReservationList]> {
   const {franchiseId, userId, trainerId, startDate, endDate} = options
   try {
-    const where = [
-      `t.status != 'cancel' AND t.times = 1`,
-      `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`
-    ]
+    const where = [`t.times = 1`, `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`]
     if (trainerId) where.push(`t.trainerId = ${escape(trainerId)}`)
     return await db.query({
       sql: `SELECT t.id, t.startTime, t.endTime, t.status, ti.type as ticketType,
@@ -160,16 +157,24 @@ async function findAttendanceNoShowCount(
   try {
     const [row] = await db.query({
       sql: `SELECT 
-            (SELECT COUNT(*) FROM ?? t
+            (SELECT COUNT(t.id)
+            FROM (
+            SELECT t.id FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)}
             WHERE t.status = 'attendance' AND t.ticketId = ti.id
-            AND t.startTime BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}) as attendance,
-            (SELECT COUNT(*) FROM ?? t
+            AND t.startTime BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}
+            GROUP BY t.id
+            ) t) as attendance,
+            (SELECT COUNT(t.id)
+            FROM (
+            SELECT t.id FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)}
             WHERE t.status = 'cancel' AND t.times = 1 AND t.ticketId = ti.id
-            AND t.startTime BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}) as noShow
+            AND t.startTime BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}
+            GROUP BY t.id
+            ) t) as noShow
             `,
       values: [
         tableName,
@@ -261,11 +266,15 @@ async function findBurnRate(franchiseId: number): Promise<{total: number; used: 
             WHERE t.expiredAt > NOW()
             ) total,
             (
-            SELECT COUNT(t.id) FROM ?? t
+            SELECT COUNT(t.id)
+            FROM (
+            SELECT t.id FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)} 
             AND ti.expiredAt > NOW()
             WHERE t.status = 'attendance' OR (t.status = 'cancel' AND t.times = 1)
+            GROUP BY t.id
+            ) t
             ) used`,
       values: [Ticket.tableName, Ticket.tableTicketRelation, tableName, Ticket.tableName, Ticket.tableTicketRelation]
     })
