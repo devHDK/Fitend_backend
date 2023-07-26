@@ -9,6 +9,9 @@
           "id": {
             "type": "integer"
           },
+          "userId": {
+            "type": "integer"
+          },
           "type": {
             "type": "string",
             "enum": ["reservation", "workoutSchedule"]
@@ -17,7 +20,8 @@
             "type": "string"
           },
           "info": {
-            "type": "object"
+            "type": "object",
+            "nullable": true
           },
           "isConfirm": {
             "type": "boolean"
@@ -28,6 +32,7 @@
         },
         "required": [
           "id",
+          "userId",
           "type",
           "contents",
           "info",

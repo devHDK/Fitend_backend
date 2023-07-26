@@ -35,4 +35,15 @@ const putNotificationsConfirm = new ApiRouter({
   handler: ctrl.putNotificationsConfirm
 })
 
+const putNotificationsSettings = new ApiRouter({
+  name: 'settings',
+  method: 'put',
+  summary: '전체 읽음 처리',
+  tags: ['Notification'],
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putNotificationsConfirm
+})
+
 export {getNotifications, getNotificationsConfirm, putNotificationsConfirm}

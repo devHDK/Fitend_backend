@@ -54,10 +54,9 @@ const sendReservationMessage = async (options: IReservationPushType): Promise<vo
 }
 
 const sendWorkoutScheduleMessage = async (options: IWorkoutSchedulePushType): Promise<void> => {
-  const {tokens, type, data, badge, contents} = options
+  const {tokens, type, data, badge} = options
   try {
     const payload = {
-      notification: {title: '', body: contents},
       data: {type, ...data}
     }
     await sendPush(tokens, badge, payload)

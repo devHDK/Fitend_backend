@@ -135,10 +135,7 @@ async function create(options: {
         tokens: userDevices.map((device: IUserDevice) => device.token),
         type: 'reservationCreate',
         contents,
-        badge: user.badgeCount + 1,
-        data: JSON.stringify({
-          startTime: moment(renewReservations[0].startTime).tz('Asia/Seoul').format('YYYY-MM-DD')
-        })
+        badge: user.badgeCount + 1
       })
     }
 
@@ -250,17 +247,14 @@ async function update(options: {id: number; startTime: string; endTime: string; 
               tokens: userDevices.map((device: IUserDevice) => device.token),
               type: 'reservationCancel',
               contents,
-              badge: user.badgeCount + 1,
-              data: JSON.stringify({
-                startTime: moment(startTime).tz('Asia/Seoul').format('YYYY-MM-DD')
-              })
+              badge: user.badgeCount + 1
             })
           }
         } else {
           await Notification.create(
             {
               userId,
-              type: 'reservationNoShow',
+              type: 'reservation',
               contents,
               info: JSON.stringify({reservationId: id})
             },

@@ -20,7 +20,6 @@ import {
 } from '../interfaces/workoutSchedules'
 import {IWorkoutFeedbackCreate} from '../interfaces/workoutFeedbacks'
 import {db} from '../loaders'
-import {util} from '../libs'
 import {workoutScheduleSubscriber} from '../subscribers'
 import {IUserDevice} from '../interfaces/userDevice'
 
@@ -69,30 +68,26 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
     )
     const user = await User.findOne({id: data.userId})
     const userDevices = await UserDevice.findAllWithUserId(user.id, user.platform)
-    const contents = `새로운 운동플랜이 있어요 🏋\n${util.defaultWorkoutTimeFormatForPush(
-      data.startDate,
-      data.totalTime,
-      data.workoutTitle
-    )}`
-    await Notification.create(
-      {
-        userId: user.id,
-        type: 'workoutSchedule',
-        contents,
-        info: JSON.stringify({workoutScheduleId})
-      },
-      connection
-    )
+    // const contents = `새로운 운동플랜이 있어요 🏋\n${util.defaultWorkoutTimeFormatForPush(
+    //   data.startDate,
+    //   data.totalTime,
+    //   data.workoutTitle
+    // )}`
+    // await Notification.create(
+    //   {
+    //     userId: user.id,
+    //     type: 'workoutSchedule',
+    //     contents,
+    //     info: JSON.stringify({workoutScheduleId})
+    //   },
+    //   connection
+    // )
     if (userDevices && userDevices.length > 0) {
       await User.updateBadgeCount(user.id, connection)
       workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
         tokens: userDevices.map((device: IUserDevice) => device.token),
         type: 'workoutScheduleCreate',
-        contents,
-        badge: user.badgeCount + 1,
-        data: JSON.stringify({
-          startTime: data.startDate
-        })
+        badge: user.badgeCount + 1
       })
     }
     await db.commit(connection)
@@ -194,30 +189,29 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
     }
     const user = await User.findOne({id: workoutSchedule.userId})
     const userDevices = await UserDevice.findAllWithUserId(user.id, user.platform)
-    const contents = `운동플랜이 수정 되었어요 📝\n${util.defaultWorkoutTimeFormatForPush(
-      data.startDate,
-      data.totalTime,
-      data.workoutTitle
-    )}`
-    await Notification.create(
-      {
-        userId: user.id,
-        type: 'workoutSchedule',
-        contents,
-        info: JSON.stringify({workoutScheduleId: workoutSchedule.id})
-      },
-      connection
-    )
+    // const contents = `운동플랜이 수정 되었어요 📝\n${util.defaultWorkoutTimeFormatForPush(
+    //   data.startDate,
+    //   data.totalTime,
+    //   data.workoutTitle
+    // )}`
+    // await Notification.create(
+    //   {
+    //     userId: user.id,
+    //     type: 'workoutSchedule',
+    //     contents,
+    //     info: JSON.stringify({workoutScheduleId: workoutSchedule.id})
+    //   },
+    //   connection
+    // )
     if (userDevices && userDevices.length > 0) {
       await User.updateBadgeCount(user.id, connection)
       workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
         tokens: userDevices.map((device: IUserDevice) => device.token),
-        type: 'workoutScheduleChangeDate',
-        contents,
+        type: 'workoutScheduleChange',
         badge: user.badgeCount + 1,
-        data: JSON.stringify({
-          startTime: data.startDate
-        })
+        data: {
+          workoutScheduleId: workoutSchedule.id
+        }
       })
     }
     await db.commit(connection)
