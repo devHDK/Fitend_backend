@@ -65,8 +65,8 @@ async function findAllForUser(options: IReservationFindAllForUser): Promise<[IRe
     return await db.query({
       sql: `SELECT DATE_FORMAT(DATE_ADD(t.startTime, INTERVAL 9 HOUR), '%Y-%m-%d') as startDate,
             JSON_ARRAYAGG(JSON_OBJECT(
-            'id', t.id, 'startTime', DATE_FORMAT(t.startTime, '%Y-%m-%dT%h:%i:%s.000Z'), 
-            'endTime', DATE_FORMAT(t.endTime, '%Y-%m-%dT%h:%i:%s.000Z'), 'status', t.status,
+            'id', t.id, 'startTime', DATE_FORMAT(t.startTime, '%Y-%m-%dT%H:%i:%s.000Z'), 
+            'endTime', DATE_FORMAT(t.endTime, '%Y-%m-%dT%H:%i:%s.000Z'), 'status', t.status,
             'ticketType', ti.type, 'userNickname', u.nickname, 'seq', t.seq, 'totalSession', ti.totalSession,
             'ticketStartedAt', ti.startedAt, 'ticketExpiredAt', ti.expiredAt, 
             'trainer', JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage)

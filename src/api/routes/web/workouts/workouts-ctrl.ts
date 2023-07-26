@@ -4,7 +4,14 @@ import {WorkoutService} from '../../../../services'
 async function postWorkouts(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {title, subTitle, totalTime, exercises} = req.options
-    await WorkoutService.create({trainerId: req.userId, title, subTitle, totalTime, exercises})
+    await WorkoutService.create({
+      trainerId: req.userId,
+      franchiseId: req.franchiseId,
+      title,
+      subTitle,
+      totalTime,
+      exercises
+    })
     res.status(200).json()
   } catch (e) {
     next(e)

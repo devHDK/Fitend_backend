@@ -11,6 +11,7 @@ export interface IWorkout {
 
 export interface IWorkoutCreate {
   trainerId: number
+  franchiseId: number
   title: string
   subTitle: string
   totalTime: string

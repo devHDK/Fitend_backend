@@ -60,6 +60,7 @@ export interface IUserUpdate {
   birth?: string
   gender?: string
   password?: string
+  badgeCount?: number
   memo?: string
   platform?: string
   deviceId?: string

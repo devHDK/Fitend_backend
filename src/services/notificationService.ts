@@ -1,5 +1,6 @@
 import {INotificationFindAll, INotificationList} from '../interfaces/notifications'
 import {Notification, User, UserDevice} from '../models/index'
+import {db} from '../loaders'
 
 async function findAll(options: INotificationFindAll): Promise<INotificationList> {
   try {
@@ -18,9 +19,13 @@ async function findConfirm(userId: number): Promise<boolean> {
 }
 
 async function updateConfirmWithUserId(userId: number): Promise<void> {
+  const connection = await db.beginTransaction()
   try {
-    await Notification.updateConfirmWithUserId(userId)
+    await Notification.updateConfirmWithUserId(userId, connection)
+    await User.updateOne({id: userId, badgeCount: 0}, connection)
+    await db.commit(connection)
   } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }

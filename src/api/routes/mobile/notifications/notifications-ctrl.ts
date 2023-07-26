@@ -22,8 +22,8 @@ async function getNotificationsConfirm(req: IRequest, res: Response, next: Funct
 
 async function putNotificationsConfirm(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const ret = await NotificationService.updateConfirmWithUserId(req.userId)
-    res.status(200).json({isConfirm: ret})
+    await NotificationService.updateConfirmWithUserId(req.userId)
+    res.status(200).json()
   } catch (e) {
     next(e)
   }

@@ -67,7 +67,7 @@ async function findConfirm(userId: number): Promise<boolean> {
   }
 }
 
-async function updateConfirmWithUserId(userId: number): Promise<void> {
+async function updateConfirmWithUserId(userId: number, connection?: PoolConnection): Promise<void> {
   try {
     await db.query({
       sql: `UPDATE ?? SET ? WHERE ?`,

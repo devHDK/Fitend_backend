@@ -4,6 +4,7 @@ import {db} from '../loaders'
 
 async function create(options: {
   trainerId: number
+  franchiseId: number
   title: string
   subTitle: string
   totalTime: string
@@ -16,10 +17,11 @@ async function create(options: {
 }): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {trainerId, title, subTitle, totalTime, exercises} = options
+    const {trainerId, franchiseId, title, subTitle, totalTime, exercises} = options
     const workoutId = await Workout.create(
       {
         trainerId,
+        franchiseId,
         title,
         subTitle,
         totalTime
