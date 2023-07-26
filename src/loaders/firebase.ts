@@ -19,8 +19,17 @@ async function init(): Promise<void> {
   logger.debug('Firebase loaded')
 }
 
-const sendPush = async (tokens: string[], badge: number, payload: admin.messaging.MessagingPayload): Promise<void> => {
+const sendPush = async (
+  tokens: string[],
+  badge: number,
+  sound: string,
+  payload: admin.messaging.MessagingPayload
+): Promise<void> => {
   try {
+    const apnsPayload: {aps: {contentAvailable: boolean; badge: number; sound?: string}} = {
+      aps: {contentAvailable: true, badge}
+    }
+    if (sound) apnsPayload.aps.sound = sound
     const result = await admin.messaging().sendMulticast({
       tokens,
       data: payload.data,
@@ -29,9 +38,7 @@ const sendPush = async (tokens: string[], badge: number, payload: admin.messagin
         headers: {
           messageType: 'background'
         },
-        payload: {
-          aps: {contentAvailable: true, badge, sound: 'default'}
-        }
+        payload: apnsPayload
       }
     })
     logger.info(`[FCM] sendToTopic result : ${JSON.stringify(result)}`)
@@ -47,7 +54,7 @@ const sendReservationMessage = async (options: IReservationPushType): Promise<vo
       notification: {title: '', body: contents},
       data: {type, ...data}
     }
-    await sendPush(tokens, badge, payload)
+    await sendPush(tokens, badge, 'default', payload)
   } catch (e) {
     throw e
   }
@@ -59,7 +66,7 @@ const sendWorkoutScheduleMessage = async (options: IWorkoutSchedulePushType): Pr
     const payload = {
       data: {type, ...data}
     }
-    await sendPush(tokens, badge, payload)
+    await sendPush(tokens, badge, null, payload)
   } catch (e) {
     throw e
   }
