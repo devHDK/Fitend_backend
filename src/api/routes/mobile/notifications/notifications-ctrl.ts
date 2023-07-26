@@ -31,7 +31,7 @@ async function putNotificationsConfirm(req: IRequest, res: Response, next: Funct
 
 async function putNotificationsSettings(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    await NotificationService.updateSettings(req.userId)
+    await NotificationService.updateSettings(req.userId, req.options.isNotification)
     res.status(200).json()
   } catch (e) {
     next(e)

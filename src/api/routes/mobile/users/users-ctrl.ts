@@ -15,21 +15,11 @@ async function postUsersPasswordConfirm(req: IRequest, res: Response, next: Func
 
 async function getMe(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {authorization} = req.headers
-    if (authorization && authorization.split(' ')[0] === 'Bearer') {
-      const jwtToken = await JWT.decodeToken(authorization.split(' ')[1], {algorithms: ['RS256']})
-      if (jwtToken.sub) {
-        req.userId = jwtToken.sub
-        req.userType = jwtToken.type
-      }
-    }
     const user = await UserService.getMe({id: req.userId})
-    const isActive = await Ticket.findOneWithUserId(user.id)
-    if (!isActive) throw new Error('ticket_expired')
-    delete user.password
     res.status(200).json({user})
   } catch (e) {
     if (e.message === 'ticket_expired') e.status = 401
+    if (e.message === 'no_token') e.status = 401
     next(e)
   }
 }

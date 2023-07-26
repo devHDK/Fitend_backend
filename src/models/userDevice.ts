@@ -80,12 +80,12 @@ async function findAllWithUserId(userId: number, platform: 'ios' | 'android'): P
 }
 
 async function updateOne(options: IUserDeviceUpdate, connection?: PoolConnection): Promise<void> {
-  const {userId, platform, ...data} = options
+  const {userId, platform, deviceId, ...data} = options
   try {
     await db.query({
       connection,
-      sql: `UPDATE ?? SET ? WHERE ? AND ?`,
-      values: [tableName, data, {userId}, {platform}]
+      sql: `UPDATE ?? SET ? WHERE ? AND ? AND ?`,
+      values: [tableName, data, {userId}, {platform}, {deviceId}]
     })
   } catch (e) {
     throw e

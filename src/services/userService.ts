@@ -1,4 +1,4 @@
-import {Ticket, User, WorkoutSchedule} from '../models'
+import {Ticket, User, UserDevice, WorkoutSchedule} from '../models'
 import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserListForTrainer, IUserCreateOne} from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'
@@ -56,7 +56,13 @@ async function confirmPassword(options: {id: number; password: string}): Promise
 async function getMe(options: {id: number}): Promise<IUser> {
   try {
     const {id} = options
-    return await User.findOne({id})
+    const user = await User.findOne({id})
+    const userDevice = await UserDevice.findOne(user.id, user.deviceId, user.platform)
+    if (!userDevice.token) throw new Error('no_token')
+    const isActive = await Ticket.findOneWithUserId(user.id)
+    if (!isActive) throw new Error('ticket_expired')
+    delete user.password
+    return user
   } catch (e) {
     throw e
   }

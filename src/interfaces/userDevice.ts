@@ -10,5 +10,7 @@ export interface IUserDevice {
 export interface IUserDeviceUpdate {
   userId: number
   platform: 'ios' | 'android'
+  deviceId: string
   token?: string
+  isNotification?: boolean
 }

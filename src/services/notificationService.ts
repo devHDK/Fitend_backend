@@ -25,10 +25,10 @@ async function updateConfirmWithUserId(userId: number): Promise<void> {
   }
 }
 
-async function updateSettings(userId: number): Promise<void> {
+async function updateSettings(userId: number, isNotification: boolean): Promise<void> {
   try {
     const user = await User.findOne({id: userId})
-    const userDevice = await UserDevice.findOne(userId, user.deviceId, user.platform)
+    await UserDevice.updateOne({userId, deviceId: user.deviceId, platform: user.platform, isNotification})
   } catch (e) {
     throw e
   }
