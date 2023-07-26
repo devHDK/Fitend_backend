@@ -1,5 +1,5 @@
 import {INotificationFindAll, INotificationList} from '../interfaces/notifications'
-import {Notification} from '../models/index'
+import {Notification, User, UserDevice} from '../models/index'
 
 async function findAll(options: INotificationFindAll): Promise<INotificationList> {
   try {
@@ -25,4 +25,13 @@ async function updateConfirmWithUserId(userId: number): Promise<void> {
   }
 }
 
-export {findAll, findConfirm, updateConfirmWithUserId}
+async function updateSettings(userId: number): Promise<void> {
+  try {
+    const user = await User.findOne({id: userId})
+    const userDevice = await UserDevice.findOne(userId, user.deviceId, user.platform)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {findAll, findConfirm, updateConfirmWithUserId, updateSettings}

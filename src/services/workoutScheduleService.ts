@@ -210,7 +210,7 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
         type: 'workoutScheduleChange',
         badge: user.badgeCount + 1,
         data: {
-          workoutScheduleId: workoutSchedule.id
+          workoutScheduleId: workoutSchedule.id.toString()
         }
       })
     }

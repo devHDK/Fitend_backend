@@ -52,13 +52,13 @@ async function upsertOne(
   }
 }
 
-async function findOne(userId: number, type: 'student' | 'presenter'): Promise<IUserDevice> {
+async function findOne(userId: number, deviceId: string, platform: 'ios' | 'android'): Promise<IUserDevice> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.*
             FROM ?? t
-            WHERE ? AND ?`,
-      values: [tableName, {userId}, {type}]
+            WHERE ? AND ? AND ?`,
+      values: [tableName, {userId}, {deviceId}, {platform}]
     })
     return row
   } catch (e) {

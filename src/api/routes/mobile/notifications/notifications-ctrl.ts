@@ -29,4 +29,13 @@ async function putNotificationsConfirm(req: IRequest, res: Response, next: Funct
   }
 }
 
-export {getNotifications, getNotificationsConfirm, putNotificationsConfirm}
+async function putNotificationsSettings(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    await NotificationService.updateSettings(req.userId)
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+export {getNotifications, getNotificationsConfirm, putNotificationsConfirm, putNotificationsSettings}
