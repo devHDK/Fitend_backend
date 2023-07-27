@@ -11,6 +11,7 @@ export interface IUser {
   platform?: 'android' | 'ios'
   deviceId?: string
   badgeCount?: number
+  isNotification?: boolean
   createdAt?: string
   deletedAt?: Date | string
 }

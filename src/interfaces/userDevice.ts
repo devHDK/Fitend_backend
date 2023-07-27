@@ -3,6 +3,7 @@ export interface IUserDevice {
   deviceId: string
   token: string
   platform: 'ios' | 'android'
+  isNotification: boolean
   createdAt: string | Date
   updatedAt: string | Date
 }

@@ -8,8 +8,8 @@ function defaultTimeFormatForPush(startTime: string): string {
 }
 
 function changeTimeFormatForPush(beforeTime: string, changeTime: string): string {
-  const convertBeforeTime = moment(beforeTime).format('M/D hh:mm')
-  const convertChangeTime = moment(changeTime).format('M/D hh:mm')
+  const convertBeforeTime = moment(beforeTime).format('M/D HH:mm')
+  const convertChangeTime = moment(changeTime).format('M/D HH:mm')
   return `${convertBeforeTime} → ${convertChangeTime}`
 }
 

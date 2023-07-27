@@ -177,7 +177,9 @@ async function findAllUsers(
             FROM ?? t
             JOIN ?? wst ON wst.userId = t.id AND wst.franchiseId = ${escape(franchiseId)} 
             AND wst.month = ${escape(month)}
-            LEFT JOIN ?? tr ON tr.userId = t.id
+            LEFT JOIN (
+            SELECT tr2.userId, tr2.trainerId FROM ?? tr2 GROUP BY tr2.userId, tr2.trainerId
+            ) tr ON tr.userId = t.id
             LEFT JOIN ?? tra ON tra.id = tr.trainerId 
             GROUP BY t.id`,
       values: [

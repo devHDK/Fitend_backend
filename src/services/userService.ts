@@ -1,3 +1,4 @@
+import {use} from 'chai'
 import {Ticket, User, UserDevice, WorkoutSchedule} from '../models'
 import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserListForTrainer, IUserCreateOne} from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
@@ -62,7 +63,7 @@ async function getMe(options: {id: number}): Promise<IUser> {
     const isActive = await Ticket.findOneWithUserId(user.id)
     if (!isActive) throw new Error('ticket_expired')
     delete user.password
-    return user
+    return {...user, isNotification: userDevice.isNotification}
   } catch (e) {
     throw e
   }
