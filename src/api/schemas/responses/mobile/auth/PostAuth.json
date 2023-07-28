@@ -22,6 +22,9 @@
         "phone": {
           "type": "string"
         },
+        "isNotification": {
+          "type": "boolean"
+        },
         "deletedAt": {
           "type": "string",
           "nullable": true

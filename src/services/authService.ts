@@ -19,6 +19,7 @@ async function signIn(options: {
       user &&
       Code.verifyPassword(password, user.password.password, user.password.salt, Code.passwordIterations.mobile)
     ) {
+      const userDevice = await UserDevice.findOne(user.id, user.deviceId, user.platform)
       const isActive = await Ticket.findOneWithUserId(user.id)
       if (!isActive) throw new Error('not_allowed')
       const accessToken = await JWT.createAccessToken({id: user.id, type: 'user'})
@@ -29,7 +30,14 @@ async function signIn(options: {
       }
       delete user.password
       await db.commit(connection)
-      return {accessToken, refreshToken, user}
+      return {
+        accessToken,
+        refreshToken,
+        user: {
+          ...user,
+          isNotification: userDevice.isNotification
+        }
+      }
     }
     throw new Error('invalid_password')
   } catch (e) {
