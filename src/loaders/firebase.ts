@@ -1,5 +1,6 @@
 import admin from 'firebase-admin'
 import config from 'config'
+import {AndroidNotification} from 'firebase-admin/lib/messaging'
 import {aws, logger} from './'
 import {IReservationPushType} from '../interfaces/reservation'
 import {IWorkoutSchedulePushType} from '../interfaces/workoutSchedules'
@@ -34,6 +35,11 @@ const sendPush = async (
       tokens,
       data: payload.data,
       notification: payload.notification,
+      android: {
+        notification: {
+          clickAction: 'FLUTTER_NOTIFICATION_CLICK'
+        }
+      },
       apns: {
         headers: {
           messageType: 'background'
