@@ -67,7 +67,7 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
       connection
     )
     const user = await User.findOne({id: data.userId})
-    const userDevices = await UserDevice.findAllWithUserId(user.id, user.platform)
+    const userDevices = await UserDevice.findAllWithUserId(user.id)
     // const contents = `새로운 운동플랜이 있어요 🏋\n${util.defaultWorkoutTimeFormatForPush(
     //   data.startDate,
     //   data.totalTime,
@@ -188,7 +188,7 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
       )
     }
     const user = await User.findOne({id: workoutSchedule.userId})
-    const userDevices = await UserDevice.findAllWithUserId(user.id, user.platform)
+    const userDevices = await UserDevice.findAllWithUserId(user.id)
     // const contents = `운동플랜이 수정 되었어요 📝\n${util.defaultWorkoutTimeFormatForPush(
     //   data.startDate,
     //   data.totalTime,

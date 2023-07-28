@@ -66,13 +66,13 @@ async function findOne(userId: number, deviceId: string, platform: 'ios' | 'andr
   }
 }
 
-async function findAllWithUserId(userId: number, platform: 'ios' | 'android'): Promise<[IUserDevice]> {
+async function findAllWithUserId(userId: number): Promise<[IUserDevice]> {
   try {
     return await db.query({
       sql: `SELECT *
             FROM ?? 
-            WHERE isNotification = true AND ? AND ?`,
-      values: [tableName, {userId}, {platform}]
+            WHERE isNotification = true AND ?`,
+      values: [tableName, {userId}]
     })
   } catch (e) {
     throw e

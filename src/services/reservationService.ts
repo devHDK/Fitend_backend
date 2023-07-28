@@ -118,7 +118,7 @@ async function create(options: {
     }
 
     const user = await User.findOne({id: userId})
-    const userDevices = await UserDevice.findAllWithUserId(user.id, user.platform)
+    const userDevices = await UserDevice.findAllWithUserId(user.id)
     const contents = `예약이 확정 되었어요 😊\n${util.defaultTimeFormatForPush(renewReservations[0].startTime)}`
     await Notification.create(
       {
@@ -199,7 +199,7 @@ async function update(options: {id: number; startTime: string; endTime: string; 
     )
 
     const user = await User.findOne({id: userId})
-    const userDevices = await UserDevice.findAllWithUserId(user.id, user.platform)
+    const userDevices = await UserDevice.findAllWithUserId(user.id)
 
     if (reservedStatus === 'complete') {
       if (status === 'cancel' || status === 'noShow') {
