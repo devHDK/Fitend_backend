@@ -83,7 +83,7 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
     //   connection
     // )
     if (userDevices && userDevices.length > 0) {
-      await User.updateBadgeCount(user.id, connection)
+      // await User.updateBadgeCount(user.id, connection)
       workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
         tokens: userDevices.map((device: IUserDevice) => device.token),
         type: 'workoutScheduleCreate',
@@ -204,7 +204,7 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
     //   connection
     // )
     if (userDevices && userDevices.length > 0) {
-      await User.updateBadgeCount(user.id, connection)
+      // await User.updateBadgeCount(user.id, connection)
       workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
         tokens: userDevices.map((device: IUserDevice) => device.token),
         type: 'workoutScheduleChange',
