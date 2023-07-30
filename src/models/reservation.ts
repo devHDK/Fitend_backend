@@ -58,7 +58,7 @@ async function findAllForUser(options: IReservationFindAllForUser): Promise<[IRe
   try {
     const startDateUtc = moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss')
     const where = [
-      `t.status != 'cancel' AND t.times = 1`,
+      `t.times = 1`,
       `t.startTime BETWEEN ${escape(startDateUtc)} AND DATE_ADD('${startDateUtc}', 
       INTERVAL ${interval ? escape(interval) : 30} DAY)`
     ]
