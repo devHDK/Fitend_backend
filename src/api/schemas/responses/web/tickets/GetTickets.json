@@ -25,6 +25,9 @@
           "restSession": {
             "type": "integer"
           },
+          "availSession": {
+            "type": "integer"
+          },
           "startedAt": {
             "type": "string"
           },

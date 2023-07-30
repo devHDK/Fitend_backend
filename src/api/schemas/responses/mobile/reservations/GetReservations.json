@@ -30,6 +30,9 @@
                   "type": "string",
                   "enum": ["complete", "attendance", "cancel"]
                 },
+                "times": {
+                  "type": "integer"
+                },
                 "ticketType": {
                   "type": "string"
                 },

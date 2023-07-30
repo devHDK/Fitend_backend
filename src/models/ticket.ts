@@ -71,6 +71,8 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             (t.totalSession - (SELECT COUNT(*) FROM ?? r
             WHERE r.ticketId = t.id AND 
             (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession,
+            (t.totalSession - (SELECT COUNT(*) FROM ?? r
+            WHERE r.ticketId = t.id AND r.times = 1)) as availSession,
             DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
             JSON_ARRAY(u.nickname) as users
@@ -85,7 +87,14 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
-      values: [Reservation.tableName, tableName, tableTicketRelation, franchiseId, User.tableName]
+      values: [
+        Reservation.tableName,
+        Reservation.tableName,
+        tableName,
+        tableTicketRelation,
+        franchiseId,
+        User.tableName
+      ]
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM (

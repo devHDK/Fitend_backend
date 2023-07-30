@@ -70,6 +70,7 @@ export interface IReservationList {
       startTime: string
       endTime: string
       status: string
+      times: boolean
       ticketType: string
       userNickname: string
       trainer: {
