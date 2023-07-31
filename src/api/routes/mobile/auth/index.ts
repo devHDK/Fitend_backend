@@ -17,6 +17,17 @@ const postAuth = new ApiRouter({
   handler: ctrl.postAuth
 })
 
+const postAuthLogout = new ApiRouter({
+  name: 'logout',
+  method: 'post',
+  summary: '로그아웃',
+  tags: ['Auth'],
+  responses: {
+    200: {description: 'Success'}
+  },
+  handler: ctrl.postAuthLogout
+})
+
 const postAuthRefresh = new ApiRouter({
   name: 'refresh',
   method: 'post',
@@ -31,4 +42,4 @@ const postAuthRefresh = new ApiRouter({
   handler: ctrl.postAuthRefresh
 })
 
-export {postAuth, postAuthRefresh}
+export {postAuth, postAuthLogout, postAuthRefresh}

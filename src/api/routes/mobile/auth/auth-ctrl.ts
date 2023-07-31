@@ -23,6 +23,19 @@ async function postAuth(req: IRequest, res: Response, next: Function): Promise<v
   }
 }
 
+async function postAuthLogout(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    await AuthService.signOut(req.userId)
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'invalid_token') {
+      e.status = 401
+      e.message = '유효하지 않은 토큰입니다.'
+    }
+    next(e)
+  }
+}
+
 async function postAuthRefresh(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {accessToken, refreshToken} = req.options
@@ -37,4 +50,4 @@ async function postAuthRefresh(req: IRequest, res: Response, next: Function): Pr
   }
 }
 
-export {postAuth, postAuthRefresh}
+export {postAuth, postAuthLogout, postAuthRefresh}

@@ -27,6 +27,7 @@ async function signIn(options: {
       await User.updateOne({id: user.id, deviceId, platform}, connection)
       if (token) {
         await UserDevice.upsertOne({userId: user.id, platform, deviceId, token}, connection)
+        await UserDevice.updateOne({userId: user.id, platform, deviceId, isNotification: true}, connection)
       }
       delete user.password
       await db.commit(connection)
@@ -42,6 +43,15 @@ async function signIn(options: {
     throw new Error('invalid_password')
   } catch (e) {
     if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
+async function signOut(userId: number): Promise<void> {
+  try {
+    const user = await User.findOne({id: userId})
+    await UserDevice.updateOne({userId, platform: user.platform, deviceId: user.deviceId, isNotification: false})
+  } catch (e) {
     throw e
   }
 }
@@ -65,4 +75,4 @@ async function refreshToken(accessToken: string, refreshToken: string): Promise<
   }
 }
 
-export {signIn, refreshToken}
+export {signIn, signOut, refreshToken}
