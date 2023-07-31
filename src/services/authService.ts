@@ -47,10 +47,9 @@ async function signIn(options: {
   }
 }
 
-async function signOut(userId: number): Promise<void> {
+async function signOut(userId: number, platform: 'ios' | 'android', deviceId: string): Promise<void> {
   try {
-    const user = await User.findOne({id: userId})
-    await UserDevice.updateOne({userId, platform: user.platform, deviceId: user.deviceId, isNotification: false})
+    await UserDevice.updateOne({userId, platform, deviceId, isNotification: false})
   } catch (e) {
     throw e
   }

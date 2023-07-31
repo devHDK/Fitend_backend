@@ -22,6 +22,7 @@ const postAuthLogout = new ApiRouter({
   method: 'post',
   summary: '로그아웃',
   tags: ['Auth'],
+  schema: 'requests/mobile/auth/PostAuthLogout',
   responses: {
     200: {description: 'Success'}
   },

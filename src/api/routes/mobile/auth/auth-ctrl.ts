@@ -25,7 +25,7 @@ async function postAuth(req: IRequest, res: Response, next: Function): Promise<v
 
 async function postAuthLogout(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    await AuthService.signOut(req.userId)
+    await AuthService.signOut(req.userId, req.options.platform, req.options.deviceId)
     res.status(200).json()
   } catch (e) {
     if (e.message === 'invalid_token') {
