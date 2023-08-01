@@ -224,7 +224,7 @@ async function findCounts(
             FROM ?? t 
             JOIN ?? tr ON tr.ticketId = t.id AND tr.userId = ${escape(userId)}
             WHERE t.expiredAt < ${escape(currentTime)}
-            GROUP BY t.id) as expiredCount`,
+            ) as expiredCount`,
       values: [tableName, tableTicketRelation, tableName, tableTicketRelation, tableName, tableTicketRelation]
     })
     return row
