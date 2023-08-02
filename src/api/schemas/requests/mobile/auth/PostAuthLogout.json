@@ -5,7 +5,8 @@
       "type": "string"
     },
     "platform": {
-      "type": "string"
+      "type": "string",
+      "enum": ["ios", "android"]
     }
   },
   "required": [

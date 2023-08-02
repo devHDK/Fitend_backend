@@ -28,10 +28,6 @@ async function postAuthLogout(req: IRequest, res: Response, next: Function): Pro
     await AuthService.signOut(req.userId, req.options.platform, req.options.deviceId)
     res.status(200).json()
   } catch (e) {
-    if (e.message === 'invalid_token') {
-      e.status = 401
-      e.message = '유효하지 않은 토큰입니다.'
-    }
     next(e)
   }
 }
