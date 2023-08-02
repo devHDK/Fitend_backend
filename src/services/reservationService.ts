@@ -271,7 +271,10 @@ async function update(options: {id: number; startTime: string; endTime: string; 
           }
         }
       } else if (status === 'complete') {
-        const reservationDuplicate = await Reservation.findOneWithTime({ticketId: tickets.id, startTime, endTime})
+        const reservationDuplicate = await Reservation.findOneWithTime(
+          {ticketId: tickets.id, startTime, endTime, reservedId: id},
+          connection
+        )
         if (reservationDuplicate > 0) throw new Error('reservation_duplicate')
         const isAfter = moment(reservedStartTime).isBefore(moment(startTime), 'minute')
         const betweenReservations = await Reservation.findBetweenReservation(

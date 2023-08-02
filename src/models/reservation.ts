@@ -284,16 +284,20 @@ async function findBurnRate(franchiseId: number): Promise<{total: number; used: 
   }
 }
 
-async function findOneWithTime(options: {ticketId: number; startTime: string; endTime: string}): Promise<number> {
-  const {ticketId, startTime, endTime} = options
+async function findOneWithTime(
+  options: {ticketId: number; startTime: string; endTime: string; reservedId?: number},
+  connection?: PoolConnection
+): Promise<number> {
+  const {ticketId, startTime, endTime, reservedId} = options
   try {
     const [row] = await db.query(
       {
+        connection,
         sql: `SELECT count(id) as count FROM ??  
             WHERE times != 0 AND ticketId = ${escape(ticketId)}
             AND (((startTime < '${startTime}' AND '${startTime}' < endTime) OR (startTime < '${endTime}' AND '${endTime}'< endTime))
-            OR (startTime >= '${startTime}' AND endTime <= '${endTime}'))
-            `,
+            OR (startTime >= '${startTime}' AND endTime <= '${endTime}')) 
+            ${reservedId ? `AND id != ${escape(reservedId)}` : ``}`,
         values: [this.tableName]
       },
       '*'
