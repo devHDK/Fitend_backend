@@ -36,7 +36,7 @@ async function signIn(options: {
         refreshToken,
         user: {
           ...user,
-          isNotification: userDevice.isNotification
+          isNotification: userDevice ? userDevice.isNotification : true
         }
       }
     }

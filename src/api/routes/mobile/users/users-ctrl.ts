@@ -1,7 +1,5 @@
 import {Response} from 'express'
 import {UserService} from '../../../../services'
-import {jwt as JWT} from '../../../../libs'
-import {Ticket} from '../../../../models'
 
 async function postUsersPasswordConfirm(req: IRequest, res: Response, next: Function): Promise<void> {
   try {

@@ -1,4 +1,3 @@
-import {use} from 'chai'
 import {Ticket, User, UserDevice, WorkoutSchedule} from '../models'
 import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserListForTrainer, IUserCreateOne} from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
