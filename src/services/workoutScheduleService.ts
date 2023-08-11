@@ -86,8 +86,7 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
       // await User.updateBadgeCount(user.id, connection)
       workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
         tokens: userDevices.map((device: IUserDevice) => device.token),
-        type: 'workoutScheduleCreate',
-        badge: user.badgeCount + 1
+        type: 'workoutScheduleCreate'
       })
     }
     await db.commit(connection)

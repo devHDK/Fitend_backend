@@ -67,15 +67,19 @@ async function findAllForUser(options: IReservationFindAllForUser): Promise<[IRe
             JSON_ARRAYAGG(JSON_OBJECT(
             'id', t.id, 'startTime', DATE_FORMAT(t.startTime, '%Y-%m-%dT%H:%i:%s.000Z'), 
             'endTime', DATE_FORMAT(t.endTime, '%Y-%m-%dT%H:%i:%s.000Z'), 'status', t.status, 'times', t.times,
-            'ticketType', ti.type, 'userNickname', u.nickname, 'seq', t.seq, 'totalSession', ti.totalSession,
-            'ticketStartedAt', ti.startedAt, 'ticketExpiredAt', ti.expiredAt, 
+            'ticketType', ti.type, 'seq', t.seq, 'totalSession', ti.totalSession, 'userNickname', u.nickname,
+            'ticketStartedAt', ti.startedAt, 'ticketExpiredAt', ti.expiredAt,
             'trainer', JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage)
             )) as reservations
             FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
-            JOIN ?? tr ON tr.ticketId = ti.id AND tr.userId = ${escape(userId)}
-            JOIN ?? u ON u.id = tr.userId 
-            JOIN ?? tra ON tra.id = tr.trainerId
+            JOIN (
+              SELECT tr.ticketId, tr.trainerId FROM ?? tr 
+              WHERE tr.userId = ${escape(userId)}
+              GROUP BY tr.ticketId
+            ) tr2 ON tr2.ticketId = ti.id
+            JOIN ?? u ON u.id = ${escape(userId)}
+            JOIN ?? tra ON tra.id = tr2.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY startDate`,
       values: [tableName, Ticket.tableName, Ticket.tableTicketRelation, User.tableName, Trainer.tableName]

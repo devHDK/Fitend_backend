@@ -106,7 +106,7 @@ export interface IWorkoutScheduleExercise {
 
 export interface IWorkoutSchedulePushType {
   tokens: string[]
-  badge: number
+  badge?: number
   type: 'workoutScheduleCreate' | 'workoutScheduleDelete' | 'workoutScheduleChange'
   contents?: string
   data?: any

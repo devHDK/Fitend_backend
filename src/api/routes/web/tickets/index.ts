@@ -46,7 +46,8 @@ const putTicketsWithId = new ApiRouter({
   tags: ['Ticket'],
   schema: 'requests/web/tickets/PutTicketsWithId',
   responses: {
-    200: {description: 'success'}
+    200: {description: 'success'},
+    403: {description: 'not_allowed/세션수 확인'}
   },
   handler: ctrl.putTicketsWithId
 })

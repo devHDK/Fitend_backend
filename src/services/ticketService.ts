@@ -67,6 +67,8 @@ async function update(options: {
   const connection = await db.beginTransaction()
   try {
     const {id, type, userId, trainerIds, franchiseId, totalSession, startedAt, expiredAt} = options
+    const reservationValidCount = await Reservation.findValidCount(id)
+    if (totalSession < reservationValidCount) throw new Error('not_allowed')
     await Ticket.update({id, type, totalSession, startedAt, expiredAt}, connection)
     await Ticket.deleteRelations(id, connection)
     await Ticket.createRelationExercises({userId, trainerIds, ticketId: id, franchiseId}, connection)
