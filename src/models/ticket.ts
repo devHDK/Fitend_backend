@@ -15,6 +15,8 @@ async function create(
     startedAt: string
     expiredAt: string
     totalSession: number
+    sessionPrice: number
+    coachingPrice: number
   },
   connection: PoolConnection
 ): Promise<number> {
@@ -133,7 +135,7 @@ async function findOne(options: ITicketFindOne): Promise<ITicket> {
 async function findOneWithId(id: number): Promise<ITicketDetail> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.type, t.totalSession,
+      sql: `SELECT t.id, t.type, t.totalSession, t.sessionPrice, t.coachingPrice,
             (t.totalSession - (SELECT COUNT(*) FROM ?? r
             WHERE r.ticketId = t.id AND 
             (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession, 
@@ -238,6 +240,8 @@ async function update(
     id: number
     type: 'personal' | 'fitness'
     totalSession: number
+    sessionPrice: number
+    coachingPrice: number
     startedAt: string
     expiredAt: string
   },

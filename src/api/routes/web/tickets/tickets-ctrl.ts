@@ -3,12 +3,14 @@ import {TicketService} from '../../../../services'
 
 async function postTickets(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {type, userId, trainerIds, totalSession, startedAt, expiredAt} = req.options
+    const {type, userId, trainerIds, sessionPrice, coachingPrice, totalSession, startedAt, expiredAt} = req.options
     await TicketService.create({
       type,
       userId,
       trainerIds,
       franchiseId: req.franchiseId,
+      sessionPrice,
+      coachingPrice,
       totalSession,
       startedAt,
       expiredAt
@@ -42,7 +44,7 @@ async function getTicketsWithId(req: IRequest, res: Response, next: Function): P
 
 async function putTicketsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {id, type, userId, trainerIds, totalSession, startedAt, expiredAt} = req.options
+    const {id, type, userId, trainerIds, totalSession, sessionPrice, coachingPrice, startedAt, expiredAt} = req.options
     await TicketService.update({
       id,
       type,
@@ -50,6 +52,8 @@ async function putTicketsWithId(req: IRequest, res: Response, next: Function): P
       trainerIds,
       franchiseId: req.franchiseId,
       totalSession,
+      sessionPrice,
+      coachingPrice,
       startedAt,
       expiredAt
     })
