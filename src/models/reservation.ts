@@ -42,7 +42,7 @@ async function findAll(options: IReservationFindAll): Promise<[IReservationList]
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)}
             ${userId ? `AND tr.userId = ${escape(userId)}` : ``}
             JOIN ?? u ON u.id = tr.userId 
-            JOIN ?? tra ON tra.id = tr.trainerId
+            JOIN ?? tra ON tra.id = t.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.seq`,
@@ -116,7 +116,7 @@ async function findOneWithId(id: number): Promise<IReservationDetail> {
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id
             JOIN ?? u ON u.id = tr.userId
-            JOIN ?? tra ON tra.id = tr.trainerId
+            JOIN ?? tra ON tra.id = t.trainerId
             WHERE t.id = ${escape(id)}
             GROUP BY t.id`,
       values: [tableName, Ticket.tableName, Ticket.tableTicketRelation, User.tableName, Trainer.tableName]
