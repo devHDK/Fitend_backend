@@ -6,8 +6,9 @@ const getPayrollWithMonth = new ApiRouter({
   method: 'get',
   summary: '이달의 페이롤',
   tags: ['Payroll'],
+  schema: 'requests/web/payroll/GetPayroll',
   responses: {
-    200: {message: 'responses/web/trainers/GetTrainers'}
+    200: {schema: 'responses/web/payroll/GetPayroll'}
   },
   handler: ctrl.getPayrollWithMonth
 })

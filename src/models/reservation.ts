@@ -12,6 +12,8 @@ import {
   IReservationListForTicket
 } from '../interfaces/reservation'
 import {Ticket, Trainer, User} from './index'
+import {tableTicketRelation} from './ticket'
+import {IReservation} from '../interfaces/payroll'
 
 const tableName = 'Reservations'
 
@@ -238,6 +240,49 @@ async function findBetweenReservation(
   }
 }
 
+async function findBetweenReservationWithTrainerId(
+  options: {
+    startTime: string
+    endTime: string
+    trainerId: number
+    franchiseId: number
+  },
+  connection?: PoolConnection
+): Promise<[IReservation]> {
+  const {startTime, endTime, trainerId, franchiseId} = options
+  try {
+    return await db.query({
+      connection,
+      sql: `SELECT t.ticketId, ti.type, u.nickname as nickname, ti.sessionPrice, ti.coachingPrice, ti.totalSession,
+            (ti.totalSession - (SELECT MAX(r2.seq) FROM ?? r2 
+                WHERE r2.ticketId = tr.ticketId AND r2.times != 0 AND 
+                r2.startTime > ${escape(startTime)} AND r2.startTime < ${escape(endTime)})) as leftSession,
+            (SELECT COUNT(*) FROM ?? r 
+                WHERE r.ticketId = tr.ticketId AND r.times != 0 AND 
+                r.startTime > ${escape(startTime)} AND r.startTime < ${escape(endTime)}) as thisMonthCount
+            FROM ?? t 
+            JOIN ?? tr ON tr.ticketId = t.ticketId 
+            JOIN ?? ti ON ti.id = tr.ticketId
+            JOIN ?? u ON t.userId = u.id
+            WHERE t.trainerId = ? AND t.startTime > ${escape(startTime)} AND t.startTime < ${escape(endTime)}
+            AND t.times != 0 AND tr.franchiseId = ?
+            GROUP BY t.ticketId`,
+      values: [
+        tableName,
+        tableName,
+        tableName,
+        tableTicketRelation,
+        Ticket.tableName,
+        User.tableName,
+        trainerId,
+        franchiseId
+      ]
+    })
+  } catch (err) {
+    throw err
+  }
+}
+
 async function findAllByTicketIdAndLaterStartTime(
   options: {
     startTime: string
@@ -348,6 +393,7 @@ export {
   findValidCount,
   findCountByTicketIdAndPrevStartTime,
   findBetweenReservation,
+  findBetweenReservationWithTrainerId,
   findAllByTicketIdAndLaterStartTime,
   findBurnRate,
   findAttendanceNoShowCount,

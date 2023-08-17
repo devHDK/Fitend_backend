@@ -1,6 +1,14 @@
 import moment from 'moment-timezone'
 import {db} from '../loaders'
-import {ITrainer, ITrainerFindOne, ITrainerList, ITrainerUpdate} from '../interfaces/trainer'
+import {
+  ITrainer,
+  ITrainerFindOne,
+  ITrainerFindOneWageInfo,
+  ITrainerList,
+  ITrainerUpdate,
+  ITrainerWageInfo
+} from '../interfaces/trainer'
+import {IWageInfo} from '../interfaces/payroll'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -34,6 +42,21 @@ async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
   }
 }
 
+async function findTrainerWageInfo(options: ITrainerFindOneWageInfo): Promise<IWageInfo> {
+  try {
+    const {trainerId, franchiseId} = options
+    const [row] = await db.query({
+      sql: `SELECT t.baseWage, t.ptPercentage, t.fcPercentage
+            FROM ?? t
+            WHERE ? AND ?`,
+      values: [tableFranchiseTrainer, {trainerId}, {franchiseId}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updateOne(options: ITrainerUpdate): Promise<void> {
   const {id, ...data} = options
   try {
@@ -46,4 +69,4 @@ async function updateOne(options: ITrainerUpdate): Promise<void> {
   }
 }
 
-export {tableName, tableFranchiseTrainer, findOne, findAll, updateOne}
+export {tableName, tableFranchiseTrainer, findOne, findTrainerWageInfo, findAll, updateOne}
