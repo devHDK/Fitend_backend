@@ -8,10 +8,13 @@ import {findBetweenReservationWithTrainerId} from '../models/reservation'
 async function findAllWithMonth(req: IPayrollFindAll): Promise<IPayrollResponse> {
   try {
     const {trainerId, franchiseId, startDate} = req
-    const endDate = moment(startDate).utc().add(1, 'month').format('YYYY-MM-DDTHH:mm:ss')
-    const lastMonthStartDate = moment(startDate).utc().subtract(1, 'month').format('YYYY-MM-DDTHH:mm:ss')
-    const lastMonthEndDate = moment(lastMonthStartDate).add(1, 'month').format('YYYY-MM-DDTHH:mm:ss')
-
+    const endDate = moment(startDate).endOf('month').subtract(9, 'hours').format('YYYY-MM-DDTHH:mm:ss')
+    const lastMonthStartDate = moment(startDate).subtract(1, 'month').subtract(9, 'hours').format('YYYY-MM-DDTHH:mm:ss')
+    const lastMonthEndDate = moment(startDate)
+      .subtract(1, 'month')
+      .endOf('month')
+      .subtract(9, 'hours')
+      .format('YYYY-MM-DDTHH:mm:ss')
     //baseWage 및 percentage
     const wageInfo = await Trainer.findTrainerWageInfo({trainerId, franchiseId})
     //tickets

@@ -150,7 +150,7 @@ async function findBetweenfcTicket(options: {
             JOIN ?? tr ON tr.ticketId = t.id 
             JOIN ?? u ON u.id = tr.userId
             WHERE tr.trainerId = ? AND tr.franchiseId = ? 
-            AND t.startedAt > ${escape(startTime)} AND t.startedAt < ${escape(endTime)}
+            AND t.startedAt >= ${escape(startTime)} AND t.startedAt <= ${escape(endTime)}
             AND t.type = 'fitness'`,
       values: [
         WorkoutFeedbacks.tableName,

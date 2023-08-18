@@ -107,8 +107,6 @@ async function create(options: {
         ticketId
       })
 
-      console.log(`laterOrderNum : ${laterOrderNum}`)
-
       for (let j = 1; j <= laterReservation.length; j++) {
         await Reservation.update(
           {
