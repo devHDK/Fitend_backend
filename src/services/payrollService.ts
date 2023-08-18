@@ -8,21 +8,21 @@ import {findBetweenReservationWithTrainerId} from '../models/reservation'
 async function findAllWithMonth(req: IPayrollFindAll): Promise<IPayrollResponse> {
   try {
     const {trainerId, franchiseId, startDate} = req
-    const endDate = moment(startDate).add(1, 'month').format('YYYY-MM-DD')
-    const lastMonthStartDate = moment(startDate).subtract(1, 'month').format('YYYY-MM-DD')
-    const lastMonthEndDate = moment(lastMonthStartDate).add(1, 'month').format('YYYY-MM-DD')
+    const endDate = moment(startDate).utc().add(1, 'month').format('YYYY-MM-DDTHH:mm:ss')
+    const lastMonthStartDate = moment(startDate).utc().subtract(1, 'month').format('YYYY-MM-DDTHH:mm:ss')
+    const lastMonthEndDate = moment(lastMonthStartDate).add(1, 'month').format('YYYY-MM-DDTHH:mm:ss')
 
     //baseWage 및 percentage
     const wageInfo = await Trainer.findTrainerWageInfo({trainerId, franchiseId})
     //tickets
     const reservations = await Reservation.findBetweenReservationWithTrainerId({
-      startTime: moment(startDate).utc().format('YYYY-MM-DD'),
+      startTime: moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss'),
       endTime: endDate,
       trainerId,
       franchiseId
     })
     const coaching = await Ticket.findBetweenfcTicket({
-      startTime: moment(startDate).utc().format('YYYY-MM-DD'),
+      startTime: moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss'),
       endTime: endDate,
       trainerId,
       franchiseId

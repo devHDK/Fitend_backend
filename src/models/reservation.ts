@@ -258,7 +258,7 @@ async function findBetweenReservationWithTrainerId(
                 WHERE r2.ticketId = tr.ticketId AND r2.times != 0 AND 
                 r2.startTime > ${escape(startTime)} AND r2.startTime < ${escape(endTime)})) as leftSession,
             (SELECT COUNT(*) FROM ?? r 
-                WHERE r.ticketId = tr.ticketId AND r.times != 0 AND 
+                WHERE r.ticketId = tr.ticketId AND r.times != 0 AND r.status != 'complete' AND
                 r.startTime > ${escape(startTime)} AND r.startTime < ${escape(endTime)}) as thisMonthCount
             FROM ?? t 
             JOIN ?? tr ON tr.ticketId = t.ticketId 
