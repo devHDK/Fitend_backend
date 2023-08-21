@@ -2,7 +2,8 @@ import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
 import {ITicket, ITicketDetail, ITicketFindAll, ITicketList, ITicketFindOne} from '../interfaces/tickets'
-import {Reservation, Trainer, User} from './index'
+import {Reservation, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
+import {ICoaching} from '../interfaces/payroll'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -15,6 +16,8 @@ async function create(
     startedAt: string
     expiredAt: string
     totalSession: number
+    sessionPrice: number
+    coachingPrice: number
   },
   connection: PoolConnection
 ): Promise<number> {
@@ -130,10 +133,45 @@ async function findOne(options: ITicketFindOne): Promise<ITicket> {
   }
 }
 
+async function findBetweenfcTicket(options: {
+  startTime: string
+  endTime: string
+  trainerId: number
+  franchiseId: number
+}): Promise<[ICoaching]> {
+  try {
+    const {startTime, endTime, trainerId, franchiseId} = options
+    const rows = await db.query({
+      sql: `SELECT t.id as ticketId, u.nickname, t.type, t.startedAt, t.expiredAt, t.coachingPrice,
+            (SELECT COUNT(wf.id) FROM ?? wf 
+                JOIN ?? ws ON wf.workoutScheduleId = ws.id
+                WHERE ws.trainerId = ${trainerId} AND ws.franchiseId = ${franchiseId} AND ws.userId = u.id) as doneCount 
+            FROM ?? t 
+            JOIN ?? tr ON tr.ticketId = t.id 
+            JOIN ?? u ON u.id = tr.userId
+            WHERE tr.trainerId = ? AND tr.franchiseId = ? 
+            AND t.startedAt >= ${escape(startTime)} AND t.startedAt <= ${escape(endTime)}
+            AND t.type = 'fitness'`,
+      values: [
+        WorkoutFeedbacks.tableName,
+        WorkoutSchedule.tableName,
+        tableName,
+        tableTicketRelation,
+        User.tableName,
+        trainerId,
+        franchiseId
+      ]
+    })
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneWithId(id: number): Promise<ITicketDetail> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.type, t.totalSession,
+      sql: `SELECT t.id, t.type, t.totalSession, t.sessionPrice, t.coachingPrice,
             (t.totalSession - (SELECT COUNT(*) FROM ?? r
             WHERE r.ticketId = t.id AND 
             (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession, 
@@ -238,6 +276,8 @@ async function update(
     id: number
     type: 'personal' | 'fitness'
     totalSession: number
+    sessionPrice: number
+    coachingPrice: number
     startedAt: string
     expiredAt: string
   },
@@ -288,6 +328,7 @@ export {
   findOne,
   findOneWithId,
   findOneWithUserId,
+  findBetweenfcTicket,
   findCounts,
   update,
   deleteOne,

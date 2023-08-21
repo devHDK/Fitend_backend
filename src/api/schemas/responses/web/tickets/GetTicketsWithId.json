@@ -27,6 +27,12 @@
     "restSession": {
       "type": "integer"
     },
+    "sessionPrice": {
+      "type": "integer"
+    },
+    "coachingPrice": {
+      "type": "integer"
+    },
     "startedAt": {
       "type": "string"
     },
@@ -86,6 +92,8 @@
     "users",
     "totalSession",
     "restSession",
+    "sessionPrice",
+    "coachingPrice",
     "startedAt",
     "createdAt",
     "trainers",

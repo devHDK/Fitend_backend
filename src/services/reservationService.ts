@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import moment from 'moment-timezone'
+import {print} from 'redis'
 import {
   IReservationFindAll,
   IReservationList,
@@ -102,14 +103,14 @@ async function create(options: {
 
     if (laterReservation && laterReservation.length > 0) {
       const laterOrderNum = await Reservation.findCountByTicketIdAndPrevStartTime({
-        startTime: moment(laterReservation[0].startTime).format('YYYY-MM-DDTHH:mm:ss'),
+        startTime: moment(laterReservation[0].startTime).subtract('hours', 9).format('YYYY-MM-DDTHH:mm:ss'),
         ticketId
       })
 
-      for (let j = 0; j < laterReservation.length; j++) {
+      for (let j = 1; j <= laterReservation.length; j++) {
         await Reservation.update(
           {
-            id: laterReservation[j].id,
+            id: laterReservation[j - 1].id,
             seq: laterOrderNum + 1 + j
           },
           connection

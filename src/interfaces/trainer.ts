@@ -21,6 +21,17 @@ export interface ITrainerFindOne {
   id?: number
 }
 
+export interface ITrainerFindOneWageInfo {
+  trainerId?: number
+  franchiseId?: number
+}
+
+export interface ITrainerWageInfo {
+  baseWage?: number
+  ptPercentage?: number
+  fcPercentage?: number
+}
+
 export interface ITrainerUpdate {
   id: number
   password?: string

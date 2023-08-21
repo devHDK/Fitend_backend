@@ -13,16 +13,30 @@ async function create(options: {
   trainerIds: number[]
   franchiseId: number
   totalSession: number
+  sessionPrice: number
+  coachingPrice: number
   startedAt: string
   expiredAt: string
 }): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {type, userId, trainerIds, franchiseId, totalSession, startedAt, expiredAt} = options
+    const {
+      type,
+      userId,
+      trainerIds,
+      franchiseId,
+      totalSession,
+      sessionPrice,
+      coachingPrice,
+      startedAt,
+      expiredAt
+    } = options
     const ticketId = await Ticket.create(
       {
         type,
         totalSession,
+        sessionPrice,
+        coachingPrice,
         startedAt,
         expiredAt
       },
@@ -61,15 +75,28 @@ async function update(options: {
   trainerIds: number[]
   franchiseId: number
   totalSession: number
+  sessionPrice: number
+  coachingPrice: number
   startedAt: string
   expiredAt: string
 }): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {id, type, userId, trainerIds, franchiseId, totalSession, startedAt, expiredAt} = options
+    const {
+      id,
+      type,
+      userId,
+      trainerIds,
+      franchiseId,
+      totalSession,
+      sessionPrice,
+      coachingPrice,
+      startedAt,
+      expiredAt
+    } = options
     const reservationValidCount = await Reservation.findValidCount(id)
     if (totalSession < reservationValidCount) throw new Error('not_allowed')
-    await Ticket.update({id, type, totalSession, startedAt, expiredAt}, connection)
+    await Ticket.update({id, type, totalSession, sessionPrice, coachingPrice, startedAt, expiredAt}, connection)
     await Ticket.deleteRelations(id, connection)
     await Ticket.createRelationExercises({userId, trainerIds, ticketId: id, franchiseId}, connection)
     await db.commit(connection)
