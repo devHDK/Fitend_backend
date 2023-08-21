@@ -52,6 +52,15 @@ const sendPush = async (
   }
 }
 
+const sendToTopic = async (topic: string, payload: admin.messaging.MessagingPayload): Promise<void> => {
+  try {
+    const result = await admin.messaging().sendToTopic(topic, payload)
+    logger.info(`[FCM] sendToTopic result : ${JSON.stringify(result)}`)
+  } catch (e) {
+    throw e
+  }
+}
+
 const sendReservationMessage = async (options: IReservationPushType): Promise<void> => {
   const {tokens, type, data, badge, contents} = options
   try {
@@ -77,4 +86,4 @@ const sendWorkoutScheduleMessage = async (options: IWorkoutSchedulePushType): Pr
   }
 }
 
-export {init, sendPush, sendReservationMessage, sendWorkoutScheduleMessage}
+export {init, sendPush, sendToTopic, sendReservationMessage, sendWorkoutScheduleMessage}

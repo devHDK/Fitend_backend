@@ -1,7 +1,7 @@
 export interface IWorkoutSchedule {
   id: number
   userId: number
-  trainer: number
+  trainerId: number
   franchiseId: number
   startDate: string
   seq: number

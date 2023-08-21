@@ -10,7 +10,7 @@ import {
   IWorkoutScheduleListForTrainer
 } from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
-import {WorkoutPlan, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords} from './index'
+import {WorkoutPlan, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords, User} from './index'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -126,6 +126,23 @@ async function findOne(workoutScheduleId: number): Promise<IWorkoutSchedule> {
     const [row] = await db.query({
       sql: `SELECT t.* FROM ?? t WHERE t.?`,
       values: [tableName, {id: workoutScheduleId}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findUsernameWithWorkoutScheduleId(
+  workoutScheduleId: number
+): Promise<{trainerId: number; userNickname: string}> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.trainerId, u.nickname as userNickname
+            FROM ?? t 
+            JOIN ?? u ON u.id = t.userId
+            WHERE t.?`,
+      values: [tableName, User.tableName, {id: workoutScheduleId}]
     })
     return row
   } catch (e) {
@@ -301,6 +318,7 @@ export {
   findAllForTrainer,
   findOneWithId,
   findOne,
+  findUsernameWithWorkoutScheduleId,
   findOneForTrainer,
   findOneWithWorkoutPlanId,
   findCounts,

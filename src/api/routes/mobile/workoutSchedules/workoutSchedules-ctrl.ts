@@ -1,5 +1,7 @@
 import {Response} from 'express'
 import {WorkoutScheduleService} from '../../../../services'
+import {firebase} from '../../../../loaders'
+import {WorkoutSchedule} from '../../../../models'
 
 async function postWorkoutSchedulesFeedbacks(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
@@ -10,6 +12,10 @@ async function postWorkoutSchedulesFeedbacks(req: IRequest, res: Response, next:
       strengthIndex,
       issueIndexes,
       contents
+    })
+    const workoutSchedule = await WorkoutSchedule.findUsernameWithWorkoutScheduleId(workoutScheduleId)
+    await firebase.sendToTopic(`trainer_${workoutSchedule.trainerId}`, {
+      notification: {body: `${workoutSchedule.userNickname}님이 오늘의 운동을 완료하였습니다.`}
     })
     res.status(200).json()
   } catch (e) {
