@@ -207,7 +207,7 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
       workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
         tokens: userDevices.map((device: IUserDevice) => device.token),
         type: 'workoutScheduleChange',
-        badge: user.badgeCount + 1,
+        // badge: user.badgeCount + 1,
         data: {
           workoutScheduleId: workoutSchedule.id.toString()
         }
