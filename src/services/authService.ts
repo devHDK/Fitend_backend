@@ -46,7 +46,7 @@ async function signIn(options: {
           // forbiddenDeviceList 에 입력된 deviceId가 포함되있지 않고, 기존 deviceId가 trainer deviceId일 경우
           await UserDevice.deleteOne(existDevices[0].deviceId, user.id, connection)
         }
-      } else if (existDevices.length < 1) {
+      } else if (existDevices.length < 1 && forbiddenDeviceList.includes(user.deviceId)) {
         //리스트에 아무것도 없을땐 무조건 추가
         if (token) {
           await User.updateOne({id: user.id, deviceId, platform}, connection)
