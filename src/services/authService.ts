@@ -28,7 +28,7 @@ async function signIn(options: {
       const existDevices = await UserDevice.findAllWithUserId(user.id)
       const forbiddenDeviceList = await Trainer.findDeviceList()
 
-      if (!forbiddenDeviceList.includes(user.deviceId) && token) {
+      if (!forbiddenDeviceList.includes(deviceId) && token) {
         await User.updateOne({id: user.id, deviceId, platform}, connection)
         await UserDevice.upsertOne({userId: user.id, platform, deviceId, token}, connection)
         await UserDevice.updateOne({userId: user.id, platform, deviceId, isNotification: true}, connection)
@@ -42,11 +42,11 @@ async function signIn(options: {
           }
         }
       } else if (existDevices.length === 1) {
-        if (forbiddenDeviceList.includes(existDevices[0].deviceId) && !forbiddenDeviceList.includes(user.deviceId)) {
+        if (forbiddenDeviceList.includes(existDevices[0].deviceId) && !forbiddenDeviceList.includes(deviceId)) {
           // forbiddenDeviceList 에 입력된 deviceId가 포함되있지 않고, 기존 deviceId가 trainer deviceId일 경우
           await UserDevice.deleteOne(existDevices[0].deviceId, user.id, connection)
         }
-      } else if (existDevices.length < 1 && forbiddenDeviceList.includes(user.deviceId)) {
+      } else if (existDevices.length < 1 && forbiddenDeviceList.includes(deviceId)) {
         //리스트에 아무것도 없을땐 무조건 추가
         if (token) {
           await User.updateOne({id: user.id, deviceId, platform}, connection)
