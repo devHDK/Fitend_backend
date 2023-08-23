@@ -1,6 +1,6 @@
 import {code as Code, jwt as JWT} from '../libs'
 import {IUser} from '../interfaces/user'
-import {User, Ticket, UserDevice} from '../models'
+import {User, Ticket, UserDevice, Trainer} from '../models'
 import {db} from '../loaders'
 
 async function signIn(options: {
@@ -24,11 +24,24 @@ async function signIn(options: {
       if (!isActive) throw new Error('not_allowed')
       const accessToken = await JWT.createAccessToken({id: user.id, type: 'user'})
       const refreshToken = await JWT.createRefreshToken({id: user.id, type: 'user'}, user.password.salt)
-      await User.updateOne({id: user.id, deviceId, platform}, connection)
+
+      const existDevices = await UserDevice.findAllWithUserId(user.id)
+      const forbiddenDeviceList = await Trainer.findDeviceList()
+
+      if (existDevices.length > 1) {
+        for (const device of existDevices) {
+          if (forbiddenDeviceList.includes(device.deviceId)) {
+            await UserDevice.deleteOne(device.deviceId, user.id, connection)
+          }
+        }
+      }
+
       if (token) {
+        await User.updateOne({id: user.id, deviceId, platform}, connection)
         await UserDevice.upsertOne({userId: user.id, platform, deviceId, token}, connection)
         await UserDevice.updateOne({userId: user.id, platform, deviceId, isNotification: true}, connection)
       }
+
       delete user.password
       await db.commit(connection)
       return {

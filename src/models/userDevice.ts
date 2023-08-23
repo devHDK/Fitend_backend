@@ -66,6 +66,20 @@ async function findOne(userId: number, deviceId: string, platform: 'ios' | 'andr
   }
 }
 
+async function findOneWithDeviceId(deviceId: string, userId: number): Promise<IUserDevice> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.*
+            FROM ?? t
+            WHERE ? AND ?`,
+      values: [tableName, {deviceId}, {userId}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllWithUserId(userId: number): Promise<[IUserDevice]> {
   try {
     return await db.query({
@@ -92,4 +106,16 @@ async function updateOne(options: IUserDeviceUpdate, connection?: PoolConnection
   }
 }
 
-export {tableName, createOne, upsertOne, findOne, findAllWithUserId, updateOne}
+async function deleteOne(deviceId: string, userId: number, connection?: PoolConnection): Promise<void> {
+  try {
+    await db.query({
+      connection,
+      sql: `DELETE FROM ?? WHERE ? AND ? `,
+      values: [tableName, {deviceId}, {userId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+export {tableName, createOne, upsertOne, findOne, findOneWithDeviceId, findAllWithUserId, updateOne, deleteOne}

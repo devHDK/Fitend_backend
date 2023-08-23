@@ -42,6 +42,19 @@ async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
   }
 }
 
+async function findDeviceList(): Promise<[string]> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT JSON_ARRAYAGG(t.deviceId)
+            FROM ?? t`,
+      values: [tableName]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findTrainerWageInfo(options: ITrainerFindOneWageInfo): Promise<IWageInfo> {
   try {
     const {trainerId, franchiseId} = options
@@ -69,4 +82,4 @@ async function updateOne(options: ITrainerUpdate): Promise<void> {
   }
 }
 
-export {tableName, tableFranchiseTrainer, findOne, findTrainerWageInfo, findAll, updateOne}
+export {tableName, tableFranchiseTrainer, findOne, findTrainerWageInfo, findAll, findDeviceList, updateOne}
