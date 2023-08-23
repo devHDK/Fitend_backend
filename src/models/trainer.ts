@@ -42,11 +42,11 @@ async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
   }
 }
 
-async function findDeviceList(): Promise<[string]> {
+async function findDeviceList(): Promise<[{deviceId: string}]> {
   try {
-    const [row] = await db.query({
-      sql: `SELECT JSON_ARRAYAGG(t.deviceId)
-            FROM ?? t`,
+    const row = await db.query({
+      sql: `SELECT deviceId
+            FROM ?? `,
       values: [tableName]
     })
     return row

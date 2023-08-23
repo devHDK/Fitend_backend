@@ -26,9 +26,12 @@ async function signIn(options: {
       const refreshToken = await JWT.createRefreshToken({id: user.id, type: 'user'}, user.password.salt)
 
       const existDevices = await UserDevice.findAllWithUserId(user.id)
-      const forbiddenDeviceList = await Trainer.findDeviceList()
+      const forbiddenDevices = await Trainer.findDeviceList()
+      const forbiddenDeviceList = forbiddenDevices.map((device) => device.deviceId)
+      console.log(forbiddenDeviceList)
+      const isForbiddenDevice = forbiddenDeviceList.some((item) => item === deviceId)
 
-      if (!forbiddenDeviceList.includes(deviceId) && token) {
+      if (!isForbiddenDevice && token) {
         await User.updateOne({id: user.id, deviceId, platform}, connection)
         await UserDevice.upsertOne({userId: user.id, platform, deviceId, token}, connection)
         await UserDevice.updateOne({userId: user.id, platform, deviceId, isNotification: true}, connection)
@@ -37,16 +40,16 @@ async function signIn(options: {
       if (existDevices.length > 1) {
         //기존 device list가 2개 이상이면 trainer device 전부 삭제
         for (const device of existDevices) {
-          if (forbiddenDeviceList.includes(device.deviceId)) {
+          if (forbiddenDeviceList.some((item) => item === device.deviceId)) {
             await UserDevice.deleteOne(device.deviceId, user.id, connection)
           }
         }
       } else if (existDevices.length === 1) {
-        if (forbiddenDeviceList.includes(existDevices[0].deviceId) && !forbiddenDeviceList.includes(deviceId)) {
+        if (forbiddenDeviceList.some((item) => item === existDevices[0].deviceId) && !isForbiddenDevice) {
           // forbiddenDeviceList 에 입력된 deviceId가 포함되있지 않고, 기존 deviceId가 trainer deviceId일 경우
           await UserDevice.deleteOne(existDevices[0].deviceId, user.id, connection)
         }
-      } else if (existDevices.length < 1 && forbiddenDeviceList.includes(deviceId)) {
+      } else if (existDevices.length < 1 && isForbiddenDevice) {
         //리스트에 아무것도 없을땐 무조건 추가
         if (token) {
           await User.updateOne({id: user.id, deviceId, platform}, connection)
