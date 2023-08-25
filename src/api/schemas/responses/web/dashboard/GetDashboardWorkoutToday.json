@@ -15,6 +15,9 @@
           "trainerNickname": {
             "type": "string"
           },
+          "workoutScheduleId": {
+            "type": "integer"
+          },
           "createdAt": {
             "type": "string"
           }
@@ -23,6 +26,7 @@
           "userId",
           "userNickname",
           "trainerNickname",
+          "workoutScheduleId",
           "createdAt"
         ]
       }

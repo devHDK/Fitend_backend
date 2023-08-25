@@ -84,7 +84,7 @@ async function findAllToday(
     const todayStart = moment(today).startOf('day').subtract(9, 'hour').format('YYYY-MM-DDTHH:mm:ss')
     const todayEnd = moment(today).endOf('day').subtract(9, 'hour').format('YYYY-MM-DDTHH:mm:ss')
     return await db.query({
-      sql: `SELECT u.id as userId, u.nickname as userNickname, tra.nickname as trainerNickname, t.createdAt
+      sql: `SELECT u.id as userId, u.nickname as userNickname, tra.nickname as trainerNickname, t.createdAt, ws.id as workoutScheduleId
             FROM ?? t
             JOIN ?? wp ON wp.id = t.workoutPlanId
             JOIN ?? ws ON ws.id = wp.workoutScheduleId
