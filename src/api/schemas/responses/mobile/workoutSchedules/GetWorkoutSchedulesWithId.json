@@ -46,6 +46,10 @@
           "trackingFieldId": {
             "type": "integer"
           },
+          "circuitGroupNum" : {
+            "type": "integer",
+            "nullable" : true
+          },
           "targetMuscles": {
             "type": "array",
             "items": {

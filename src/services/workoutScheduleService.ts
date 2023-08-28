@@ -35,6 +35,7 @@ interface IWorkoutScheduleCreateData extends IWorkoutScheduleCreate {
     {
       exerciseId: number
       setInfo: [{index: number; reps: number; weight: number; seconds: number}]
+      circuitGroupNum?: number
     }
   ]
 }
@@ -44,6 +45,7 @@ interface IWorkoutScheduleUpdateData extends IWorkoutScheduleUpdate {
     {
       exerciseId: number
       setInfo: [{index: number; reps: number; weight: number; seconds: number}]
+      circuitGroupNum?: number
     }
   ]
 }
@@ -54,8 +56,16 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
     const {workoutPlans, ...data} = options
     const workoutScheduleId = await WorkoutSchedule.create(data, connection)
     for (let i = 0; i < workoutPlans.length; i++) {
-      const {exerciseId, setInfo} = workoutPlans[i]
-      await WorkoutPlan.create({exerciseId, workoutScheduleId, setInfo: JSON.stringify(setInfo)}, connection)
+      const {exerciseId, setInfo, circuitGroupNum} = workoutPlans[i]
+      await WorkoutPlan.create(
+        {
+          exerciseId,
+          workoutScheduleId,
+          setInfo: JSON.stringify(setInfo),
+          circuitGroupNum: circuitGroupNum || null
+        },
+        connection
+      )
     }
     await WorkoutStat.upsertOne(
       {
@@ -159,8 +169,16 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
     if (workoutPlans && workoutPlans.length > 0) {
       await WorkoutPlan.deleteAllWithWorkoutScheduleId(data.id, connection)
       for (let i = 0; i < workoutPlans.length; i++) {
-        const {exerciseId, setInfo} = workoutPlans[i]
-        await WorkoutPlan.create({exerciseId, workoutScheduleId: data.id, setInfo: JSON.stringify(setInfo)}, connection)
+        const {exerciseId, setInfo, circuitGroupNum} = workoutPlans[i]
+        await WorkoutPlan.create(
+          {
+            exerciseId,
+            workoutScheduleId: data.id,
+            setInfo: JSON.stringify(setInfo),
+            circuitGroupNum: circuitGroupNum || null
+          },
+          connection
+        )
       }
     }
 
