@@ -30,7 +30,7 @@ async function createRecords(userId: number, options: IWorkoutRecordCreate[]): P
       {
         userId,
         franchiseId: workoutSchedule.franchiseId,
-        month: moment().startOf('month').format('YYYY-MM-DD'),
+        month: moment(startDate).startOf('month').format('YYYY-MM-DD'),
         doneCount: 1
       },
       connection
