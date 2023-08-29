@@ -53,6 +53,7 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
   try {
     const {workoutPlans, ...data} = options
     const workoutScheduleId = await WorkoutSchedule.create(data, connection)
+    const {startDate} = data
     for (let i = 0; i < workoutPlans.length; i++) {
       const {exerciseId, setInfo} = workoutPlans[i]
       await WorkoutPlan.create({exerciseId, workoutScheduleId, setInfo: JSON.stringify(setInfo)}, connection)
@@ -61,7 +62,7 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
       {
         userId: data.userId,
         franchiseId: data.franchiseId,
-        month: moment().startOf('month').format('YYYY-MM-DD'),
+        month: moment(startDate).startOf('month').format('YYYY-MM-DD'),
         monthCount: 1
       },
       connection
