@@ -13,6 +13,8 @@ async function create(options: {
       id: number
       setInfo: [{index: number; reps: number; weight: number; seconds: number}]
       circuitGroupNum: number
+      setType?: string
+      circuitSeq?: number
     }
   ]
 }): Promise<void> {
@@ -63,6 +65,8 @@ async function update(options: {
       id: number
       setInfo: [{index: number; reps: number; weight: number; seconds: number}]
       circuitGroupNum: number
+      setType?: string
+      circuitSeq?: number
     }
   ]
 }): Promise<void> {

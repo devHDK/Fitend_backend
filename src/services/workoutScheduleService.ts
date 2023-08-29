@@ -36,6 +36,8 @@ interface IWorkoutScheduleCreateData extends IWorkoutScheduleCreate {
       exerciseId: number
       setInfo: [{index: number; reps: number; weight: number; seconds: number}]
       circuitGroupNum?: number
+      setType?: string
+      circuitSeq?: number
     }
   ]
 }
@@ -46,6 +48,8 @@ interface IWorkoutScheduleUpdateData extends IWorkoutScheduleUpdate {
       exerciseId: number
       setInfo: [{index: number; reps: number; weight: number; seconds: number}]
       circuitGroupNum?: number
+      setType?: string
+      circuitSeq?: number
     }
   ]
 }
@@ -55,14 +59,17 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
   try {
     const {workoutPlans, ...data} = options
     const workoutScheduleId = await WorkoutSchedule.create(data, connection)
+    const {startDate} = data
     for (let i = 0; i < workoutPlans.length; i++) {
-      const {exerciseId, setInfo, circuitGroupNum} = workoutPlans[i]
+      const {exerciseId, setInfo, circuitGroupNum, setType, circuitSeq} = workoutPlans[i]
       await WorkoutPlan.create(
         {
           exerciseId,
           workoutScheduleId,
           setInfo: JSON.stringify(setInfo),
-          circuitGroupNum: circuitGroupNum || null
+          circuitGroupNum: circuitGroupNum || null,
+          setType: setType || null,
+          circuitSeq: circuitSeq || null
         },
         connection
       )
@@ -71,7 +78,7 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
       {
         userId: data.userId,
         franchiseId: data.franchiseId,
-        month: moment().startOf('month').format('YYYY-MM-DD'),
+        month: moment(startDate).startOf('month').format('YYYY-MM-DD'),
         monthCount: 1
       },
       connection
@@ -169,13 +176,15 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
     if (workoutPlans && workoutPlans.length > 0) {
       await WorkoutPlan.deleteAllWithWorkoutScheduleId(data.id, connection)
       for (let i = 0; i < workoutPlans.length; i++) {
-        const {exerciseId, setInfo, circuitGroupNum} = workoutPlans[i]
+        const {exerciseId, setInfo, circuitGroupNum, setType, circuitSeq} = workoutPlans[i]
         await WorkoutPlan.create(
           {
             exerciseId,
             workoutScheduleId: data.id,
             setInfo: JSON.stringify(setInfo),
-            circuitGroupNum: circuitGroupNum || null
+            circuitGroupNum: circuitGroupNum || null,
+            setType: setType || null,
+            circuitSeq: circuitSeq || null
           },
           connection
         )

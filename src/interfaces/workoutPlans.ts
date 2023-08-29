@@ -12,4 +12,6 @@ export interface IWorkoutPlanCreate {
   workoutScheduleId: number
   setInfo: [{index: number; reps: number; weight: number; seconds: number}] | string
   circuitGroupNum?: number
+  setType?: string
+  circuitSeq?: number
 }

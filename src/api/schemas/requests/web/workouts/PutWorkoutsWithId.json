@@ -27,6 +27,14 @@
             "type": "integer",
             "nullable": true
           },
+          "setType": {
+            "type": "string",
+            "nullable": true
+          },
+          "circuitSeq": {
+            "type": "integer",
+            "nullable": true
+          },
           "setInfo": {
             "type": "array",
             "items": {
