@@ -275,6 +275,21 @@ async function deleteOne(id: number): Promise<void> {
       },
       connection
     )
+
+    const user = await User.findOne({id: workoutSchedule.userId})
+    const userDevices = await UserDevice.findAllWithUserId(user.id)
+    if (userDevices && userDevices.length > 0) {
+      // await User.updateBadgeCount(user.id, connection)
+      workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'workoutScheduleDelete',
+        // badge: user.badgeCount + 1,
+        data: {
+          workoutScheduleId: workoutSchedule.id.toString()
+        }
+      })
+    }
+
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
