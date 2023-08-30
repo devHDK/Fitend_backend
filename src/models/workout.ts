@@ -39,6 +39,22 @@ async function createRelationExercises(
   connection: PoolConnection
 ): Promise<void> {
   const {exercises, workoutId} = options
+  for (const exercise of exercises) {
+    if (!exercise.circuitGroupNum) {
+      exercise.circuitGroupNum = null
+    }
+
+    if (!exercise.circuitSeq) {
+      exercise.circuitSeq = null
+    }
+
+    if (!exercise.setType) {
+      exercise.setType = null
+    } else {
+      exercise.setType = `'${exercise.setType}'`
+    }
+  }
+
   const values = exercises
     .map(
       (exercise) =>

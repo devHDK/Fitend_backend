@@ -42,7 +42,8 @@
           },
           "setType": {
             "type": "string",
-            "nullable": true
+            "nullable": true,
+            "enum": ["superSet", "interval"]
           },
           "circuitSeq": {
             "type": "integer",
