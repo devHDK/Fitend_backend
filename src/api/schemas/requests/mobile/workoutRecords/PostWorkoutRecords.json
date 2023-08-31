@@ -42,6 +42,26 @@
           }
         }
       }
+    },
+    "scheduleRecords": {
+      "type": "object",
+      "nullable": true,
+      "properties": {
+        "workoutScheduleId": {
+          "type": "integer"
+        },
+        "heartRates": {
+          "type": "array",
+          "nullable": "true",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "workoutDuration": {
+          "type": "integer",
+          "nullable": "true"
+        }
+      }
     }
   },
   "required": [

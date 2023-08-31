@@ -48,7 +48,13 @@ async function findOne(workoutScheduleId: number): Promise<IWorkoutRecordDetailD
     const workoutFeedbacks = await WorkoutFeedbacks.findOneWithWorkoutScheduleId(workoutScheduleId)
     delete workoutFeedbacks.createdAt
     const workoutRecords = await WorkoutRecords.findAllWithWorkoutScheduleId(workoutScheduleId)
-    return {startDate: moment(workoutSchedule.startDate).format('YYYY-MM-DD'), ...workoutFeedbacks, workoutRecords}
+    const scheduleRecord = await WorkoutSchedule.findOneScheduleRecord(workoutScheduleId)
+    return {
+      startDate: moment(workoutSchedule.startDate).format('YYYY-MM-DD'),
+      ...workoutFeedbacks,
+      workoutRecords,
+      scheduleRecord
+    }
   } catch (e) {
     throw e
   }

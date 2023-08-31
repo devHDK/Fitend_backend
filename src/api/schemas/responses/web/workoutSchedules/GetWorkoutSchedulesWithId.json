@@ -26,6 +26,17 @@
     "isWorkoutComplete": {
       "type": "boolean"
     },
+    "heartRates": {
+      "type": "array",
+      "nullable": "true",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "workoutDuration": {
+      "type": "integer",
+      "nullable": "true"
+    },
     "strengthIndex": {
       "type": "integer",
       "minimum": 1,
