@@ -11,6 +11,10 @@ interface IWorkoutRecordDetailData {
   issueIndex: number
   contents: string
   workoutRecords: [IWorkoutRecordDetail]
+  scheduleRecords: {
+    heartRates: [number]
+    workoutDuration: number
+  }
 }
 
 async function createRecords(userId: number, options: IWorkoutRecordCreate[]): Promise<void> {
@@ -48,12 +52,12 @@ async function findOne(workoutScheduleId: number): Promise<IWorkoutRecordDetailD
     const workoutFeedbacks = await WorkoutFeedbacks.findOneWithWorkoutScheduleId(workoutScheduleId)
     delete workoutFeedbacks.createdAt
     const workoutRecords = await WorkoutRecords.findAllWithWorkoutScheduleId(workoutScheduleId)
-    const scheduleRecord = await WorkoutSchedule.findOneScheduleRecord(workoutScheduleId)
+    const scheduleRecords = await WorkoutSchedule.findOneScheduleRecord(workoutScheduleId)
     return {
       startDate: moment(workoutSchedule.startDate).format('YYYY-MM-DD'),
       ...workoutFeedbacks,
       workoutRecords,
-      scheduleRecord
+      scheduleRecords
     }
   } catch (e) {
     throw e

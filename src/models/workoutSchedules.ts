@@ -166,7 +166,9 @@ async function findUsernameWithWorkoutScheduleId(
   }
 }
 
-async function findOneScheduleRecord(workoutScheduleId: number): Promise<IWorkoutSchedule> {
+async function findOneScheduleRecord(
+  workoutScheduleId: number
+): Promise<{heartRates: [number]; workoutDuration: number}> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.heartRates, t.workoutDuration FROM ?? t WHERE t.?`,
