@@ -256,7 +256,7 @@ async function findBetweenReservationWithTrainerId(
       sql: `SELECT t.ticketId, ti.type, u.nickname as nickname, ti.sessionPrice, ti.coachingPrice, ti.totalSession,
             (ti.totalSession - (SELECT coalesce(MAX(r2.seq), 0) FROM ?? r2 
                 WHERE r2.ticketId = tr.ticketId AND r2.times != 0 AND r2.status != 'complete' AND
-                r2.startTime >= ${escape(startTime)} AND r2.startTime <= ${escape(endTime)})) as leftSession,
+                r2.startTime <= ${escape(endTime)})) as leftSession,
             (SELECT COUNT(*) FROM ?? r 
                 WHERE r.ticketId = tr.ticketId AND r.times != 0 AND r.status != 'complete' AND
                 r.startTime >= ${escape(startTime)} AND r.startTime <= ${escape(endTime)}) as thisMonthCount
