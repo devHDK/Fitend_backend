@@ -94,8 +94,8 @@
           "nullable": "true"
         }
       }
-  },
-  "required": [
-  ],
-  "additionalProperties": false
+    },
+
+    "additionalProperties": false
+  }
 }
