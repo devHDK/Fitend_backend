@@ -28,14 +28,14 @@
     },
     "heartRates": {
       "type": "array",
-      "nullable": "true",
+      "nullable": true,
       "items": {
         "type": "integer"
       }
     },
     "workoutDuration": {
       "type": "integer",
-      "nullable": "true"
+      "nullable": true
     },
     "strengthIndex": {
       "type": "integer",
