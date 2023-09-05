@@ -14,6 +14,7 @@ import * as Reservation from './reservation'
 import * as EventSchedule from './eventSchedule'
 import * as Notification from './notification'
 import * as WorkoutStat from './workoutStat'
+import * as Franchise from './franchise'
 
 export {
   Administrator,
@@ -31,5 +32,6 @@ export {
   Reservation,
   EventSchedule,
   Notification,
-  WorkoutStat
+  WorkoutStat,
+  Franchise
 }

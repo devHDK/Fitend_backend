@@ -1,27 +1,14 @@
 {
   "type": "object",
   "properties": {
-    "searchType": {
-      "type": "string",
-      "enum": ["nickname", "phone"]
-    },
     "search": {
       "type": "string"
     },
     "status": {
-      "type": "string",
-      "enum": ["general", "dormancy", "delete"]
-    },
-    "isMarketing": {
       "type": "boolean"
     },
-    "startAt": {
-      "type": "string",
-      "format": "date"
-    },
-    "endAt": {
-      "type": "string",
-      "format": "date"
+    "franchiseId": {
+      "type": "integer"
     },
     "start": {
       "type": "integer",

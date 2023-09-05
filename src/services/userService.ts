@@ -1,5 +1,13 @@
-import {Ticket, User, UserDevice, WorkoutSchedule} from '../models'
-import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserListForTrainer, IUserCreateOne} from '../interfaces/user'
+import {Ticket, User, UserDevice, WorkoutSchedule, Franchise} from '../models'
+import {
+  IUser,
+  IUserFindOne,
+  IUserUpdate,
+  IUserFindAll,
+  IUserListForTrainer,
+  IUserCreateOne,
+  IUserListForAdmin
+} from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'
 import {db} from '../loaders'
@@ -19,6 +27,13 @@ interface IUserDetail extends IUser {
     asOfTodayCount: number
     doneCount: number
     recentDate: string
+  }
+}
+
+interface IUserDetailForAdmin extends IUserDetail {
+  franchises: {
+    franchiseId: number
+    name: string
   }
 }
 
@@ -87,9 +102,29 @@ async function findOneWithId(id: number): Promise<IUserDetail> {
   }
 }
 
+async function findOneForAdmin(id: number): Promise<IUserDetailForAdmin> {
+  try {
+    const user = await User.findOneWithId(id)
+    const tickets = await Ticket.findCounts(id)
+    const workouts = await WorkoutSchedule.findCounts(id)
+    const franchises = await Franchise.findOneWithUserId(id)
+    return {...user, tickets, workouts, franchises}
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTrainer> {
   try {
     return await User.findAllForTrainer(options)
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllForAdmin(options: IUserFindAll): Promise<IUserListForAdmin> {
+  try {
+    return await User.findAllForAdmin(options)
   } catch (e) {
     throw e
   }
@@ -125,4 +160,15 @@ async function updatePassword(options: {id: number; password: string; newPasswor
   }
 }
 
-export {create, confirmPassword, getMe, findOne, findOneWithId, findAllForTrainer, update, updatePassword}
+export {
+  create,
+  confirmPassword,
+  getMe,
+  findOne,
+  findOneWithId,
+  findOneForAdmin,
+  findAllForTrainer,
+  findAllForAdmin,
+  update,
+  updatePassword
+}

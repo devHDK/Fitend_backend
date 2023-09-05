@@ -9,41 +9,57 @@
           "id": {
             "type": "integer"
           },
-          "status": {
+          "nickname": {
             "type": "string"
           },
-          "nickname": {
-            "type": "string",
-            "maxLength": 20
+          "email": {
+            "type": "string"
           },
           "phone": {
             "type": "string"
           },
-          "point": {
-            "type": "number"
+          "franchises": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
           },
-          "isMarketing": {
-            "type": "boolean"
+            "trainers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "nickname": {
+                    "type": "string"
+                  }
+                }
+              },
+            "nullable": true
           },
           "createdAt": {
             "type": "string",
             "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
           }
         },
         "required": [
           "id",
-          "status",
           "nickname",
+          "email",
           "phone",
-          "point",
-          "isMarketing",
-          "createdAt",
-          "updatedAt"
+          "franchises",
+          "trainers",
+          "createdAt"
         ],
         "additionalProperties": false
       }

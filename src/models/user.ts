@@ -8,7 +8,9 @@ import {
   IUserUpdate,
   IUserFindAll,
   IUserListForTrainer,
-  IUserData
+  IUserData,
+  IUserListForAdmin,
+  IUserDataForAdmin
 } from '../interfaces/user'
 import {Trainer, Ticket} from './'
 
@@ -16,6 +18,7 @@ moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'Users'
 const tableFranchiseUser = 'Franchises-Users'
+const tableFranchise = 'Franchises'
 
 async function create(options: IUserCreateOne, connection: PoolConnection): Promise<number> {
   try {
@@ -114,6 +117,82 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
         tableName,
         tableFranchiseUser,
         franchiseId
+      ]
+    })
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllForAdmin(options: IUserFindAll): Promise<IUserListForAdmin> {
+  try {
+    const {franchiseId, start, perPage, search, status} = options
+    const where = []
+
+    if (search) where.push(`(u.nickname like '%${search}%' OR u.phone like '%${search}%')`)
+    const currentTime = moment().format('YYYY-MM-DD')
+    const rows: IUserDataForAdmin[] = await db.query({
+      sql: `SELECT u.id, u.email, u.nickname, u.phone, u.createdAt,
+            JSON_ARRAYAGG(JSON_OBJECT('id', fu.franchiseId, 'point', f.name)) as franchises,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
+              JOIN ?? tr ON tr.userId = u.id AND tr.ticketId = ti.id
+              JOIN ?? tra ON tra.id = tr.trainerId
+              WHERE ti.expiredAt > '${currentTime}'
+              LIMIT 1
+              ) as trainers
+            FROM ?? u
+            ${
+              franchiseId
+                ? `JOIN ?? fu ON u.id = fu.userId
+            JOIN ?? f ON f.id = ${escape(franchiseId)}`
+                : `JOIN ?? fu ON u.id = fu.userId
+            JOIN ?? f ON f.id = fu.franchiseId`
+            }
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY u.id
+            ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
+            ORDER BY u.createdAt DESC
+            LIMIT ${start}, ${perPage}`,
+      values: [
+        Ticket.tableName,
+        Ticket.tableTicketRelation,
+        Trainer.tableName,
+        tableName,
+        tableFranchiseUser,
+        tableFranchise
+      ]
+    })
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total FROM (
+            SELECT u.id, u.email, u.nickname, u.phone, u.createdAt,
+            JSON_ARRAYAGG(JSON_OBJECT('id', fu.franchiseId, 'point', f.name)) as franchises,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
+              JOIN ?? tr ON tr.userId = u.id AND tr.ticketId = ti.id
+              JOIN ?? tra ON tra.id = tr.trainerId
+              WHERE ti.expiredAt > '${currentTime}'
+              LIMIT 1
+              ) as trainers
+            FROM ?? u
+           ${
+             franchiseId
+               ? `JOIN ?? fu ON u.id = fu.userId
+            JOIN ?? f ON f.id = ${escape(franchiseId)}`
+               : `JOIN ?? fu ON u.id = fu.userId
+            JOIN ?? f ON f.id = fu.franchiseId`
+           }
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY u.id
+            ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
+            ) u
+            `,
+      values: [
+        Ticket.tableName,
+        Ticket.tableTicketRelation,
+        Trainer.tableName,
+        tableName,
+        tableFranchiseUser,
+        tableFranchise
       ]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
@@ -221,6 +300,7 @@ export {
   create,
   createRelationsFranchises,
   findAllForTrainer,
+  findAllForAdmin,
   findOne,
   findOneWithId,
   findActivePersonalUsers,

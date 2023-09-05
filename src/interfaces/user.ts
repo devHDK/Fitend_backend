@@ -34,7 +34,19 @@ export interface IUserData {
   createdAt: Date
 }
 
+export interface IUserDataForAdmin {
+  id: number
+  nickname: string
+  phone: string
+  email: string
+  franchises: [{id: number; name: string}]
+  trainers: [{id: number; nickname: string}]
+  createdAt: Date
+}
+
 export type IUserListForTrainer = IResponseList<IUserData>
+
+export type IUserListForAdmin = IResponseList<IUserDataForAdmin>
 
 export interface IUserFindOne {
   uniqueKey?: string
