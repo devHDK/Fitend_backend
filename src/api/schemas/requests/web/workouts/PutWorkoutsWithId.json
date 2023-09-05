@@ -30,7 +30,7 @@
           "setType": {
             "type": "string",
             "nullable": true,
-            "enum": ["superSet", "interval"]
+            "enum": ["superSet", "interval", null]
           },
           "circuitSeq": {
             "type": "integer",
