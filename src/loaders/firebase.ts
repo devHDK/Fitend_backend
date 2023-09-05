@@ -34,11 +34,13 @@ const sendPush = async (
       tokens,
       data: payload.data,
       notification: payload.notification,
-      android: {
-        notification: {
-          clickAction: 'FLUTTER_NOTIFICATION_CLICK'
-        }
-      },
+      android: !payload.data.type.includes('workoutSchedule')
+        ? {
+            notification: {
+              clickAction: 'FLUTTER_NOTIFICATION_CLICK'
+            }
+          }
+        : null,
       apns: {
         headers: {
           messageType: 'background'

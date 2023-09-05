@@ -77,9 +77,25 @@
           }
         }
       }
-    }
-  },
-  "required": [
-  ],
-  "additionalProperties": false
+    },
+    "scheduleRecords": {
+      "type": "object",
+      "nullable": true,
+      "properties": {
+        "heartRates": {
+          "type": "array",
+          "nullable": "true",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "workoutDuration": {
+          "type": "integer",
+          "nullable": "true"
+        }
+      }
+    },
+
+    "additionalProperties": false
+  }
 }

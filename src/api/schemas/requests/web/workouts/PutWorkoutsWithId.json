@@ -23,6 +23,19 @@
           "id": {
             "type": "integer"
           },
+          "circuitGroupNum": {
+            "type": "integer",
+            "nullable": true
+          },
+          "setType": {
+            "type": "string",
+            "nullable": true,
+            "enum": ["superSet", "interval", null]
+          },
+          "circuitSeq": {
+            "type": "integer",
+            "nullable": true
+          },
           "setInfo": {
             "type": "array",
             "items": {

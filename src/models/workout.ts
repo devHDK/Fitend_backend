@@ -29,6 +29,9 @@ async function createRelationExercises(
       {
         id: number
         setInfo: [{index: number; reps: number; weight: number; seconds: number}]
+        circuitGroupNum?: number
+        setType?: string
+        circuitSeq?: number
       }
     ]
     workoutId: number
@@ -36,13 +39,35 @@ async function createRelationExercises(
   connection: PoolConnection
 ): Promise<void> {
   const {exercises, workoutId} = options
+  for (const exercise of exercises) {
+    if (!exercise.circuitGroupNum) {
+      exercise.circuitGroupNum = null
+    }
+
+    if (!exercise.circuitSeq) {
+      exercise.circuitSeq = null
+    }
+
+    if (!exercise.setType) {
+      exercise.setType = null
+    } else {
+      exercise.setType = `'${exercise.setType}'`
+    }
+  }
+
   const values = exercises
-    .map((exercise) => `(${workoutId}, '${exercise.id}', '${JSON.stringify(exercise.setInfo)}')`)
+    .map(
+      (exercise) =>
+        `(${workoutId}, '${exercise.id}', ${exercise.circuitGroupNum ?? null}, ${exercise.setType || null}, ${
+          exercise.circuitSeq || null
+        }, '${JSON.stringify(exercise.setInfo)}')`
+    )
     .join(',')
+
   try {
     await db.query({
       connection,
-      sql: `INSERT INTO ?? (workoutId, exerciseId, setInfo) VALUES ${values}`,
+      sql: `INSERT INTO ?? (workoutId, exerciseId, circuitGroupNum, setType, circuitSeq, setInfo) VALUES ${values}`,
       values: [tableWorkoutExercise]
     })
   } catch (e) {
@@ -136,7 +161,8 @@ async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDet
             ) as primaryTypes,
             t.trainerId, tr.nickname as trainerNickname, tr.profileImage as trainerProfileImage, t.updatedAt,
             JSON_ARRAYAGG(
-              JSON_OBJECT('id', e.id, 'videos', e.videos, 'name', e.name, 'trackingFieldId', e.trackingFieldId ,'setInfo', we.setInfo,
+              JSON_OBJECT('id', e.id, 'videos', e.videos, 'name', e.name, 'trackingFieldId', e.trackingFieldId ,
+              'setInfo', we.setInfo, 'circuitGroupNum', we.circuitGroupNum, 'setType', we.setType, 'circuitSeq', we.circuitSeq,
               'targetMuscles', (SELECT JSON_ARRAYAGG(t.name) 
                 FROM (
                   SELECT DISTINCT tm.name

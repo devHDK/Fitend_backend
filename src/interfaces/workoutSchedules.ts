@@ -68,8 +68,12 @@ export interface IWorkoutScheduleDetail {
   workoutTitle: string
   workoutSubTitle: string
   targetMuscleTypes: string[]
+  heartRates?: number[]
+  workoutDuration?: number
+  isWorkoutComplete: boolean
   workoutTotalTime: string
   seq: number
+
   exercises: IWorkoutScheduleExercise[]
 }
 
@@ -77,6 +81,9 @@ export interface IWorkoutScheduleExercise {
   workoutPlanId: number
   exerciseId: number
   name: string
+  setType?: string
+  circuitSeq?: number
+  circuitGroupNum?: number
   description: string
   trackingFieldId: number
   targetMuscles: [

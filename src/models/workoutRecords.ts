@@ -92,7 +92,9 @@ async function findAllToday(
             JOIN ?? tra ON tra.id = ft.trainerId 
             JOIN ?? u ON u.id = ws.userId
             WHERE ws.startDate BETWEEN ${escape(todayStart)} AND ${escape(todayEnd)}
-            GROUP BY ws.id`,
+            GROUP BY ws.id
+            ORDER BY t.createdAt DESC
+            `,
       values: [
         tableName,
         WorkoutPlan.tableName,

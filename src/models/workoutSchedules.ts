@@ -10,11 +10,12 @@ import {
   IWorkoutScheduleListForTrainer
 } from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
-import {WorkoutPlan, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords, User} from './index'
+import {WorkoutPlan, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords, User, WorkoutSchedule} from './index'
 
 moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'WorkoutSchedules'
+const tableWorkoutScheduleRecords = 'WorkoutScheduleRecords'
 
 async function create(options: IWorkoutScheduleCreate, connection?: PoolConnection): Promise<number> {
   try {
@@ -24,6 +25,21 @@ async function create(options: IWorkoutScheduleCreate, connection?: PoolConnecti
       values: [tableName, options]
     })
     return insertId
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createScheduleRecords(
+  options: {workoutScheduleId: number; heartRates?: string; workoutDuration?: number},
+  connection?: PoolConnection
+) {
+  try {
+    await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableWorkoutScheduleRecords, options]
+    })
   } catch (e) {
     throw e
   }
@@ -150,11 +166,25 @@ async function findUsernameWithWorkoutScheduleId(
   }
 }
 
+async function findOneScheduleRecord(
+  workoutScheduleId: number
+): Promise<{heartRates: [number]; workoutDuration: number}> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.heartRates, t.workoutDuration FROM ?? t WHERE t.?`,
+      values: [tableWorkoutScheduleRecords, {workoutScheduleId}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id as workoutScheduleId, DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
-            t.workoutTitle, t.workoutSubTitle, t.seq,
+            t.workoutTitle, t.workoutSubTitle, t.seq, wsr.heartRates, wsr.workoutDuration,
             (
               SELECT JSON_ARRAYAGG(tm.type) 
               FROM ?? tm
@@ -178,7 +208,8 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutSch
                 (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', tm.name, 'type', et.type))
                 FROM ?? tm
                 JOIN ?? et ON et.exerciseId = e.id AND et.targetMuscleId = tm.id),
-                'videos', e.videos, 'setInfo', wp.setInfo,
+                'videos', e.videos, 'setInfo', wp.setInfo, 'circuitGroupNum', wp.circuitGroupNum,
+                'setType', wp.setType, 'circuitSeq', wp.circuitSeq,
                 'recordSetInfo', wr.setInfo
                 )
               )
@@ -190,6 +221,7 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutSch
             JOIN ?? wp ON wp.workoutScheduleId = t.id
             JOIN ?? tra ON tra.id = t.trainerId
             LEFT JOIN ?? wf ON wf.workoutScheduleId = t.id
+            LEFT JOIN ?? wsr ON wsr.workoutScheduleId = t.id
             WHERE t.?
             GROUP BY t.id`,
       values: [
@@ -207,6 +239,7 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutSch
         WorkoutPlan.tableName,
         Trainer.tableName,
         WorkoutFeedbacks.tableName,
+        tableWorkoutScheduleRecords,
         {id: workoutScheduleId}
       ]
     })
@@ -313,12 +346,15 @@ async function deleteOne(id: number, connection: PoolConnection): Promise<void> 
 
 export {
   tableName,
+  tableWorkoutScheduleRecords,
   create,
+  createScheduleRecords,
   findAll,
   findAllForTrainer,
   findOneWithId,
   findOne,
   findUsernameWithWorkoutScheduleId,
+  findOneScheduleRecord,
   findOneForTrainer,
   findOneWithWorkoutPlanId,
   findCounts,
