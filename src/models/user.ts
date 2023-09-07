@@ -134,7 +134,8 @@ async function findAllForAdmin(options: IUserFindAll): Promise<IUserListForAdmin
     const currentTime = moment().format('YYYY-MM-DD')
     const rows: IUserDataForAdmin[] = await db.query({
       sql: `SELECT u.id, u.email, u.nickname, u.phone, u.createdAt,
-            JSON_ARRAYAGG(JSON_OBJECT('id', fu.franchiseId, 'point', f.name)) as franchises,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', fu.franchiseId, 'name', f.name)) FROM ?? f
+            JOIN ?? fu ON u.id = fu.userId AND f.id = fu.franchiseId) as franchises,
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
               JOIN ?? tr ON tr.userId = u.id AND tr.ticketId = ti.id
               JOIN ?? tra ON tra.id = tr.trainerId
@@ -142,31 +143,27 @@ async function findAllForAdmin(options: IUserFindAll): Promise<IUserListForAdmin
               LIMIT 1
               ) as trainers
             FROM ?? u
-            ${
-              franchiseId
-                ? `JOIN ?? fu ON u.id = fu.userId
-            JOIN ?? f ON f.id = ${escape(franchiseId)}`
-                : `JOIN ?? fu ON u.id = fu.userId
-            JOIN ?? f ON f.id = fu.franchiseId`
-            }
+            ${franchiseId ? `JOIN ?? fu ON fu.franchiseId = ${escape(franchiseId)} AND fu.userId = u.id` : ''}
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY u.id
             ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
             ORDER BY u.createdAt DESC
             LIMIT ${start}, ${perPage}`,
       values: [
+        tableFranchise,
+        tableFranchiseUser,
         Ticket.tableName,
         Ticket.tableTicketRelation,
         Trainer.tableName,
         tableName,
-        tableFranchiseUser,
-        tableFranchise
+        tableFranchiseUser
       ]
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM (
             SELECT u.id, u.email, u.nickname, u.phone, u.createdAt,
-            JSON_ARRAYAGG(JSON_OBJECT('id', fu.franchiseId, 'point', f.name)) as franchises,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', fu.franchiseId, 'name', f.name)) FROM ?? f
+            JOIN ?? fu ON u.id = fu.userId) as franchises,
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
               JOIN ?? tr ON tr.userId = u.id AND tr.ticketId = ti.id
               JOIN ?? tra ON tra.id = tr.trainerId
@@ -174,25 +171,20 @@ async function findAllForAdmin(options: IUserFindAll): Promise<IUserListForAdmin
               LIMIT 1
               ) as trainers
             FROM ?? u
-           ${
-             franchiseId
-               ? `JOIN ?? fu ON u.id = fu.userId
-            JOIN ?? f ON f.id = ${escape(franchiseId)}`
-               : `JOIN ?? fu ON u.id = fu.userId
-            JOIN ?? f ON f.id = fu.franchiseId`
-           }
+            ${franchiseId ? `JOIN ?? fu ON fu.franchiseId = ${escape(franchiseId)} AND fu.userId = u.id` : ''}
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY u.id
             ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
             ) u
             `,
       values: [
+        tableFranchise,
+        tableFranchiseUser,
         Ticket.tableName,
         Ticket.tableTicketRelation,
         Trainer.tableName,
         tableName,
-        tableFranchiseUser,
-        tableFranchise
+        tableFranchiseUser
       ]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}

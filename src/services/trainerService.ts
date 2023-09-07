@@ -1,4 +1,4 @@
-import {ITrainer, ITrainerList} from '../interfaces/trainer'
+import {ITrainer, ITrainerFindAllForAdmin, ITrainerList, ITrainerListForAdmin} from '../interfaces/trainer'
 import {Trainer} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
 import {passwordIterations} from '../libs/code'
@@ -29,6 +29,14 @@ async function findAll(franchiseId: number): Promise<[ITrainerList]> {
   }
 }
 
+async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrainerListForAdmin> {
+  try {
+    return await Trainer.findAllForAdmin(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updatePassword({
   trainerId,
   password,
@@ -52,4 +60,4 @@ async function updatePassword({
   }
 }
 
-export {signIn, findAll, updatePassword}
+export {signIn, findAll, findAllForAdmin, updatePassword}

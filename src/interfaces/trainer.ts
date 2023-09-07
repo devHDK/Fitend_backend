@@ -16,6 +16,24 @@ export type ITrainerList = {
   nickname: string
 }
 
+export interface ITrainerDataForAdmin {
+  id: number
+  nickname: string
+  email: string
+  franchises: [{id: number; name: string}]
+  users: number
+  createdAt: Date
+}
+
+export type ITrainerListForAdmin = IResponseList<ITrainerDataForAdmin>
+
+export type ITrainerFindAllForAdmin = {
+  franchiseId: number
+  start: number
+  perPage: number
+  search?: string
+}
+
 export interface ITrainerFindOne {
   email?: string
   id?: number
