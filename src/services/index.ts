@@ -13,6 +13,7 @@ import * as ReservationService from './reservationService'
 import * as EventScheduleService from './eventScheduleService'
 import * as NotificationService from './notificationService'
 import * as PayrollService from './payrollService'
+import * as FranchisesService from './franchisesService'
 
 export {
   AdministratorService,
@@ -29,5 +30,6 @@ export {
   ReservationService,
   EventScheduleService,
   NotificationService,
-  PayrollService
+  PayrollService,
+  FranchisesService
 }

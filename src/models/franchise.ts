@@ -20,4 +20,15 @@ async function findOneWithUserId(id: number): Promise<IFranchise> {
   }
 }
 
-export {tableName, findOneWithUserId}
+async function findAllForAdmin(): Promise<[IFranchise]> {
+  try {
+    return await db.query({
+      sql: `SELECT f.id as franchisesId, f.name From ?? f`,
+      values: [tableName]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+export {tableName, findOneWithUserId, findAllForAdmin}

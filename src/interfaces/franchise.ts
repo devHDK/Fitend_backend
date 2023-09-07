@@ -1,4 +1,4 @@
-export interface IFranchise {
+export type IFranchise = {
   franchiseId: number
   name: string
 }
