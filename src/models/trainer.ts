@@ -3,6 +3,7 @@ import {db} from '../loaders'
 import {
   ITrainer,
   ITrainerDataForAdmin,
+  ITrainerDetail,
   ITrainerFindAllForAdmin,
   ITrainerFindOne,
   ITrainerFindOneWageInfo,
@@ -110,6 +111,19 @@ async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
   }
 }
 
+async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.id, t.nickname, t.email, t.createdAt 
+            FROM ?? t WHERE ?`,
+      values: [tableName, {id}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findDeviceList(): Promise<[{deviceId: string}]> {
   try {
     const row = await db.query({
@@ -158,5 +172,6 @@ export {
   findAll,
   findDeviceList,
   updateOne,
-  findAllForAdmin
+  findAllForAdmin,
+  findOneWithIdForAdmin
 }

@@ -14,4 +14,17 @@ const getTrainers = new ApiRouter({
   handler: ctrl.getTrainers
 })
 
-export {getTrainers}
+const getTrainersWithId = new ApiRouter({
+  name: ':id',
+  paths: ['common/IdPath'],
+  method: 'get',
+  summary: '일반 회원 상세 조회',
+  roles: ['master'],
+  tags: ['Trainers'],
+  responses: {
+    200: {schema: 'responses/admin/trainers/GetTrainersWithId'}
+  },
+  handler: ctrl.getTrainersWithId
+})
+
+export {getTrainers, getTrainersWithId}

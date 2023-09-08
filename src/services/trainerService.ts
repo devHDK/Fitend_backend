@@ -1,7 +1,16 @@
-import {ITrainer, ITrainerFindAllForAdmin, ITrainerList, ITrainerListForAdmin} from '../interfaces/trainer'
-import {Trainer} from '../models/index'
+import moment from 'moment-timezone'
+import {
+  ITrainer,
+  ITrainerDetail,
+  ITrainerFindAllForAdmin,
+  ITrainerList,
+  ITrainerListForAdmin
+} from '../interfaces/trainer'
+import {Franchise, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
 import {passwordIterations} from '../libs/code'
+
+moment.tz.setDefault('Asia/Seoul')
 
 async function signIn(options: {email: string; password: string}): Promise<{accessToken: string; trainer: ITrainer}> {
   try {
@@ -37,6 +46,26 @@ async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrain
   }
 }
 
+async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
+  try {
+    const thisMonthStart = moment().startOf('month').format('YYYY-MM-DD')
+    const thisMonthEnd = moment().add(1, 'day').format('YYYY-MM-DD')
+    const lastMonthStart = moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD')
+    const lastMonthEnd = moment().subtract(1, 'month').endOf('month').add(1, 'day').format('YYYY-MM-DD')
+    const trainer = await Trainer.findOneWithIdForAdmin(id)
+    const franchiseInfo = await Franchise.findOneWithTrainerId(id)
+    const fcThisMonthCount = await User.findActiveFitnessUsersForAdminWithTrainerId(id, thisMonthStart, thisMonthEnd)
+    const fcLastMonthCount = await User.findActiveFitnessUsersForAdminWithTrainerId(id, lastMonthStart, lastMonthEnd)
+    const ptThisMonthCount = await User.findActivePersonalUsersForAdminWithTrainerId(id, thisMonthStart, thisMonthEnd)
+    const ptLastMonthCount = await User.findActivePersonalUsersForAdminWithTrainerId(id, lastMonthStart, lastMonthEnd)
+    const fitnessActiveUsers = {thisMonthCount: fcThisMonthCount, lastMonthCount: fcLastMonthCount}
+    const personalActiveUsers = {thisMonthCount: ptThisMonthCount, lastMonthCount: ptLastMonthCount}
+    return {...trainer, franchiseInfo, activeUsers: {fitnessActiveUsers, personalActiveUsers}}
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updatePassword({
   trainerId,
   password,
@@ -60,4 +89,4 @@ async function updatePassword({
   }
 }
 
-export {signIn, findAll, findAllForAdmin, updatePassword}
+export {signIn, findAll, findAllForAdmin, findOneWithIdForAdmin, updatePassword}

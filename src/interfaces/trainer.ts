@@ -1,3 +1,5 @@
+import {IFranchise, IFranchiseWithWageInfo} from './franchise'
+
 export interface ITrainer {
   id?: number
   nickname?: string
@@ -53,4 +55,23 @@ export interface ITrainerWageInfo {
 export interface ITrainerUpdate {
   id: number
   password?: string
+}
+
+export type ITrainerDetail = {
+  id: number
+  nickname: string
+  email: string
+  createdAt: Date
+  activeUsers: ActiveUsers
+  franchiseInfo: IFranchiseWithWageInfo
+}
+
+export type ActiveUsers = {
+  fitnessActiveUsers: FitnessActiveUsersClass
+  personalActiveUsers: FitnessActiveUsersClass
+}
+
+export type FitnessActiveUsersClass = {
+  thisMonthCount: number
+  lastMonthCount: number
 }
