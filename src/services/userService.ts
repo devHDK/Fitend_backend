@@ -1,4 +1,4 @@
-import {Ticket, User, UserDevice, WorkoutSchedule} from '../models'
+import {Ticket, Trainer, User, UserDevice, WorkoutSchedule} from '../models'
 import {IUser, IUserFindOne, IUserUpdate, IUserFindAll, IUserListForTrainer, IUserCreateOne} from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'
@@ -109,6 +109,35 @@ async function update(options: IUserUpdate): Promise<void> {
   }
 }
 
+async function updateFCMToken(options: {
+  userId: number
+  deviceId: string
+  token: string
+  platform: 'android' | 'ios'
+}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {userId, deviceId, token, platform} = options
+
+    const user = await User.findOne({id: userId})
+
+    const forbiddenDevices = await Trainer.findDeviceList()
+    const forbiddenDeviceList = forbiddenDevices.map((device) => device.deviceId)
+    const isForbiddenDevice = forbiddenDeviceList.some((item) => item === deviceId)
+
+    if (!isForbiddenDevice && token) {
+      await User.updateOne({id: user.id, deviceId, platform}, connection)
+      await UserDevice.upsertOne({userId: user.id, platform, deviceId, token}, connection)
+      await UserDevice.updateOne({userId: user.id, platform, deviceId, isNotification: true}, connection)
+    }
+
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
 async function updatePassword(options: {id: number; password: string; newPassword: string}): Promise<void> {
   const {id, password, newPassword} = options
   try {
@@ -125,4 +154,14 @@ async function updatePassword(options: {id: number; password: string; newPasswor
   }
 }
 
-export {create, confirmPassword, getMe, findOne, findOneWithId, findAllForTrainer, update, updatePassword}
+export {
+  create,
+  confirmPassword,
+  getMe,
+  findOne,
+  findOneWithId,
+  findAllForTrainer,
+  update,
+  updateFCMToken,
+  updatePassword
+}

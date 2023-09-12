@@ -1,0 +1,21 @@
+{
+  "type": "object",
+  "properties": {
+    "deviceId": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "deviceId",
+    "token",
+    "platform"
+
+  ],
+  "additionalProperties": false
+}
