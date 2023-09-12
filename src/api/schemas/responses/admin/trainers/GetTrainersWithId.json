@@ -60,6 +60,71 @@
           "type": "integer"
         }
       }
+    },
+    "thisMonthSession": {
+      "type": "object",
+      "properties": {
+        "reservations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "ticketId",
+              "type",
+              "nickname",
+              "sessionPrice",
+              "thisMonthCount"
+            ],
+            "properties": {
+              "ticketId": {
+                "type": "integer"
+              },
+              "type": {
+                "type": "string"
+              },
+              "nickname": {
+                "type": "string"
+              },
+              "sessionPrice": {
+                "type": "integer"
+              },
+              "thisMonthCount": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "coaching": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "ticketId",
+              "nickname",
+              "type",
+              "coachingPrice",
+              "doneCount"
+            ],
+            "properties": {
+              "ticketId": {
+                "type": "integer"
+              },
+              "nickname": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "coachingPrice": {
+                "type": "integer"
+              },
+              "doneCount": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "required": [

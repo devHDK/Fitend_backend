@@ -6,7 +6,7 @@ import {
   ITrainerList,
   ITrainerListForAdmin
 } from '../interfaces/trainer'
-import {Franchise, Trainer, User} from '../models/index'
+import {Franchise, Reservation, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
 import {passwordIterations} from '../libs/code'
 
@@ -60,7 +60,17 @@ async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
     const ptLastMonthCount = await User.findActivePersonalUsersForAdminWithTrainerId(id, lastMonthStart, lastMonthEnd)
     const fitnessActiveUsers = {thisMonthCount: fcThisMonthCount, lastMonthCount: fcLastMonthCount}
     const personalActiveUsers = {thisMonthCount: ptThisMonthCount, lastMonthCount: ptLastMonthCount}
-    return {...trainer, franchiseInfo, activeUsers: {fitnessActiveUsers, personalActiveUsers}}
+    const reservations = await Reservation.findBetweenReservationWithTrainerIdForAdmin({
+      startTime: moment(thisMonthStart).utc().format('YYYY-MM-DDTHH:mm:ss'),
+      endTime: moment(thisMonthEnd).utc().format('YYYY-MM-DDTHH:mm:ss'),
+      trainerId: id
+    })
+    return {
+      ...trainer,
+      franchiseInfo,
+      activeUsers: {fitnessActiveUsers, personalActiveUsers},
+      thisMonthSession: {reservations}
+    }
   } catch (e) {
     throw e
   }

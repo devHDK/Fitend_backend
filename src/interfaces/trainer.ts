@@ -1,4 +1,5 @@
 import {IFranchise, IFranchiseWithWageInfo} from './franchise'
+import {IPayrollResponseForAdminWithTrainerId} from './payroll'
 
 export interface ITrainer {
   id?: number
@@ -64,6 +65,7 @@ export type ITrainerDetail = {
   createdAt: Date
   activeUsers: ActiveUsers
   franchiseInfo: IFranchiseWithWageInfo
+  thisMonthSession: IPayrollResponseForAdminWithTrainerId
 }
 
 export type ActiveUsers = {

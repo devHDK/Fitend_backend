@@ -1,4 +1,5 @@
 import moment from 'moment-timezone'
+import {escape} from 'mysql'
 import {db} from '../loaders'
 import {
   ITrainer,
@@ -49,7 +50,7 @@ async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrain
             JOIN ?? tr ON tr.trainerId = t.id
             JOIN ?? u ON tr.userId = u.id
             JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt > '${currentTime}'
-            ${franchiseId ? `JOIN ?? ft ON ft.franchiseId = ? AND ft.trainerId = t.id` : ''}
+            JOIN ?? ft ON ft.trainerId = t.id ${franchiseId ? `AND ft.franchiseId = ${escape(franchiseId)}` : ''}
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.createdAt DESC
@@ -61,35 +62,19 @@ async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrain
         Ticket.tableTicketRelation,
         User.tableName,
         Ticket.tableName,
-        tableFranchiseTrainer,
-        franchiseId
+        tableFranchiseTrainer
       ]
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM (
-            SELECT t.id, t.nickname, t.email, t.createdAt,
-            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', f.id, 'name', f.name)) FROM ?? f
-            JOIN ?? ft ON ft.trainerId = t.id AND ft.franchiseId = f.id) as franchises,
-            COUNT(u.id) as userAvailableCount
+            SELECT t.id
             FROM ?? t
-            JOIN ?? tr ON tr.trainerId = t.id
-            JOIN ?? u ON tr.userId = u.id
-            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt > '${currentTime}'
-            ${franchiseId ? `JOIN ?? ft ON ft.franchiseId = ? AND ft.trainerId = t.id` : ''}
+            JOIN ?? ft ON ft.trainerId = t.id ${franchiseId ? `AND ft.franchiseId = ${escape(franchiseId)}` : ''}
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             ) t`,
-      values: [
-        tableFranchise,
-        tableFranchiseTrainer,
-        tableName,
-        Ticket.tableTicketRelation,
-        User.tableName,
-        Ticket.tableName,
-        tableFranchiseTrainer,
-        franchiseId
-      ]
+      values: [tableName, tableFranchiseTrainer]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
