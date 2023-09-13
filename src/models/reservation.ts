@@ -307,12 +307,13 @@ async function findAllByTicketIdAndLaterStartTime(
 
 async function findBurnRate(franchiseId: number): Promise<{total: number; used: number}> {
   try {
+    const currentTime = moment().format('YYYY-MM-DD')
     const [row] = await db.query({
       sql: `SELECT 
             (
             SELECT SUM(t.totalSession) FROM ?? t 
             JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ${escape(franchiseId)}
-            WHERE t.expiredAt > NOW()
+            WHERE t.expiredAt >= ${currentTime}
             ) total,
             (
             SELECT COUNT(t.id)
@@ -320,7 +321,7 @@ async function findBurnRate(franchiseId: number): Promise<{total: number; used: 
             SELECT t.id FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)} 
-            AND ti.expiredAt > NOW()
+            AND ti.expiredAt >= ${currentTime}
             WHERE t.status = 'attendance' OR (t.status = 'cancel' AND t.times = 1)
             GROUP BY t.id
             ) t
