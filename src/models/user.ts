@@ -68,7 +68,7 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
             ${
               trainerId
                 ? `JOIN TicketsRelations tr ON tr.trainerId = ${escape(trainerId)} AND tr.userId = t.id
-                   JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt > '${currentTime}'`
+                   JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt >= '${currentTime}'`
                 : ''
             }
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
@@ -91,7 +91,7 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
               (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
               JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
               JOIN ?? tra ON tra.id = tr.trainerId
-              WHERE ti.expiredAt > '${currentTime}'
+              WHERE ti.expiredAt >= '${currentTime}'
               LIMIT 1
               ) as trainers
               FROM ?? t
@@ -99,7 +99,7 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
               ${
                 trainerId
                   ? `JOIN TicketsRelations tr ON tr.trainerId = ${escape(trainerId)} AND tr.userId = t.id
-                   JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt > '${currentTime}'`
+                   JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt >= '${currentTime}'`
                   : ''
               }
               ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
