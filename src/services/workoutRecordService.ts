@@ -1,7 +1,7 @@
 import moment from 'moment-timezone'
 import {db} from '../loaders'
 import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat} from '../models'
-import {IWorkoutRecordCreate, IWorkoutRecordDetail} from '../interfaces/workoutRecords'
+import {IWorkoutRecordCreate, IWorkoutRecordDetail, IWorkoutRecordScheduleCreate} from '../interfaces/workoutRecords'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -46,6 +46,26 @@ async function createRecords(userId: number, options: IWorkoutRecordCreate[]): P
   }
 }
 
+async function createRecordsSchedule(options: IWorkoutRecordScheduleCreate) {
+  const connection = await db.beginTransaction()
+  try {
+    const scheduleRecords = options
+
+    await WorkoutSchedule.createScheduleRecords(
+      {
+        workoutScheduleId: scheduleRecords.workoutScheduleId,
+        heartRates: scheduleRecords.heartRates ?? JSON.stringify(scheduleRecords.heartRates),
+        workoutDuration: scheduleRecords.workoutDuration
+      },
+      connection
+    )
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
 async function findOne(workoutScheduleId: number): Promise<IWorkoutRecordDetailData> {
   try {
     const workoutSchedule = await WorkoutSchedule.findOneWithId(workoutScheduleId)
@@ -64,4 +84,4 @@ async function findOne(workoutScheduleId: number): Promise<IWorkoutRecordDetailD
   }
 }
 
-export {createRecords, findOne}
+export {createRecords, createRecordsSchedule, findOne}

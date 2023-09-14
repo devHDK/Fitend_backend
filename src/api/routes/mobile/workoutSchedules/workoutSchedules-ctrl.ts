@@ -13,10 +13,7 @@ async function postWorkoutSchedulesFeedbacks(req: IRequest, res: Response, next:
       issueIndexes,
       contents
     })
-    const workoutSchedule = await WorkoutSchedule.findUsernameWithWorkoutScheduleId(workoutScheduleId)
-    await firebase.sendToTopic(`trainer_${workoutSchedule.trainerId}`, {
-      notification: {body: `${workoutSchedule.userNickname}님이 오늘의 운동을 완료하였습니다.`}
-    })
+
     res.status(200).json()
   } catch (e) {
     if (e.message === 'not_allowed') e.status = 403

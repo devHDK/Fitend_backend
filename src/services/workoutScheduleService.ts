@@ -19,7 +19,7 @@ import {
   IWorkoutScheduleListForTrainer
 } from '../interfaces/workoutSchedules'
 import {IWorkoutFeedbackCreate} from '../interfaces/workoutFeedbacks'
-import {db} from '../loaders'
+import {db, firebase} from '../loaders'
 import {workoutScheduleSubscriber} from '../subscribers'
 import {IUserDevice} from '../interfaces/userDevice'
 
@@ -125,6 +125,12 @@ async function createFeedbacks(options: IWorkoutFeedbackData): Promise<void> {
     if (issueIndexes && issueIndexes.length > 0) {
       await WorkoutFeedbacks.createRelationIssues({workoutFeedbackId, issueIndexes}, connection)
     }
+
+    const workoutScheduleData = await WorkoutSchedule.findUsernameWithWorkoutScheduleId(data.workoutScheduleId)
+    await firebase.sendToTopic(`trainer_${workoutSchedule.trainerId}`, {
+      notification: {body: `${workoutScheduleData.userNickname}님이 오늘의 운동을 완료하였습니다.`}
+    })
+
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
