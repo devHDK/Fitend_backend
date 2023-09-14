@@ -1,5 +1,5 @@
 import moment from 'moment-timezone'
-import {escape} from 'mysql'
+import {escape, PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {
   ITrainer,
@@ -21,6 +21,21 @@ moment.tz.setDefault('Asia/Seoul')
 const tableName = 'Trainers'
 const tableFranchiseTrainer = 'Franchises-Trainers'
 const tableFranchise = 'Franchises'
+
+async function create(
+  options: {password: string; nickname: string; email: string},
+  connection: PoolConnection
+): Promise<void> {
+  try {
+    await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableName, options]
+    })
+  } catch (e) {
+    throw e
+  }
+}
 
 async function findAll(franchiseId: number): Promise<[ITrainerList]> {
   try {
@@ -152,6 +167,7 @@ async function updateOne(options: ITrainerUpdate): Promise<void> {
 export {
   tableName,
   tableFranchiseTrainer,
+  create,
   findOne,
   findTrainerWageInfo,
   findAll,

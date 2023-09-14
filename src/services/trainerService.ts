@@ -9,8 +9,25 @@ import {
 import {Franchise, Reservation, Ticket, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
 import {passwordIterations} from '../libs/code'
+import {db} from '../loaders'
 
 moment.tz.setDefault('Asia/Seoul')
+
+async function create(options: {nickname: string; email: string; password: string}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {password, ...data} = options
+    const passwordHash = Code.createPasswordHash(password, passwordIterations.web)
+    await Trainer.create({password: JSON.stringify(passwordHash), ...data}, connection)
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    if (e.code === 'ER_DUP_ENTRY') {
+      throw new Error('already_in_use')
+    }
+    throw e
+  }
+}
 
 async function signIn(options: {email: string; password: string}): Promise<{accessToken: string; trainer: ITrainer}> {
   try {
@@ -104,4 +121,4 @@ async function updatePassword({
   }
 }
 
-export {signIn, findAll, findAllForAdmin, findOneWithIdForAdmin, updatePassword}
+export {create, signIn, findAll, findAllForAdmin, findOneWithIdForAdmin, updatePassword}

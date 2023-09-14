@@ -1,6 +1,20 @@
 import {ApiRouter} from '../../default'
 import * as ctrl from './trainers-ctrl'
 
+const postTrainers = new ApiRouter({
+  name: '',
+  method: 'post',
+  summary: '트레이너 생성',
+  schema: 'requests/admin/trainers/PostTrainers',
+  roles: ['master'],
+  tags: ['Trainers'],
+  responses: {
+    200: {description: 'success'},
+    409: {description: '이메일 또는 휴대폰번호 중복'}
+  },
+  handler: ctrl.postTrainers
+})
+
 const getTrainers = new ApiRouter({
   name: '',
   method: 'get',
@@ -27,4 +41,4 @@ const getTrainersWithId = new ApiRouter({
   handler: ctrl.getTrainersWithId
 })
 
-export {getTrainers, getTrainersWithId}
+export {getTrainers, getTrainersWithId, postTrainers}
