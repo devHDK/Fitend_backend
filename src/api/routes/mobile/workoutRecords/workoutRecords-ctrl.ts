@@ -4,10 +4,7 @@ import {WorkoutRecordService} from '../../../../services'
 async function postWorkoutSchedulesRecords(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {scheduleRecords, records} = req.options
-    await WorkoutRecordService.createRecords(req.userId, records)
-
-    if (scheduleRecords) await WorkoutRecordService.createRecordsSchedule(scheduleRecords)
-
+    await WorkoutRecordService.createRecords(req.userId, {records, scheduleRecords})
     res.status(200).json()
   } catch (e) {
     if (e.message === 'not_allowed') e.status = 403
