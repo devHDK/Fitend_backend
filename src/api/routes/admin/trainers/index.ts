@@ -18,7 +18,7 @@ const getTrainersWithId = new ApiRouter({
   name: ':id',
   paths: ['common/IdPath'],
   method: 'get',
-  summary: '일반 회원 상세 조회',
+  summary: '트레이너 상세 조회',
   roles: ['master'],
   tags: ['Trainers'],
   responses: {

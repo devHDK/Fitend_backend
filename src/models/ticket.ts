@@ -3,7 +3,7 @@ import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
 import {ITicket, ITicketDetail, ITicketFindAll, ITicketList, ITicketFindOne} from '../interfaces/tickets'
 import {Reservation, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
-import {ICoaching} from '../interfaces/payroll'
+import {ICoaching, ICoachingForAdmin} from '../interfaces/payroll'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -160,6 +160,39 @@ async function findBetweenfcTicket(options: {
         User.tableName,
         trainerId,
         franchiseId
+      ]
+    })
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findFcTicketWithTrainerIdForAdmin(options: {
+  startTime: string
+  endTime: string
+  trainerId: number
+}): Promise<[ICoachingForAdmin]> {
+  try {
+    const {startTime, endTime, trainerId} = options
+    const rows = await db.query({
+      sql: `SELECT t.id as ticketId, u.nickname, t.type, t.coachingPrice,
+            (SELECT COUNT(wf.id) FROM ?? wf 
+                JOIN ?? ws ON wf.workoutScheduleId = ws.id
+                WHERE ws.trainerId = ${trainerId} AND ws.userId = u.id) as doneCount
+            FROM ?? t
+            JOIN ?? tr ON t.id = tr.ticketId
+            JOIN ?? u ON u.id = tr.userId
+            WHERE tr.trainerId = ?
+            AND t.startedAt >= ${escape(startTime)} AND t.startedAt <= ${escape(endTime)}
+            AND t.type = 'fitness'`,
+      values: [
+        WorkoutFeedbacks.tableName,
+        WorkoutSchedule.tableName,
+        tableName,
+        tableTicketRelation,
+        User.tableName,
+        trainerId
       ]
     })
     return rows
@@ -329,6 +362,7 @@ export {
   findOneWithId,
   findOneWithUserId,
   findBetweenfcTicket,
+  findFcTicketWithTrainerIdForAdmin,
   findCounts,
   update,
   deleteOne,

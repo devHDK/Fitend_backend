@@ -99,7 +99,7 @@ async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
 async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.nickname, t.email, t.createdAt 
+      sql: `SELECT t.id, t.nickname, t.email, t.createdAt, t.profileImage
             FROM ?? t WHERE ?`,
       values: [tableName, {id}]
     })
