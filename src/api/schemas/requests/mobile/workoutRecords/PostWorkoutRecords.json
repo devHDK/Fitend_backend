@@ -33,7 +33,7 @@
                 },
                 "seconds": {
                   "type": "integer",
-                  "minimum": 1,
+                  "minimum": 0,
                   "maximum": 10800,
                   "nullable": true
                 }
@@ -52,14 +52,14 @@
         },
         "heartRates": {
           "type": "array",
-          "nullable": "true",
+          "nullable": true,
           "items": {
             "type": "integer"
           }
         },
         "workoutDuration": {
           "type": "integer",
-          "nullable": "true"
+          "nullable": true
         }
       }
     }

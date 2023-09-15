@@ -1,7 +1,7 @@
 import moment from 'moment-timezone'
 import {db} from '../loaders'
 import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat} from '../models'
-import {IWorkoutRecordCreate, IWorkoutRecordDetail} from '../interfaces/workoutRecords'
+import {IWorkoutRecordDetail, IWorkoutRecordsCreate} from '../interfaces/workoutRecords'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -17,17 +17,19 @@ interface IWorkoutRecordDetailData {
   }
 }
 
-async function createRecords(userId: number, options: IWorkoutRecordCreate[]): Promise<void> {
+async function createRecords(userId: number, options: IWorkoutRecordsCreate): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const workoutSchedule = await WorkoutSchedule.findOneWithWorkoutPlanId(options[0].workoutPlanId)
+    const {records, scheduleRecords} = options
+
+    const workoutSchedule = await WorkoutSchedule.findOneWithWorkoutPlanId(records[0].workoutPlanId)
     const today = moment().format('YYYY-MM-DD')
     const startDate = moment(workoutSchedule.startDate).format('YYYY-MM-DD')
     if (!workoutSchedule || workoutSchedule.userId !== userId) throw new Error('not_allowed')
-    const workoutRecord = await WorkoutRecords.findOneWithWorkoutPlanId(options[0].workoutPlanId)
+    const workoutRecord = await WorkoutRecords.findOneWithWorkoutPlanId(records[0].workoutPlanId)
     if (workoutRecord) throw new Error('duplicate_record')
-    for (let i = 0; i < options.length; i++) {
-      const {workoutPlanId, setInfo} = options[i]
+    for (let i = 0; i < records.length; i++) {
+      const {workoutPlanId, setInfo} = records[i]
       await WorkoutRecords.create({workoutPlanId, setInfo: JSON.stringify(setInfo)}, connection)
     }
     await WorkoutStat.upsertOne(
@@ -39,7 +41,17 @@ async function createRecords(userId: number, options: IWorkoutRecordCreate[]): P
       },
       connection
     )
-    await db.commit(connection)
+    if (scheduleRecords)
+      await WorkoutSchedule.createScheduleRecords(
+        {
+          workoutScheduleId: scheduleRecords.workoutScheduleId,
+          heartRates: scheduleRecords.heartRates ?? JSON.stringify(scheduleRecords.heartRates),
+          workoutDuration: scheduleRecords.workoutDuration
+        },
+        connection
+      )
+
+    connection.commit()
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e

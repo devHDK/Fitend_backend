@@ -1,6 +1,6 @@
 import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
-import {IWorkoutRecord, IWorkoutRecordCreate, IWorkoutRecordDetail} from '../interfaces/workoutRecords'
+import {IWorkoutRecord, IWorkoutRecordSetInfoCreate, IWorkoutRecordDetail} from '../interfaces/workoutRecords'
 import {db} from '../loaders'
 import {
   Exercise,
@@ -18,7 +18,7 @@ moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'WorkoutRecords'
 
-async function create(options: IWorkoutRecordCreate, connection?: PoolConnection): Promise<void> {
+async function create(options: IWorkoutRecordSetInfoCreate, connection?: PoolConnection): Promise<void> {
   try {
     await db.query({
       connection,

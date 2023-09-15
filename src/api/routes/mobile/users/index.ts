@@ -25,6 +25,18 @@ const getMe = new ApiRouter({
   handler: ctrl.getMe
 })
 
+const putFCMToken = new ApiRouter({
+  name: 'fcmToken',
+  method: 'put',
+  summary: 'fcmToken update',
+  schema: 'requests/mobile/users/PutFCMToken',
+  tags: ['Users'],
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putFCMToken
+})
+
 const putUsersPassword = new ApiRouter({
   name: 'password',
   method: 'put',
@@ -37,4 +49,4 @@ const putUsersPassword = new ApiRouter({
   handler: ctrl.putUsersPassword
 })
 
-export {postUsersPasswordConfirm, getMe, putUsersPassword}
+export {postUsersPasswordConfirm, getMe, putFCMToken, putUsersPassword}

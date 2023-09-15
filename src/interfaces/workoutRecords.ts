@@ -4,9 +4,20 @@ export interface IWorkoutRecord {
   setInfo: string | [{index: number; reps: number; weight: number; seconds: number}]
 }
 
-export interface IWorkoutRecordCreate {
+export interface IWorkoutRecordsCreate {
+  records: IWorkoutRecordSetInfoCreate[]
+  scheduleRecords: IWorkoutRecordScheduleCreate
+}
+
+export interface IWorkoutRecordSetInfoCreate {
   workoutPlanId: number
   setInfo: string | [{index: number; reps: number; weight: number; seconds: number}]
+}
+
+export interface IWorkoutRecordScheduleCreate {
+  workoutScheduleId: number
+  heartRates: string
+  workoutDuration: number
 }
 
 export interface IWorkoutRecordDetail {

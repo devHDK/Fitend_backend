@@ -1,3 +1,4 @@
+import {print} from 'redis'
 import {Reservation, Ticket} from '../models/index'
 import {db} from '../loaders'
 import {ITicketFindAll, ITicketList, ITicketDetail} from '../interfaces/tickets'
@@ -95,6 +96,7 @@ async function update(options: {
       expiredAt
     } = options
     const reservationValidCount = await Reservation.findValidCount(id)
+    console.log(reservationValidCount)
     if (totalSession < reservationValidCount) throw new Error('not_allowed')
     await Ticket.update({id, type, totalSession, sessionPrice, coachingPrice, startedAt, expiredAt}, connection)
     await Ticket.deleteRelations(id, connection)
