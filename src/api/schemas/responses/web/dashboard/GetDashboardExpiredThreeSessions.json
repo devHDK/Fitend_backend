@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer"
+          },
+          "userNickname": {
+            "type": "string"
+          },
+          "trainerNickname": {
+            "type": "string"
+          },
+          "restSession": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "userId",
+          "userNickname",
+          "trainerNickname",
+          "restSession"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "data"
+  ],
+  "additionalProperties": false
+}

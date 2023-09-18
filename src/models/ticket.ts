@@ -304,6 +304,70 @@ async function findCounts(
   }
 }
 
+async function findExpiredSevenDays(
+  franchiseId: number
+): Promise<
+  [
+    {
+      userId: 0
+      userNickname: 'string'
+      trainerNickname: 'string'
+      expiredAt: 'string'
+    }
+  ]
+> {
+  const currentTime = moment().format('YYYY-MM-DD')
+  try {
+    const rows = await db.query({
+      sql: `SELECT tr.userId as userId, u.nickname as userNickname, t.expiredAt, tra.nickname as trainerNickname
+            FROM ?? t
+            JOIN ?? tr ON tr.franchiseId = ${escape(franchiseId)} AND t.id = tr.ticketId
+            JOIN ?? u ON tr.userId = u.id
+            JOIN ?? tra ON tra.id = tr.trainerId
+            WHERE TIMESTAMPDIFF(DAY, ${escape(currentTime)}, t.expiredAt) BETWEEN 0 AND 7
+            GROUP BY tr.userId ORDER BY t.expiredAt ASC`,
+      values: [tableName, tableTicketRelation, User.tableName, Trainer.tableName]
+    })
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findExpiredThreeSessions(
+  franchiseId: number
+): Promise<
+  [
+    {
+      userId: 0
+      userNickname: 'string'
+      trainerNickname: 'string'
+      restSession: 0
+    }
+  ]
+> {
+  const currentTime = moment().format('YYYY-MM-DD')
+  try {
+    const rows = await db.query({
+      sql: `SELECT tr.userId as userId, u.nickname as userNickname, (t.totalSession - 
+            (SELECT COUNT(*) FROM ?? r
+            WHERE r.ticketId = t.id AND (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession,
+            tra.nickname as trainerNickname
+            FROM ?? t
+            JOIN ?? tr ON tr.franchiseId = ${escape(franchiseId)} AND t.id = tr.ticketId
+            JOIN ?? u ON tr.userId = u.id
+            JOIN ?? tra ON tra.id = tr.trainerId
+            WHERE t.type = 'personal' AND t.expiredAt >= ${escape(currentTime)}
+            GROUP BY tr.userId HAVING restSession <= 3
+            ORDER BY restSession ASC`,
+      values: [Reservation.tableName, tableName, tableTicketRelation, User.tableName, Trainer.tableName]
+    })
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
 async function update(
   options: {
     id: number
@@ -364,6 +428,8 @@ export {
   findBetweenfcTicket,
   findFcTicketWithTrainerIdForAdmin,
   findCounts,
+  findExpiredSevenDays,
+  findExpiredThreeSessions,
   update,
   deleteOne,
   deleteRelations
