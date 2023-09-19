@@ -325,7 +325,7 @@ async function findExpiredSevenDays(
             JOIN ?? u ON tr.userId = u.id
             JOIN ?? tra ON tra.id = tr.trainerId
             WHERE TIMESTAMPDIFF(DAY, ${escape(currentTime)}, t.expiredAt) BETWEEN 0 AND 7
-            GROUP BY tr.userId ORDER BY t.expiredAt ASC`,
+            GROUP BY tr.ticketId ORDER BY t.expiredAt ASC`,
       values: [tableName, tableTicketRelation, User.tableName, Trainer.tableName]
     })
     return rows
@@ -358,7 +358,7 @@ async function findExpiredThreeSessions(
             JOIN ?? u ON tr.userId = u.id
             JOIN ?? tra ON tra.id = tr.trainerId
             WHERE t.type = 'personal' AND t.expiredAt >= ${escape(currentTime)}
-            GROUP BY tr.userId HAVING restSession <= 3
+            GROUP BY tr.ticketId HAVING restSession <= 3
             ORDER BY restSession ASC`,
       values: [Reservation.tableName, tableName, tableTicketRelation, User.tableName, Trainer.tableName]
     })
