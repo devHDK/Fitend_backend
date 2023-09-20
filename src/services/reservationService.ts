@@ -34,7 +34,7 @@ async function create(options: {
       if (isMyTicket === -1) throw new Error('not_allowed')
       if (tickets.expiredAt < moment().utc().add(9, 'hour').format('YYYY-MM-DD')) throw new Error('expired_ticket')
       const validReservationCount = await Reservation.findValidCount(ticketId)
-      if (tickets.totalSession - validReservationCount < 1) throw new Error('over_sessions')
+      if (tickets.totalSession + tickets.serviceSession - validReservationCount < 1) throw new Error('over_sessions')
     } else throw new Error('not_found')
 
     const renewReservations = _.uniqWith(reservations, _.isEqual)

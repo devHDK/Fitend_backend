@@ -19,6 +19,11 @@
       "minimum": 1,
       "maximum": 500
     },
+    "totalSession": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
     "sessionPrice": {
       "type": "integer"
     },
@@ -39,6 +44,7 @@
     "userId",
     "trainerIds",
     "totalSession",
+    "serviceSession",
     "sessionPrice",
     "coachingPrice",
     "startedAt",

@@ -24,7 +24,7 @@ async function findAllWithMonth(req: IPayrollFindAll): Promise<IPayrollResponse>
       trainerId,
       franchiseId
     })
-    const coaching = await Ticket.findBetweenfcTicket({
+    const coaching = await Ticket.findBetweenFCTicket({
       startTime: moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss'),
       endTime: endDate,
       trainerId,
@@ -37,7 +37,7 @@ async function findAllWithMonth(req: IPayrollFindAll): Promise<IPayrollResponse>
       trainerId,
       franchiseId
     })
-    const lastMonthCoaching = await Ticket.findBetweenfcTicket({
+    const lastMonthCoaching = await Ticket.findBetweenFCTicket({
       startTime: lastMonthStartDate,
       endTime: lastMonthEndDate,
       trainerId,
