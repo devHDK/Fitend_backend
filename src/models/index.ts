@@ -3,6 +3,7 @@ import * as User from './user'
 import * as UserDevice from './userDevice'
 import * as Trainer from './trainer'
 import * as Ticket from './ticket'
+import * as TicketHolding from './ticketHoldings'
 import * as Exercise from './exercise'
 import * as Workout from './workout'
 import * as TargetMuscle from './targetMuscle'
@@ -22,6 +23,7 @@ export {
   UserDevice,
   Trainer,
   Ticket,
+  TicketHolding,
   Exercise,
   Workout,
   TargetMuscle,
