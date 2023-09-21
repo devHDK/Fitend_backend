@@ -24,12 +24,19 @@ async function findAllWithMonth(req: IPayrollFindAll): Promise<IPayrollResponse>
       trainerId,
       franchiseId
     })
-    const coaching = await Ticket.findBetweenFCTicket({
-      startTime: moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss'),
-      endTime: endDate,
-      trainerId,
-      franchiseId
-    })
+
+    let coaching = []
+    for (let i = 0; i < 6; i++) {
+      const tempRet = await Ticket.findBetweenFCTicket({
+        startTime: moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss'),
+        endTime: endDate,
+        trainerId,
+        franchiseId,
+        plusMonth: i
+      })
+
+      coaching = [...coaching, ...tempRet]
+    }
 
     const lastMonthReservations = await Reservation.findBetweenReservationWithTrainerId({
       startTime: lastMonthStartDate,
@@ -37,12 +44,19 @@ async function findAllWithMonth(req: IPayrollFindAll): Promise<IPayrollResponse>
       trainerId,
       franchiseId
     })
-    const lastMonthCoaching = await Ticket.findBetweenFCTicket({
-      startTime: lastMonthStartDate,
-      endTime: lastMonthEndDate,
-      trainerId,
-      franchiseId
-    })
+
+    let lastMonthCoaching = []
+    for (let i = 0; i < 6; i++) {
+      const tempRet = await Ticket.findBetweenFCTicket({
+        startTime: lastMonthStartDate,
+        endTime: lastMonthEndDate,
+        trainerId,
+        franchiseId,
+        plusMonth: i
+      })
+
+      lastMonthCoaching = [...lastMonthCoaching, ...tempRet]
+    }
 
     const ret = {
       thisMonth: <IMonth>{
