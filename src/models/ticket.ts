@@ -154,9 +154,11 @@ async function findBetweenFCTicket(options: {
             JOIN ?? tr ON tr.ticketId = t.id 
             JOIN ?? u ON u.id = tr.userId
             WHERE tr.trainerId = ? AND tr.franchiseId = ? 
-            AND DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH)  >= ${escape(
-        startTime
-      )} AND DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH) <= ${escape(endTime)}
+            AND 
+            (DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH)  >= ${escape(startTime)} 
+            AND 
+            DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH) <= ${escape(endTime)}) 
+            AND t.expiredAt > ${escape(startTime)}
             AND t.type = 'fitness'`,
       values: [
         WorkoutFeedbacks.tableName,
