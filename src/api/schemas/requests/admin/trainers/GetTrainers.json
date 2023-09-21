@@ -1,22 +1,11 @@
 {
   "type": "object",
   "properties": {
-    "typeId": {
-      "type": "string"
-    },
-    "status": {
-      "type": "boolean"
-    },
     "search": {
       "type": "string"
     },
-    "startAt": {
-      "type": "string",
-      "format": "date"
-    },
-    "endAt": {
-      "type": "string",
-      "format": "date"
+    "franchiseId": {
+      "type": "integer"
     },
     "start": {
       "type": "integer",

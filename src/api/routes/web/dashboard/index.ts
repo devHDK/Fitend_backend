@@ -59,10 +59,34 @@ const getDashboardWorkoutUsers = new ApiRouter({
   handler: ctrl.getDashboardWorkoutUsers
 })
 
+const getDashboardExpiredSevenDays = new ApiRouter({
+  name: 'expired/sevenDays',
+  method: 'get',
+  summary: '대시보드 > 만료일 7일 남은 회원 목록',
+  tags: ['Dashboard'],
+  responses: {
+    200: {schema: 'responses/web/dashboard/GetDashboardExpiredSevenDays'}
+  },
+  handler: ctrl.getDashboardExpiredSevenDays
+})
+
+const getDashboardExpiredThreeSessions = new ApiRouter({
+  name: 'expired/threeSessions',
+  method: 'get',
+  summary: '대시보드 > 잔여세션 3회 미만 회원 목록',
+  tags: ['Dashboard'],
+  responses: {
+    200: {schema: 'responses/web/dashboard/GetDashboardExpiredThreeSessions'}
+  },
+  handler: ctrl.getDashboardExpiredThreeSessions
+})
+
 export {
   getDashboardActiveUsers,
   getDashboardSessions,
   getDashboardWorkoutToday,
   getDashboardWorkoutYesterday,
-  getDashboardWorkoutUsers
+  getDashboardWorkoutUsers,
+  getDashboardExpiredSevenDays,
+  getDashboardExpiredThreeSessions
 }

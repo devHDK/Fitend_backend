@@ -1,0 +1,142 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "nickname": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "profileImage": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "activeUsers": {
+      "type": "object",
+      "properties": {
+        "fitnessActiveUsers": {
+          "type": "object",
+          "properties": {
+            "thisMonthCount": {
+              "type": "integer"
+            },
+            "lastMonthCount": {
+              "type": "integer"
+            }
+          }
+        },
+        "personalActiveUsers": {
+          "type": "object",
+          "properties": {
+            "thisMonthCount": {
+              "type": "integer"
+            },
+            "lastMonthCount": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "franchiseInfo": {
+      "type": "object",
+      "properties": {
+        "franchiseId": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "baseWage": {
+          "type": "integer"
+        },
+        "fcPercentage": {
+          "type": "integer"
+        },
+        "ptPercentage": {
+          "type": "integer"
+        }
+      }
+    },
+    "thisMonthSession": {
+      "type": "object",
+      "properties": {
+        "reservations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "ticketId",
+              "type",
+              "nickname",
+              "sessionPrice",
+              "thisMonthCount"
+            ],
+            "properties": {
+              "ticketId": {
+                "type": "integer"
+              },
+              "type": {
+                "type": "string"
+              },
+              "nickname": {
+                "type": "string"
+              },
+              "sessionPrice": {
+                "type": "integer"
+              },
+              "thisMonthCount": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "coaching": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "ticketId",
+              "nickname",
+              "type",
+              "coachingPrice",
+              "doneCount"
+            ],
+            "properties": {
+              "ticketId": {
+                "type": "integer"
+              },
+              "nickname": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "coachingPrice": {
+                "type": "integer"
+              },
+              "doneCount": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "id",
+    "nickname",
+    "email",
+    "activeUsers",
+    "franchiseInfo",
+    "createdAt"
+  ],
+  "additionalProperties": false
+}

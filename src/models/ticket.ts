@@ -3,7 +3,7 @@ import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
 import {ITicket, ITicketDetail, ITicketFindAll, ITicketList, ITicketFindOne} from '../interfaces/tickets'
 import {Reservation, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
-import {ICoaching} from '../interfaces/payroll'
+import {ICoaching, ICoachingForAdmin} from '../interfaces/payroll'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -169,6 +169,39 @@ async function findBetweenFCTicket(options: {
   }
 }
 
+async function findFcTicketWithTrainerIdForAdmin(options: {
+  startTime: string
+  endTime: string
+  trainerId: number
+}): Promise<[ICoachingForAdmin]> {
+  try {
+    const {startTime, endTime, trainerId} = options
+    const rows = await db.query({
+      sql: `SELECT t.id as ticketId, u.nickname, t.type, t.coachingPrice,
+            (SELECT COUNT(wf.id) FROM ?? wf 
+                JOIN ?? ws ON wf.workoutScheduleId = ws.id
+                WHERE ws.trainerId = ${trainerId} AND ws.userId = u.id) as doneCount
+            FROM ?? t
+            JOIN ?? tr ON t.id = tr.ticketId
+            JOIN ?? u ON u.id = tr.userId
+            WHERE tr.trainerId = ?
+            AND t.startedAt >= ${escape(startTime)} AND t.startedAt <= ${escape(endTime)}
+            AND t.type = 'fitness'`,
+      values: [
+        WorkoutFeedbacks.tableName,
+        WorkoutSchedule.tableName,
+        tableName,
+        tableTicketRelation,
+        User.tableName,
+        trainerId
+      ]
+    })
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneWithId(id: number): Promise<ITicketDetail> {
   try {
     const [row] = await db.query({
@@ -272,6 +305,70 @@ async function findCounts(
   }
 }
 
+async function findExpiredSevenDays(
+  franchiseId: number
+): Promise<
+  [
+    {
+      userId: 0
+      userNickname: 'string'
+      trainerNickname: 'string'
+      expiredAt: 'string'
+    }
+  ]
+> {
+  const currentTime = moment().format('YYYY-MM-DD')
+  try {
+    const rows = await db.query({
+      sql: `SELECT tr.userId as userId, u.nickname as userNickname, t.expiredAt, tra.nickname as trainerNickname
+            FROM ?? t
+            JOIN ?? tr ON tr.franchiseId = ${escape(franchiseId)} AND t.id = tr.ticketId
+            JOIN ?? u ON tr.userId = u.id
+            JOIN ?? tra ON tra.id = tr.trainerId
+            WHERE TIMESTAMPDIFF(DAY, ${escape(currentTime)}, t.expiredAt) BETWEEN 0 AND 7
+            GROUP BY tr.ticketId ORDER BY t.expiredAt ASC`,
+      values: [tableName, tableTicketRelation, User.tableName, Trainer.tableName]
+    })
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findExpiredThreeSessions(
+  franchiseId: number
+): Promise<
+  [
+    {
+      userId: 0
+      userNickname: 'string'
+      trainerNickname: 'string'
+      restSession: 0
+    }
+  ]
+> {
+  const currentTime = moment().format('YYYY-MM-DD')
+  try {
+    const rows = await db.query({
+      sql: `SELECT tr.userId as userId, u.nickname as userNickname, ((t.totalSession + t.serviceSession) - 
+            (SELECT COUNT(*) FROM ?? r
+            WHERE r.ticketId = t.id AND (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession,
+            tra.nickname as trainerNickname
+            FROM ?? t
+            JOIN ?? tr ON tr.franchiseId = ${escape(franchiseId)} AND t.id = tr.ticketId
+            JOIN ?? u ON tr.userId = u.id
+            JOIN ?? tra ON tra.id = tr.trainerId
+            WHERE t.type = 'personal' AND t.expiredAt >= ${escape(currentTime)}
+            GROUP BY tr.ticketId HAVING restSession <= 3
+            ORDER BY restSession ASC`,
+      values: [Reservation.tableName, tableName, tableTicketRelation, User.tableName, Trainer.tableName]
+    })
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
 async function update(
   options: {
     id: number
@@ -331,7 +428,10 @@ export {
   findOneWithId,
   findOneWithUserId,
   findBetweenFCTicket,
+  findFcTicketWithTrainerIdForAdmin,
   findCounts,
+  findExpiredSevenDays,
+  findExpiredThreeSessions,
   update,
   deleteOne,
   deleteRelations

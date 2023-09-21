@@ -8,14 +8,18 @@ import {
   IUserUpdate,
   IUserFindAll,
   IUserListForTrainer,
-  IUserData
+  IUserData,
+  IUserListForAdmin,
+  IUserDataForAdmin
 } from '../interfaces/user'
 import {Trainer, Ticket} from './'
+import {tableTicketRelation} from './ticket'
 
 moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'Users'
 const tableFranchiseUser = 'Franchises-Users'
+const tableFranchise = 'Franchises'
 
 async function create(options: IUserCreateOne, connection: PoolConnection): Promise<number> {
   try {
@@ -122,6 +126,58 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
   }
 }
 
+async function findAllForAdmin(options: IUserFindAll): Promise<IUserListForAdmin> {
+  try {
+    const {franchiseId, start, perPage, search, status} = options
+    const where = []
+
+    if (search) where.push(`(u.nickname like '%${search}%' OR u.phone like '%${search}%')`)
+    const currentTime = moment().format('YYYY-MM-DD')
+    const rows: IUserDataForAdmin[] = await db.query({
+      sql: `SELECT u.id, u.email, u.nickname, u.phone, u.createdAt,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', fu.franchiseId, 'name', f.name)) FROM ?? f
+            JOIN ?? fu ON u.id = fu.userId AND f.id = fu.franchiseId) as franchises,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
+              JOIN ?? tr ON tr.userId = u.id AND tr.ticketId = ti.id
+              JOIN ?? tra ON tra.id = tr.trainerId
+              WHERE ti.expiredAt > '${currentTime}'
+              LIMIT 1
+              ) as trainers
+            FROM ?? u
+            JOIN ?? fu ON fu.userId = u.id ${franchiseId ? `AND fu.franchiseId = ${escape(franchiseId)}` : ''}
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY u.id
+            ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
+            ORDER BY u.createdAt DESC
+            LIMIT ${start}, ${perPage}`,
+      values: [
+        tableFranchise,
+        tableFranchiseUser,
+        Ticket.tableName,
+        Ticket.tableTicketRelation,
+        Trainer.tableName,
+        tableName,
+        tableFranchiseUser
+      ]
+    })
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total FROM (
+            SELECT u.id
+            FROM ?? u
+            JOIN ?? fu ON fu.userId = u.id ${franchiseId ? `AND fu.franchiseId = ${escape(franchiseId)}` : ''}
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY u.id
+            ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
+            ) u
+            `,
+      values: [tableName, tableFranchiseUser]
+    })
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOne(options: IUserFindOne): Promise<IUser> {
   try {
     const [row] = await db.query({
@@ -176,6 +232,52 @@ async function findActiveFitnessUsers(franchiseId: number, startDate: string, en
   }
 }
 
+async function findActivePersonalUsersForAdminWithTrainerId(
+  trainerId: number,
+  startDate: string,
+  endDate: string
+): Promise<number> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT COUNT(tb.id) as count
+            FROM (
+            SELECT u.id
+            FROM ?? u
+            JOIN ?? tr ON tr.userId = u.id AND tr.trainerId = ?
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= ${escape(startDate)} 
+            AND ti.startedAt < ${escape(endDate)} AND ti.type = 'personal'
+            GROUP BY u.id) tb`,
+      values: [tableName, tableTicketRelation, trainerId, Ticket.tableName]
+    })
+    return row ? row.count : 0
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findActiveFitnessUsersForAdminWithTrainerId(
+  trainerId: number,
+  startDate: string,
+  endDate: string
+): Promise<number> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT COUNT(tb.id) as count
+            FROM (
+            SELECT u.id
+            FROM ?? u
+            JOIN ?? tr ON tr.userId = u.id AND tr.trainerId = ?
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= ${escape(startDate)} 
+            AND ti.startedAt < ${escape(endDate)} AND ti.type = 'fitness'
+            GROUP BY u.id) tb`,
+      values: [tableName, tableTicketRelation, trainerId, Ticket.tableName]
+    })
+    return row ? row.count : 0
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneWithId(id: number): Promise<IUser> {
   try {
     const [row] = await db.query({
@@ -221,10 +323,13 @@ export {
   create,
   createRelationsFranchises,
   findAllForTrainer,
+  findAllForAdmin,
   findOne,
   findOneWithId,
   findActivePersonalUsers,
   findActiveFitnessUsers,
   updateOne,
-  updateBadgeCount
+  updateBadgeCount,
+  findActivePersonalUsersForAdminWithTrainerId,
+  findActiveFitnessUsersForAdminWithTrainerId
 }
