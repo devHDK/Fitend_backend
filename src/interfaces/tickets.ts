@@ -2,6 +2,9 @@ export interface ITicket {
   id: number
   type: 'personal' | 'fitness'
   totalSession: number
+  serviceSession: number
+  sessionPrice: number
+  coachingPrice: number
   startedAt: string
   expiredAt: string
   createdAt: string

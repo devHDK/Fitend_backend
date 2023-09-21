@@ -13,6 +13,20 @@ const postTickets = new ApiRouter({
   handler: ctrl.postTickets
 })
 
+const postTicketHoldings = new ApiRouter({
+  name: ':id/ticketHoldings',
+  method: 'post',
+  summary: '수강권 holding 기간 생성',
+  tags: ['Ticket'],
+  schema: 'requests/web/tickets/PostTicketHoldings',
+  responses: {
+    200: {description: 'success'},
+    402: {description: 'past_date_error'},
+    403: {description: 'date_overlap'}
+  },
+  handler: ctrl.postTicketHoldings
+})
+
 const getTickets = new ApiRouter({
   name: '',
   method: 'get',
@@ -52,6 +66,20 @@ const putTicketsWithId = new ApiRouter({
   handler: ctrl.putTicketsWithId
 })
 
+const putTicketHoldingWithId = new ApiRouter({
+  name: 'ticketHoldings/:id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '수강권 holding 수정',
+  tags: ['Ticket'],
+  schema: 'requests/web/tickets/PutTicketsWithId',
+  responses: {
+    200: {description: 'success'},
+    403: {description: 'not_allowed/세션수 확인'}
+  },
+  handler: ctrl.putTicketHoldingsWithId
+})
+
 const deleteTicketsWithId = new ApiRouter({
   name: ':id',
   method: 'delete',
@@ -64,4 +92,25 @@ const deleteTicketsWithId = new ApiRouter({
   handler: ctrl.deleteTicketsWithId
 })
 
-export {postTickets, getTickets, getTicketsWithId, putTicketsWithId, deleteTicketsWithId}
+const deleteTicketHoldingsWithId = new ApiRouter({
+  name: 'ticketHoldings/:id',
+  method: 'delete',
+  paths: ['common/IdPath'],
+  summary: '수강권 holding 기간 삭제',
+  tags: ['Ticket'],
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.deleteTicketHoldingsWithId
+})
+
+export {
+  postTickets,
+  postTicketHoldings,
+  getTickets,
+  getTicketsWithId,
+  putTicketsWithId,
+  putTicketHoldingWithId,
+  deleteTicketsWithId,
+  deleteTicketHoldingsWithId
+}

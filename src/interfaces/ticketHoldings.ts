@@ -11,3 +11,11 @@ export interface ITicketHoldingUpdate {
   endAt: string
   days?: number
 }
+
+export interface ITicketHoldingFindAll {
+  id: number
+  ticketId: number
+  startAt: string
+  endAt: string
+  days: number
+}

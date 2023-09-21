@@ -1,7 +1,7 @@
 import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
-import {ITicketHolding, ITicketHoldingUpdate} from '../interfaces/ticketHoldings'
+import {ITicketHolding, ITicketHoldingFindAll, ITicketHoldingUpdate} from '../interfaces/ticketHoldings'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -15,6 +15,20 @@ async function create(options: ITicketHolding, connection: PoolConnection): Prom
       values: [tableName, options]
     })
     return insertId
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllWithTicketId(ticketId: number): Promise<[ITicketHoldingFindAll]> {
+  try {
+    return await db.query({
+      sql: `SELECT *
+            FROM ?? th 
+            WHERE th.ticketId = ${escape(ticketId)}
+            ORDER BY r.startTime DESC`,
+      values: [tableName]
+    })
   } catch (e) {
     throw e
   }
@@ -45,4 +59,4 @@ async function deleteOne(id: number, connection?: PoolConnection): Promise<void>
   }
 }
 
-export {tableName, create, update, deleteOne}
+export {tableName, create, findAllWithTicketId, update, deleteOne}

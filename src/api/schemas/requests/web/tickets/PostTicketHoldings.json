@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "startedAt": {
+      "type": "string",
+      "format": "date"
+    },
+    "endAt": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "startAt",
+    "endAt"
+  ],
+  "additionalProperties": false
+}

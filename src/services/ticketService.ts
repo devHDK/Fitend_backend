@@ -1,8 +1,11 @@
-import {print} from 'redis'
-import {Reservation, Ticket} from '../models/index'
+import moment from 'moment-timezone'
+import {Reservation, Ticket, TicketHolding} from '../models/index'
 import {db} from '../loaders'
 import {ITicketFindAll, ITicketList, ITicketDetail} from '../interfaces/tickets'
 import {IReservationListForTicket} from '../interfaces/reservation'
+import {ITicketHolding} from '../interfaces/ticketHoldings'
+
+moment.tz.setDefault('Asia/Seoul')
 
 interface ITicketDetailWithReservations extends ITicketDetail {
   reservations: IReservationListForTicket[]
@@ -51,6 +54,56 @@ async function create(options: {
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e
+  }
+}
+
+async function createTicketHolding(options: ITicketHolding): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {ticketId, startAt, endAt} = options
+
+    if (
+      moment(startAt).isBefore(moment.now()) ||
+      moment(endAt).isBefore(moment.now()) ||
+      moment(endAt).isBefore(moment(startAt))
+    ) {
+      throw Error('past_date_error')
+    }
+
+    const holdings = await TicketHolding.findAllWithTicketId(ticketId)
+    if (holdings.length) {
+      holdings.forEach((ticketHold) => {
+        if (
+          moment(startAt).isSameOrBefore(moment(ticketHold.endAt)) &&
+          moment(ticketHold.startAt).isSameOrBefore(moment(endAt))
+        ) {
+          throw Error('date_overlap')
+        }
+      })
+    }
+    const days = moment(endAt).diff(moment(startAt))
+    await TicketHolding.create({ticketId, startAt, endAt, days}, connection)
+    const ticket = await Ticket.findOne({id: ticketId})
+    const newExpiredAt = moment(ticket.expiredAt).add(days, 'days').format('YYYY-MM-DD')
+    await Ticket.update(
+      {
+        id: ticket.id,
+        type: ticket.type,
+        totalSession: ticket.totalSession,
+        serviceSession: ticket.serviceSession,
+        sessionPrice: ticket.sessionPrice,
+        coachingPrice: ticket.coachingPrice,
+        startedAt: ticket.startedAt,
+        expiredAt: newExpiredAt
+      },
+      connection
+    )
+
+    connection.commit()
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    if (e.message === 'past_date_error') e.status = 402
+    if (e.message === 'date_overlap') e.status = 403
   }
 }
 
@@ -124,4 +177,4 @@ async function deleteOne(id: number): Promise<void> {
   }
 }
 
-export {create, findAll, findOneWithId, update, deleteOne}
+export {create, createTicketHolding, findAll, findOneWithId, update, deleteOne}
