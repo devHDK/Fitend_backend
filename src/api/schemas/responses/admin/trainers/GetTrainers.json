@@ -15,9 +15,6 @@
           "email": {
             "type": "string"
           },
-          "phone": {
-            "type": "string"
-          },
           "franchises": {
             "type": "array",
             "items": {
@@ -32,19 +29,8 @@
               }
             }
           },
-            "trainers": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "integer"
-                  },
-                  "nickname": {
-                    "type": "string"
-                  }
-                }
-              },
+          "userAvailableCount": {
+            "type": "number",
             "nullable": true
           },
           "createdAt": {
@@ -56,9 +42,8 @@
           "id",
           "nickname",
           "email",
-          "phone",
           "franchises",
-          "trainers",
+          "userAvailableCount",
           "createdAt"
         ],
         "additionalProperties": false

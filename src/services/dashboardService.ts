@@ -1,5 +1,5 @@
 import moment from 'moment-timezone'
-import {Reservation, User, WorkoutRecords} from '../models/index'
+import {Reservation, Ticket, User, WorkoutRecords} from '../models/index'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -106,4 +106,50 @@ async function findAllWorkoutUsers(
   }
 }
 
-export {findActiveUsers, findSessions, findAllWorkoutToday, findAllWorkoutYesterday, findAllWorkoutUsers}
+async function findExpiredSevenDays(
+  franchiseId: number
+): Promise<
+  [
+    {
+      userId: 0
+      userNickname: 'string'
+      trainerNickname: 'string'
+      expiredAt: 'string'
+    }
+  ]
+> {
+  try {
+    return await Ticket.findExpiredSevenDays(franchiseId)
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findExpiredThreeSessions(
+  franchiseId: number
+): Promise<
+  [
+    {
+      userId: 0
+      userNickname: 'string'
+      trainerNickname: 'string'
+      restSession: 0
+    }
+  ]
+> {
+  try {
+    return await Ticket.findExpiredThreeSessions(franchiseId)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {
+  findActiveUsers,
+  findSessions,
+  findAllWorkoutToday,
+  findAllWorkoutYesterday,
+  findAllWorkoutUsers,
+  findExpiredSevenDays,
+  findExpiredThreeSessions
+}

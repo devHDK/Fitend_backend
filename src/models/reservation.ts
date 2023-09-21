@@ -5,14 +5,14 @@ import {
   IReservationCreate,
   IReservationDetail,
   IReservationFindAll,
-  IReservationList,
-  IReservationUpdate,
-  IReservationFindOne,
   IReservationFindAllForUser,
-  IReservationListForTicket
+  IReservationFindOne,
+  IReservationList,
+  IReservationListForTicket,
+  IReservationUpdate
 } from '../interfaces/reservation'
 import {Ticket, Trainer, User} from './index'
-import {IReservation} from '../interfaces/payroll'
+import {IReservation, IReservationForAdmin} from '../interfaces/payroll'
 import {tableTicketRelation} from './ticket'
 
 const tableName = 'Reservations'
@@ -283,6 +283,30 @@ async function findBetweenReservationWithTrainerId(
   }
 }
 
+async function findBetweenReservationWithTrainerIdForAdmin(options: {
+  startTime: string
+  endTime: string
+  trainerId: number
+}): Promise<IReservationForAdmin[]> {
+  const {startTime, endTime, trainerId} = options
+  try {
+    return await db.query({
+      sql: `SELECT t.ticketId, ti.type, u.nickname, ti.sessionPrice,
+            (SELECT COUNT(*) FROM ?? r 
+            WHERE r.ticketId = ti.id AND r.times != 0 AND r.status != 'complete' AND
+            r.startTime >= ${escape(startTime)} AND r.startTime <= ${escape(endTime)}) as thisMonthCount
+            FROM ?? t
+            JOIN ?? ti ON t.ticketId = ti.id
+            JOIN ?? u ON t.userId = u.id
+            WHERE t.trainerId = ? AND t.startTime >= ${escape(startTime)} AND t.startTime <= ${escape(endTime)}
+            GROUP BY t.ticketId`,
+      values: [tableName, tableName, Ticket.tableName, User.tableName, trainerId]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllByTicketIdAndLaterStartTime(
   options: {
     startTime: string
@@ -399,6 +423,7 @@ export {
   findBurnRate,
   findAttendanceNoShowCount,
   findOneWithTime,
-  update
+  update,
+  findBetweenReservationWithTrainerIdForAdmin
   // deleteRelationExercise
 }

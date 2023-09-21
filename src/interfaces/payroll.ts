@@ -4,9 +4,19 @@ export interface IPayrollFindAll {
   startDate: Date
 }
 
+export interface IPayrollFindAllForAdmin {
+  trainerId: number
+  startDate: Date
+}
+
 export interface IPayrollResponse {
   thisMonth: IMonth
   lastMonth: IMonth
+}
+
+export interface IPayrollResponseForAdminWithTrainerId {
+  reservations?: IReservationForAdmin[]
+  coaching?: ICoachingForAdmin[]
 }
 
 export interface IMonth {
@@ -40,4 +50,20 @@ export interface IWageInfo {
   baseWage: number
   ptPercentage: number
   fcPercentage: number
+}
+
+export interface ICoachingForAdmin {
+  ticketId: number
+  nickname: string
+  type: string
+  coachingPrice: number
+  doneCount: number
+}
+
+export interface IReservationForAdmin {
+  ticketId: number
+  type: string
+  nickname: string
+  sessionPrice: number
+  thisMonthCount?: number
 }

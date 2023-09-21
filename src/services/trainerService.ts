@@ -1,7 +1,33 @@
-import {ITrainer, ITrainerList} from '../interfaces/trainer'
-import {Trainer} from '../models/index'
+import moment from 'moment-timezone'
+import {
+  ITrainer,
+  ITrainerDetail,
+  ITrainerFindAllForAdmin,
+  ITrainerList,
+  ITrainerListForAdmin
+} from '../interfaces/trainer'
+import {Franchise, Reservation, Ticket, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
 import {passwordIterations} from '../libs/code'
+import {db} from '../loaders'
+
+moment.tz.setDefault('Asia/Seoul')
+
+async function create(options: {nickname: string; email: string; password: string}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {password, ...data} = options
+    const passwordHash = Code.createPasswordHash(password, passwordIterations.web)
+    await Trainer.create({password: JSON.stringify(passwordHash), ...data}, connection)
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    if (e.code === 'ER_DUP_ENTRY') {
+      throw new Error('already_in_use')
+    }
+    throw e
+  }
+}
 
 async function signIn(options: {email: string; password: string}): Promise<{accessToken: string; trainer: ITrainer}> {
   try {
@@ -24,6 +50,49 @@ async function signIn(options: {email: string; password: string}): Promise<{acce
 async function findAll(franchiseId: number): Promise<[ITrainerList]> {
   try {
     return await Trainer.findAll(franchiseId)
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrainerListForAdmin> {
+  try {
+    return await Trainer.findAllForAdmin(options)
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
+  try {
+    const thisMonthStart = moment().startOf('month').format('YYYY-MM-DD')
+    const thisMonthEnd = moment().add(1, 'day').format('YYYY-MM-DD')
+    const lastMonthStart = moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD')
+    const lastMonthEnd = moment().subtract(1, 'month').endOf('month').add(1, 'day').format('YYYY-MM-DD')
+    const trainer = await Trainer.findOneWithIdForAdmin(id)
+    const franchiseInfo = await Franchise.findOneWithTrainerId(id)
+    const fcThisMonthCount = await User.findActiveFitnessUsersForAdminWithTrainerId(id, thisMonthStart, thisMonthEnd)
+    const fcLastMonthCount = await User.findActiveFitnessUsersForAdminWithTrainerId(id, lastMonthStart, lastMonthEnd)
+    const ptThisMonthCount = await User.findActivePersonalUsersForAdminWithTrainerId(id, thisMonthStart, thisMonthEnd)
+    const ptLastMonthCount = await User.findActivePersonalUsersForAdminWithTrainerId(id, lastMonthStart, lastMonthEnd)
+    const fitnessActiveUsers = {thisMonthCount: fcThisMonthCount, lastMonthCount: fcLastMonthCount}
+    const personalActiveUsers = {thisMonthCount: ptThisMonthCount, lastMonthCount: ptLastMonthCount}
+    const reservations = await Reservation.findBetweenReservationWithTrainerIdForAdmin({
+      startTime: moment(thisMonthStart).utc().format('YYYY-MM-DDTHH:mm:ss'),
+      endTime: moment(thisMonthEnd).utc().format('YYYY-MM-DDTHH:mm:ss'),
+      trainerId: id
+    })
+    const coaching = await Ticket.findFcTicketWithTrainerIdForAdmin({
+      startTime: moment(thisMonthStart).utc().format('YYYY-MM-DDTHH:mm:ss'),
+      endTime: moment(thisMonthEnd).utc().format('YYYY-MM-DDTHH:mm:ss'),
+      trainerId: id
+    })
+    return {
+      ...trainer,
+      franchiseInfo,
+      activeUsers: {fitnessActiveUsers, personalActiveUsers},
+      thisMonthSession: {reservations, coaching}
+    }
   } catch (e) {
     throw e
   }
@@ -52,4 +121,4 @@ async function updatePassword({
   }
 }
 
-export {signIn, findAll, updatePassword}
+export {create, signIn, findAll, findAllForAdmin, findOneWithIdForAdmin, updatePassword}

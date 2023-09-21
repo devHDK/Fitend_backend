@@ -1,0 +1,86 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "nickname": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "birth": {
+      "type": "string",
+      "format": "date",
+      "nullable": true
+    },
+    "gender": {
+      "type": "string",
+      "enum": ["male", "female"]
+    },
+    "memo": {
+      "type": "string",
+      "nullable": true
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tickets": {
+      "type": "object",
+      "properties": {
+        "personalCount": {
+          "type": "integer"
+        },
+        "fitnessCount": {
+          "type": "integer"
+        },
+        "expiredCount": {
+          "type": "integer"
+        }
+      }
+    },
+    "franchises": {
+      "type": "object",
+      "properties": {
+        "franchiseId": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "workouts": {
+      "type": "object",
+      "properties": {
+        "thisMonthCount": {
+          "type": "integer"
+        },
+        "asOfTodayCount": {
+          "type": "integer"
+        },
+        "doneCount": {
+          "type": "integer"
+        },
+        "recentDate": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "id",
+    "nickname",
+    "email",
+    "phone",
+    "gender",
+    "franchises",
+    "createdAt"
+  ],
+  "additionalProperties": false
+}

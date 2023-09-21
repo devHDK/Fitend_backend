@@ -27,7 +27,4 @@ const getUsersWithId = new ApiRouter({
   handler: ctrl.getUsersWithId
 })
 
-export {
-  getUsers,
-  getUsersWithId,
-}
+export {getUsers, getUsersWithId}
