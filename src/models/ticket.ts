@@ -350,7 +350,7 @@ async function findExpiredThreeSessions(
   const currentTime = moment().format('YYYY-MM-DD')
   try {
     const rows = await db.query({
-      sql: `SELECT tr.userId as userId, u.nickname as userNickname, (t.totalSession - 
+      sql: `SELECT tr.userId as userId, u.nickname as userNickname, ((t.totalSession + t.serviceSession) - 
             (SELECT COUNT(*) FROM ?? r
             WHERE r.ticketId = t.id AND (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession,
             tra.nickname as trainerNickname
