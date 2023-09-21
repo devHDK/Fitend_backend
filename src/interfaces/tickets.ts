@@ -1,7 +1,7 @@
 export interface ITicket {
   id: number
   type: 'personal' | 'fitness'
-  totalSession: string
+  totalSession: number
   startedAt: string
   expiredAt: string
   createdAt: string
@@ -10,7 +10,8 @@ export interface ITicket {
 export interface ITicketFindOne {
   id?: number
   type?: 'personal' | 'fitness'
-  totalSession?: string
+  totalSession?: number
+  serviceSession?: number
   startedAt?: string
   expiredAt?: string
 }
@@ -34,6 +35,7 @@ export interface ITicketDetail {
     }
   ]
   totalSession: number
+  serviceSession: number
   restSession: number
   startedAt: string
   expiredAt: string

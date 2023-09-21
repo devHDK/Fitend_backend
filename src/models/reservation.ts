@@ -12,8 +12,8 @@ import {
   IReservationUpdate
 } from '../interfaces/reservation'
 import {Ticket, Trainer, User} from './index'
-import {tableTicketRelation} from './ticket'
 import {IReservation, IReservationForAdmin} from '../interfaces/payroll'
+import {tableTicketRelation} from './ticket'
 
 const tableName = 'Reservations'
 
@@ -37,7 +37,7 @@ async function findAll(options: IReservationFindAll): Promise<[IReservationList]
     if (trainerId) where.push(`t.trainerId = ${escape(trainerId)}`)
     return await db.query({
       sql: `SELECT t.id, t.startTime, t.endTime, t.status, ti.type as ticketType,
-            u.nickname as userNickname, t.seq, ti.totalSession,
+            u.nickname as userNickname, t.seq, (ti.totalSession + ti.serviceSession) as totalSession,
             JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer
             FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
@@ -69,7 +69,7 @@ async function findAllForUser(options: IReservationFindAllForUser): Promise<[IRe
             JSON_ARRAYAGG(JSON_OBJECT(
             'id', t.id, 'startTime', DATE_FORMAT(t.startTime, '%Y-%m-%dT%H:%i:%s.000Z'), 
             'endTime', DATE_FORMAT(t.endTime, '%Y-%m-%dT%H:%i:%s.000Z'), 'status', t.status, 'times', t.times,
-            'ticketType', ti.type, 'seq', t.seq, 'totalSession', ti.totalSession, 'userNickname', u.nickname,
+            'ticketType', ti.type, 'seq', t.seq, 'totalSession', (ti.totalSession + ti.serviceSession), 'userNickname', u.nickname,
             'ticketStartedAt', ti.startedAt, 'ticketExpiredAt', ti.expiredAt,
             'trainer', JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage)
             )) as reservations
@@ -112,7 +112,7 @@ async function findOneWithId(id: number): Promise<IReservationDetail> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id, t.startTime, t.endTime, t.status, t.times, ti.id as ticketId, ti.type as ticketType,
-            u.id as userId, u.nickname as userNickname, t.seq, ti.totalSession, ti.startedAt, ti.expiredAt, 
+            u.id as userId, u.nickname as userNickname, t.seq, (ti.totalSession + ti.serviceSession) as totalSession, ti.startedAt, ti.expiredAt, 
             JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer
             FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
@@ -253,8 +253,8 @@ async function findBetweenReservationWithTrainerId(
   try {
     return await db.query({
       connection,
-      sql: `SELECT t.ticketId, ti.type, u.nickname as nickname, ti.sessionPrice, ti.coachingPrice, ti.totalSession,
-            (ti.totalSession - (SELECT coalesce(MAX(r2.seq), 0) FROM ?? r2 
+      sql: `SELECT t.ticketId, ti.type, u.nickname as nickname, ti.sessionPrice, ti.coachingPrice, (ti.totalSession + ti.serviceSession) as totalSession,
+            ((ti.totalSession + ti.serviceSession) - (SELECT coalesce(MAX(r2.seq), 0) FROM ?? r2 
                 WHERE r2.ticketId = tr.ticketId AND r2.times != 0 AND r2.status != 'complete' AND
                 r2.startTime <= ${escape(endTime)})) as leftSession,
             (SELECT COUNT(*) FROM ?? r 
@@ -335,7 +335,7 @@ async function findBurnRate(franchiseId: number): Promise<{total: number; used: 
     const [row] = await db.query({
       sql: `SELECT 
             (
-            SELECT SUM(t.totalSession) FROM ?? t 
+            SELECT SUM(t.totalSession + t.serviceSession)  FROM ?? t 
             JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ${escape(franchiseId)}
             WHERE t.expiredAt >= ${currentTime}
             ) total,

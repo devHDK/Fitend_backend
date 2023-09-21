@@ -24,6 +24,9 @@
     "totalSession": {
       "type": "integer"
     },
+    "serviceSession": {
+      "type": "integer"
+    },
     "restSession": {
       "type": "integer"
     },
@@ -91,6 +94,7 @@
     "type",
     "users",
     "totalSession",
+    "serviceSession",
     "restSession",
     "sessionPrice",
     "coachingPrice",

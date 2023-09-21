@@ -16,6 +16,7 @@ async function create(
     startedAt: string
     expiredAt: string
     totalSession: number
+    serviceSession: number
     sessionPrice: number
     coachingPrice: number
   },
@@ -70,11 +71,11 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
       }
     }
     const rows = await db.query({
-      sql: `SELECT t.id, t.type, t.totalSession,
-            (t.totalSession - (SELECT COUNT(*) FROM ?? r
+      sql: `SELECT t.id, t.type, (t.totalSession + t.serviceSession) as totalSession,
+            ((t.totalSession + t.serviceSession) - (SELECT COUNT(*) FROM ?? r
             WHERE r.ticketId = t.id AND 
             (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession,
-            (t.totalSession - (SELECT COUNT(*) FROM ?? r
+            ((t.totalSession + t.serviceSession) - (SELECT COUNT(*) FROM ?? r
             WHERE r.ticketId = t.id AND r.times = 1)) as availSession,
             DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
@@ -133,7 +134,7 @@ async function findOne(options: ITicketFindOne): Promise<ITicket> {
   }
 }
 
-async function findBetweenfcTicket(options: {
+async function findBetweenFCTicket(options: {
   startTime: string
   endTime: string
   trainerId: number
@@ -204,8 +205,8 @@ async function findFcTicketWithTrainerIdForAdmin(options: {
 async function findOneWithId(id: number): Promise<ITicketDetail> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.type, t.totalSession, t.sessionPrice, t.coachingPrice,
-            (t.totalSession - (SELECT COUNT(*) FROM ?? r
+      sql: `SELECT t.id, t.type, t.totalSession, t.serviceSession, t.sessionPrice, t.coachingPrice,
+            ((t.totalSession + t.serviceSession) - (SELECT COUNT(*) FROM ?? r
             WHERE r.ticketId = t.id AND 
             (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession, 
             DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
@@ -373,6 +374,7 @@ async function update(
     id: number
     type: 'personal' | 'fitness'
     totalSession: number
+    serviceSession: number
     sessionPrice: number
     coachingPrice: number
     startedAt: string
@@ -425,7 +427,7 @@ export {
   findOne,
   findOneWithId,
   findOneWithUserId,
-  findBetweenfcTicket,
+  findBetweenFCTicket,
   findFcTicketWithTrainerIdForAdmin,
   findCounts,
   findExpiredSevenDays,
