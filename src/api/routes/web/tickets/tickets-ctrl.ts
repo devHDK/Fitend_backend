@@ -122,6 +122,8 @@ async function deleteTicketsWithId(req: IRequest, res: Response, next: Function)
 
 async function deleteTicketHoldingsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
+    await TicketService.deleteTicketHolding(req.options.id)
+
     res.status(200).json()
   } catch (e) {
     next(e)

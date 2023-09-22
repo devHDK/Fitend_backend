@@ -232,4 +232,41 @@ async function deleteOne(id: number): Promise<void> {
   }
 }
 
-export {create, createTicketHolding, findAll, findOneWithId, update, updateTicketHolding, deleteOne}
+async function deleteTicketHolding(id: number): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const beforeTicketHolding = await TicketHolding.findOneWithId(id)
+    const ticket = await Ticket.findOne({id: beforeTicketHolding.ticketId})
+    const newExpiredAt = moment(ticket.expiredAt).subtract(beforeTicketHolding.days, 'days').format('YYYY-MM-DD')
+
+    await TicketHolding.deleteOne(id)
+    await Ticket.update(
+      {
+        id: ticket.id,
+        type: ticket.type,
+        totalSession: ticket.totalSession,
+        serviceSession: ticket.serviceSession,
+        sessionPrice: ticket.sessionPrice,
+        coachingPrice: ticket.coachingPrice,
+        startedAt: ticket.startedAt,
+        expiredAt: newExpiredAt
+      },
+      connection
+    )
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
+export {
+  create,
+  createTicketHolding,
+  findAll,
+  findOneWithId,
+  update,
+  updateTicketHolding,
+  deleteOne,
+  deleteTicketHolding
+}
