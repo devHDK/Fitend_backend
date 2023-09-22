@@ -75,9 +75,9 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
                    JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt >= '${currentTime}'`
                 : ''
             }
-            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''} 
             GROUP BY t.id
-            ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
+            ${status !== undefined && status !== 'hold' ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
       values: [

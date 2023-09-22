@@ -1,6 +1,5 @@
 import {Response} from 'express'
 import {PayrollService} from '../../../../services'
-import {IPayrollFindAll} from '../../../../interfaces/payroll'
 
 async function getPayrollWithMonth(req: IRequest, res: Response, next: Function): Promise<void> {
   try {

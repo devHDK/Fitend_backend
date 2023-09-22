@@ -1,7 +1,7 @@
 import moment from 'moment-timezone'
 import {print} from 'redis'
 import {Response} from 'express'
-import {Ticket, Reservation, Trainer} from '../models/index'
+import {Ticket, Reservation, Trainer, TicketHolding} from '../models/index'
 import {IMonth, IPayrollFindAll, IPayrollResponse} from '../interfaces/payroll'
 import {findBetweenReservationWithTrainerId} from '../models/reservation'
 
