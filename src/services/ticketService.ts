@@ -3,12 +3,13 @@ import {Reservation, Ticket, TicketHolding} from '../models/index'
 import {db} from '../loaders'
 import {ITicketFindAll, ITicketList, ITicketDetail} from '../interfaces/tickets'
 import {IReservationListForTicket} from '../interfaces/reservation'
-import {ITicketHolding} from '../interfaces/ticketHoldings'
+import {ITicketHolding, ITicketHoldingFindAll} from '../interfaces/ticketHoldings'
 
 moment.tz.setDefault('Asia/Seoul')
 
-interface ITicketDetailWithReservations extends ITicketDetail {
+interface ITicketDetailWithReservationsAndHoldings extends ITicketDetail {
   reservations: IReservationListForTicket[]
+  holdings: ITicketHoldingFindAll[]
 }
 
 async function create(options: {
@@ -117,11 +118,15 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   }
 }
 
-async function findOneWithId(id: number): Promise<ITicketDetailWithReservations> {
+async function findOneWithId(id: number): Promise<ITicketDetailWithReservationsAndHoldings> {
   try {
     const ticket = await Ticket.findOneWithId(id)
     const reservations = await Reservation.findAllWithTicketId(id)
-    return {...ticket, reservations}
+    const holdings = await TicketHolding.findAllWithTicketId(id)
+
+    console.log(holdings)
+
+    return {...ticket, reservations, holdings}
   } catch (e) {
     throw e
   }

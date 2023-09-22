@@ -1,3 +1,5 @@
+import {ITicketHolding} from './ticketHoldings'
+
 export interface ITicket {
   id: number
   type: 'personal' | 'fitness'
