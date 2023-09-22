@@ -157,6 +157,7 @@ async function findBetweenFCTicket(options: {
 }): Promise<[ICoaching]> {
   try {
     const {startTime, endTime, trainerId, franchiseId, plusMonth} = options
+
     const rows = await db.query({
       sql: `SELECT t.id as ticketId, u.nickname, t.type, t.startedAt, t.expiredAt, t.coachingPrice,
             (SELECT COUNT(wf.id) FROM ?? wf 
@@ -172,7 +173,8 @@ async function findBetweenFCTicket(options: {
             (DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH)  >= ${escape(startTime)} 
             AND 
             DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH) <= ${escape(endTime)}) 
-            AND t.expiredAt > ${escape(startTime)}
+            AND DATE_SUB(t.expiredAt, INTERVAL (SELECT IF(SUM(th.days) > 0 , SUM(th.days), 0) FROM ?? th WHERE th.ticketId = t.id) DAY) 
+            > ${escape(startTime)}
             AND t.type = 'fitness'`,
       values: [
         WorkoutFeedbacks.tableName,
@@ -181,7 +183,8 @@ async function findBetweenFCTicket(options: {
         tableTicketRelation,
         User.tableName,
         trainerId,
-        franchiseId
+        franchiseId,
+        TicketHolding.tableName
       ]
     })
     return rows
