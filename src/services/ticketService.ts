@@ -3,7 +3,7 @@ import {Reservation, Ticket, TicketHolding} from '../models/index'
 import {db} from '../loaders'
 import {ITicketFindAll, ITicketList, ITicketDetail} from '../interfaces/tickets'
 import {IReservationListForTicket} from '../interfaces/reservation'
-import {ITicketHolding, ITicketHoldingFindAll} from '../interfaces/ticketHoldings'
+import {ITicketHolding, ITicketHoldingFindAll, ITicketHoldingUpdate} from '../interfaces/ticketHoldings'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -101,7 +101,7 @@ async function createTicketHolding(options: ITicketHolding): Promise<void> {
       },
       connection
     )
-    connection.commit()
+    await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
     if (e.message === 'past_date_error') e.status = 402
@@ -123,8 +123,6 @@ async function findOneWithId(id: number): Promise<ITicketDetailWithReservationsA
     const ticket = await Ticket.findOneWithId(id)
     const reservations = await Reservation.findAllWithTicketId(id)
     const holdings = await TicketHolding.findAllWithTicketId(id)
-
-    console.log(holdings)
 
     return {...ticket, reservations, holdings}
   } catch (e) {
@@ -176,6 +174,56 @@ async function update(options: {
   }
 }
 
+async function updateTicketHolding(options: ITicketHoldingUpdate): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {id, startAt, endAt} = options
+
+    const beforeTicketHolding = await TicketHolding.findOneWithId(id)
+
+    const holdings = await TicketHolding.findAllWithTicketId(beforeTicketHolding.ticketId)
+    if (holdings.length) {
+      holdings.forEach((ticketHold) => {
+        if (
+          moment(startAt).isSameOrBefore(moment(ticketHold.endAt)) &&
+          moment(ticketHold.startAt).isSameOrBefore(moment(endAt)) &&
+          ticketHold.id !== id
+        ) {
+          throw Error('date_overlap')
+        }
+      })
+    }
+
+    const beforeDays = beforeTicketHolding.days
+    const afterDays = moment(endAt).diff(moment(startAt), 'days')
+    const ticket = await Ticket.findOne({id: beforeTicketHolding.ticketId})
+    const newExpiredAt = moment(ticket.expiredAt)
+      .add(afterDays - beforeDays, 'days')
+      .format('YYYY-MM-DD')
+
+    await TicketHolding.update({id, startAt, endAt, days: afterDays}, connection)
+    await Ticket.update(
+      {
+        id: ticket.id,
+        type: ticket.type,
+        totalSession: ticket.totalSession,
+        serviceSession: ticket.serviceSession,
+        sessionPrice: ticket.sessionPrice,
+        coachingPrice: ticket.coachingPrice,
+        startedAt: ticket.startedAt,
+        expiredAt: newExpiredAt
+      },
+      connection
+    )
+
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    if (e.message === 'date_overlap') e.status = 403
+    throw e
+  }
+}
+
 async function deleteOne(id: number): Promise<void> {
   try {
     await Ticket.deleteOne(id)
@@ -184,4 +232,4 @@ async function deleteOne(id: number): Promise<void> {
   }
 }
 
-export {create, createTicketHolding, findAll, findOneWithId, update, deleteOne}
+export {create, createTicketHolding, findAll, findOneWithId, update, updateTicketHolding, deleteOne}

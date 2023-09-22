@@ -20,6 +20,21 @@ async function create(options: ITicketHolding, connection: PoolConnection): Prom
   }
 }
 
+async function findOneWithId(id: number): Promise<ITicketHoldingFindAll> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT *
+            FROM ?? th 
+            WHERE th.id = ${escape(id)}
+            `,
+      values: [tableName]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllWithTicketId(ticketId: number): Promise<[ITicketHoldingFindAll]> {
   try {
     return await db.query({
@@ -59,4 +74,4 @@ async function deleteOne(id: number, connection?: PoolConnection): Promise<void>
   }
 }
 
-export {tableName, create, findAllWithTicketId, update, deleteOne}
+export {tableName, create, findOneWithId, findAllWithTicketId, update, deleteOne}

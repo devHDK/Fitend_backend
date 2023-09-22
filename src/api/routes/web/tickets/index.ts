@@ -73,10 +73,10 @@ const putTicketHoldingWithId = new ApiRouter({
   paths: ['common/IdPath'],
   summary: '수강권 holding 수정',
   tags: ['Ticket'],
-  schema: 'requests/web/tickets/PutTicketsWithId',
+  schema: 'requests/web/tickets/PutTicketHoldingsWithId',
   responses: {
     200: {description: 'success'},
-    403: {description: 'not_allowed/세션수 확인'}
+    403: {description: 'date_overlap'}
   },
   handler: ctrl.putTicketHoldingsWithId
 })

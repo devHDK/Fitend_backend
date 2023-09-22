@@ -1,5 +1,7 @@
 import {Response} from 'express'
 import {TicketService} from '../../../../services'
+import {TicketHolding} from '../../../../models'
+import {updateTicketHolding} from '../../../../services/ticketService'
 
 async function postTickets(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
@@ -35,7 +37,6 @@ async function postTickets(req: IRequest, res: Response, next: Function): Promis
 async function postTicketHoldings(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {startAt, endAt} = req.options
-    console.log(startAt)
     await TicketService.createTicketHolding({ticketId: req.options.id, startAt, endAt})
     res.status(200).json()
   } catch (e) {
@@ -100,6 +101,9 @@ async function putTicketsWithId(req: IRequest, res: Response, next: Function): P
 
 async function putTicketHoldingsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
+    const {startAt, endAt} = req.options
+
+    await TicketService.updateTicketHolding({id: req.options.id, startAt, endAt})
     res.status(200).json()
   } catch (e) {
     if (e.message === 'not_allowed') e.status = 403
