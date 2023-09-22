@@ -56,6 +56,7 @@ export type ITicketList = IResponseList<{
   userNickname: string
   totalSession: number
   validSession: number
+  isHolding?: boolean
   startedAt: string
   expiredAt: string
   createdAt: string

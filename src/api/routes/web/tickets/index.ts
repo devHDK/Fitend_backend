@@ -17,6 +17,7 @@ const postTicketHoldings = new ApiRouter({
   name: ':id/ticketHoldings',
   method: 'post',
   summary: '수강권 holding 기간 생성',
+  paths: ['common/IdPath'],
   tags: ['Ticket'],
   schema: 'requests/web/tickets/PostTicketHoldings',
   responses: {

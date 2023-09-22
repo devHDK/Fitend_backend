@@ -61,11 +61,12 @@ async function createTicketHolding(options: ITicketHolding): Promise<void> {
   const connection = await db.beginTransaction()
   try {
     const {ticketId, startAt, endAt} = options
+    const currentTime = moment().format('YYYY-MM-DD')
 
     if (
-      moment(startAt).isBefore(moment.now()) ||
-      moment(endAt).isBefore(moment.now()) ||
-      moment(endAt).isBefore(moment(startAt))
+      moment(startAt).isBefore(currentTime) ||
+      moment(endAt).isBefore(currentTime) ||
+      moment(endAt).isSameOrBefore(moment(startAt))
     ) {
       throw Error('past_date_error')
     }
@@ -81,10 +82,11 @@ async function createTicketHolding(options: ITicketHolding): Promise<void> {
         }
       })
     }
-    const days = moment(endAt).diff(moment(startAt))
-    await TicketHolding.create({ticketId, startAt, endAt, days}, connection)
+    const days = moment(endAt).diff(moment(startAt), 'days')
     const ticket = await Ticket.findOne({id: ticketId})
     const newExpiredAt = moment(ticket.expiredAt).add(days, 'days').format('YYYY-MM-DD')
+
+    await TicketHolding.create({ticketId, startAt, endAt, days}, connection)
     await Ticket.update(
       {
         id: ticket.id,
@@ -98,12 +100,12 @@ async function createTicketHolding(options: ITicketHolding): Promise<void> {
       },
       connection
     )
-
     connection.commit()
   } catch (e) {
     if (connection) await db.rollback(connection)
     if (e.message === 'past_date_error') e.status = 402
     if (e.message === 'date_overlap') e.status = 403
+    throw e
   }
 }
 

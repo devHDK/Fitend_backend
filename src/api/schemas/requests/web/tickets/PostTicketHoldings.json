@@ -1,7 +1,7 @@
 {
   "type": "object",
   "properties": {
-    "startedAt": {
+    "startAt": {
       "type": "string",
       "format": "date"
     },

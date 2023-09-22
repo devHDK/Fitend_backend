@@ -35,7 +35,7 @@ async function postTickets(req: IRequest, res: Response, next: Function): Promis
 async function postTicketHoldings(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {startAt, endAt} = req.options
-
+    console.log(startAt)
     await TicketService.createTicketHolding({ticketId: req.options.id, startAt, endAt})
     res.status(200).json()
   } catch (e) {
