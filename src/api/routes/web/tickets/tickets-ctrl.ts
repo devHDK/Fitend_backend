@@ -1,5 +1,7 @@
 import {Response} from 'express'
 import {TicketService} from '../../../../services'
+import {TicketHolding} from '../../../../models'
+import {updateTicketHolding} from '../../../../services/ticketService'
 
 async function postTickets(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
@@ -26,6 +28,16 @@ async function postTickets(req: IRequest, res: Response, next: Function): Promis
       startedAt,
       expiredAt
     })
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+async function postTicketHoldings(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {startAt, endAt} = req.options
+    await TicketService.createTicketHolding({ticketId: req.options.id, startAt, endAt})
     res.status(200).json()
   } catch (e) {
     next(e)
@@ -87,6 +99,18 @@ async function putTicketsWithId(req: IRequest, res: Response, next: Function): P
   }
 }
 
+async function putTicketHoldingsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {startAt, endAt} = req.options
+
+    await TicketService.updateTicketHolding({id: req.options.id, startAt, endAt})
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'not_allowed') e.status = 403
+    next(e)
+  }
+}
+
 async function deleteTicketsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     await TicketService.deleteOne(req.options.id)
@@ -96,4 +120,23 @@ async function deleteTicketsWithId(req: IRequest, res: Response, next: Function)
   }
 }
 
-export {postTickets, getTickets, getTicketsWithId, putTicketsWithId, deleteTicketsWithId}
+async function deleteTicketHoldingsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    await TicketService.deleteTicketHolding(req.options.id)
+
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+export {
+  postTickets,
+  postTicketHoldings,
+  getTickets,
+  getTicketsWithId,
+  putTicketsWithId,
+  putTicketHoldingsWithId,
+  deleteTicketsWithId,
+  deleteTicketHoldingsWithId
+}

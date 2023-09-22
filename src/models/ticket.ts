@@ -2,7 +2,7 @@ import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
 import {ITicket, ITicketDetail, ITicketFindAll, ITicketList, ITicketFindOne} from '../interfaces/tickets'
-import {Reservation, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
+import {Reservation, TicketHolding, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
 import {ICoaching, ICoachingForAdmin} from '../interfaces/payroll'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -60,8 +60,8 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   try {
     const {franchiseId, search, status, trainerId, start, perPage} = options
     const where = []
+    const currentTime = moment().format('YYYY-MM-DD')
     if (status !== undefined) {
-      const currentTime = moment().format('YYYY-MM-DD')
       if (status) {
         // where.push(`t.startedAt <= ${currentTime}`)
         where.push(`t.expiredAt >= '${currentTime}'`)
@@ -79,7 +79,10 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             WHERE r.ticketId = t.id AND r.times = 1)) as availSession,
             DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
-            JSON_ARRAY(u.nickname) as users
+            JSON_ARRAY(u.nickname) as users,
+            (SELECT IF(EXISTS(SELECT * FROM ?? th 
+            WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
+            ) as isHolding
             FROM ?? t
             JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ? ${
               trainerId ? `AND tr.trainerId = ${trainerId}` : ``
@@ -94,12 +97,20 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
       values: [
         Reservation.tableName,
         Reservation.tableName,
+        TicketHolding.tableName,
         tableName,
         tableTicketRelation,
         franchiseId,
         User.tableName
       ]
     })
+
+    rows.forEach((value) => {
+      if (value.isHolding === null) {
+        value.isHolding = false
+      }
+    })
+
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM (
               SELECT t.id
@@ -114,6 +125,9 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             `,
       values: [tableName, tableTicketRelation, User.tableName]
     })
+
+    console.log(rows)
+
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
     throw e
@@ -139,19 +153,26 @@ async function findBetweenFCTicket(options: {
   endTime: string
   trainerId: number
   franchiseId: number
+  plusMonth: number
 }): Promise<[ICoaching]> {
   try {
-    const {startTime, endTime, trainerId, franchiseId} = options
+    const {startTime, endTime, trainerId, franchiseId, plusMonth} = options
     const rows = await db.query({
       sql: `SELECT t.id as ticketId, u.nickname, t.type, t.startedAt, t.expiredAt, t.coachingPrice,
             (SELECT COUNT(wf.id) FROM ?? wf 
                 JOIN ?? ws ON wf.workoutScheduleId = ws.id
-                WHERE ws.trainerId = ${trainerId} AND ws.franchiseId = ${franchiseId} AND ws.userId = u.id) as doneCount 
+                WHERE ws.trainerId = ${trainerId} AND ws.franchiseId = ${franchiseId} AND ws.userId = u.id AND wf.createdAt < ${escape(
+        endTime
+      )} ) as doneCount 
             FROM ?? t 
             JOIN ?? tr ON tr.ticketId = t.id 
             JOIN ?? u ON u.id = tr.userId
             WHERE tr.trainerId = ? AND tr.franchiseId = ? 
-            AND t.startedAt >= ${escape(startTime)} AND t.startedAt <= ${escape(endTime)}
+            AND 
+            (DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH)  >= ${escape(startTime)} 
+            AND 
+            DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH) <= ${escape(endTime)}) 
+            AND t.expiredAt > ${escape(startTime)}
             AND t.type = 'fitness'`,
       values: [
         WorkoutFeedbacks.tableName,

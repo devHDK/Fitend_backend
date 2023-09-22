@@ -87,6 +87,29 @@
           }
         }
       }
+    },
+    "holdings" : {
+      "type" : "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "ticketId": {
+            "type": "integer"
+          },
+          "startAt" : {
+            "type": "string"
+          },
+          "endAt" : {
+            "type": "string"
+          },
+          "days" : {
+            "type": "integer"
+          }
+        }
+      }
     }
   },
   "required": [
@@ -101,7 +124,8 @@
     "startedAt",
     "createdAt",
     "trainers",
-    "reservations"
+    "reservations",
+    "holdings"
   ],
   "additionalProperties": false
 }
