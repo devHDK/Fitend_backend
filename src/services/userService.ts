@@ -164,6 +164,10 @@ async function updateFCMToken(options: {
       await User.updateOne({id: user.id, deviceId, platform}, connection)
       await UserDevice.upsertOne({userId: user.id, platform, deviceId, token}, connection)
       await UserDevice.updateOne({userId: user.id, platform, deviceId, isNotification: true}, connection)
+      const unUsedDevice = await UserDevice.findOneWithTokenAndUnmatchDevice(token, deviceId)
+      if (unUsedDevice) {
+        await UserDevice.deleteOne(unUsedDevice.deviceId, unUsedDevice.userId, connection)
+      }
     }
 
     await db.commit(connection)

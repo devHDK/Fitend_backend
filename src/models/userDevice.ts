@@ -1,5 +1,5 @@
 import moment from 'moment-timezone'
-import {PoolConnection} from 'mysql'
+import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
 import {IUserDeviceUpdate, IUserDevice} from '../interfaces/userDevice'
 
@@ -66,6 +66,20 @@ async function findOne(userId: number, deviceId: string, platform: 'ios' | 'andr
   }
 }
 
+async function findOneWithTokenAndUnmatchDevice(token: string, deviceId: string): Promise<IUserDevice> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.*
+            FROM ?? t
+            WHERE ? AND deviceId != ${escape(deviceId)}`,
+      values: [tableName, {token}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneWithDeviceId(deviceId: string, userId: number): Promise<IUserDevice> {
   try {
     const [row] = await db.query({
@@ -118,4 +132,14 @@ async function deleteOne(deviceId: string, userId: number, connection?: PoolConn
   }
 }
 
-export {tableName, createOne, upsertOne, findOne, findOneWithDeviceId, findAllWithUserId, updateOne, deleteOne}
+export {
+  tableName,
+  createOne,
+  upsertOne,
+  findOne,
+  findOneWithDeviceId,
+  findOneWithTokenAndUnmatchDevice,
+  findAllWithUserId,
+  updateOne,
+  deleteOne
+}
