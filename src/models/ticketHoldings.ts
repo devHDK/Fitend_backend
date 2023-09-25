@@ -41,7 +41,7 @@ async function findAllWithTicketId(ticketId: number): Promise<[ITicketHoldingFin
       sql: `SELECT *
             FROM ?? th 
             WHERE th.ticketId = ${escape(ticketId)}
-            ORDER BY th.startAt DESC`,
+            ORDER BY th.startAt ASC`,
       values: [tableName]
     })
   } catch (e) {
