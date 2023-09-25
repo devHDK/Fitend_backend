@@ -19,6 +19,7 @@ module.exports = {
   ],
   plugins: ['chai-expect', 'promise', 'prettier', 'security'],
   rules: {
+    semi: ['error', 'never'],
     'prettier/prettier': ['error'],
     camelcase: 0,
     'consistent-return': 0,
