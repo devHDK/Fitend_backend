@@ -12,7 +12,7 @@ import {
   IUserListForAdmin,
   IUserDataForAdmin
 } from '../interfaces/user'
-import {Trainer, Ticket} from './'
+import {Trainer, Ticket, TicketHolding} from './'
 import {tableTicketRelation} from './ticket'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -66,7 +66,12 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
             JOIN ?? tra ON tra.id = tr.trainerId
             WHERE ti.expiredAt >= '${currentTime}'
             LIMIT 1
-            ) as trainers
+            ) as trainers,
+            (SELECT IF(EXISTS(SELECT * FROM ?? th
+              JOIN ?? tr ON tr.userId = t.id
+              JOIN ?? ti ON tr.ticketId = ti.id AND th.ticketId = ti.id
+              WHERE th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}'), TRUE, FALSE) 
+              ) as isHolding
             FROM ?? t
             JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
             ${
@@ -77,13 +82,18 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
             }
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''} 
             GROUP BY t.id
-            ${status !== undefined && status !== 'hold' ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
+            ${status === 'active' ? `HAVING trainers IS NOT NULL AND isHolding IS false` : ``}
+            ${status === 'banned' ? `HAVING trainers IS NULL` : ``}
+            ${status === 'hold' ? `HAVING isHolding IS true` : ``}
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
       values: [
         Ticket.tableName,
         Ticket.tableTicketRelation,
         Trainer.tableName,
+        TicketHolding.tableName,
+        Ticket.tableTicketRelation,
+        Ticket.tableName,
         tableName,
         tableFranchiseUser,
         franchiseId
@@ -97,7 +107,12 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
               JOIN ?? tra ON tra.id = tr.trainerId
               WHERE ti.expiredAt >= '${currentTime}'
               LIMIT 1
-              ) as trainers
+              ) as trainers,
+              (SELECT IF(EXISTS(SELECT * FROM ?? th
+                JOIN ?? tr ON tr.userId = t.id
+                JOIN ?? ti ON tr.ticketId = ti.id AND th.ticketId = ti.id
+                WHERE th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}'), TRUE, FALSE) 
+                ) as isHolding
               FROM ?? t
               JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
               ${
@@ -108,13 +123,18 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
               }
               ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
               GROUP BY t.id
-              ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
+              ${status === 'active' ? `HAVING trainers IS NOT NULL` : ``}
+              ${status === 'banned' ? `HAVING trainers IS NULL` : ``}
+              ${status === 'hold' ? `HAVING isHolding IS true` : ``}
             ) t
             `,
       values: [
         Ticket.tableName,
         Ticket.tableTicketRelation,
         Trainer.tableName,
+        TicketHolding.tableName,
+        Ticket.tableTicketRelation,
+        Ticket.tableName,
         tableName,
         tableFranchiseUser,
         franchiseId

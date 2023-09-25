@@ -5,7 +5,8 @@
       "type": "string"
     },
     "status": {
-      "type": "boolean"
+      "type": "string",
+      "enum": ["active", "banned", "hold"]
     },
     "trainerId": {
       "type": "integer"
