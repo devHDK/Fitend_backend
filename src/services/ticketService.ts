@@ -38,6 +38,10 @@ async function create(options: {
       startedAt,
       expiredAt
     } = options
+
+    if (moment(expiredAt).isSameOrBefore(moment(startedAt))) {
+      throw Error('past_date_error')
+    }
     const ticketId = await Ticket.create(
       {
         type,
@@ -54,6 +58,7 @@ async function create(options: {
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
+    if (e.message === 'past_date_error') e.status = 402
     throw e
   }
 }
@@ -159,8 +164,10 @@ async function update(options: {
       expiredAt
     } = options
     const reservationValidCount = await Reservation.findValidCount(id)
-    console.log(reservationValidCount)
     if (totalSession < reservationValidCount) throw new Error('not_allowed')
+    if (moment(expiredAt).isSameOrBefore(moment(startedAt))) {
+      throw Error('past_date_error')
+    }
     await Ticket.update(
       {id, type, totalSession, serviceSession, sessionPrice, coachingPrice, startedAt, expiredAt},
       connection
@@ -170,6 +177,7 @@ async function update(options: {
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
+    if (e.message === 'past_date_error') e.status = 402
     throw e
   }
 }

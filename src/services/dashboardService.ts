@@ -38,7 +38,6 @@ async function findSessions(
     const thisMonthEnd = moment().endOf('month').subtract(9, 'hour').format('YYYY-MM-DDTHH:mm:ss')
     const burnRate = await Reservation.findBurnRate(franchiseId)
     const thisMonth = await Reservation.findAttendanceNoShowCount(franchiseId, thisMonthStart, thisMonthEnd)
-    console.log(thisMonth)
     return {burnRate, thisMonth}
   } catch (e) {
     throw e

@@ -126,8 +126,6 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
       values: [tableName, tableTicketRelation, User.tableName]
     })
 
-    console.log(rows)
-
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
     throw e

@@ -28,7 +28,6 @@ async function signIn(options: {
       const existDevices = await UserDevice.findAllWithUserId(user.id)
       const forbiddenDevices = await Trainer.findDeviceList()
       const forbiddenDeviceList = forbiddenDevices.map((device) => device.deviceId)
-      console.log(forbiddenDeviceList)
       const isForbiddenDevice = forbiddenDeviceList.some((item) => item === deviceId)
 
       if (!isForbiddenDevice && token) {
