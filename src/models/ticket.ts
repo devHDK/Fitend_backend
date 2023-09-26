@@ -172,7 +172,7 @@ async function findBetweenFCTicket(options: {
             AND 
             DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH) <= ${escape(endTime)}) 
             AND DATE_SUB(t.expiredAt, INTERVAL (SELECT IF(SUM(th.days) > 0 , SUM(th.days), 0) FROM ?? th WHERE th.ticketId = t.id) DAY) 
-            > ${escape(startTime)}
+            > ${escape(endTime)}
             AND t.type = 'fitness'`,
       values: [
         WorkoutFeedbacks.tableName,
