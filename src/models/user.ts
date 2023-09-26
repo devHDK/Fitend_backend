@@ -123,7 +123,7 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
               }
               ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
               GROUP BY t.id
-              ${status === 'active' ? `HAVING trainers IS NOT NULL` : ``}
+              ${status === 'active' ? `HAVING trainers IS NOT NULL AND isHolding IS false` : ``}
               ${status === 'banned' ? `HAVING trainers IS NULL` : ``}
               ${status === 'hold' ? `HAVING isHolding IS true` : ``}
             ) t
@@ -300,12 +300,18 @@ async function findActiveFitnessUsersForAdminWithTrainerId(
 
 async function findOneWithId(id: number): Promise<IUser> {
   try {
+    const currentTime = moment().format('YYYY-MM-DD')
     const [row] = await db.query({
       sql: `SELECT t.id, t.nickname, t.email, t.phone, DATE_FORMAT(t.birth, '%Y-%m-%d') as birth,
-            t.gender, t.memo, t.createdAt
+            t.gender, t.memo, t.createdAt,
+            (SELECT IF(EXISTS(SELECT * FROM ?? th
+              JOIN ?? tr ON tr.userId = t.id
+              JOIN ?? ti ON tr.ticketId = ti.id AND th.ticketId = ti.id
+              WHERE th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}'), TRUE, FALSE) 
+              ) as isHolding
             FROM ?? t
             WHERE ?`,
-      values: [tableName, {id}]
+      values: [TicketHolding.tableName, Ticket.tableTicketRelation, Ticket.tableName, tableName, {id}]
     })
     return row
   } catch (e) {

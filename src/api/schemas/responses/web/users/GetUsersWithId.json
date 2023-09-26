@@ -30,6 +30,9 @@
       "type": "string",
       "format": "date-time"
     },
+    "isHolding": {
+      "type": "boolean"
+    },
     "tickets": {
       "type": "object",
       "properties": {
@@ -68,7 +71,8 @@
     "email",
     "phone",
     "gender",
-    "createdAt"
+    "createdAt",
+    "isHolding"
   ],
   "additionalProperties": false
 }
