@@ -42,8 +42,9 @@ export interface IThread {
 
 export type IThreadList = IResponseList<IThread>
 
-export interface IAdministratorCreate {
-  username: string
+export interface IThreadCreate {
+  userId: number
+  trainerId: number
   password: string
 }
 

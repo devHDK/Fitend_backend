@@ -1,5 +1,13 @@
 import {Thread} from '../models/index'
-import {IThreadFindAll, IThreadList} from '../interfaces/thread'
+import {IThreadFindAll, IThreadList, IThreadCreateOne} from '../interfaces/thread'
+
+async function create(options: IThreadCreateOne): Promise<IThreadList> {
+  try {
+    return await Thread.findAll(options)
+  } catch (e) {
+    throw e
+  }
+}
 
 async function findAll(options: IThreadFindAll): Promise<IThreadList> {
   try {
@@ -9,4 +17,4 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
   }
 }
 
-export {findAll}
+export {create, findAll}
