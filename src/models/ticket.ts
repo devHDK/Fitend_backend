@@ -62,12 +62,10 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
     const where = []
     const currentTime = moment().format('YYYY-MM-DD')
     if (status !== undefined) {
-      if (status) {
-        // where.push(`t.startedAt <= ${currentTime}`)
-        where.push(`t.expiredAt >= '${currentTime}'`)
-      } else {
-        // where.push(`t.startedAt >= ${currentTime}`)
+      if (status === 'banned') {
         where.push(`t.expiredAt < '${currentTime}'`)
+      } else if (status === 'active') {
+        where.push(`t.expiredAt >= '${currentTime}'`)
       }
     }
     const rows = await db.query({
@@ -92,6 +90,8 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             }
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
+            ${status === 'active' ? `HAVING isHolding IS FALSE` : ``}
+            ${status === 'hold' ? `HAVING isHolding IS TRUE` : ``}
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
       values: [
@@ -113,7 +113,10 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
 
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM (
-              SELECT t.id
+              SELECT t.id,
+              (SELECT IF(EXISTS(SELECT * FROM ?? th 
+                WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
+                ) as isHolding
               FROM ?? t
               JOIN ?? tr ON tr.ticketId = t.id
               JOIN ?? u ON u.id = tr.userId ${
@@ -121,9 +124,11 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
               }
               ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
               GROUP BY t.id
+              ${status === 'active' ? `HAVING isHolding IS FALSE` : ``}
+              ${status === 'hold' ? `HAVING isHolding IS TRUE` : ``}
             ) t
             `,
-      values: [tableName, tableTicketRelation, User.tableName]
+      values: [TicketHolding.tableName, tableName, tableTicketRelation, User.tableName]
     })
 
     return {data: rows, total: rowTotal ? rowTotal.total : 0}

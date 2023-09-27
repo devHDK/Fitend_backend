@@ -24,7 +24,7 @@ export interface ITicketFindOne {
 export interface ITicketFindAll {
   franchiseId: number
   search?: string
-  status?: boolean
+  status?: string
   trainerId?: number
   start: number
   perPage: number

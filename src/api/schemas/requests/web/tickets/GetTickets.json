@@ -5,7 +5,8 @@
       "type": "string"
     },
     "status": {
-      "type": "boolean"
+      "type": "string",
+      "enum": ["active", "banned", "hold"]
     },
     "trainerId": {
       "type": "integer"
@@ -22,10 +23,6 @@
       "default:": 25
     }
   },
-  "required": [
-    "start",
-    "perPage"
-
-  ],
+  "required": ["start", "perPage"],
   "additionalProperties": false
 }
