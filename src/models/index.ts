@@ -16,6 +16,9 @@ import * as EventSchedule from './eventSchedule'
 import * as Notification from './notification'
 import * as WorkoutStat from './workoutStat'
 import * as Franchise from './franchise'
+import * as Thread from './thread'
+import * as Emoji from './emoji'
+import * as Comment from './comment'
 
 export {
   Administrator,
@@ -35,5 +38,8 @@ export {
   EventSchedule,
   Notification,
   WorkoutStat,
-  Franchise
+  Franchise,
+  Thread,
+  Emoji,
+  Comment
 }

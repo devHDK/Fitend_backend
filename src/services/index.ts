@@ -14,6 +14,7 @@ import * as EventScheduleService from './eventScheduleService'
 import * as NotificationService from './notificationService'
 import * as PayrollService from './payrollService'
 import * as FranchisesService from './franchisesService'
+import * as ThreadService from './threadService'
 
 export {
   AdministratorService,
@@ -31,5 +32,6 @@ export {
   EventScheduleService,
   NotificationService,
   PayrollService,
-  FranchisesService
+  FranchisesService,
+  ThreadService
 }
