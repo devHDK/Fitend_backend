@@ -206,10 +206,10 @@ async function updateTicketHolding(options: ITicketHoldingUpdate): Promise<void>
     const afterDays = moment(endAt).diff(moment(startAt), 'days')
     const ticket = await Ticket.findOne({id: beforeTicketHolding.ticketId})
     const newExpiredAt = moment(ticket.expiredAt)
-      .add(afterDays + 1 - beforeDays, 'days')
+      .add(afterDays - beforeDays, 'days')
       .format('YYYY-MM-DD')
 
-    await TicketHolding.update({id, startAt, endAt, days: afterDays}, connection)
+    await TicketHolding.update({id, startAt, endAt, days: afterDays + 1}, connection)
     await Ticket.update(
       {
         id: ticket.id,
