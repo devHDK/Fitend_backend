@@ -29,4 +29,30 @@ async function getThreads(req: IRequest, res: Response, next: Function): Promise
   }
 }
 
-export {postThreads, getThreads}
+async function getThreadsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id} = req.options
+    const ret = await ThreadService.findOne(id)
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
+async function putThreadsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, title, content, gallery} = req.options
+    const ret = await ThreadService.updateOne({
+      id,
+      title,
+      content,
+      gallery: gallery ? JSON.stringify(gallery) : null
+    })
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
+
+export {postThreads, getThreads, getThreadsWithId, putThreadsWithId}

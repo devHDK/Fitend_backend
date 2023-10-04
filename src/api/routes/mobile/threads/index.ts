@@ -25,4 +25,29 @@ const getThreads = new ApiRouter({
   handler: ctrl.getThreads
 })
 
-export {postThreads, getThreads}
+const getThreadsWithId = new ApiRouter({
+  name: ':id',
+  paths: ['common/IdPath'],
+  method: 'get',
+  summary: 'Threads 상세 조회',
+  tags: ['Thread'],
+  responses: {
+    200: {schema: 'responses/mobile/threads/GetThreadsWithId'}
+  },
+  handler: ctrl.getThreadsWithId
+})
+
+const putThreadsWithId = new ApiRouter({
+  name: ':id',
+  paths: ['common/IdPath'],
+  method: 'put',
+  summary: 'Threads 수정',
+  tags: ['Thread'],
+  schema: 'requests/mobile/threads/PutThreadsWithId',
+  responses: {
+    200: {description: 'Success'}
+  },
+  handler: ctrl.putThreadsWithId
+})
+
+export {postThreads, getThreads, getThreadsWithId, putThreadsWithId}

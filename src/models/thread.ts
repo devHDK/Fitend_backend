@@ -2,7 +2,7 @@ import {PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {Comment, Emoji, Trainer, User} from './'
 import {
-  IThreadFindAll, IThreadList, IThread, IThreadCreateOne
+  IThreadFindAll, IThreadList, IThread, IThreadCreateOne, ITh, IThreadUpdateOne
 } from '../interfaces/thread'
 
 const tableName = 'Threads'
@@ -55,69 +55,44 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
   }
 }
 
-// async function findOne(id: number): Promise<IAdministrator> {
-//   try {
-//     const [row] = await db.query({
-//       sql: `SELECT t.*
-//       FROM ?? t
-//       WHERE ?`,
-//       values: [tableName, {id}]
-//     })
-//     return row
-//   } catch (e) {
-//     throw e
-//   }
-// }
+async function findOne(id: number): Promise<IThread> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.id, t.writerType, t.title, t.content, t.type, t.gallery, t.workoutInfo, t.createdAt,
+      JSON_OBJECT('id', u.id, 'nickname', u.nickname, 'gender', u.gender) as user,
+      JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer,
+      (SELECT JSON_ARRAYAGG(
+          JSON_OBJECT('id', e.id, 'emoji', e.emoji, 'userId', te.userId, 'trainerId', te.trainerId
+        ))
+      FROM ?? e
+      JOIN ?? te ON te.emojiId = e.id AND te.threadId = t.id
+      GROUP BY e.id
+      ) as emojis
+      FROM ?? t
+      JOIN ?? u ON u.id = t.userId
+      JOIN ?? tra ON tra.id = t.trainerId
+      WHERE t.id = ?
+      GROUP BY t.id`,
+      values: [Emoji.tableName, Emoji.tableThreadEmoji, tableName, User.tableName, Trainer.tableName, id]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
 
-// async function findOneSecret(id?: number, username?: string): Promise<IAdministratorSecret> {
-//   try {
-//     const options: any = {}
-//     if (id) options.id = id
-//     if (username) options.username = username
-
-//     const [adminUser]: [IAdministratorSecret] = await db.query({
-//       sql: `SELECT * FROM ?? WHERE ?`,
-//       values: [tableName, options]
-//     })
-//     return adminUser
-//   } catch (e) {
-//     throw e
-//   }
-// }
-
-// async function updatePassword(options: IAdministratorUpdatePassword, connection?: PoolConnection): Promise<void> {
-//   try {
-//     const {id, password, salt} = options
-//     await db.query({
-//       connection,
-//       sql: `UPDATE ?? SET ? WHERE ?`,
-//       values: [
-//         tableName,
-//         {
-//           password,
-//           salt
-//         },
-//         {id}
-//       ]
-//     })
-//   } catch (e) {
-//     throw e
-//   }
-// }
-
-// async function updateOne(options: IAdministratorUpdate, connection?: PoolConnection): Promise<IAdministratorUpdate> {
-//   const {id, ...data} = options
-//   try {
-//     const {affectedRows} = await db.query({
-//       connection,
-//       sql: `UPDATE ?? SET ? WHERE ? `,
-//       values: [tableName, data, {id}]
-//     })
-//     if (affectedRows > 0) return options
-//   } catch (e) {
-//     throw e
-//   }
-// }
+async function updateOne(options: IThreadUpdateOne, connection?: PoolConnection): Promise<void> {
+  const {id, ...data} = options
+  try {
+    await db.query({
+      connection,
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableName, data, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
 
 // async function deleteOne(options: IAdministratorDelete, connection?: PoolConnection): Promise<IAdministratorDelete> {
 //   const {id} = options
@@ -133,4 +108,4 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
 //   }
 // }
 
-export {tableName, create, findAll}
+export {tableName, create, findAll, findOne, updateOne}

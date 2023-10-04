@@ -68,16 +68,11 @@ export interface IThreadFindAll {
   perPage: number
 }
 
-export interface IAdministratorUpdate {
+export interface IThreadUpdateOne {
   id: number
-  name: string
-  nickname: string
-}
-
-export interface IAdministratorUpdatePassword {
-  id: number
-  password: string
-  salt: string
+  title?: string
+  content: string
+  gallery?: string
 }
 
 export interface IAdministratorDelete {
