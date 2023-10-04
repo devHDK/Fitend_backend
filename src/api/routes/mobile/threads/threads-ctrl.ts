@@ -4,7 +4,7 @@ import {ThreadService} from '../../../../services'
 async function postThreads(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {trainerId, title, content, gallery} = req.options
-    const ret = await ThreadService.create({
+    await ThreadService.create({
       userId: req.userId,
       trainerId,
       writerType: 'user',
@@ -13,7 +13,7 @@ async function postThreads(req: IRequest, res: Response, next: Function): Promis
       content,
       gallery: gallery ? JSON.stringify(gallery) : null
     })
-    res.status(200).json(ret)
+    res.status(200).json()
   } catch (e) {
     next(e)
   }
@@ -42,17 +42,27 @@ async function getThreadsWithId(req: IRequest, res: Response, next: Function): P
 async function putThreadsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id, title, content, gallery} = req.options
-    const ret = await ThreadService.updateOne({
+    await ThreadService.updateOne({
       id,
       title,
       content,
       gallery: gallery ? JSON.stringify(gallery) : null
     })
-    res.status(200).json(ret)
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+async function deleteThreadsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id} = req.options
+    await ThreadService.deleteOne(id)
+    res.status(200).json()
   } catch (e) {
     next(e)
   }
 }
 
 
-export {postThreads, getThreads, getThreadsWithId, putThreadsWithId}
+export {postThreads, getThreads, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}

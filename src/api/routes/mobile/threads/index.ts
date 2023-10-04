@@ -50,4 +50,16 @@ const putThreadsWithId = new ApiRouter({
   handler: ctrl.putThreadsWithId
 })
 
-export {postThreads, getThreads, getThreadsWithId, putThreadsWithId}
+const deleteThreadsWithId = new ApiRouter({
+  name: ':id',
+  paths: ['common/IdPath'],
+  method: 'delete',
+  summary: 'Threads 삭제',
+  tags: ['Thread'],
+  responses: {
+    200: {description: 'Success'}
+  },
+  handler: ctrl.deleteThreadsWithId
+})
+
+export {postThreads, getThreads, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}

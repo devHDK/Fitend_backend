@@ -94,18 +94,16 @@ async function updateOne(options: IThreadUpdateOne, connection?: PoolConnection)
   }
 }
 
-// async function deleteOne(options: IAdministratorDelete, connection?: PoolConnection): Promise<IAdministratorDelete> {
-//   const {id} = options
-//   try {
-//     const {affectedRows} = await db.query({
-//       connection,
-//       sql: `DELETE FROM ?? WHERE ? `,
-//       values: [tableName, {id}]
-//     })
-//     if (affectedRows > 0) return options
-//   } catch (e) {
-//     throw e
-//   }
-// }
+async function deleteOne(id: number, connection?: PoolConnection): Promise<void> {
+  try {
+    await db.query({
+      connection,
+      sql: `DELETE FROM ?? WHERE ? `,
+      values: [tableName, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
 
-export {tableName, create, findAll, findOne, updateOne}
+export {tableName, create, findAll, findOne, updateOne, deleteOne}
