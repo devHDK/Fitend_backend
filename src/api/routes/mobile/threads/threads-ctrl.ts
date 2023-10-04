@@ -3,12 +3,15 @@ import {ThreadService} from '../../../../services'
 
 async function postThreads(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {title, content, gallery} = req.options
+    const {trainerId, title, content, gallery} = req.options
     const ret = await ThreadService.create({
       userId: req.userId,
+      trainerId,
+      writerType: 'user',
+      type: 'general',
       title,
       content,
-      gallery
+      gallery: gallery ? JSON.stringify(gallery) : null
     })
     res.status(200).json(ret)
   } catch (e) {

@@ -3,12 +3,12 @@ import * as ctrl from './threads-ctrl'
 
 const postThreads = new ApiRouter({
   name: '',
-  method: 'get',
+  method: 'post',
   summary: 'Threads 생성',
   tags: ['Thread'],
   schema: 'requests/mobile/threads/PostThreads',
   responses: {
-    200: {schema: 'responses/mobile/threads/PostThreads'}
+    200: {description: 'Success'}
   },
   handler: ctrl.postThreads
 })
@@ -25,4 +25,4 @@ const getThreads = new ApiRouter({
   handler: ctrl.getThreads
 })
 
-export {getThreads}
+export {postThreads, getThreads}

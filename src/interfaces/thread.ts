@@ -42,10 +42,24 @@ export interface IThread {
 
 export type IThreadList = IResponseList<IThread>
 
-export interface IThreadCreate {
+export interface IThreadCreateOne {
   userId: number
   trainerId: number
-  password: string
+  writerType: 'user' | 'trainer'
+  type: 'general' | 'record'
+  title?: string
+  content: string
+  gallery?: string
+  workoutInfo?: {
+    workoutScheduleId: number
+    targetMuscleIds: number[]
+    title: string
+    subTitle: string
+    workoutDuration: number
+    totalSet: number
+    heartRate: number
+    calories: number
+  }
 }
 
 export interface IThreadFindAll {

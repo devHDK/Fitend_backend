@@ -2,22 +2,22 @@ import {PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {Comment, Emoji, Trainer, User} from './'
 import {
-  IThreadFindAll, IThreadList, IThread
+  IThreadFindAll, IThreadList, IThread, IThreadCreateOne
 } from '../interfaces/thread'
 
 const tableName = 'Threads'
 
-// async function create(options: IAdministratorCreate, connection?: PoolConnection): Promise<void> {
-//   try {
-//     await db.query({
-//       connection,
-//       sql: `INSERT INTO ?? SET ?`,
-//       values: [tableName, options]
-//     })
-//   } catch (e) {
-//     throw e
-//   }
-// }
+async function create(options: IThreadCreateOne, connection?: PoolConnection): Promise<void> {
+  try {
+    await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableName, options]
+    })
+  } catch (e) {
+    throw e
+  }
+}
 
 async function findAll(options: IThreadFindAll): Promise<IThreadList> {
   try {
@@ -133,4 +133,4 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
 //   }
 // }
 
-export {tableName, findAll}
+export {tableName, create, findAll}

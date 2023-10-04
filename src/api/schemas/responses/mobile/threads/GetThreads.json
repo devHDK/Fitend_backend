@@ -137,7 +137,8 @@
                   "nullable": true
                 }
               }
-            }
+            },
+            "nullable": true
           },
           "commentCount": {
             "type": "integer"
