@@ -16,6 +16,7 @@ import * as PayrollService from './payrollService'
 import * as FranchisesService from './franchisesService'
 import * as ThreadService from './threadService'
 import * as CommentService from './commentService'
+import * as EmojiService from './emojiService'
 
 export {
   AdministratorService,
@@ -35,5 +36,6 @@ export {
   PayrollService,
   FranchisesService,
   ThreadService,
-  CommentService
+  CommentService,
+  EmojiService
 }

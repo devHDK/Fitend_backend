@@ -1,4 +1,4 @@
-import {Comment, User, UserDevice, Notification} from '../models/index'
+import {Comment, User, UserDevice, Notification, Thread} from '../models/index'
 import {ICommentFindAll, ICommentCreateOne, IComment, ICommentUpdateOne} from '../interfaces/comment'
 import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
@@ -7,20 +7,21 @@ import {threadSubscriber} from '../subscribers'
 async function create(options: ICommentCreateOne): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {userId, content} = options
-    const commentId = await Comment.create(options)
-    const user = await User.findOne({id: userId})
+    const {threadId, userId, trainerId, content} = options
+    const commentId = await Comment.create(options, connection)
+    const thread = await Thread.findOne(threadId)
+    const user = await User.findOne({id: thread.user.id})
     if (userId) {
-      await firebase.sendToTopic(`trainer_${options.trainerId}`, {
-        notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
+      await firebase.sendToTopic(`trainer_${trainerId}`, {
+        notification: {body: `${user.nickname}님이 스레드에 댓글을 달았어요`}
       })
     } else {
       const userDevices = await UserDevice.findAllWithUserId(user.id)
       const contents = `스레드에 댓글이 달렸어요 📥\n${content}`
       await Notification.create(
         {
-          userId,
-          type: 'Comment',
+          userId: user.id,
+          type: 'comment',
           contents,
           info: JSON.stringify({commentId})
         },

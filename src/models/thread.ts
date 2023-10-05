@@ -33,7 +33,6 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
               ))
             FROM ?? e
             JOIN ?? te ON te.emojiId = e.id AND te.threadId = t.id
-            GROUP BY e.id
             ) as emojis,
             COUNT(cm.id) as commentCount
             FROM ?? t

@@ -8,7 +8,7 @@ async function create(options: IThreadCreateOne): Promise<void> {
   const connection = await db.beginTransaction()
   try {
     const {userId, writerType, title, content} = options
-    const threadId = await Thread.create(options)
+    const threadId = await Thread.create(options, connection)
     const user = await User.findOne({id: userId})
     if (writerType === 'user') {
       await firebase.sendToTopic(`trainer_${options.trainerId}`, {
