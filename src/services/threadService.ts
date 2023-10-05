@@ -1,15 +1,44 @@
-import {Thread, User} from '../models/index'
+import {Thread, User, UserDevice, Notification} from '../models/index'
 import {IThreadFindAll, IThreadList, IThreadCreateOne, IThread, IThreadUpdateOne} from '../interfaces/thread'
-import {firebase} from '../loaders'
+import {IUserDevice} from '../interfaces/userDevice'
+import {firebase, db} from '../loaders'
+import {threadSubscriber} from '../subscribers'
 
 async function create(options: IThreadCreateOne): Promise<void> {
+  const connection = await db.beginTransaction()
   try {
-    await Thread.create(options)
-    const user = await User.findOne({id: options.userId})
-    await firebase.sendToTopic(`trainer_${options.trainerId}`, {
-      notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
-    })
+    const {userId, writerType, title, content} = options
+    const threadId = await Thread.create(options)
+    const user = await User.findOne({id: userId})
+    if (writerType === 'user') {
+      await firebase.sendToTopic(`trainer_${options.trainerId}`, {
+        notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
+      })
+    } else {
+      const userDevices = await UserDevice.findAllWithUserId(user.id)
+      const contents = `새로운 스레드가 올라왔어요 👀\n${title ? `${title}·` : ``}${content}`
+      await Notification.create(
+        {
+          userId,
+          type: 'thread',
+          contents,
+          info: JSON.stringify({threadId})
+        },
+        connection
+      )
+      if (userDevices && userDevices.length > 0) {
+        await User.updateBadgeCount(userId, connection)
+        threadSubscriber.publishThreadPushEvent({
+          tokens: userDevices.map((device: IUserDevice) => device.token),
+          type: 'threadCreate',
+          contents,
+          badge: user.badgeCount + 1
+        })
+      }
+    }
+    await db.commit(connection)
   } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }

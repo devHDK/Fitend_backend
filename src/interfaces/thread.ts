@@ -75,6 +75,11 @@ export interface IThreadUpdateOne {
   gallery?: string
 }
 
-export interface IAdministratorDelete {
-  id: number
+export interface IThreadPushType {
+  tokens: string[]
+  badge: number
+  type:
+    | 'threadCreate'
+  contents: string
+  data?: any
 }

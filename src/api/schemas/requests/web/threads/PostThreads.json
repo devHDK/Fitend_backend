@@ -1,0 +1,43 @@
+{
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "integer"
+      },
+      "title": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40
+      },
+      "content": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 40
+      },
+      "gallery": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["image", "video"]
+                },
+                "url": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                }
+            }
+        }
+      }
+
+    },
+    "required": [
+      "userId",
+      "content"
+    ],
+    "additionalProperties": false
+  }
+  

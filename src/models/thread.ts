@@ -2,18 +2,19 @@ import {PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {Comment, Emoji, Trainer, User} from './'
 import {
-  IThreadFindAll, IThreadList, IThread, IThreadCreateOne, ITh, IThreadUpdateOne
+  IThreadFindAll, IThreadList, IThread, IThreadCreateOne, IThreadUpdateOne
 } from '../interfaces/thread'
 
 const tableName = 'Threads'
 
-async function create(options: IThreadCreateOne, connection?: PoolConnection): Promise<void> {
+async function create(options: IThreadCreateOne, connection?: PoolConnection): Promise<number> {
   try {
-    await db.query({
+    const {insertId} = await db.query({
       connection,
       sql: `INSERT INTO ?? SET ?`,
       values: [tableName, options]
     })
+    return insertId
   } catch (e) {
     throw e
   }
@@ -41,6 +42,7 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
             LEFT JOIN ?? cm ON cm.threadId = t.id
             WHERE t.userId = ?
             GROUP BY t.id
+            ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
       values: [Emoji.tableName, Emoji.tableThreadEmoji, tableName, User.tableName, Trainer.tableName, Comment.tableName, userId]
     })

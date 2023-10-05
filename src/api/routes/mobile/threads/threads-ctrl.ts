@@ -64,5 +64,4 @@ async function deleteThreadsWithId(req: IRequest, res: Response, next: Function)
   }
 }
 
-
 export {postThreads, getThreads, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}

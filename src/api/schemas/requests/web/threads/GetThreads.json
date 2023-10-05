@@ -1,12 +1,8 @@
 {
   "type": "object",
   "properties": {
-    "search": {
-      "type": "string"
-    },
-    "filter": {
-      "type": "string",
-      "enum": ["unread", "read", "saved", "sent"]
+    "userId": {
+      "type": "integer"
     },
     "start": {
       "type": "integer",
@@ -21,9 +17,9 @@
     }
   },
   "required": [
+    "userId",
     "start",
     "perPage"
-
   ],
   "additionalProperties": false
 }
