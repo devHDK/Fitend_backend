@@ -1,0 +1,35 @@
+{
+    "type": "object",
+    "properties": {
+      "threadId": {
+        "type": "integer"
+      },
+      "content": {
+        "type": "string"
+      },
+      "gallery": {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["image", "video"]
+                },
+                "url": {
+                    "type": "string"
+                },
+                "thumbnail": {
+                    "type": "string"
+                }
+            }
+        }
+      }
+    },
+    "required": [
+      "threadId",
+      "content"
+    ],
+    "additionalProperties": false
+  }
+  

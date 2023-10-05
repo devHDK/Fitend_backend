@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "threadId": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "threadId"
+  ],
+  "additionalProperties": false
+}
