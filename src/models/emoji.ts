@@ -6,6 +6,7 @@ import {
 
 const tableName = 'Emojis'
 const tableThreadEmoji = 'Threads-Emojis'
+const tableCommentEmoji = 'Comments-Emojis'
 
 // async function create(options: IAdministratorCreate, connection?: PoolConnection): Promise<void> {
 //   try {
@@ -128,4 +129,4 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
 //   }
 // }
 
-export {tableName, tableThreadEmoji, findAll}
+export {tableName, tableThreadEmoji, tableCommentEmoji, findAll}

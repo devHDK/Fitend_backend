@@ -1,13 +1,8 @@
 {
     "type": "object",
     "properties": {
-      "trainerId": {
+      "threadId": {
         "type": "integer"
-      },
-      "title": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 40
       },
       "content": {
         "type": "string"
@@ -30,10 +25,9 @@
             }
         }
       }
-
     },
     "required": [
-      "trainerId",
+      "threadId",
       "content"
     ],
     "additionalProperties": false

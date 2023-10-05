@@ -6,15 +6,15 @@ import firebase = require('../loaders/firebase')
 const eventsEmitter = new events.EventEmitter()
 const threadPushEvent = 'onReservationPushEvent'
 
-eventsEmitter.on(threadPushEvent, async (options: IReservationPushType) => {
+eventsEmitter.on(threadPushEvent, async (options: IThreadPushType) => {
   try {
-    await firebase.sendReservationMessage(options)
+    await firebase.sendThreadMessage(options)
   } catch (e) {
     logger.error(`Error on event ${threadPushEvent}`, e)
   }
 })
 
-function publishThreadPushEvent(options: IReservationPushType): void {
+function publishThreadPushEvent(options: IThreadPushType): void {
   eventsEmitter.emit(threadPushEvent, options)
 }
 

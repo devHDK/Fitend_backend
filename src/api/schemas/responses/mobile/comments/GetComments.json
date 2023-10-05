@@ -1,0 +1,135 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "threadId": {
+            "type": "integer"
+          },
+          "trainerId": {
+            "type": "integer",
+            "nullable": true
+          },
+          "userId": {
+            "type": "integer",
+            "nullable": true
+          },
+          "content": {
+            "type": "string"
+          },
+          "gallery": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["image", "video"]
+                },
+                "url": {
+                  "type": "string"
+                },
+                "thumbnail": {
+                  "type": "string"
+                }
+              }
+            },
+            "nullable": true
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "nickname": {
+                "type": "string"
+              },
+              "gender": {
+                "type": "string",
+                "enum": ["male", "female"]
+              }
+            },
+            "required": [
+              "id",
+              "nickname",
+              "gender"
+            ],
+            "nullable": true,
+            "additionalProperties": false
+          },
+          "trainer": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "nickname": {
+                "type": "string"
+              },
+              "profileImage": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "nickname",
+              "profileImage"
+            ],
+            "nullable": true,
+            "additionalProperties": false
+          },
+          "emojis": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "emoji": {
+                  "type": "string"
+                },
+                "userId": {
+                  "type": "integer",
+                  "nullable": true
+                },
+                "trainerId": {
+                  "type": "integer",
+                  "nullable": true
+                }
+              }
+            },
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "threadId",
+          "userId",
+          "trainerId",
+          "content",
+          "gallery",
+          "user",
+          "trainer",
+          "createdAt"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "data"
+  ],
+  "additionalProperties": false
+}
+

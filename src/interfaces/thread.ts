@@ -79,7 +79,9 @@ export interface IThreadPushType {
   tokens: string[]
   badge: number
   type:
-    | 'threadCreate'
+    'threadCreate'
+    | 'commentCreate'
+
   contents: string
   data?: any
 }
