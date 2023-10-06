@@ -89,6 +89,7 @@ export interface IThreadUpdateOne {
   title?: string
   content?: string
   gallery?: string
+  checked?: boolean
   commentChecked?: boolean
 }
 

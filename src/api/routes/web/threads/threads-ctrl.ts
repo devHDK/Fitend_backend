@@ -63,6 +63,20 @@ async function putThreadsWithId(req: IRequest, res: Response, next: Function): P
   }
 }
 
+async function putThreadsCheck(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, checked, commentChecked} = req.options
+    await ThreadService.updateChecked({
+      id,
+      checked,
+      commentChecked
+    })
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function deleteThreadsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id} = req.options
@@ -73,4 +87,4 @@ async function deleteThreadsWithId(req: IRequest, res: Response, next: Function)
   }
 }
 
-export {postThreads, getThreads, getThreadsUsers, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}
+export {postThreads, getThreads, getThreadsUsers, getThreadsWithId, putThreadsWithId, putThreadsCheck, deleteThreadsWithId}

@@ -61,6 +61,19 @@ const putThreadsWithId = new ApiRouter({
   handler: ctrl.putThreadsWithId
 })
 
+const putThreadsCheck = new ApiRouter({
+  name: ':id/check',
+  paths: ['common/IdPath'],
+  method: 'put',
+  summary: '스레드 및 댓글 읽음처리',
+  tags: ['Thread'],
+  schema: 'requests/web/threads/PutThreadsCheck',
+  responses: {
+    200: {description: 'Success'}
+  },
+  handler: ctrl.putThreadsCheck
+})
+
 const deleteThreadsWithId = new ApiRouter({
   name: ':id',
   paths: ['common/IdPath'],
@@ -73,4 +86,4 @@ const deleteThreadsWithId = new ApiRouter({
   handler: ctrl.deleteThreadsWithId
 })
 
-export {postThreads, getThreads, getThreadsUsers, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}
+export {postThreads, getThreads, getThreadsUsers, getThreadsWithId, putThreadsWithId, putThreadsCheck, deleteThreadsWithId}

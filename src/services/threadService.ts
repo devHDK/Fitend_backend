@@ -75,6 +75,14 @@ async function updateOne(options: IThreadUpdateOne): Promise<void> {
   }
 }
 
+async function updateChecked(options: IThreadUpdateOne): Promise<void> {
+  try {
+    await Thread.updateOne(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function deleteOne(id: number): Promise<void> {
   try {
     await Thread.deleteOne(id)
@@ -83,4 +91,4 @@ async function deleteOne(id: number): Promise<void> {
   }
 }
 
-export {create, findAll, findAllUsers, findOne, updateOne, deleteOne}
+export {create, findAll, findAllUsers, findOne, updateOne, updateChecked, deleteOne}

@@ -39,7 +39,7 @@
               "type": "string",
               "nullable": true
             },
-            "isRead": {
+            "isChecked": {
               "type": "boolean"
             }
           },
@@ -49,7 +49,7 @@
             "gender",
             "availableTickets",
             "updatedAt",
-            "isRead"
+            "isChecked"
           ],
           "additionalProperties": false
         }

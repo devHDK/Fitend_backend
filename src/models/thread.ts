@@ -76,7 +76,7 @@ async function findAllUsers(trainerId: number): Promise<IThreadUserList> {
           FROM ?? th 
           WHERE th.userId = tr.userId AND th.trainerId = tr.trainerId 
           AND (th.checked = false OR th.commentChecked = false)
-          LIMIT 1) as isRead
+          LIMIT 1) as isChecked
       FROM ?? t
       JOIN ?? tr ON tr.userId = t.id AND tr.trainerId = ?
       JOIN ?? ti ON ti.id = tr.ticketId
@@ -86,7 +86,7 @@ async function findAllUsers(trainerId: number): Promise<IThreadUserList> {
       values: [tableName, tableName, User.tableName, Ticket.tableTicketRelation, trainerId, Ticket.tableName]
     })
     return rows.map(row => {
-      row.isRead = row.isRead === null ? true : row.isRead
+      row.isChecked = row.isChecked === null ? true : row.isChecked
       row.availableTickets = row.availableTickets.filter(ticket => {
         return ticket.isActive
       }).map(ticket => {

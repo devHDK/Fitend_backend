@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "properties": {
+      "checked": {
+        "type": "boolean"
+      },
+      "commentChecked": {
+        "type": "boolean"
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  }
+  
