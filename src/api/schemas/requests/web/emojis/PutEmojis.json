@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "properties": {
+      "emoji": {
+        "type": "string"
+      },
+      "threadId": {
+        "type": "integer"
+      },
+      "commentId": {
+        "type": "integer"
+      }
+    },
+    "required": ["emoji"],
+    "additionalProperties": false
+  }
+  

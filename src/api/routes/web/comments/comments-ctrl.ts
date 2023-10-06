@@ -20,7 +20,6 @@ async function getComments(req: IRequest, res: Response, next: Function): Promis
   try {
     const {threadId} = req.options
     const ret = await CommentService.findAll(threadId)
-    console.log(ret)
     res.status(200).json({data: ret})
   } catch (e) {
     next(e)
