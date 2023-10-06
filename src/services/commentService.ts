@@ -1,5 +1,5 @@
 import {Comment, User, UserDevice, Notification, Thread} from '../models/index'
-import {ICommentFindAll, ICommentCreateOne, IComment, ICommentUpdateOne} from '../interfaces/comment'
+import {ICommentCreateOne, IComment, ICommentUpdateOne} from '../interfaces/comment'
 import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
 import {threadSubscriber} from '../subscribers'
@@ -12,6 +12,7 @@ async function create(options: ICommentCreateOne): Promise<void> {
     const thread = await Thread.findOne(threadId)
     const user = await User.findOne({id: thread.user.id})
     if (userId) {
+      await Thread.updateOne({id: threadId, commentChecked: false}, connection)
       await firebase.sendToTopic(`trainer_${trainerId}`, {
         notification: {body: `${user.nickname}님이 스레드에 댓글을 달았어요`}
       })

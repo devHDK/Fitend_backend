@@ -24,6 +24,12 @@
           "content": {
             "type": "string"
           },
+          "checked": {
+            "type": "boolean"
+          },
+          "commentChecked": {
+            "type": "boolean"
+          },
           "gallery": {
             "type": "array",
             "items": {

@@ -1,9 +1,13 @@
 import {PoolConnection} from 'mysql'
+import moment from 'moment-timezone'
 import {db} from '../loaders'
-import {Comment, Emoji, Trainer, User} from './'
+import _ from 'lodash'
+import {Comment, Emoji, Ticket, Trainer, User} from './'
 import {
-  IThreadFindAll, IThreadList, IThread, IThreadCreateOne, IThreadUpdateOne
+  IThreadFindAll, IThreadList, IThread, IThreadCreateOne, IThreadUpdateOne, IThreadUserList
 } from '../interfaces/thread'
+
+moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'Threads'
 
@@ -26,6 +30,7 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
 
     const rows: IThread[] = await db.query({
       sql: `SELECT t.id, t.writerType, t.title, t.content, t.type, t.gallery, t.workoutInfo, t.createdAt,
+            t.checked, t.commentChecked,
             JSON_OBJECT('id', u.id, 'nickname', u.nickname, 'gender', u.gender) as user,
             JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer,
             (SELECT JSON_ARRAYAGG(
@@ -51,6 +56,45 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
       values: [tableName, userId]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllUsers(trainerId: number): Promise<IThreadUserList> {
+  try {
+    const currentTime = moment().format('YYYY-MM-DD')
+    const rows = await db.query({
+      sql: `SELECT t.id, t.nickname, t.gender,
+      JSON_ARRAYAGG(JSON_OBJECT('id', ti.id, 'isActive', ti.expiredAt >= '${currentTime}', 'type', ti.type)) as availableTickets,
+      (SELECT th.updatedAt 
+        FROM ?? th 
+        WHERE th.userId = tr.userId AND th.trainerId = tr.trainerId 
+        ORDER BY th.updatedAt DESC 
+        LIMIT 1) as updatedAt,
+        (SELECT IF(th.id, false, true)
+          FROM ?? th 
+          WHERE th.userId = tr.userId AND th.trainerId = tr.trainerId 
+          AND (th.checked = false OR th.commentChecked = false)
+          LIMIT 1) as isRead
+      FROM ?? t
+      JOIN ?? tr ON tr.userId = t.id AND tr.trainerId = ?
+      JOIN ?? ti ON ti.id = tr.ticketId
+      GROUP BY t.id
+      ORDER BY updatedAt DESC
+      LIMIT 100`,
+      values: [tableName, tableName, User.tableName, Ticket.tableTicketRelation, trainerId, Ticket.tableName]
+    })
+    return rows.map(row => {
+      row.isRead = row.isRead === null ? true : row.isRead
+      row.availableTickets = row.availableTickets.filter(ticket => {
+        return ticket.isActive
+      }).map(ticket => {
+        delete ticket.isActive
+        return ticket
+      })
+      return row
+    })
   } catch (e) {
     throw e
   }
@@ -107,4 +151,4 @@ async function deleteOne(id: number, connection?: PoolConnection): Promise<void>
   }
 }
 
-export {tableName, create, findAll, findOne, updateOne, deleteOne}
+export {tableName, create, findAll, findAllUsers, findOne, updateOne, deleteOne}

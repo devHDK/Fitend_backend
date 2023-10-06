@@ -29,6 +29,15 @@ async function getThreads(req: IRequest, res: Response, next: Function): Promise
   }
 }
 
+async function getThreadsUsers(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const ret = await ThreadService.findAllUsers(req.userId)
+    res.status(200).json({data: ret})
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function getThreadsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id} = req.options
@@ -64,4 +73,4 @@ async function deleteThreadsWithId(req: IRequest, res: Response, next: Function)
   }
 }
 
-export {postThreads, getThreads, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}
+export {postThreads, getThreads, getThreadsUsers, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}

@@ -25,6 +25,17 @@ const getThreads = new ApiRouter({
   handler: ctrl.getThreads
 })
 
+const getThreadsUsers = new ApiRouter({
+  name: 'users',
+  method: 'get',
+  summary: 'Threads 유저 목록 조회',
+  tags: ['Thread'],
+  responses: {
+    200: {schema: 'responses/web/threads/GetThreadsUsers'}
+  },
+  handler: ctrl.getThreadsUsers
+})
+
 const getThreadsWithId = new ApiRouter({
   name: ':id',
   paths: ['common/IdPath'],
@@ -62,4 +73,4 @@ const deleteThreadsWithId = new ApiRouter({
   handler: ctrl.deleteThreadsWithId
 })
 
-export {postThreads, getThreads, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}
+export {postThreads, getThreads, getThreadsUsers, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}

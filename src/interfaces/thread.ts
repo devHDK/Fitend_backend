@@ -6,6 +6,8 @@ export interface IThread {
   writerType: number
   type: number
   content: number
+  checked: boolean
+  commentChecked: boolean
   gallery: {
     "type": ["image", "video"]
     "url": string
@@ -41,6 +43,20 @@ export interface IThread {
 }
 
 export type IThreadList = IResponseList<IThread>
+export type IThreadUserList = IThreadUser[]
+
+export interface IThreadUser {
+  id: number
+  nickname: string
+  gender: 'male' | 'female'
+  availableTickets: [{
+    id: number
+    isActive: boolean
+    type: 'fitness' | 'personal'
+  }]
+  updatedAt: string
+  updatedCount: number
+}
 
 export interface IThreadCreateOne {
   userId: number
@@ -71,8 +87,9 @@ export interface IThreadFindAll {
 export interface IThreadUpdateOne {
   id: number
   title?: string
-  content: string
+  content?: string
   gallery?: string
+  commentChecked?: boolean
 }
 
 export interface IThreadPushType {

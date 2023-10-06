@@ -1,5 +1,5 @@
 import {Thread, User, UserDevice, Notification} from '../models/index'
-import {IThreadFindAll, IThreadList, IThreadCreateOne, IThread, IThreadUpdateOne} from '../interfaces/thread'
+import {IThreadFindAll, IThreadList, IThreadCreateOne, IThread, IThreadUpdateOne, IThreadUserList} from '../interfaces/thread'
 import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
 import {threadSubscriber} from '../subscribers'
@@ -51,6 +51,14 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
   }
 }
 
+async function findAllUsers(trainerId: number): Promise<IThreadUserList> {
+  try {
+    return await Thread.findAllUsers(trainerId)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOne(id: number): Promise<IThread> {
   try {
     return await Thread.findOne(id)
@@ -75,4 +83,4 @@ async function deleteOne(id: number): Promise<void> {
   }
 }
 
-export {create, findAll, findOne, updateOne, deleteOne}
+export {create, findAll, findAllUsers, findOne, updateOne, deleteOne}

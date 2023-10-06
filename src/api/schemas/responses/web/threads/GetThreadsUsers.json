@@ -1,0 +1,64 @@
+{
+    "type": "object",
+    "properties": {
+      "data": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer"
+            },
+            "nickname": {
+              "type": "string"
+            },
+            "gender": {
+              "type": "string",
+              "enum": ["male", "female"]
+            },
+            "availableTickets": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "isActive": {
+                    "type": "boolean"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["personal", "fitness"]
+                  }
+                }
+                
+              }
+            },
+            "updatedAt": {
+              "type": "string",
+              "nullable": true
+            },
+            "isRead": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "id",
+            "nickname",
+            "gender",
+            "availableTickets",
+            "updatedAt",
+            "isRead"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "data"
+    ],
+    "additionalProperties": false
+  }
+  
+  
