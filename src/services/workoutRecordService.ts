@@ -51,7 +51,7 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
         connection
       )
 
-    connection.commit()
+    await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e
