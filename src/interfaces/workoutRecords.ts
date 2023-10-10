@@ -1,3 +1,5 @@
+import {IThreadWorkoutInfo} from './thread'
+
 export interface IWorkoutRecord {
   id: number
   workoutPlanId: number
@@ -7,6 +9,7 @@ export interface IWorkoutRecord {
 export interface IWorkoutRecordsCreate {
   records: IWorkoutRecordSetInfoCreate[]
   scheduleRecords: IWorkoutRecordScheduleCreate
+  workoutInfo: IThreadWorkoutInfo
 }
 
 export interface IWorkoutRecordSetInfoCreate {

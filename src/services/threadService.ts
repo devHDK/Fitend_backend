@@ -1,5 +1,12 @@
 import {Thread, User, UserDevice, Notification} from '../models/index'
-import {IThreadFindAll, IThreadList, IThreadCreateOne, IThread, IThreadUpdateOne, IThreadUserList} from '../interfaces/thread'
+import {
+  IThreadFindAll,
+  IThreadList,
+  IThreadCreateOne,
+  IThread,
+  IThreadUpdateOne,
+  IThreadUserList
+} from '../interfaces/thread'
 import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
 import {threadSubscriber} from '../subscribers'

@@ -1,7 +1,8 @@
 import moment from 'moment-timezone'
-import {db} from '../loaders'
-import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat} from '../models'
+import {db, firebase} from '../loaders'
+import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat, Thread, User} from '../models'
 import {IWorkoutRecordDetail, IWorkoutRecordsCreate} from '../interfaces/workoutRecords'
+import {IThread} from '../interfaces/thread'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -15,15 +16,15 @@ interface IWorkoutRecordDetailData {
     heartRates: [number]
     workoutDuration: number
   }
+  threads: IThread[]
 }
 
 async function createRecords(userId: number, options: IWorkoutRecordsCreate): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {records, scheduleRecords} = options
+    const {records, scheduleRecords, workoutInfo} = options
 
     const workoutSchedule = await WorkoutSchedule.findOneWithWorkoutPlanId(records[0].workoutPlanId)
-    const today = moment().format('YYYY-MM-DD')
     const startDate = moment(workoutSchedule.startDate).format('YYYY-MM-DD')
     if (!workoutSchedule || workoutSchedule.userId !== userId) throw new Error('not_allowed')
     const workoutRecord = await WorkoutRecords.findOneWithWorkoutPlanId(records[0].workoutPlanId)
@@ -41,15 +42,33 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
       },
       connection
     )
-    if (scheduleRecords)
-      await WorkoutSchedule.createScheduleRecords(
+    await WorkoutSchedule.createScheduleRecords(
+      {
+        workoutScheduleId: scheduleRecords.workoutScheduleId,
+        heartRates: scheduleRecords.heartRates ?? JSON.stringify(scheduleRecords.heartRates),
+        workoutDuration: scheduleRecords.workoutDuration
+      },
+      connection
+    )
+    if (workoutInfo) {
+      const {trainerId, ...data} = workoutInfo
+      const user = await User.findOne({id: userId})
+      await Thread.create(
         {
+          type: 'record',
           workoutScheduleId: scheduleRecords.workoutScheduleId,
-          heartRates: scheduleRecords.heartRates ?? JSON.stringify(scheduleRecords.heartRates),
-          workoutDuration: scheduleRecords.workoutDuration
+          trainerId,
+          userId,
+          writerType: 'user',
+          content: '오늘의 운동을 완료했어요!',
+          workoutInfo: JSON.stringify(data)
         },
         connection
       )
+      await firebase.sendToTopic(`trainer_${trainerId}`, {
+        notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
+      })
+    }
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -61,14 +80,15 @@ async function findOne(workoutScheduleId: number): Promise<IWorkoutRecordDetailD
   try {
     const workoutSchedule = await WorkoutSchedule.findOneWithId(workoutScheduleId)
     const workoutFeedbacks = await WorkoutFeedbacks.findOneWithWorkoutScheduleId(workoutScheduleId)
-    delete workoutFeedbacks.createdAt
     const workoutRecords = await WorkoutRecords.findAllWithWorkoutScheduleId(workoutScheduleId)
     const scheduleRecords = await WorkoutSchedule.findOneScheduleRecord(workoutScheduleId)
+    const threads = await Thread.findAllWithWorkoutScheduleId(workoutScheduleId)
     return {
       startDate: moment(workoutSchedule.startDate).format('YYYY-MM-DD'),
       ...workoutFeedbacks,
       workoutRecords,
-      scheduleRecords
+      scheduleRecords,
+      threads
     }
   } catch (e) {
     throw e

@@ -9,6 +9,10 @@
           "id": {
             "type": "integer"
           },
+          "workoutScheduleId": {
+            "type": "integer",
+            "nullable": true
+          },
           "writerType": {
             "type": "string",
             "enum": ["user", "trainer"]
@@ -149,6 +153,7 @@
         },
         "required": [
           "id",
+          "workoutScheduleId",
           "writerType",
           "type",
           "title",

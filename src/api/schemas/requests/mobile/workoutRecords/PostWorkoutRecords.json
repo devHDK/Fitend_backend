@@ -62,10 +62,56 @@
           "nullable": true
         }
       }
+    },
+    "workoutInfo": {
+      "type": "object",
+      "nullable": true,
+      "properties": {
+        "trainerId": {
+          "type": "integer"
+        },
+        "workoutScheduleId": {
+          "type": "integer"
+        },
+        "targetMuscleIds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "title": {
+          "type": "string"
+        },
+        "subTitle": {
+          "type": "string"
+        },
+        "workoutDuration": {
+          "type": "integer"
+        },
+        "totalSet": {
+          "type": "integer"
+        },
+        "heartRates": {
+          "type": "integer"
+        },
+        "calories": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "trainerId",
+        "workoutScheduleId",
+        "targetMuscleIds",
+        "title",
+        "subTitle",
+        "workoutDuration",
+        "totalSet"
+      ]
     }
   },
   "required": [
-    "records"
+    "records",
+    "scheduleRecords"
   ],
   "additionalProperties": false
 }
