@@ -22,9 +22,9 @@ async function create(options: ICommentCreateOne): Promise<void> {
       await Notification.create(
         {
           userId: user.id,
-          type: 'comment',
+          type: 'thread',
           contents,
-          info: JSON.stringify({commentId})
+          info: JSON.stringify({threadId})
         },
         connection
       )
