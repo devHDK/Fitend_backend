@@ -10,8 +10,7 @@ import {
   ITrainerFindOneWageInfo,
   ITrainerList,
   ITrainerListForAdmin,
-  ITrainerUpdate,
-  ITrainerWageInfo
+  ITrainerUpdate
 } from '../interfaces/trainer'
 import {IWageInfo} from '../interfaces/payroll'
 import {Ticket, User} from './'
@@ -64,7 +63,7 @@ async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrain
             FROM ?? t
             JOIN ?? tr ON tr.trainerId = t.id
             JOIN ?? u ON tr.userId = u.id
-            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt > '${currentTime}'
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= '${currentTime}'
             JOIN ?? ft ON ft.trainerId = t.id ${franchiseId ? `AND ft.franchiseId = ${escape(franchiseId)}` : ''}
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
@@ -92,6 +91,22 @@ async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrain
       values: [tableName, tableFranchiseTrainer]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findActiveTrainersWithUserId(userId: number): Promise<[{id: number, nickname: string}]> {
+  try {
+    const currentTime = moment().format('YYYY-MM-DD')
+    return await db.query({
+      sql: `SELECT t.id, t.nickname
+            FROM ?? t
+            JOIN ?? tr ON tr.trainerId = t.id AND tr.userId = ?
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= ${currentTime}
+            GROUP BY t.id`,
+      values: [tableName, Ticket.tableTicketRelation, userId, Ticket.tableName]
+    })
   } catch (e) {
     throw e
   }
@@ -171,6 +186,7 @@ export {
   findOne,
   findTrainerWageInfo,
   findAll,
+  findActiveTrainersWithUserId,
   findDeviceList,
   updateOne,
   findAllForAdmin,

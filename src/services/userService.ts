@@ -73,11 +73,12 @@ async function getMe(options: {id: number}): Promise<IUser> {
     const {id} = options
     const user = await User.findOne({id})
     const userDevice = await UserDevice.findOne(user.id, user.deviceId, user.platform)
+    const activeTrainers = await Trainer.findActiveTrainersWithUserId(id)
     if (!userDevice || !userDevice.token) throw new Error('no_token')
     const isActive = await Ticket.findOneWithUserId(user.id)
     if (!isActive) throw new Error('ticket_expired')
     delete user.password
-    return {...user, isNotification: userDevice.isNotification}
+    return {...user, isNotification: userDevice.isNotification, activeTrainers}
   } catch (e) {
     throw e
   }
