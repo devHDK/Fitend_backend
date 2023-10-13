@@ -1,41 +1,35 @@
 {
-    "type": "object",
-    "properties": {
-      "trainerId": {
-        "type": "integer"
-      },
-      "title": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 40
-      },
-      "content": {
-        "type": "string"
-      },
-      "gallery": {
-        "type": "array",
-        "items": {
-            "type": "object",
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "enum": ["image", "video"]
-                },
-                "url": {
-                    "type": "string"
-                },
-                "thumbnail": {
-                    "type": "string"
-                }
-            }
+  "type": "object",
+  "properties": {
+    "trainerId": {
+      "type": "integer"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "content": {
+      "type": "string"
+    },
+    "gallery": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["image", "video"]
+          },
+          "url": {
+            "type": "string"
+          },
+          "thumbnail": {
+            "type": "string"
+          }
         }
       }
-
-    },
-    "required": [
-      "trainerId",
-      "content"
-    ],
-    "additionalProperties": false
-  }
-  
+    }
+  },
+  "required": ["trainerId", "content"],
+  "additionalProperties": false
+}
