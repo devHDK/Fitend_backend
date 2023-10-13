@@ -44,7 +44,8 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
             FROM ?? e
             JOIN ?? te ON te.emojiId = e.id AND te.threadId = t.id
             ) as emojis,
-            COUNT(cm.id) as commentCount
+            COUNT(CASE WHEN cm.id AND cm.userId THEN 1 END) as userCommentCount,
+            COUNT(CASE WHEN cm.id AND cm.trainerId THEN 1 END) as trainerCommentCount
             FROM ?? t
             JOIN ?? u ON u.id = t.userId
             JOIN ?? tra ON tra.id = t.trainerId

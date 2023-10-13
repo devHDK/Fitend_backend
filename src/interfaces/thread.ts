@@ -38,7 +38,8 @@ export interface IThread {
     emoji: string
     users: number[]
   }[]
-  commentCount: number
+  userCommentCount: number
+  trainerCommentCount: number
   createdAt: Date
 }
 

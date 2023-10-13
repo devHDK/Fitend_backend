@@ -94,11 +94,7 @@
                 "enum": ["male", "female"]
               }
             },
-            "required": [
-              "id",
-              "nickname",
-              "gender"
-            ],
+            "required": ["id", "nickname", "gender"],
             "additionalProperties": false
           },
           "trainer": {
@@ -114,11 +110,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "id",
-              "nickname",
-              "profileImage"
-            ],
+            "required": ["id", "nickname", "profileImage"],
             "additionalProperties": false
           },
           "emojis": {
@@ -144,7 +136,10 @@
             },
             "nullable": true
           },
-          "commentCount": {
+          "userCommentCount": {
+            "type": "integer"
+          },
+          "trainerCommentCount": {
             "type": "integer"
           },
           "createdAt": {
@@ -162,7 +157,8 @@
           "workoutInfo",
           "user",
           "trainer",
-          "commentCount",
+          "userCommentCount",
+          "trainerCommentCount",
           "createdAt"
         ],
         "additionalProperties": false
@@ -173,10 +169,6 @@
       "minimum": 0
     }
   },
-  "required": [
-    "data",
-    "total"
-  ],
+  "required": ["data", "total"],
   "additionalProperties": false
 }
-
