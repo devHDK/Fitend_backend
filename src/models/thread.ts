@@ -155,21 +155,24 @@ async function findAllUsers(trainerId: number): Promise<IThreadUserList> {
 async function findOne(id: number): Promise<IThread> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.workoutScheduleId, t.writerType, t.title, t.content, t.type, t.gallery, t.workoutInfo, t.createdAt,
-      JSON_OBJECT('id', u.id, 'nickname', u.nickname, 'gender', u.gender) as user,
-      JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer,
+      sql: `SELECT t.id, t.workoutScheduleId, t.writerType, t.title, t.content,
+      t.type, t.gallery, t.workoutInfo, t.createdAt,
+      JSON_OBJECT('id', u.id,'nickname', u.nickname,'gender', u.gender) as user,
+      JSON_OBJECT('id', tra.id,'nickname', tra.nickname,'profileImage',
+                  tra.profileImage) as trainer,
       (SELECT JSON_ARRAYAGG(
-          JSON_OBJECT('id', e.id, 'emoji', e.emoji, 'userId', te.userId, 'trainerId', te.trainerId
-        ))
-      FROM ?? e
-      JOIN ?? te ON te.emojiId = e.id AND te.threadId = t.id
-      GROUP BY e.id
-      ) as emojis
-      FROM ?? t
-      JOIN ?? u ON u.id = t.userId
-      JOIN ?? tra ON tra.id = t.trainerId
-      WHERE t.id = ?
-      GROUP BY t.id`,
+          JSON_OBJECT('id', e.id,'emoji',
+                      e.emoji,'userId',
+                      te.userId,'trainerId',
+                      te.trainerId))
+       FROM ?? e
+       JOIN ?? te ON (te.emojiId = e.id)
+       WHERE te.threadId =t.id ) as emojis 
+      FROM ?? t 
+      JOIN ?? u ON u.id=t.userId 
+      JOIN ?? tra ON tra.id=t.trainerId 
+      WHERE 32=t.id
+      GROUP BY 1;`,
       values: [Emoji.tableName, Emoji.tableThreadEmoji, tableName, User.tableName, Trainer.tableName, id]
     })
     return row
