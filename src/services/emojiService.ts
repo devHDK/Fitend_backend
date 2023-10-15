@@ -7,11 +7,11 @@ async function updateEmoji(options: {
   commentId?: number
   userId?: number
   trainerId?: number
-}): Promise<void> {
+}): Promise<{emojiId: number}> {
   const connection = await db.beginTransaction()
   try {
     const {emoji, threadId, commentId, userId, trainerId} = options
-    let emojiId: number 
+    let emojiId: number
     const isEmoji = await Emoji.findOne({emoji})
     if (isEmoji) emojiId = isEmoji.id
     else {
@@ -25,19 +25,25 @@ async function updateEmoji(options: {
         trainerId
       })
       if (isThreadEmoji) {
-        await Emoji.deleteOneRelationThread({
-          emojiId,
-          threadId,
-          userId,
-          trainerId
-        }, connection)
+        await Emoji.deleteOneRelationThread(
+          {
+            emojiId,
+            threadId,
+            userId,
+            trainerId
+          },
+          connection
+        )
       } else {
-        await Emoji.createRelationThread({
-          emojiId,
-          threadId,
-          userId,
-          trainerId
-        }, connection)
+        await Emoji.createRelationThread(
+          {
+            emojiId,
+            threadId,
+            userId,
+            trainerId
+          },
+          connection
+        )
       }
     } else {
       const isCommentEmoji = await Emoji.findOneRelationComment({
@@ -47,22 +53,29 @@ async function updateEmoji(options: {
         trainerId
       })
       if (isCommentEmoji) {
-        await Emoji.deleteOneRelationComment({
-          emojiId,
-          commentId,
-          userId,
-          trainerId
-        }, connection)
+        await Emoji.deleteOneRelationComment(
+          {
+            emojiId,
+            commentId,
+            userId,
+            trainerId
+          },
+          connection
+        )
       } else {
-        await Emoji.createRelationComment({
-          emojiId,
-          commentId,
-          userId,
-          trainerId
-        }, connection)
+        await Emoji.createRelationComment(
+          {
+            emojiId,
+            commentId,
+            userId,
+            trainerId
+          },
+          connection
+        )
       }
     }
     await db.commit(connection)
+    return {emojiId}
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e
