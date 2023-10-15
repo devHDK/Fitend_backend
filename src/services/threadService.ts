@@ -5,13 +5,14 @@ import {
   IThreadCreateOne,
   IThread,
   IThreadUpdateOne,
-  IThreadUserList
+  IThreadUserList,
+  IThreadCreatedId
 } from '../interfaces/thread'
 import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
 import {threadSubscriber} from '../subscribers'
 
-async function create(options: IThreadCreateOne): Promise<void> {
+async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
   const connection = await db.beginTransaction()
   try {
     const {userId, writerType, title, content} = options
@@ -43,7 +44,10 @@ async function create(options: IThreadCreateOne): Promise<void> {
         })
       }
     }
+
     await db.commit(connection)
+
+    return {id: threadId}
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e

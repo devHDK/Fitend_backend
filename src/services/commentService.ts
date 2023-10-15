@@ -4,7 +4,7 @@ import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
 import {threadSubscriber} from '../subscribers'
 
-async function create(options: ICommentCreateOne): Promise<void> {
+async function create(options: ICommentCreateOne): Promise<any> {
   const connection = await db.beginTransaction()
   try {
     const {threadId, userId, trainerId, content} = options
@@ -39,6 +39,8 @@ async function create(options: ICommentCreateOne): Promise<void> {
       }
     }
     await db.commit(connection)
+
+    return {id: commentId}
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e
@@ -48,7 +50,7 @@ async function create(options: ICommentCreateOne): Promise<void> {
 async function findAll(threadId: number): Promise<IComment[]> {
   try {
     let ret = await Comment.findAll(threadId)
-    ret = ret.map(row => {
+    ret = ret.map((row) => {
       row.user = row.user.id ? row.user : null
       row.trainer = row.trainer.id ? row.trainer : null
       return row

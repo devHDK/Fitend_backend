@@ -5,25 +5,25 @@ export interface IComment {
   threadId: number
   content: number
   gallery: {
-    "type": ["image", "video"]
-    "url": string
-    "thumbnail": string
+    type: ['image', 'video']
+    url: string
+    thumbnail: string
   }
   user: {
-    "id": number
-    "nickname": string
-    "gender": ["male", "female"]
+    id: number
+    nickname: string
+    gender: ['male', 'female']
   }
   trainer: {
-    "id": number
-    "nickname": string
-    "profile": string
+    id: number
+    nickname: string
+    profile: string
   }
   emojis: {
-    "id": number
-    "emoji": string
-    "userId": number
-    "trainerId": number
+    id: number
+    emoji: string
+    userId: number
+    trainerId: number
   }[]
   commentCount: number
   createdAt: Date
@@ -50,8 +50,7 @@ export interface ICommentUpdateOne {
 export interface ICommentPushType {
   tokens: string[]
   badge: number
-  type:
-    | 'CommentCreate'
+  type: 'CommentCreate'
   contents: string
   data?: any
 }

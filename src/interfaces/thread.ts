@@ -99,6 +99,10 @@ export interface IThreadUpdateOne {
   commentChecked?: boolean
 }
 
+export interface IThreadCreatedId {
+  id: number
+}
+
 export interface IThreadPushType {
   tokens: string[]
   badge: number
