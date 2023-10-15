@@ -96,11 +96,13 @@ async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrain
   }
 }
 
-async function findActiveTrainersWithUserId(userId: number): Promise<[{id: number, nickname: string}]> {
+async function findActiveTrainersWithUserId(
+  userId: number
+): Promise<[{id: number; nickname: string; profileImage: string}]> {
   try {
     const currentTime = moment().format('YYYY-MM-DD')
     return await db.query({
-      sql: `SELECT t.id, t.nickname
+      sql: `SELECT t.id, t.nickname, t.profileImage
             FROM ?? t
             JOIN ?? tr ON tr.trainerId = t.id AND tr.userId = ?
             JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= ${currentTime}
