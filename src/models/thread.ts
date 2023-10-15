@@ -171,8 +171,8 @@ async function findOne(id: number): Promise<IThread> {
       FROM ?? t 
       JOIN ?? u ON u.id=t.userId 
       JOIN ?? tra ON tra.id=t.trainerId 
-      WHERE 32=t.id
-      GROUP BY 1;`,
+      WHERE t.id = ?
+      GROUP BY t.id;`,
       values: [Emoji.tableName, Emoji.tableThreadEmoji, tableName, User.tableName, Trainer.tableName, id]
     })
     return row
