@@ -1,9 +1,7 @@
 import {PoolConnection} from 'mysql'
 import {db} from '../loaders'
-import {
-  ICommentFindAll, IComment, ICommentCreateOne, ICommentUpdateOne
-} from '../interfaces/comment'
-import { Emoji, Trainer, User } from '.'
+import {ICommentFindAll, IComment, ICommentCreateOne, ICommentUpdateOne} from '../interfaces/comment'
+import {Emoji, Trainer, User} from '.'
 
 const tableName = 'Comments'
 const tableCommentEmoji = 'Comments-Emojis'
@@ -32,7 +30,6 @@ async function findAll(threadId: number): Promise<IComment[]> {
               ))
             FROM ?? e
             JOIN ?? ce ON ce.emojiId = e.id AND ce.commentId = t.id
-            GROUP BY e.id
             ) as emojis
             FROM ?? t
             LEFT JOIN ?? u ON u.id = t.userId
