@@ -36,7 +36,7 @@ async function findAll(threadId: number): Promise<IComment[]> {
             LEFT JOIN ?? tra ON tra.id = t.trainerId
             WHERE t.threadId = ?
             GROUP BY t.id
-            ORDER BY t.createdAt DESC
+            ORDER BY t.createdAt ASC
             LIMIT 100`,
       values: [Emoji.tableName, Emoji.tableCommentEmoji, tableName, User.tableName, Trainer.tableName, threadId]
     })
