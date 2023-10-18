@@ -6,7 +6,8 @@ import {
   IThread,
   IThreadUpdateOne,
   IThreadUserList,
-  IThreadCreatedId
+  IThreadCreatedId,
+  IThreadFindAllUsers
 } from '../interfaces/thread'
 import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
@@ -62,9 +63,9 @@ async function findAll(options: IThreadFindAll): Promise<IThreadList> {
   }
 }
 
-async function findAllUsers(trainerId: number): Promise<IThreadUserList> {
+async function findAllUsers(options: IThreadFindAllUsers): Promise<IThreadUserList> {
   try {
-    return await Thread.findAllUsers(trainerId)
+    return await Thread.findAllUsers(options)
   } catch (e) {
     throw e
   }

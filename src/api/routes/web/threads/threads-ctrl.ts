@@ -11,7 +11,7 @@ async function postThreads(req: IRequest, res: Response, next: Function): Promis
       type: 'general',
       title,
       content,
-      gallery: gallery ? JSON.stringify(gallery) : null
+      gallery: gallery && gallery.length > 0 ? JSON.stringify(gallery) : null
     })
     res.status(200).json()
   } catch (e) {
@@ -31,7 +31,12 @@ async function getThreads(req: IRequest, res: Response, next: Function): Promise
 
 async function getThreadsUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const ret = await ThreadService.findAllUsers(req.userId)
+    const {search, order} = req.options
+    const ret = await ThreadService.findAllUsers({
+      trainerId: req.userId,
+      search,
+      order
+    })
     res.status(200).json({data: ret})
   } catch (e) {
     next(e)

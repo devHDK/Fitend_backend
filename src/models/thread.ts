@@ -9,7 +9,8 @@ import {
   IThread,
   IThreadCreateOne,
   IThreadUpdateOne,
-  IThreadUserList
+  IThreadUserList,
+  IThreadFindAllUsers
 } from '../interfaces/thread'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -17,6 +18,8 @@ moment.tz.setDefault('Asia/Seoul')
 const tableName = 'Threads'
 
 async function create(options: IThreadCreateOne, connection?: PoolConnection): Promise<number> {
+  if (!options.title) delete options.title
+  if (!options.gallery) delete options.gallery
   try {
     const {insertId} = await db.query({
       connection,
@@ -111,9 +114,12 @@ async function findAllWithWorkoutScheduleId(workoutScheduleId: number): Promise<
   }
 }
 
-async function findAllUsers(trainerId: number): Promise<IThreadUserList> {
+async function findAllUsers(options: IThreadFindAllUsers): Promise<IThreadUserList> {
   try {
+    const {trainerId, search, order = 'DESC'} = options
     const currentTime = moment().format('YYYY-MM-DD')
+    const where = []
+    if (search) where.push(`t.nickname like '%${search}%'`)
     const rows = await db.query({
       sql: `SELECT t.id, t.nickname, t.gender,
       JSON_ARRAYAGG(JSON_OBJECT('id', ti.id, 'isActive', ti.expiredAt >= '${currentTime}', 'type', ti.type)) as availableTickets,
@@ -130,8 +136,9 @@ async function findAllUsers(trainerId: number): Promise<IThreadUserList> {
       FROM ?? t
       JOIN ?? tr ON tr.userId = t.id AND tr.trainerId = ?
       JOIN ?? ti ON ti.id = tr.ticketId
+      ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
       GROUP BY t.id
-      ORDER BY updatedAt DESC
+      ORDER BY updatedAt ${order}
       LIMIT 100`,
       values: [tableName, tableName, User.tableName, Ticket.tableTicketRelation, trainerId, Ticket.tableName]
     })

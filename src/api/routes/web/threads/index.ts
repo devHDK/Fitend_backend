@@ -30,6 +30,7 @@ const getThreadsUsers = new ApiRouter({
   method: 'get',
   summary: 'Threads 유저 목록 조회',
   tags: ['Thread'],
+  schema: 'requests/web/threads/GetThreadsUsers',
   responses: {
     200: {schema: 'responses/web/threads/GetThreadsUsers'}
   },

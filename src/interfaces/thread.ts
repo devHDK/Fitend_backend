@@ -90,6 +90,12 @@ export interface IThreadFindAll {
   perPage: number
 }
 
+export interface IThreadFindAllUsers {
+  trainerId: number
+  search?: string
+  order?: 'ASC' | 'DESC'
+}
+
 export interface IThreadUpdateOne {
   id: number
   title?: string

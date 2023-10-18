@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "properties": {
+      "search": {
+        "type": "string"
+      },
+      "order": {
+        "type": "string",
+        "enum": [
+          "ASC",
+          "DESC"
+        ]
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  }
