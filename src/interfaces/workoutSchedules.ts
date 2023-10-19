@@ -64,6 +64,7 @@ export interface IWorkoutScheduleUpdate {
 
 export interface IWorkoutScheduleDetail {
   workoutScheduleId: number
+  trainerId: number
   startDate: number
   workoutTitle: string
   workoutSubTitle: string

@@ -103,7 +103,7 @@ async function findOneWithId(workoutScheduleId: number): Promise<IWorkoutSchedul
   try {
     const [row] = await db.query({
       sql: `SELECT t.id as workoutScheduleId, DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
-            t.workoutTitle, t.workoutSubTitle, 
+            t.workoutTitle, t.workoutSubTitle, t.trainerId,
             (
               SELECT JSON_ARRAYAGG(tm.type) 
               FROM ?? tm

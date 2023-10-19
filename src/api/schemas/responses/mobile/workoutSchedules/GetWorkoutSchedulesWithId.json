@@ -4,6 +4,9 @@
     "workoutScheduleId": {
       "type": "integer"
     },
+    "trainerId": {
+      "type": "integer"
+    },
     "startDate": {
       "type": "string"
     },
@@ -46,9 +49,9 @@
           "trackingFieldId": {
             "type": "integer"
           },
-          "circuitGroupNum" : {
+          "circuitGroupNum": {
             "type": "integer",
-            "nullable" : true
+            "nullable": true
           },
           "setType": {
             "type": "string",
@@ -125,20 +128,13 @@
             }
           }
         },
-        "required": [
-          "workoutPlanId",
-          "name",
-          "description",
-          "trackingFieldId",
-          "targetMuscles",
-          "videos",
-          "setInfo"
-        ]
+        "required": ["workoutPlanId", "name", "description", "trackingFieldId", "targetMuscles", "videos", "setInfo"]
       }
     }
   },
   "required": [
     "workoutScheduleId",
+    "trainerId",
     "workoutTitle",
     "workoutSubTitle",
     "targetMuscleTypes",
