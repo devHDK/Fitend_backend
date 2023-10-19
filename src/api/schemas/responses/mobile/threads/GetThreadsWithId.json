@@ -61,7 +61,7 @@
           "type": "string"
         },
         "workoutDuration": {
-          "type": "string"
+          "type": "integer"
         },
         "totalSet": {
           "type": "integer"
@@ -89,11 +89,7 @@
           "enum": ["male", "female"]
         }
       },
-      "required": [
-        "id",
-        "nickname",
-        "gender"
-      ],
+      "required": ["id", "nickname", "gender"],
       "additionalProperties": false
     },
     "trainer": {
@@ -109,11 +105,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "id",
-        "nickname",
-        "profileImage"
-      ],
+      "required": ["id", "nickname", "profileImage"],
       "additionalProperties": false
     },
     "emojis": {
@@ -158,4 +150,3 @@
   ],
   "additionalProperties": false
 }
-
