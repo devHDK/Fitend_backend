@@ -1,5 +1,7 @@
-import {Emoji} from '../models/index'
+import {Comment, Emoji, Thread, UserDevice} from '../models/index'
 import {db} from '../loaders'
+import {threadSubscriber} from '../subscribers'
+import {IUserDevice} from '../interfaces/userDevice'
 
 async function updateEmoji(options: {
   emoji?: string
@@ -24,6 +26,7 @@ async function updateEmoji(options: {
         userId,
         trainerId
       })
+
       if (isThreadEmoji) {
         await Emoji.deleteOneRelationThread(
           {
@@ -34,6 +37,24 @@ async function updateEmoji(options: {
           },
           connection
         )
+
+        if (trainerId !== null) {
+          const thread = await Thread.findOne(threadId)
+          const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
+
+          if (userDevices && userDevices.length > 0) {
+            threadSubscriber.publishThreadPushEvent({
+              tokens: userDevices.map((device: IUserDevice) => device.token),
+              type: 'threadEmojiDelete',
+              data: {
+                id: emojiId,
+                emoji,
+                trainerId,
+                threadId
+              }
+            })
+          }
+        }
       } else {
         await Emoji.createRelationThread(
           {
@@ -44,6 +65,24 @@ async function updateEmoji(options: {
           },
           connection
         )
+
+        if (trainerId !== null) {
+          const thread = await Thread.findOne(threadId)
+          const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
+
+          if (userDevices && userDevices.length > 0) {
+            threadSubscriber.publishThreadPushEvent({
+              tokens: userDevices.map((device: IUserDevice) => device.token),
+              type: 'threadEmojiCreate',
+              data: {
+                id: emojiId,
+                emoji,
+                trainerId,
+                threadId
+              }
+            })
+          }
+        }
       }
     } else {
       const isCommentEmoji = await Emoji.findOneRelationComment({
@@ -62,6 +101,26 @@ async function updateEmoji(options: {
           },
           connection
         )
+
+        if (trainerId !== null) {
+          const comment = await Comment.findOne(commentId)
+          const thread = await Thread.findOne(comment.threadId)
+          const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
+
+          if (userDevices && userDevices.length > 0) {
+            threadSubscriber.publishThreadPushEvent({
+              tokens: userDevices.map((device: IUserDevice) => device.token),
+              type: 'commentEmojiDelete',
+              data: {
+                id: emojiId,
+                emoji,
+                trainerId,
+                threadId: comment.threadId,
+                commentId
+              }
+            })
+          }
+        }
       } else {
         await Emoji.createRelationComment(
           {
@@ -72,6 +131,26 @@ async function updateEmoji(options: {
           },
           connection
         )
+
+        if (trainerId !== null) {
+          const comment = await Comment.findOne(commentId)
+          const thread = await Thread.findOne(comment.threadId)
+          const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
+
+          if (userDevices && userDevices.length > 0) {
+            threadSubscriber.publishThreadPushEvent({
+              tokens: userDevices.map((device: IUserDevice) => device.token),
+              type: 'commentEmojiCreate',
+              data: {
+                id: emojiId,
+                emoji,
+                trainerId,
+                threadId: comment.threadId,
+                commentId
+              }
+            })
+          }
+        }
       }
     }
     await db.commit(connection)

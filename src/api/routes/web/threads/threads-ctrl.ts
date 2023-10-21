@@ -56,7 +56,7 @@ async function getThreadsWithId(req: IRequest, res: Response, next: Function): P
 async function putThreadsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id, title, content, gallery} = req.options
-    await ThreadService.updateOne({
+    await ThreadService.updateOneForTrainer({
       id,
       title,
       content,
@@ -85,7 +85,7 @@ async function putThreadsCheck(req: IRequest, res: Response, next: Function): Pr
 async function deleteThreadsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id} = req.options
-    await ThreadService.deleteOne(id)
+    await ThreadService.deleteOneForTrainer(id)
     res.status(200).json()
   } catch (e) {
     next(e)

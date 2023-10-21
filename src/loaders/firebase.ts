@@ -90,13 +90,13 @@ const sendWorkoutScheduleMessage = async (options: IWorkoutSchedulePushType): Pr
 }
 
 const sendThreadMessage = async (options: IThreadPushType): Promise<void> => {
-  const {tokens, type, data, badge, contents} = options
+  const {tokens, type, data, badge, contents, sound} = options
   try {
     const payload = {
       notification: {title: '', body: contents},
       data: {type, ...data}
     }
-    await sendPush(tokens, badge, 'default', payload)
+    await sendPush(tokens, badge, sound, payload)
   } catch (e) {
     throw e
   }

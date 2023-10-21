@@ -34,7 +34,11 @@ async function create(options: ICommentCreateOne): Promise<any> {
           tokens: userDevices.map((device: IUserDevice) => device.token),
           type: 'commentCreate',
           contents,
-          badge: user.badgeCount + 1
+          badge: user.badgeCount + 1,
+          sound: 'default',
+          data: {
+            threadId
+          }
         })
       }
     }
@@ -77,6 +81,29 @@ async function updateOne(options: ICommentUpdateOne): Promise<void> {
   }
 }
 
+async function updateOneForTrainer(options: ICommentUpdateOne): Promise<void> {
+  try {
+    const comment = await Comment.findOne(options.id)
+    const thread = await Thread.findOne(comment.threadId)
+
+    await Comment.updateOne(options)
+
+    const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
+
+    if (userDevices && userDevices.length > 0) {
+      threadSubscriber.publishThreadPushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'commentUpdate',
+        data: {
+          threadId: comment.threadId
+        }
+      })
+    }
+  } catch (e) {
+    throw e
+  }
+}
+
 async function deleteOne(id: number): Promise<void> {
   try {
     await Comment.deleteOne(id)
@@ -85,4 +112,28 @@ async function deleteOne(id: number): Promise<void> {
   }
 }
 
-export {create, findAll, findOne, updateOne, deleteOne}
+async function deleteOneForTrainer(id: number): Promise<void> {
+  try {
+    const comment = await Comment.findOne(id)
+    const thread = await Thread.findOne(comment.threadId)
+
+    await Comment.deleteOne(id)
+
+    const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
+
+    if (userDevices && userDevices.length > 0) {
+      threadSubscriber.publishThreadPushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'commentDelete',
+        data: {
+          threadId: comment.threadId,
+          commentId: comment.id
+        }
+      })
+    }
+  } catch (e) {
+    throw e
+  }
+}
+
+export {create, findAll, findOne, updateOne, updateOneForTrainer, deleteOne, deleteOneForTrainer}

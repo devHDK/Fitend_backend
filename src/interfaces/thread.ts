@@ -111,9 +111,19 @@ export interface IThreadCreatedId {
 
 export interface IThreadPushType {
   tokens: string[]
-  badge: number
-  type: 'threadCreate' | 'commentCreate'
-
-  contents: string
+  badge?: number
+  type:
+    | 'threadCreate'
+    | 'threadUpdate'
+    | 'threadDelete'
+    | 'commentCreate'
+    | 'commentUpdate'
+    | 'commentDelete'
+    | 'threadEmojiCreate'
+    | 'threadEmojiDelete'
+    | 'commentEmojiCreate'
+    | 'commentEmojiDelete'
+  sound?: 'default'
+  contents?: string
   data?: any
 }

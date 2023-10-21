@@ -41,7 +41,11 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
           tokens: userDevices.map((device: IUserDevice) => device.token),
           type: 'threadCreate',
           contents,
-          badge: user.badgeCount + 1
+          badge: user.badgeCount + 1,
+          sound: 'default',
+          data: {
+            threadId
+          }
         })
       }
     }
@@ -87,6 +91,27 @@ async function updateOne(options: IThreadUpdateOne): Promise<void> {
   }
 }
 
+async function updateOneForTrainer(options: IThreadUpdateOne): Promise<void> {
+  try {
+    const thread = await Thread.findOne(options.id)
+    await Thread.updateOne(options)
+
+    const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
+
+    if (userDevices && userDevices.length > 0) {
+      threadSubscriber.publishThreadPushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'threadUpdate',
+        data: {
+          threadId: thread.id
+        }
+      })
+    }
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updateChecked(options: IThreadUpdateOne): Promise<void> {
   try {
     await Thread.updateOne(options)
@@ -103,4 +128,36 @@ async function deleteOne(id: number): Promise<void> {
   }
 }
 
-export {create, findAll, findAllUsers, findOne, updateOne, updateChecked, deleteOne}
+async function deleteOneForTrainer(id: number): Promise<void> {
+  try {
+    const thread = await Thread.findOne(id)
+
+    await Thread.deleteOne(id)
+
+    const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
+
+    if (userDevices && userDevices.length > 0) {
+      threadSubscriber.publishThreadPushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'threadDelete',
+        data: {
+          threadId: thread.id
+        }
+      })
+    }
+  } catch (e) {
+    throw e
+  }
+}
+
+export {
+  create,
+  findAll,
+  findAllUsers,
+  findOne,
+  updateOne,
+  updateOneForTrainer,
+  updateChecked,
+  deleteOne,
+  deleteOneForTrainer
+}

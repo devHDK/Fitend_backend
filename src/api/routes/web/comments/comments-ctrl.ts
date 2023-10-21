@@ -29,7 +29,7 @@ async function getComments(req: IRequest, res: Response, next: Function): Promis
 async function putCommentsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id, content, gallery} = req.options
-    await CommentService.updateOne({
+    await CommentService.updateOneForTrainer({
       id,
       content,
       gallery: gallery ? JSON.stringify(gallery) : null
@@ -43,7 +43,7 @@ async function putCommentsWithId(req: IRequest, res: Response, next: Function): 
 async function deleteCommentsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id} = req.options
-    await CommentService.deleteOne(id)
+    await CommentService.deleteOneForTrainer(id)
     res.status(200).json()
   } catch (e) {
     next(e)
