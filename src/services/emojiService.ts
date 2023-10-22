@@ -45,7 +45,7 @@ async function updateEmoji(options: {
           if (userDevices && userDevices.length > 0) {
             threadSubscriber.publishThreadPushEvent({
               tokens: userDevices.map((device: IUserDevice) => device.token),
-              type: 'threadEmojiDelete',
+              type: 'emojiDelete',
               data: {
                 id: emojiId,
                 emoji,
@@ -73,7 +73,7 @@ async function updateEmoji(options: {
           if (userDevices && userDevices.length > 0) {
             threadSubscriber.publishThreadPushEvent({
               tokens: userDevices.map((device: IUserDevice) => device.token),
-              type: 'threadEmojiCreate',
+              type: 'emojiCreate',
               data: {
                 id: emojiId,
                 emoji,
@@ -110,7 +110,7 @@ async function updateEmoji(options: {
           if (userDevices && userDevices.length > 0) {
             threadSubscriber.publishThreadPushEvent({
               tokens: userDevices.map((device: IUserDevice) => device.token),
-              type: 'commentEmojiDelete',
+              type: 'emojiDelete',
               data: {
                 id: emojiId,
                 emoji,
@@ -140,7 +140,7 @@ async function updateEmoji(options: {
           if (userDevices && userDevices.length > 0) {
             threadSubscriber.publishThreadPushEvent({
               tokens: userDevices.map((device: IUserDevice) => device.token),
-              type: 'commentEmojiCreate',
+              type: 'emojiCreate',
               data: {
                 id: emojiId,
                 emoji,

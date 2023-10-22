@@ -119,10 +119,8 @@ export interface IThreadPushType {
     | 'commentCreate'
     | 'commentUpdate'
     | 'commentDelete'
-    | 'threadEmojiCreate'
-    | 'threadEmojiDelete'
-    | 'commentEmojiCreate'
-    | 'commentEmojiDelete'
+    | 'emojiCreate'
+    | 'emojiDelete'
   sound?: 'default'
   contents?: string
   data?: any
