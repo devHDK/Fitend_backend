@@ -38,7 +38,7 @@ async function updateEmoji(options: {
           connection
         )
 
-        if (trainerId !== null) {
+        if (trainerId) {
           const thread = await Thread.findOne(threadId)
           const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
 
@@ -47,10 +47,10 @@ async function updateEmoji(options: {
               tokens: userDevices.map((device: IUserDevice) => device.token),
               type: 'emojiDelete',
               data: {
-                id: emojiId,
-                emoji,
-                trainerId,
-                threadId
+                id: emojiId.toString(),
+                emoji: emoji.toString(),
+                trainerId: thread.trainer.id.toString(),
+                threadId: threadId.toString()
               }
             })
           }
@@ -66,7 +66,7 @@ async function updateEmoji(options: {
           connection
         )
 
-        if (trainerId !== null) {
+        if (trainerId) {
           const thread = await Thread.findOne(threadId)
           const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
 
@@ -75,10 +75,10 @@ async function updateEmoji(options: {
               tokens: userDevices.map((device: IUserDevice) => device.token),
               type: 'emojiCreate',
               data: {
-                id: emojiId,
-                emoji,
-                trainerId,
-                threadId
+                id: emojiId.toString(),
+                emoji: emoji.toString(),
+                trainerId: thread.trainer.id.toString(),
+                threadId: threadId.toString()
               }
             })
           }
@@ -102,7 +102,9 @@ async function updateEmoji(options: {
           connection
         )
 
-        if (trainerId !== null) {
+        console.log('trainerId', trainerId)
+
+        if (trainerId) {
           const comment = await Comment.findOne(commentId)
           const thread = await Thread.findOne(comment.threadId)
           const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
@@ -112,11 +114,11 @@ async function updateEmoji(options: {
               tokens: userDevices.map((device: IUserDevice) => device.token),
               type: 'emojiDelete',
               data: {
-                id: emojiId,
-                emoji,
-                trainerId,
-                threadId: comment.threadId,
-                commentId
+                id: emojiId.toString(),
+                emoji: emoji.toString(),
+                trainerId: comment.trainerId.toString(),
+                threadId: comment.threadId.toString(),
+                commentId: commentId.toString()
               }
             })
           }
@@ -132,7 +134,7 @@ async function updateEmoji(options: {
           connection
         )
 
-        if (trainerId !== null) {
+        if (trainerId) {
           const comment = await Comment.findOne(commentId)
           const thread = await Thread.findOne(comment.threadId)
           const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
@@ -142,11 +144,11 @@ async function updateEmoji(options: {
               tokens: userDevices.map((device: IUserDevice) => device.token),
               type: 'emojiCreate',
               data: {
-                id: emojiId,
-                emoji,
-                trainerId,
-                threadId: comment.threadId,
-                commentId
+                id: emojiId.toString(),
+                emoji: emoji.toString(),
+                trainerId: comment.trainerId.toString(),
+                threadId: comment.threadId.toString(),
+                commentId: commentId.toString()
               }
             })
           }

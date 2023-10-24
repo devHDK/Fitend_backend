@@ -45,25 +45,14 @@ async function findAll(threadId: number): Promise<IComment[]> {
   }
 }
 
-async function findOne(id: number): Promise<IComment> {
+async function findOne(id: number): Promise<any> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.writerType, t.title, t.content, t.type, t.gallery, t.workoutInfo, t.createdAt,
-      JSON_OBJECT('id', u.id, 'nickname', u.nickname, 'gender', u.gender) as user,
-      JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer,
-      (SELECT JSON_ARRAYAGG(
-          JSON_OBJECT('id', e.id, 'emoji', e.emoji, 'userId', te.userId, 'trainerId', te.trainerId
-        ))
-      FROM ?? e
-      JOIN ?? te ON te.emojiId = e.id AND te.CommentId = t.id
-      GROUP BY e.id
-      ) as emojis
-      FROM ?? t
-      JOIN ?? u ON u.id = t.userId
-      JOIN ?? tra ON tra.id = t.trainerId
-      WHERE t.id = ?
-      GROUP BY t.id`,
-      values: []
+      sql: `SELECT * 
+      FROM ??
+      WHERE ?
+      `,
+      values: [tableName, {id}]
     })
     return row
   } catch (e) {

@@ -44,7 +44,7 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
           badge: user.badgeCount + 1,
           sound: 'default',
           data: {
-            threadId
+            threadId: threadId.toString()
           }
         })
       }
@@ -103,7 +103,7 @@ async function updateOneForTrainer(options: IThreadUpdateOne): Promise<void> {
         tokens: userDevices.map((device: IUserDevice) => device.token),
         type: 'threadUpdate',
         data: {
-          threadId: thread.id
+          threadId: thread.id.toString()
         }
       })
     }
@@ -141,7 +141,7 @@ async function deleteOneForTrainer(id: number): Promise<void> {
         tokens: userDevices.map((device: IUserDevice) => device.token),
         type: 'threadDelete',
         data: {
-          threadId: thread.id
+          threadId: thread.id.toString()
         }
       })
     }

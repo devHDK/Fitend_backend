@@ -37,7 +37,7 @@ async function create(options: ICommentCreateOne): Promise<any> {
           badge: user.badgeCount + 1,
           sound: 'default',
           data: {
-            threadId
+            threadId: threadId.toString()
           }
         })
       }
@@ -95,7 +95,7 @@ async function updateOneForTrainer(options: ICommentUpdateOne): Promise<void> {
         tokens: userDevices.map((device: IUserDevice) => device.token),
         type: 'commentUpdate',
         data: {
-          threadId: comment.threadId
+          threadId: comment.threadId.toString()
         }
       })
     }
@@ -126,8 +126,8 @@ async function deleteOneForTrainer(id: number): Promise<void> {
         tokens: userDevices.map((device: IUserDevice) => device.token),
         type: 'commentDelete',
         data: {
-          threadId: comment.threadId,
-          commentId: comment.id
+          threadId: comment.threadId.toString(),
+          commentId: comment.id.toString()
         }
       })
     }
