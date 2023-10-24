@@ -22,6 +22,10 @@
         "phone": {
           "type": "string"
         },
+        "gender": {
+          "type": "string",
+          "enum": ["male", "female"]
+        },
         "isNotification": {
           "type": "boolean"
         },
@@ -33,10 +37,6 @@
       "additionalProperties": false
     }
   },
-  "required": [
-    "accessToken",
-    "refreshToken",
-    "user"
-  ],
+  "required": ["accessToken", "refreshToken", "user"],
   "additionalProperties": false
 }

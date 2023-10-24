@@ -12,10 +12,12 @@ export interface IUser {
   deviceId?: string
   badgeCount?: number
   isNotification?: boolean
-  activeTrainers?: [{
-    id: number
-    nickname: string
-  }]
+  activeTrainers?: [
+    {
+      id: number
+      nickname: string
+    }
+  ]
   createdAt?: string
   deletedAt?: Date | string
 }
