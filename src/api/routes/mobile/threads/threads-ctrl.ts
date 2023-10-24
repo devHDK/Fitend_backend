@@ -34,8 +34,10 @@ async function getThreadsWithId(req: IRequest, res: Response, next: Function): P
   try {
     const {id} = req.options
     const ret = await ThreadService.findOne(id)
+    if (!ret) throw new Error('not_found')
     res.status(200).json(ret)
   } catch (e) {
+    if (e.message === 'not_found') e.status = 404
     next(e)
   }
 }

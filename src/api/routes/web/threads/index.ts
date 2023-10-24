@@ -44,7 +44,8 @@ const getThreadsWithId = new ApiRouter({
   summary: 'Threads 상세 조회',
   tags: ['Thread'],
   responses: {
-    200: {schema: 'responses/web/threads/GetThreadsWithId'}
+    200: {schema: 'responses/web/threads/GetThreadsWithId'},
+    404: {description: 'not_found'}
   },
   handler: ctrl.getThreadsWithId
 })
