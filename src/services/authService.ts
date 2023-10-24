@@ -57,6 +57,8 @@ async function signIn(options: {
         }
       }
 
+      const activeTrainers = await Trainer.findActiveTrainersWithUserId(user.id)
+
       delete user.password
       await db.commit(connection)
       return {
@@ -64,7 +66,8 @@ async function signIn(options: {
         refreshToken,
         user: {
           ...user,
-          isNotification: userDevice ? userDevice.isNotification : true
+          isNotification: userDevice ? userDevice.isNotification : true,
+          activeTrainers
         }
       }
     }

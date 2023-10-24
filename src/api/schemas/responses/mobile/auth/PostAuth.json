@@ -32,6 +32,20 @@
         "deletedAt": {
           "type": "string",
           "nullable": true
+        },
+        "activeTrainers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "nickname": {
+                "type": "string"
+              }
+            }
+          }
         }
       },
       "additionalProperties": false
