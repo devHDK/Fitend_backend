@@ -10,8 +10,7 @@
     },
     "content": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 40
+      "minLength": 1
     },
     "gallery": {
       "type": "array",
