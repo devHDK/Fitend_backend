@@ -96,7 +96,7 @@ const sendThreadMessage = async (options: IThreadPushType): Promise<void> => {
   const {tokens, type, data, badge, contents, sound} = options
   try {
     const payload = {
-      notification: {title: '', body: contents},
+      notification: contents ? {title: '', body: contents} : null,
       data: {type, ...data}
     }
     await sendPush(tokens, badge, sound, payload)
