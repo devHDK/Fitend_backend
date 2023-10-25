@@ -36,7 +36,7 @@ const sendPush = async (
       data: payload.data,
       notification: payload.notification,
       android:
-        !payload.data.type.includes('workoutSchedule') ||
+        payload.data.type === 'reservation' ||
         payload.data.type === 'threadCreate' ||
         payload.data.type === 'commentCreate'
           ? {
@@ -44,7 +44,7 @@ const sendPush = async (
                 clickAction: 'FLUTTER_NOTIFICATION_CLICK'
               }
             }
-          : null,
+          : {},
       apns: {
         headers: {
           messageType: 'background'
@@ -52,7 +52,7 @@ const sendPush = async (
         payload: apnsPayload
       }
     })
-    logger.info(`[FCM] sendToTopic result : ${JSON.stringify(result)}`)
+    logger.info(`[FCM] sendToTokens result : ${JSON.stringify(result)}`)
   } catch (e) {
     throw e
   }
@@ -96,7 +96,7 @@ const sendThreadMessage = async (options: IThreadPushType): Promise<void> => {
   const {tokens, type, data, badge, contents, sound} = options
   try {
     const payload = {
-      notification: contents ? {title: '', body: contents} : null,
+      notification: {title: '', body: contents},
       data: {type, ...data}
     }
     await sendPush(tokens, badge, sound, payload)
