@@ -146,7 +146,7 @@ async function updateEmoji(options: {
               data: {
                 id: emojiId.toString(),
                 emoji: emoji.toString(),
-                trainerId: comment.trainerId.toString(),
+                trainerId: trainerId.toString(),
                 threadId: comment.threadId.toString(),
                 commentId: commentId.toString()
               }
