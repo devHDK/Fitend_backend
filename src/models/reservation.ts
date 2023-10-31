@@ -337,7 +337,7 @@ async function findBurnRate(franchiseId: number): Promise<{total: number; used: 
             (
             SELECT SUM(t.totalSession + t.serviceSession)  FROM ?? t 
             JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ${escape(franchiseId)}
-            WHERE t.expiredAt >= ${currentTime}
+            WHERE t.expiredAt >= ${escape(currentTime)}
             ) total,
             (
             SELECT COUNT(t.id)
@@ -345,7 +345,7 @@ async function findBurnRate(franchiseId: number): Promise<{total: number; used: 
             SELECT t.id FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)} 
-            AND ti.expiredAt >= ${currentTime}
+            AND ti.expiredAt >= ${escape(currentTime)}
             WHERE t.status = 'attendance' OR (t.status = 'cancel' AND t.times = 1)
             GROUP BY t.id
             ) t
