@@ -58,7 +58,7 @@ async function createRelationExercises(
 
 async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   try {
-    const {franchiseId, search, status, trainerId, start, perPage} = options
+    const {franchiseId, search, status, type, trainerId, start, perPage} = options
     const where = []
     const currentTime = moment().format('YYYY-MM-DD')
     if (status !== undefined) {
@@ -67,6 +67,9 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
       } else if (status === 'active') {
         where.push(`t.expiredAt >= '${currentTime}'`)
       }
+    }
+    if (type !== undefined) {
+      where.push(`t.type = ${escape(type)}`)
     }
     const rows = await db.query({
       sql: `SELECT t.id, t.type, (t.totalSession + t.serviceSession) as totalSession,

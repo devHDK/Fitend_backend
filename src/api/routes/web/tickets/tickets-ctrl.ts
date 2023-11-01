@@ -46,8 +46,16 @@ async function postTicketHoldings(req: IRequest, res: Response, next: Function):
 
 async function getTickets(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {search, status, trainerId, start, perPage} = req.options
-    const ret = await TicketService.findAll({franchiseId: req.franchiseId, search, status, trainerId, start, perPage})
+    const {search, status, trainerId, type, start, perPage} = req.options
+    const ret = await TicketService.findAll({
+      franchiseId: req.franchiseId,
+      search,
+      status,
+      type,
+      trainerId,
+      start,
+      perPage
+    })
     res.status(200).json(ret)
   } catch (e) {
     next(e)

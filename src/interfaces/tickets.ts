@@ -25,6 +25,7 @@ export interface ITicketFindAll {
   franchiseId: number
   search?: string
   status?: string
+  type?: string
   trainerId?: number
   start: number
   perPage: number

@@ -8,6 +8,10 @@
       "type": "string",
       "enum": ["active", "banned", "hold"]
     },
+    "type": {
+      "type": "string",
+      "enum": ["personal", "fitness"]
+    },
     "trainerId": {
       "type": "integer"
     },
