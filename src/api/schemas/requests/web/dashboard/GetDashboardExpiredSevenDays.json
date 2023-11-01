@@ -1,14 +1,10 @@
 {
   "type": "object",
   "properties": {
-    "today": {
-      "type": "string",
-      "format": "date"
-    },
     "trainerId": {
       "type": "integer"
     }
   },
-  "required": ["today"],
+  "required": [],
   "additionalProperties": false
 }

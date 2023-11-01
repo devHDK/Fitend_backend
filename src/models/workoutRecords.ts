@@ -69,7 +69,8 @@ async function findAllWithWorkoutScheduleId(workoutScheduleId: number): Promise<
 
 async function findAllToday(
   franchiseId: number,
-  today: string
+  today: string,
+  trainerId: number
 ): Promise<
   [
     {
@@ -92,6 +93,7 @@ async function findAllToday(
             JOIN ?? tra ON tra.id = ft.trainerId 
             JOIN ?? u ON u.id = ws.userId
             WHERE ws.startDate BETWEEN ${escape(todayStart)} AND ${escape(todayEnd)}
+            ${trainerId ? `AND ws.trainerId = ${escape(trainerId)}` : ''}
             GROUP BY ws.id
             ORDER BY t.createdAt DESC
             `,
@@ -112,7 +114,8 @@ async function findAllToday(
 
 async function findAllYesterday(
   franchiseId: number,
-  today: string
+  today: string,
+  trainerId: number
 ): Promise<
   [
     {
@@ -134,6 +137,7 @@ async function findAllYesterday(
             JOIN ?? u ON u.id = t.userId
             LEFT JOIN ?? wf ON wf.workoutScheduleId = t.id
             WHERE t.startDate BETWEEN ${escape(todayStart)} AND ${escape(todayEnd)}
+            ${trainerId ? `AND ft.trainerId = ${escape(trainerId)}` : ''}
             GROUP BY t.id
             HAVING workoutFeedbackId is null`,
       values: [
@@ -152,7 +156,8 @@ async function findAllYesterday(
 
 async function findAllUsers(
   franchiseId: number,
-  today: string
+  today: string,
+  trainerId: number
 ): Promise<
   [
     {
@@ -183,6 +188,7 @@ async function findAllUsers(
             SELECT tr2.userId, tr2.trainerId FROM ?? tr2 GROUP BY tr2.userId, tr2.trainerId
             ) tr ON tr.userId = t.id
             LEFT JOIN ?? tra ON tra.id = tr.trainerId 
+            ${trainerId ? `WHERE tra.id = ${escape(trainerId)}` : ''}
             GROUP BY t.id`,
       values: [
         WorkoutSchedule.tableName,

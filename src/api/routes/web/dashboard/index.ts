@@ -6,6 +6,7 @@ const getDashboardActiveUsers = new ApiRouter({
   method: 'get',
   summary: '대시보드 > 활성화 회원수(PT/FC)',
   tags: ['Dashboard'],
+  schema: 'requests/web/dashboard/GetDashboardActiveUsers',
   responses: {
     200: {schema: 'responses/web/dashboard/GetDashboardActiveUsers'}
   },
@@ -17,6 +18,7 @@ const getDashboardSessions = new ApiRouter({
   method: 'get',
   summary: '대시보드 > 세션(전체/이번달)',
   tags: ['Dashboard'],
+  schema: 'requests/web/dashboard/GetDashboardSessions',
   responses: {
     200: {schema: 'responses/web/dashboard/GetDashboardSessions'}
   },
@@ -64,6 +66,7 @@ const getDashboardExpiredSevenDays = new ApiRouter({
   method: 'get',
   summary: '대시보드 > 만료일 7일 남은 회원 목록',
   tags: ['Dashboard'],
+  schema: 'requests/web/dashboard/GetDashboardExpiredSevenDays',
   responses: {
     200: {schema: 'responses/web/dashboard/GetDashboardExpiredSevenDays'}
   },
@@ -75,6 +78,7 @@ const getDashboardExpiredThreeSessions = new ApiRouter({
   method: 'get',
   summary: '대시보드 > 잔여세션 3회 미만 회원 목록',
   tags: ['Dashboard'],
+  schema: 'requests/web/dashboard/GetDashboardExpiredThreeSessions',
   responses: {
     200: {schema: 'responses/web/dashboard/GetDashboardExpiredThreeSessions'}
   },

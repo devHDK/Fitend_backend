@@ -333,7 +333,8 @@ async function findCounts(
 }
 
 async function findExpiredSevenDays(
-  franchiseId: number
+  franchiseId: number,
+  trainerId: number
 ): Promise<
   [
     {
@@ -352,6 +353,7 @@ async function findExpiredSevenDays(
             JOIN ?? tr ON tr.franchiseId = ${escape(franchiseId)} AND t.id = tr.ticketId
             JOIN ?? u ON tr.userId = u.id
             JOIN ?? tra ON tra.id = tr.trainerId
+            ${trainerId ? `AND tra.id = ${escape(trainerId)}` : ''}
             WHERE TIMESTAMPDIFF(DAY, ${escape(currentTime)}, t.expiredAt) BETWEEN 0 AND 7
             GROUP BY tr.ticketId ORDER BY t.expiredAt ASC`,
       values: [tableName, tableTicketRelation, User.tableName, Trainer.tableName]
@@ -363,7 +365,8 @@ async function findExpiredSevenDays(
 }
 
 async function findExpiredThreeSessions(
-  franchiseId: number
+  franchiseId: number,
+  trainerId: number
 ): Promise<
   [
     {
@@ -385,6 +388,7 @@ async function findExpiredThreeSessions(
             JOIN ?? tr ON tr.franchiseId = ${escape(franchiseId)} AND t.id = tr.ticketId
             JOIN ?? u ON tr.userId = u.id
             JOIN ?? tra ON tra.id = tr.trainerId
+            ${trainerId ? `AND tra.id = ${escape(trainerId)}` : ''}
             WHERE t.type = 'personal' AND t.expiredAt >= ${escape(currentTime)}
             GROUP BY tr.ticketId HAVING restSession <= 3
             ORDER BY restSession ASC`,

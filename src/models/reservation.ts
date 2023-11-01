@@ -158,7 +158,8 @@ async function findValidCount(ticketId: number): Promise<number> {
 async function findAttendanceNoShowCount(
   franchiseId: number,
   thisMonthStart: string,
-  thisMonthEnd: string
+  thisMonthEnd: string,
+  trainerId: number
 ): Promise<{attendance: number; noShow: number}> {
   try {
     const [row] = await db.query({
@@ -168,6 +169,7 @@ async function findAttendanceNoShowCount(
             SELECT t.id FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)}
+            ${trainerId ? `AND tr.trainerId = ${escape(trainerId)}` : ''}
             WHERE t.status = 'attendance' AND t.ticketId = ti.id
             AND t.startTime BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}
             GROUP BY t.id
@@ -177,6 +179,7 @@ async function findAttendanceNoShowCount(
             SELECT t.id FROM ?? t
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)}
+            ${trainerId ? `AND tr.trainerId = ${escape(trainerId)}` : ''}
             WHERE t.status = 'cancel' AND t.times = 1 AND t.ticketId = ti.id
             AND t.startTime BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}
             GROUP BY t.id
@@ -329,7 +332,7 @@ async function findAllByTicketIdAndLaterStartTime(
   }
 }
 
-async function findBurnRate(franchiseId: number): Promise<{total: number; used: number}> {
+async function findBurnRate(franchiseId: number, trainerId: number): Promise<{total: number; used: number}> {
   try {
     const currentTime = moment().format('YYYY-MM-DD')
     const [row] = await db.query({
@@ -337,6 +340,7 @@ async function findBurnRate(franchiseId: number): Promise<{total: number; used: 
             (
             SELECT SUM(t.totalSession + t.serviceSession)  FROM ?? t 
             JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ${escape(franchiseId)}
+            ${trainerId ? `AND tr.trainerId = ${escape(trainerId)}` : ''}
             WHERE t.expiredAt >= ${escape(currentTime)}
             ) total,
             (
@@ -346,6 +350,7 @@ async function findBurnRate(franchiseId: number): Promise<{total: number; used: 
             JOIN ?? ti ON ti.id = t.ticketId
             JOIN ?? tr ON tr.ticketId = ti.id AND tr.franchiseId = ${escape(franchiseId)} 
             AND ti.expiredAt >= ${escape(currentTime)}
+            ${trainerId ? `AND tr.trainerId = ${escape(trainerId)}` : ''}
             WHERE t.status = 'attendance' OR (t.status = 'cancel' AND t.times = 1)
             GROUP BY t.id
             ) t
