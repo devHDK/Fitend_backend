@@ -2,7 +2,7 @@ import moment from 'moment-timezone'
 import {db, firebase} from '../loaders'
 import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat, Thread, User} from '../models'
 import {IWorkoutRecordDetail, IWorkoutRecordsCreate} from '../interfaces/workoutRecords'
-import {IThread} from '../interfaces/thread'
+import {IThread, IThreadCreatedId} from '../interfaces/thread'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -19,10 +19,11 @@ interface IWorkoutRecordDetailData {
   threads: IThread[]
 }
 
-async function createRecords(userId: number, options: IWorkoutRecordsCreate): Promise<void> {
+async function createRecords(userId: number, options: IWorkoutRecordsCreate): Promise<IThreadCreatedId | null> {
   const connection = await db.beginTransaction()
   try {
     const {records, scheduleRecords, workoutInfo} = options
+    let threadId: number
 
     const workoutSchedule = await WorkoutSchedule.findOneWithWorkoutPlanId(records[0].workoutPlanId)
     const startDate = moment(workoutSchedule.startDate).format('YYYY-MM-DD')
@@ -53,7 +54,7 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
     if (workoutInfo) {
       const {trainerId, ...data} = workoutInfo
       const user = await User.findOne({id: userId})
-      await Thread.create(
+      threadId = await Thread.create(
         {
           type: 'record',
           workoutScheduleId: scheduleRecords.workoutScheduleId,
@@ -69,7 +70,12 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
         notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
       })
     }
+
+    console.log('threadId ===>', threadId)
+
     await db.commit(connection)
+
+    if (threadId) return {id: threadId}
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e

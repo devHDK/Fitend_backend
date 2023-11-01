@@ -122,6 +122,7 @@ async function createFeedbacks(options: IWorkoutFeedbackData): Promise<void> {
     const workoutFeedback = await WorkoutFeedbacks.findOneWithWorkoutScheduleId(data.workoutScheduleId)
     if (workoutFeedback) throw new Error('duplicate_feedback')
     const workoutFeedbackId = await WorkoutFeedbacks.create(data, connection)
+
     if (issueIndexes && issueIndexes.length > 0) {
       await WorkoutFeedbacks.createRelationIssues({workoutFeedbackId, issueIndexes}, connection)
     }

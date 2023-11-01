@@ -8,7 +8,7 @@ const postWorkoutRecords = new ApiRouter({
   tags: ['WorkoutRecord'],
   schema: 'requests/mobile/workoutRecords/PostWorkoutRecords',
   responses: {
-    200: {description: 'success'},
+    200: {schema: 'responses/mobile/workoutRecords/PostWorkoutRecords'},
     403: {description: 'not_allowed'},
     409: {description: 'duplicate_record'}
   },

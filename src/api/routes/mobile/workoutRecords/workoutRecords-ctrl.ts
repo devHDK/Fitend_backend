@@ -4,8 +4,11 @@ import {WorkoutRecordService} from '../../../../services'
 async function postWorkoutSchedulesRecords(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {scheduleRecords, records, workoutInfo} = req.options
-    await WorkoutRecordService.createRecords(req.userId, {records, scheduleRecords, workoutInfo})
-    res.status(200).json()
+    let ret
+    const threadId = await WorkoutRecordService.createRecords(req.userId, {records, scheduleRecords, workoutInfo})
+    if (threadId) ret = threadId
+
+    res.status(200).json(ret || null)
   } catch (e) {
     if (e.message === 'not_allowed') e.status = 403
     if (e.message === 'duplicate_record') e.status = 409
