@@ -4,7 +4,8 @@ import {Reservation, Ticket, User, WorkoutRecords} from '../models/index'
 moment.tz.setDefault('Asia/Seoul')
 
 async function findActiveUsers(
-  franchiseId: number
+  franchiseId: number,
+  trainerId: number
 ): Promise<{
   personalActiveUsers: {thisMonthCount: number; lastMonthCount: number}
   fitnessActiveUsers: {thisMonthCount: number; lastMonthCount: number}
@@ -14,10 +15,10 @@ async function findActiveUsers(
     const thisMonthEnd = moment().add(1, 'day').format('YYYY-MM-DD')
     const lastMonthStart = moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD')
     const lastMonthEnd = moment().subtract(1, 'month').endOf('month').add(1, 'day').format('YYYY-MM-DD')
-    const thisMonthCount = await User.findActivePersonalUsers(franchiseId, thisMonthStart, thisMonthEnd)
-    const lastMonthCount = await User.findActivePersonalUsers(franchiseId, lastMonthStart, lastMonthEnd)
-    const fcThisMonthCount = await User.findActiveFitnessUsers(franchiseId, thisMonthStart, thisMonthEnd)
-    const fcLastMonthCount = await User.findActiveFitnessUsers(franchiseId, lastMonthStart, lastMonthEnd)
+    const thisMonthCount = await User.findActivePersonalUsers(franchiseId, thisMonthStart, thisMonthEnd, trainerId)
+    const lastMonthCount = await User.findActivePersonalUsers(franchiseId, lastMonthStart, lastMonthEnd, trainerId)
+    const fcThisMonthCount = await User.findActiveFitnessUsers(franchiseId, thisMonthStart, thisMonthEnd, trainerId)
+    const fcLastMonthCount = await User.findActiveFitnessUsers(franchiseId, lastMonthStart, lastMonthEnd, trainerId)
     return {
       personalActiveUsers: {thisMonthCount, lastMonthCount},
       fitnessActiveUsers: {thisMonthCount: fcThisMonthCount, lastMonthCount: fcLastMonthCount}
@@ -28,7 +29,8 @@ async function findActiveUsers(
 }
 
 async function findSessions(
-  franchiseId: number
+  franchiseId: number,
+  trainerId: number
 ): Promise<{
   burnRate: {total: number; used: number}
   thisMonth: {attendance: number; noShow: number}
@@ -36,8 +38,8 @@ async function findSessions(
   try {
     const thisMonthStart = moment().startOf('month').subtract(9, 'hour').format('YYYY-MM-DDTHH:mm:ss')
     const thisMonthEnd = moment().endOf('month').subtract(9, 'hour').format('YYYY-MM-DDTHH:mm:ss')
-    const burnRate = await Reservation.findBurnRate(franchiseId)
-    const thisMonth = await Reservation.findAttendanceNoShowCount(franchiseId, thisMonthStart, thisMonthEnd)
+    const burnRate = await Reservation.findBurnRate(franchiseId, trainerId)
+    const thisMonth = await Reservation.findAttendanceNoShowCount(franchiseId, thisMonthStart, thisMonthEnd, trainerId)
     return {burnRate, thisMonth}
   } catch (e) {
     throw e
@@ -46,7 +48,8 @@ async function findSessions(
 
 async function findAllWorkoutToday(
   franchiseId: number,
-  today: string
+  today: string,
+  trainerId: number
 ): Promise<
   [
     {
@@ -58,7 +61,7 @@ async function findAllWorkoutToday(
   ]
 > {
   try {
-    return await WorkoutRecords.findAllToday(franchiseId, today)
+    return await WorkoutRecords.findAllToday(franchiseId, today, trainerId)
   } catch (e) {
     throw e
   }
@@ -66,7 +69,8 @@ async function findAllWorkoutToday(
 
 async function findAllWorkoutYesterday(
   franchiseId: number,
-  today: string
+  today: string,
+  trainerId: number
 ): Promise<
   [
     {
@@ -77,7 +81,7 @@ async function findAllWorkoutYesterday(
   ]
 > {
   try {
-    return await WorkoutRecords.findAllYesterday(franchiseId, today)
+    return await WorkoutRecords.findAllYesterday(franchiseId, today, trainerId)
   } catch (e) {
     throw e
   }
@@ -85,7 +89,8 @@ async function findAllWorkoutYesterday(
 
 async function findAllWorkoutUsers(
   franchiseId: number,
-  today: string
+  today: string,
+  trainerId: number
 ): Promise<
   [
     {
@@ -99,14 +104,15 @@ async function findAllWorkoutUsers(
   ]
 > {
   try {
-    return await WorkoutRecords.findAllUsers(franchiseId, today)
+    return await WorkoutRecords.findAllUsers(franchiseId, today, trainerId)
   } catch (e) {
     throw e
   }
 }
 
 async function findExpiredSevenDays(
-  franchiseId: number
+  franchiseId: number,
+  trainerId: number
 ): Promise<
   [
     {
@@ -118,14 +124,15 @@ async function findExpiredSevenDays(
   ]
 > {
   try {
-    return await Ticket.findExpiredSevenDays(franchiseId)
+    return await Ticket.findExpiredSevenDays(franchiseId, trainerId)
   } catch (e) {
     throw e
   }
 }
 
 async function findExpiredThreeSessions(
-  franchiseId: number
+  franchiseId: number,
+  trainerId: number
 ): Promise<
   [
     {
@@ -137,7 +144,7 @@ async function findExpiredThreeSessions(
   ]
 > {
   try {
-    return await Ticket.findExpiredThreeSessions(franchiseId)
+    return await Ticket.findExpiredThreeSessions(franchiseId, trainerId)
   } catch (e) {
     throw e
   }

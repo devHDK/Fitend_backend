@@ -58,7 +58,7 @@ async function createRelationExercises(
 
 async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   try {
-    const {franchiseId, search, status, trainerId, start, perPage} = options
+    const {franchiseId, search, status, type, trainerId, start, perPage} = options
     const where = []
     const currentTime = moment().format('YYYY-MM-DD')
     if (status !== undefined) {
@@ -67,6 +67,9 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
       } else if (status === 'active') {
         where.push(`t.expiredAt >= '${currentTime}'`)
       }
+    }
+    if (type !== undefined) {
+      where.push(`t.type = ${escape(type)}`)
     }
     const rows = await db.query({
       sql: `SELECT t.id, t.type, (t.totalSession + t.serviceSession) as totalSession,
@@ -333,7 +336,8 @@ async function findCounts(
 }
 
 async function findExpiredSevenDays(
-  franchiseId: number
+  franchiseId: number,
+  trainerId: number
 ): Promise<
   [
     {
@@ -352,6 +356,7 @@ async function findExpiredSevenDays(
             JOIN ?? tr ON tr.franchiseId = ${escape(franchiseId)} AND t.id = tr.ticketId
             JOIN ?? u ON tr.userId = u.id
             JOIN ?? tra ON tra.id = tr.trainerId
+            ${trainerId ? `AND tra.id = ${escape(trainerId)}` : ''}
             WHERE TIMESTAMPDIFF(DAY, ${escape(currentTime)}, t.expiredAt) BETWEEN 0 AND 7
             GROUP BY tr.ticketId ORDER BY t.expiredAt ASC`,
       values: [tableName, tableTicketRelation, User.tableName, Trainer.tableName]
@@ -363,7 +368,8 @@ async function findExpiredSevenDays(
 }
 
 async function findExpiredThreeSessions(
-  franchiseId: number
+  franchiseId: number,
+  trainerId: number
 ): Promise<
   [
     {
@@ -385,6 +391,7 @@ async function findExpiredThreeSessions(
             JOIN ?? tr ON tr.franchiseId = ${escape(franchiseId)} AND t.id = tr.ticketId
             JOIN ?? u ON tr.userId = u.id
             JOIN ?? tra ON tra.id = tr.trainerId
+            ${trainerId ? `AND tra.id = ${escape(trainerId)}` : ''}
             WHERE t.type = 'personal' AND t.expiredAt >= ${escape(currentTime)}
             GROUP BY tr.ticketId HAVING restSession <= 3
             ORDER BY restSession ASC`,
