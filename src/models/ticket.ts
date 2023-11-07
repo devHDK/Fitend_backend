@@ -58,7 +58,7 @@ async function createRelationExercises(
 
 async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   try {
-    const {franchiseId, search, status, type, trainerId, start, perPage} = options
+    const {franchiseId, search, status, type, userId, trainerId, start, perPage} = options
     const where = []
     const currentTime = moment().format('YYYY-MM-DD')
     if (status !== undefined) {
@@ -87,7 +87,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             FROM ?? t
             JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ? ${
               trainerId ? `AND tr.trainerId = ${trainerId}` : ``
-            }
+            } ${userId ? `AND tr.userId = ${userId}` : ``}
             JOIN ?? u ON u.id = tr.userId ${
               search ? `AND (u.nickname like '%${search}%' OR u.phone = '%${search}%')` : ``
             }
@@ -121,7 +121,9 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
                 WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
                 ) as isHolding
               FROM ?? t
-              JOIN ?? tr ON tr.ticketId = t.id
+              JOIN ?? tr ON tr.ticketId = t.id ${
+                trainerId ? `AND tr.trainerId = ${trainerId}` : ``
+              } ${userId ? `AND tr.userId = ${userId}` : ``}
               JOIN ?? u ON u.id = tr.userId ${
                 search ? `AND (u.nickname like '%${search}%' OR u.phone = '%${search}%')` : ``
               }

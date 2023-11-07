@@ -26,6 +26,7 @@ export interface ITicketFindAll {
   search?: string
   status?: string
   type?: string
+  userId?: number
   trainerId?: number
   start: number
   perPage: number

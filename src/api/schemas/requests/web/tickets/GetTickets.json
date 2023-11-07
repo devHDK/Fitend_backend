@@ -12,6 +12,9 @@
       "type": "string",
       "enum": ["personal", "fitness"]
     },
+    "userId": {
+      "type": "integer"
+    },
     "trainerId": {
       "type": "integer"
     },
