@@ -7,7 +7,8 @@ import {
   IWorkoutSchedule,
   IWorkoutScheduleCreate,
   IWorkoutScheduleUpdate,
-  IWorkoutScheduleListForTrainer
+  IWorkoutScheduleListForTrainer,
+  IWorkoutHistory
 } from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
 import {WorkoutPlan, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords, User, WorkoutSchedule} from './index'
@@ -93,6 +94,30 @@ async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWo
               GROUP BY ws.id
               ORDER BY ws.startDate`,
       values: [tableName, WorkoutPlan.tableName, WorkoutFeedbacks.tableName, WorkoutRecords.tableName, {userId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllHistory(
+  id: number,
+  userId: number,
+  today: string,
+  startDate: string
+): Promise<[IWorkoutHistory]> {
+  try {
+    return await db.query({
+      sql: `SELECT t.id as workoutScheduleId, wr.setInfo, wr.createdAt
+            FROM ?? t
+            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = ${escape(id)}
+            JOIN ?? wr ON wr.workoutPlanId = wp.id
+            WHERE t.userId = ${escape(userId)} AND 
+            t.startDate BETWEEN ${escape(startDate)} AND ${escape(today)}
+            GROUP BY t.id
+            ORDER BY wr.createdAt DESC
+            `,
+      values: [tableName, WorkoutPlan.tableName, WorkoutRecords.tableName]
     })
   } catch (e) {
     throw e
@@ -351,6 +376,7 @@ export {
   createScheduleRecords,
   findAll,
   findAllForTrainer,
+  findAllHistory,
   findOneWithId,
   findOne,
   findUsernameWithWorkoutScheduleId,

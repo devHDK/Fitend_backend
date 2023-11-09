@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "integer"
+    }
+  },
+  "required": ["userId"],
+  "additionalProperties": false
+}

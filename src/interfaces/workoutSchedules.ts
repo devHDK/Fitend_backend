@@ -119,3 +119,16 @@ export interface IWorkoutSchedulePushType {
   contents?: string
   data?: any
 }
+
+export type IWorkoutHistory = {
+  workoutScheduleId: number
+  createdAt: Date
+  setInfo: SetInfo[]
+}
+
+export type SetInfo = {
+  index: number
+  reps: number
+  weight: number
+  seconds: number
+}
