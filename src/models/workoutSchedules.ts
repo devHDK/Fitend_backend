@@ -108,16 +108,17 @@ async function findAllHistory(
 ): Promise<[IWorkoutHistory]> {
   try {
     return await db.query({
-      sql: `SELECT t.id as workoutScheduleId, wr.setInfo, wr.createdAt
+      sql: `SELECT t.id as workoutScheduleId, ex.name, wr.setInfo, wp.setInfo as goalSetInfo,wr.createdAt
             FROM ?? t
             JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = ${escape(id)}
+            JOIN ?? ex ON ex.id = ${escape(id)}
             JOIN ?? wr ON wr.workoutPlanId = wp.id
             WHERE t.userId = ${escape(userId)} AND 
             t.startDate BETWEEN ${escape(startDate)} AND ${escape(today)}
             GROUP BY t.id
             ORDER BY wr.createdAt DESC
             `,
-      values: [tableName, WorkoutPlan.tableName, WorkoutRecords.tableName]
+      values: [tableName, WorkoutPlan.tableName, Exercise.tableName, WorkoutRecords.tableName]
     })
   } catch (e) {
     throw e

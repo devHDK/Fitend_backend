@@ -9,11 +9,47 @@
           "workoutScheduleId": {
             "type": "integer"
           },
+          "name": {
+            "type": "string"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
           },
           "setInfo": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 15,
+                  "nullable": true
+                },
+                "reps": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 99,
+                  "nullable": true
+                },
+                "weight": {
+                  "type": "number",
+                  "minimum": 0.1,
+                  "maximum": 999,
+                  "nullable": true
+                },
+                "seconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10800,
+                  "nullable": true
+                }
+              }
+            },
+            "nullable": true
+          },
+          "goalSetInfo": {
             "type": "array",
             "items": {
               "type": "object",
