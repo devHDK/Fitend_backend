@@ -111,7 +111,7 @@ async function findAllHistory(
       sql: `SELECT t.id as workoutScheduleId, ex.name, wr.setInfo, wp.setInfo as goalSetInfo,wr.createdAt
             FROM ?? t
             JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = ${escape(id)}
-            JOIN ?? ex ON ex.id = ${escape(id)}
+            JOIN ?? ex ON ex.id = wp.exerciseId
             JOIN ?? wr ON wr.workoutPlanId = wp.id
             WHERE t.userId = ${escape(userId)} AND 
             t.startDate BETWEEN ${escape(startDate)} AND ${escape(today)}
