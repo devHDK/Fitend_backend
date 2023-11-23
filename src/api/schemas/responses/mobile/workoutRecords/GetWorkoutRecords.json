@@ -92,6 +92,10 @@
         "workoutDuration": {
           "type": "integer",
           "nullable": true
+        },
+        "calories": {
+          "type": "integer",
+          "nullable": true
         }
       }
     },
