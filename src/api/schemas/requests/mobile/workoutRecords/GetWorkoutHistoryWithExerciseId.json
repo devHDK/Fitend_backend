@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "start": {
+      "type": "integer"
+    },
+    "perPage": {
+      "type": "integer"
+    }
+  },
+  "required": ["start", "perPage"],
+  "additionalProperties": false
+}

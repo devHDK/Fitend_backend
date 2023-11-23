@@ -1,5 +1,6 @@
 import {Response} from 'express'
 import {WorkoutRecordService} from '../../../../services'
+import {WorkoutRecords} from '../../../../models'
 
 async function postWorkoutSchedulesRecords(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
@@ -26,4 +27,16 @@ async function getWorkoutRecords(req: IRequest, res: Response, next: Function): 
   }
 }
 
-export {postWorkoutSchedulesRecords, getWorkoutRecords}
+async function getWorkoutHistoryWithExerciseId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, start, perPage} = req.options
+    const userId = req.userId
+
+    const ret = await WorkoutRecordService.findWorkoutHistoryWithExerciseId(id, userId, start, perPage)
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
+export {postWorkoutSchedulesRecords, getWorkoutRecords, getWorkoutHistoryWithExerciseId}

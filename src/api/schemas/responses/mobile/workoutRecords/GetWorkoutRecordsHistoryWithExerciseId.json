@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "required": ["data", "total"],
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["startDate", "workoutRecordId", "workoutPlanId", "exerciseName", "setInfo"],
+        "properties": {
+          "startDate": {
+            "type": "string"
+          },
+          "workoutRecordId": {
+            "type": "integer"
+          },
+          "workoutPlanId": {
+            "type": "integer"
+          },
+          "exerciseName": {
+            "type": "string"
+          },
+          "setInfo": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["index"],
+              "properties": {
+                "reps": {
+                  "type": "integer",
+                  "nullable": true
+                },
+                "index": {
+                  "type": "integer"
+                },
+                "weight": {
+                  "type": "integer",
+                  "nullable": true
+                },
+                "seconds": {
+                  "type": "integer",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "total": {
+      "type": "integer"
+    }
+  }
+}

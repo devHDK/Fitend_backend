@@ -1,7 +1,7 @@
 import moment from 'moment-timezone'
 import {db, firebase} from '../loaders'
 import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat, Thread, User} from '../models'
-import {IWorkoutRecordDetail, IWorkoutRecordsCreate} from '../interfaces/workoutRecords'
+import {IWorkoutRecordDetail, IWorkoutRecordsCreate, IWorkoutHistory} from '../interfaces/workoutRecords'
 import {IThread, IThreadCreatedId} from '../interfaces/thread'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -101,4 +101,17 @@ async function findOne(workoutScheduleId: number): Promise<IWorkoutRecordDetailD
   }
 }
 
-export {createRecords, findOne}
+async function findWorkoutHistoryWithExerciseId(
+  exerciseId: number,
+  userId: number,
+  start: number,
+  perPage: number
+): Promise<{data: [IWorkoutHistory]; total: number}> {
+  try {
+    return await WorkoutRecords.findWorkoutHistoryWithExerciseId(exerciseId, userId, start, perPage)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {createRecords, findOne, findWorkoutHistoryWithExerciseId}

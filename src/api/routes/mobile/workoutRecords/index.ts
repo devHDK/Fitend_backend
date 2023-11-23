@@ -28,4 +28,16 @@ const getWorkoutRecords = new ApiRouter({
   handler: ctrl.getWorkoutRecords
 })
 
-export {postWorkoutRecords, getWorkoutRecords}
+const getWorkoutHistoryWithExerciseId = new ApiRouter({
+  name: ':id/history',
+  paths: ['common/IdPath'],
+  summary: '운동 히스토리 조회',
+  schema: 'requests/mobile/workoutRecords/GetWorkoutHistoryWithExerciseId',
+  tags: ['WorkoutRecord'],
+  responses: {
+    200: {schema: 'responses/mobile/workoutRecords/GetWorkoutRecordsHistoryWithExerciseId'}
+  },
+  handler: ctrl.getWorkoutHistoryWithExerciseId
+})
+
+export {postWorkoutRecords, getWorkoutRecords, getWorkoutHistoryWithExerciseId}

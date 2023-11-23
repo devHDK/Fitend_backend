@@ -1,6 +1,11 @@
 import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
-import {IWorkoutRecord, IWorkoutRecordSetInfoCreate, IWorkoutRecordDetail} from '../interfaces/workoutRecords'
+import {
+  IWorkoutRecord,
+  IWorkoutRecordSetInfoCreate,
+  IWorkoutRecordDetail,
+  IWorkoutHistory
+} from '../interfaces/workoutRecords'
 import {db} from '../loaders'
 import {
   Exercise,
@@ -205,6 +210,44 @@ async function findAllUsers(
   }
 }
 
+async function findWorkoutHistoryWithExerciseId(
+  exerciseId: number,
+  userId: number,
+  start: number,
+  perPage: number
+): Promise<{data: [IWorkoutHistory]; total: number}> {
+  try {
+    const where = [`t.userId = ${escape(userId)}`]
+
+    const rows = await db.query({
+      sql: `SELECT t.startDate, wr.id as workoutRecordId, wr.workoutPlanId, wr.setInfo,
+            (SELECT e.name FROM ?? e WHERE e.id = ${escape(exerciseId)}) as exerciseName
+            FROM ?? t 
+            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = ${escape(exerciseId)}
+            JOIN ?? wr ON wr.workoutPlanId = wp.id 
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            ORDER BY t.startDate DESC
+            LIMIT ${start}, ${perPage}`,
+      values: [Exercise.tableName, WorkoutSchedule.tableName, WorkoutPlan.tableName, tableName]
+    })
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total 
+            FROM
+            (SELECT wr.*
+            FROM ?? t 
+            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = ${escape(exerciseId)}
+            JOIN ?? wr ON wr.workoutPlanId = wp.id 
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            ) t
+            `,
+      values: [WorkoutSchedule.tableName, WorkoutPlan.tableName, tableName]
+    })
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   tableName,
   create,
@@ -212,5 +255,6 @@ export {
   findAllWithWorkoutScheduleId,
   findAllToday,
   findAllYesterday,
-  findAllUsers
+  findAllUsers,
+  findWorkoutHistoryWithExerciseId
 }
