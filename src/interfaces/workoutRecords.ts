@@ -22,6 +22,7 @@ export interface IWorkoutRecordScheduleCreate {
   workoutScheduleId: number
   heartRates: string
   workoutDuration: number
+  calories: number
 }
 
 export interface IWorkoutRecordDetail {

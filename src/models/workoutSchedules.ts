@@ -32,9 +32,9 @@ async function create(options: IWorkoutScheduleCreate, connection?: PoolConnecti
 }
 
 async function createScheduleRecords(
-  options: {workoutScheduleId: number; heartRates?: string; workoutDuration?: number},
+  options: {workoutScheduleId: number; heartRates?: string; workoutDuration?: number; calories?: number},
   connection?: PoolConnection
-) {
+): Promise<void> {
   try {
     await db.query({
       connection,
@@ -194,10 +194,10 @@ async function findUsernameWithWorkoutScheduleId(
 
 async function findOneScheduleRecord(
   workoutScheduleId: number
-): Promise<{heartRates: [number]; workoutDuration: number}> {
+): Promise<{heartRates: [number]; workoutDuration: number; calories: number}> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.heartRates, t.workoutDuration FROM ?? t WHERE t.?`,
+      sql: `SELECT t.heartRates, t.workoutDuration, t.calories FROM ?? t WHERE t.?`,
       values: [tableWorkoutScheduleRecords, {workoutScheduleId}]
     })
     return row

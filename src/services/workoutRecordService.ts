@@ -15,8 +15,9 @@ interface IWorkoutRecordDetailData {
   scheduleRecords: {
     heartRates: [number]
     workoutDuration: number
+    calories: number
   }
-  threads: IThread[]
+  // threads: IThread[]
 }
 
 async function createRecords(userId: number, options: IWorkoutRecordsCreate): Promise<IThreadCreatedId | null> {
@@ -47,7 +48,8 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
       {
         workoutScheduleId: scheduleRecords.workoutScheduleId,
         heartRates: scheduleRecords.heartRates ?? JSON.stringify(scheduleRecords.heartRates),
-        workoutDuration: scheduleRecords.workoutDuration
+        workoutDuration: scheduleRecords.workoutDuration,
+        calories: scheduleRecords.calories
       },
       connection
     )
@@ -71,8 +73,6 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
       })
     }
 
-    console.log('threadId ===>', threadId)
-
     await db.commit(connection)
 
     if (threadId) return {id: threadId}
@@ -88,13 +88,13 @@ async function findOne(workoutScheduleId: number): Promise<IWorkoutRecordDetailD
     const workoutFeedbacks = await WorkoutFeedbacks.findOneWithWorkoutScheduleId(workoutScheduleId)
     const workoutRecords = await WorkoutRecords.findAllWithWorkoutScheduleId(workoutScheduleId)
     const scheduleRecords = await WorkoutSchedule.findOneScheduleRecord(workoutScheduleId)
-    const threads = await Thread.findAllWithWorkoutScheduleId(workoutScheduleId)
+    // const threads = await Thread.findAllWithWorkoutScheduleId(workoutScheduleId)
     return {
       startDate: moment(workoutSchedule.startDate).format('YYYY-MM-DD'),
       ...workoutFeedbacks,
       workoutRecords,
-      scheduleRecords,
-      threads
+      scheduleRecords
+      // threads
     }
   } catch (e) {
     throw e
