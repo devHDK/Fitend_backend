@@ -2,6 +2,7 @@ import moment from 'moment-timezone'
 import {db, firebase} from '../loaders'
 import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat, Thread, User} from '../models'
 import {IWorkoutRecordDetail, IWorkoutRecordsCreate, IWorkoutHistory} from '../interfaces/workoutRecords'
+import {IWorkoutScheduleList} from '../interfaces/workoutSchedules'
 import {IThread, IThreadCreatedId} from '../interfaces/thread'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -17,6 +18,7 @@ interface IWorkoutRecordDetailData {
     workoutDuration: number
     calories: number
   }
+  schedules: [IWorkoutScheduleList]
   // threads: IThread[]
 }
 
@@ -82,18 +84,25 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
   }
 }
 
-async function findOne(workoutScheduleId: number): Promise<IWorkoutRecordDetailData> {
+async function findOne(workoutScheduleId: number, userId: number): Promise<IWorkoutRecordDetailData> {
   try {
     const workoutSchedule = await WorkoutSchedule.findOneWithId(workoutScheduleId)
     const workoutFeedbacks = await WorkoutFeedbacks.findOneWithWorkoutScheduleId(workoutScheduleId)
     const workoutRecords = await WorkoutRecords.findAllWithWorkoutScheduleId(workoutScheduleId)
     const scheduleRecords = await WorkoutSchedule.findOneScheduleRecord(workoutScheduleId)
+    //TODO: startdate 저번주 월요일로
+    const schedules = await WorkoutSchedule.findAll({
+      userId,
+      startDate: moment(workoutSchedule.startDate).toDate(),
+      interval: 14
+    })
     // const threads = await Thread.findAllWithWorkoutScheduleId(workoutScheduleId)
     return {
       startDate: moment(workoutSchedule.startDate).format('YYYY-MM-DD'),
       ...workoutFeedbacks,
       workoutRecords,
-      scheduleRecords
+      scheduleRecords,
+      schedules
       // threads
     }
   } catch (e) {

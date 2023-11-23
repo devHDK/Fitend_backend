@@ -38,7 +38,7 @@ export interface IWorkoutScheduleFindAll {
   userId: number
   startDate: Date
   endDate?: Date
-  interval?: Date
+  interval?: number
 }
 
 export interface IWorkoutScheduleCreate {
@@ -65,7 +65,7 @@ export interface IWorkoutScheduleUpdate {
 export interface IWorkoutScheduleDetail {
   workoutScheduleId: number
   trainerId: number
-  startDate: number
+  startDate: string
   workoutTitle: string
   workoutSubTitle: string
   targetMuscleTypes: string[]
