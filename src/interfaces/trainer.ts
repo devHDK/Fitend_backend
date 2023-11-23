@@ -68,6 +68,20 @@ export type ITrainerDetail = {
   thisMonthSession: IPayrollResponseForAdminWithTrainerId
 }
 
+export type ITrainerDetailForUser = {
+  id: number
+  nickname: string
+  email: string
+  profileImage: string
+  franchises: [{id: number; name: string}]
+  shortIntro: string
+  intro: string
+  qualification: [{description: string}]
+  speciality: [{description: string}]
+  coachingStyle: [{description: string}]
+  favorite: [{description: string}]
+}
+
 export type ActiveUsers = {
   fitnessActiveUsers: FitnessActiveUsersClass
   personalActiveUsers: FitnessActiveUsersClass

@@ -5,6 +5,7 @@ import {
   ITrainer,
   ITrainerDataForAdmin,
   ITrainerDetail,
+  ITrainerDetailForUser,
   ITrainerFindAllForAdmin,
   ITrainerFindOne,
   ITrainerFindOneWageInfo,
@@ -20,6 +21,7 @@ moment.tz.setDefault('Asia/Seoul')
 const tableName = 'Trainers'
 const tableFranchiseTrainer = 'Franchises-Trainers'
 const tableFranchise = 'Franchises'
+const tableTrainerInfo = 'TrainerInfo'
 
 async function create(
   options: {password: string; nickname: string; email: string},
@@ -141,6 +143,24 @@ async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
   }
 }
 
+async function findOneWithIdForUser(id: number): Promise<ITrainerDetailForUser> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.id, t.nickname, t.email, t.createdAt, t.profileImage,
+            ti.shortIntro, ti.intro, ti.qualification, ti.speciality, ti.coachingStyle, ti.favorite,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', f.id, 'name', f.name)) FROM ?? f
+            JOIN ?? ft ON ft.trainerId = t.id AND ft.franchiseId = f.id) as franchises
+            FROM ?? t 
+            JOIN ?? ti ON ti.trainerId = t.id
+            WHERE ?`,
+      values: [tableFranchise, tableFranchiseTrainer, tableName, tableTrainerInfo, {id}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findDeviceList(): Promise<[{deviceId: string}]> {
   try {
     const row = await db.query({
@@ -189,8 +209,9 @@ export {
   findTrainerWageInfo,
   findAll,
   findActiveTrainersWithUserId,
-  findDeviceList,
-  updateOne,
   findAllForAdmin,
-  findOneWithIdForAdmin
+  findOneWithIdForAdmin,
+  findOneWithIdForUser,
+  findDeviceList,
+  updateOne
 }

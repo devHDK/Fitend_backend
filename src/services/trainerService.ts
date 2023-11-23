@@ -4,7 +4,8 @@ import {
   ITrainerDetail,
   ITrainerFindAllForAdmin,
   ITrainerList,
-  ITrainerListForAdmin
+  ITrainerListForAdmin,
+  ITrainerDetailForUser
 } from '../interfaces/trainer'
 import {Franchise, Reservation, Ticket, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
@@ -58,6 +59,14 @@ async function findAll(franchiseId: number): Promise<[ITrainerList]> {
 async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrainerListForAdmin> {
   try {
     return await Trainer.findAllForAdmin(options)
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findOneWithIdForUser(id: number): Promise<ITrainerDetailForUser> {
+  try {
+    return await Trainer.findOneWithIdForUser(id)
   } catch (e) {
     throw e
   }
@@ -121,4 +130,4 @@ async function updatePassword({
   }
 }
 
-export {create, signIn, findAll, findAllForAdmin, findOneWithIdForAdmin, updatePassword}
+export {create, signIn, findAll, findAllForAdmin, findOneWithIdForUser, findOneWithIdForAdmin, updatePassword}
