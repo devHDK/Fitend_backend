@@ -23,6 +23,9 @@
         "isNotification": {
           "type": "boolean"
         },
+        "createdAt": {
+          "type": "string"
+        },
         "deletedAt": {
           "type": "string",
           "nullable": true

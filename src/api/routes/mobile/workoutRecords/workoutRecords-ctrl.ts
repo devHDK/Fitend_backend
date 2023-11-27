@@ -28,16 +28,17 @@ async function getWorkoutRecords(req: IRequest, res: Response, next: Function): 
   }
 }
 
-async function getWorkoutHistoryWithExerciseId(req: IRequest, res: Response, next: Function): Promise<void> {
+async function getWorkoutHistoryWithPlanId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {id, start, perPage} = req.options
+    const {workoutPlanId, start, perPage} = req.options
     const userId = req.userId
 
-    const ret = await WorkoutRecordService.findWorkoutHistoryWithExerciseId(id, userId, start, perPage)
+    const ret = await WorkoutRecordService.findWorkoutHistoryWithPlanId(workoutPlanId, userId, start, perPage)
+    console.log(ret)
     res.status(200).json(ret)
   } catch (e) {
     next(e)
   }
 }
 
-export {postWorkoutSchedulesRecords, getWorkoutRecords, getWorkoutHistoryWithExerciseId}
+export {postWorkoutSchedulesRecords, getWorkoutRecords, getWorkoutHistoryWithPlanId}

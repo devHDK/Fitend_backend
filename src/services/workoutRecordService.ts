@@ -1,6 +1,6 @@
 import moment from 'moment-timezone'
 import {db, firebase} from '../loaders'
-import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat, Thread, User} from '../models'
+import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat, Thread, User, WorkoutPlan} from '../models'
 import {IWorkoutRecordDetail, IWorkoutRecordsCreate, IWorkoutHistory} from '../interfaces/workoutRecords'
 import {IWorkoutScheduleList} from '../interfaces/workoutSchedules'
 import {IThread, IThreadCreatedId} from '../interfaces/thread'
@@ -18,7 +18,6 @@ interface IWorkoutRecordDetailData {
     workoutDuration: number
     calories: number
   }
-  schedules: [IWorkoutScheduleList]
   // threads: IThread[]
 }
 
@@ -91,18 +90,12 @@ async function findOne(workoutScheduleId: number, userId: number): Promise<IWork
     const workoutRecords = await WorkoutRecords.findAllWithWorkoutScheduleId(workoutScheduleId)
     const scheduleRecords = await WorkoutSchedule.findOneScheduleRecord(workoutScheduleId)
     //TODO: startdate 저번주 월요일로
-    const schedules = await WorkoutSchedule.findAll({
-      userId,
-      startDate: moment(workoutSchedule.startDate).toDate(),
-      interval: 14
-    })
     // const threads = await Thread.findAllWithWorkoutScheduleId(workoutScheduleId)
     return {
       startDate: moment(workoutSchedule.startDate).format('YYYY-MM-DD'),
       ...workoutFeedbacks,
       workoutRecords,
-      scheduleRecords,
-      schedules
+      scheduleRecords
       // threads
     }
   } catch (e) {
@@ -110,17 +103,18 @@ async function findOne(workoutScheduleId: number, userId: number): Promise<IWork
   }
 }
 
-async function findWorkoutHistoryWithExerciseId(
-  exerciseId: number,
+async function findWorkoutHistoryWithPlanId(
+  workoutPlanId: number,
   userId: number,
   start: number,
   perPage: number
 ): Promise<{data: [IWorkoutHistory]; total: number}> {
   try {
-    return await WorkoutRecords.findWorkoutHistoryWithExerciseId(exerciseId, userId, start, perPage)
+    const workoutPlan = await WorkoutPlan.findOne({id: workoutPlanId})
+    return await WorkoutRecords.findWorkoutHistoryWithExerciseId(workoutPlan.exerciseId, userId, start, perPage)
   } catch (e) {
     throw e
   }
 }
 
-export {createRecords, findOne, findWorkoutHistoryWithExerciseId}
+export {createRecords, findOne, findWorkoutHistoryWithPlanId}

@@ -78,6 +78,9 @@ async function getMe(options: {id: number}): Promise<IUser> {
     const isActive = await Ticket.findOneWithUserId(user.id)
     if (!isActive) throw new Error('ticket_expired')
     delete user.password
+
+    console.log(user)
+
     return {...user, isNotification: userDevice.isNotification, activeTrainers}
   } catch (e) {
     throw e

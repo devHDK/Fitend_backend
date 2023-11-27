@@ -20,7 +20,7 @@ async function create(options: IWorkoutPlanCreate, connection?: PoolConnection):
   }
 }
 
-async function findOne(options: IWorkoutPlanFind): Promise<[IWorkoutPlan]> {
+async function findOne(options: IWorkoutPlanFind): Promise<IWorkoutPlan> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.*

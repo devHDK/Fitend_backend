@@ -99,54 +99,6 @@
         }
       }
     },
-    "schedules": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "startDate": {
-                "type": "string",
-                "format": "date"
-              },
-              "workouts": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "workoutScheduleId": {
-                      "type": "integer"
-                    },
-                    "seq": {
-                      "type": "integer"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "subTitle": {
-                      "type": "string"
-                    },
-                    "isComplete": {
-                      "type": "boolean"
-                    },
-                    "isRecord": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": ["workoutScheduleId", "seq", "title", "subTitle", "isComplete", "isRecord"]
-                }
-              }
-            },
-            "required": ["startDate", "workouts"],
-            "additionalProperties": false
-          }
-        }
-      },
-      "required": ["data"],
-      "additionalProperties": false
-    },
     "additionalProperties": false
   }
 }
