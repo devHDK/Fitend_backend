@@ -9,6 +9,9 @@
           "workoutScheduleId": {
             "type": "integer"
           },
+          "trackingFieldId": {
+            "type": "integer"
+          },
           "name": {
             "type": "string"
           },

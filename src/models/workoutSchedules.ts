@@ -108,7 +108,7 @@ async function findAllHistory(
 ): Promise<[IWorkoutHistory]> {
   try {
     return await db.query({
-      sql: `SELECT t.id as workoutScheduleId, ex.name, wr.setInfo, wp.setInfo as goalSetInfo,wr.createdAt
+      sql: `SELECT t.id as workoutScheduleId, ex.trackingFieldId, ex.name, wr.setInfo, wp.setInfo as goalSetInfo,wr.createdAt
             FROM ?? t
             JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = ${escape(id)}
             JOIN ?? ex ON ex.id = wp.exerciseId
