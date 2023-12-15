@@ -87,6 +87,7 @@ export interface IWorkoutScheduleExercise {
   circuitGroupNum?: number
   description: string
   trackingFieldId: number
+  isVideoRecord: boolean
   targetMuscles: [
     {
       name: string

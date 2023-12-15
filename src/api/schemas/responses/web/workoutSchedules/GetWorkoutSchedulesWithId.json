@@ -99,6 +99,9 @@
             "type": "integer",
             "nullable": true
           },
+          "isVideoRecord": {
+            "type": "boolean"
+          },
           "targetMuscles": {
             "type": "array",
             "items": {

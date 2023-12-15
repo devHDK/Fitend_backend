@@ -40,6 +40,9 @@
             "type": "integer",
             "nullable": true
           },
+          "isVideoRecord": {
+            "type": "boolean"
+          },
           "setType": {
             "type": "string",
             "nullable": true,
@@ -81,14 +84,6 @@
       }
     }
   },
-  "required": [
-    "userId",
-    "workoutId",
-    "workoutTitle",
-    "workoutSubTitle",
-    "totalTime",
-    "startDate",
-    "workoutPlans"
-  ],
+  "required": ["userId", "workoutId", "workoutTitle", "workoutSubTitle", "totalTime", "startDate", "workoutPlans"],
   "additionalProperties": false
 }
