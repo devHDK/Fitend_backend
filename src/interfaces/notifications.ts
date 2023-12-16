@@ -6,7 +6,7 @@ export type INotificationFindAll = {
 
 export type INotificationList = IResponseList<{
   id: number
-  type: 'personal' | 'fitness'
+  type: 'reservaion' | 'thread' | 'workoutSchedules' | 'noFeedback'
   userNickname: string
   totalSession: number
   createdAt: string

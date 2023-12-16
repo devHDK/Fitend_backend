@@ -14,7 +14,7 @@
           },
           "type": {
             "type": "string",
-            "enum": ["reservation", "workoutSchedule", "thread"]
+            "enum": ["reservation", "workoutSchedule", "thread", "noFeedback"]
           },
           "contents": {
             "type": "string"
@@ -30,15 +30,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "userId",
-          "type",
-          "contents",
-          "info",
-          "isConfirm",
-          "createdAt"
-        ],
+        "required": ["id", "userId", "type", "contents", "info", "isConfirm", "createdAt"],
         "additionalProperties": false
       }
     },
@@ -47,9 +39,6 @@
       "minimum": 0
     }
   },
-  "required": [
-    "data",
-    "total"
-  ],
+  "required": ["data", "total"],
   "additionalProperties": false
 }
