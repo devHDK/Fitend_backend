@@ -53,4 +53,23 @@ const putWorkoutSchedulesWithId = new ApiRouter({
   handler: ctrl.putWorkoutSchedulesWithId
 })
 
-export {postWorkoutSchedulesFeedbacks, getWorkoutSchedules, getWorkoutSchedulesWithId, putWorkoutSchedulesWithId}
+const putWorkoutSchedulesStartWithId = new ApiRouter({
+  name: ':id/start',
+  paths: ['common/IdPath'],
+  method: 'put',
+  summary: 'workout 시작',
+  tags: ['WorkoutSchedule'],
+  responses: {
+    200: {description: 'success'},
+    403: {description: 'not_allowed'}
+  },
+  handler: ctrl.putWorkoutSchedulesStartWithId
+})
+
+export {
+  postWorkoutSchedulesFeedbacks,
+  getWorkoutSchedules,
+  getWorkoutSchedulesWithId,
+  putWorkoutSchedulesWithId,
+  putWorkoutSchedulesStartWithId
+}

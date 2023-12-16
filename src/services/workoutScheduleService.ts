@@ -281,6 +281,14 @@ async function updateStartDate(options: {id: number; startDate: string; seq: num
   }
 }
 
+async function updateIsStart(options: {id: number; isStart: boolean}): Promise<void> {
+  try {
+    await WorkoutSchedule.update(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function deleteOne(id: number): Promise<void> {
   const connection = await db.beginTransaction()
   try {
@@ -329,5 +337,6 @@ export {
   findOneForTrainer,
   update,
   updateStartDate,
+  updateIsStart,
   deleteOne
 }
