@@ -32,6 +32,9 @@
     "isRecord": {
       "type": "boolean"
     },
+    "isVideoRecord": {
+      "type": "boolean"
+    },
     "exercises": {
       "type": "array",
       "items": {

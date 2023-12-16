@@ -244,7 +244,7 @@ async function findOneWithWorkoutScheduleId(workoutScheduleId: number): Promise<
   try {
     return await db.query({
       sql: `SELECT wp.id as workoutPlanId, e.name, e.description, e.trackingFieldId, e.videos, wp.setInfo, wp.circuitGroupNum,
-            wp.setType, wp.circuitSeq,
+            wp.setType, wp.circuitSeq, wp.isVideoRecord,
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', et.type))
             FROM ?? tm
             JOIN ?? et ON et.exerciseId = e.id AND et.targetMuscleId = tm.id) as targetMuscles,
