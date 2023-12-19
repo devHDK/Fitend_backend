@@ -12,14 +12,16 @@ import {
   IUserListForAdmin,
   IUserDataForAdmin
 } from '../interfaces/user'
-import {Trainer, Ticket, TicketHolding} from './'
+import {Trainer, Ticket, TicketHolding, User} from './'
 import {tableTicketRelation} from './ticket'
+import {IInflowContentFindAll, IUserInflowContents, IUserInflowContentsList} from '../interfaces/inflowContent'
 
 moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'Users'
 const tableFranchiseUser = 'Franchises-Users'
 const tableFranchise = 'Franchises'
+const tableInflowContent = 'InflowContents'
 
 async function create(options: IUserCreateOne, connection: PoolConnection): Promise<number> {
   try {
@@ -141,6 +143,54 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
       ]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findUserInflowForTrainer(options: IInflowContentFindAll): Promise<IUserInflowContentsList> {
+  try {
+    const {franchiseId, trainerId} = options
+
+    const currentTime = moment().format('YYYY-MM-DD')
+    const rows: IUserInflowContents[] = await db.query({
+      sql: `SELECT t.id, t.nickname, t.phone, t.gender, t.birth, t.createdAt, t.inflowComplete,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
+            JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
+            JOIN ?? tra ON tra.id = tr.trainerId
+            WHERE ti.expiredAt >= '${currentTime}'
+            LIMIT 1
+            ) as trainers,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', ic.id, 'name', ic.name, 'complete', ic.complete, 'memo', ic.memo)) 
+            FROM ?? us 
+            JOIN ?? ic ON ic.userId = us.id
+            WHERE us.id = t.id
+            ) as inflowContents
+            FROM ?? t
+            JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
+            ${
+              trainerId
+                ? `JOIN TicketsRelations tr ON tr.trainerId = ${escape(trainerId)} AND tr.userId = t.id
+                   JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt >= '${currentTime}'`
+                : ''
+            }
+            WHERE t.inflowComplete is false
+            GROUP BY t.id
+            ORDER BY t.createdAt DESC
+            `,
+      values: [
+        Ticket.tableName,
+        Ticket.tableTicketRelation,
+        Trainer.tableName,
+        User.tableName,
+        tableInflowContent,
+        tableName,
+        tableFranchiseUser,
+        franchiseId
+      ]
+    })
+
+    return rows
   } catch (e) {
     throw e
   }
@@ -361,6 +411,7 @@ export {
   create,
   createRelationsFranchises,
   findAllForTrainer,
+  findUserInflowForTrainer,
   findAllForAdmin,
   findOne,
   findOneWithId,
