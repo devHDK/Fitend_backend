@@ -83,4 +83,5 @@ export interface IUserUpdate {
   memo?: string
   platform?: string
   deviceId?: string
+  inflowComplete?: boolean
 }

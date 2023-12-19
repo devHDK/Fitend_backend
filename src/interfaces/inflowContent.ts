@@ -1,15 +1,14 @@
+export type IInflowContentCreate = {
+  userId: number
+  name: string
+  complete: boolean
+  memo?: string
+}
+
 export type IInflowContentFindAll = {
   trainerId?: number
   franchiseId: number
 }
-
-export type INotificationList = IResponseList<{
-  id: number
-  type: 'reservaion' | 'thread' | 'workoutSchedules' | 'noFeedback'
-  userNickname: string
-  totalSession: number
-  createdAt: string
-}>
 
 export interface IUserInflowContents {
   id: number

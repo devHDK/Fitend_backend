@@ -14,7 +14,12 @@ import {
 } from '../interfaces/user'
 import {Trainer, Ticket, TicketHolding, User} from './'
 import {tableTicketRelation} from './ticket'
-import {IInflowContentFindAll, IUserInflowContents, IUserInflowContentsList} from '../interfaces/inflowContent'
+import {
+  IInflowContentCreate,
+  IInflowContentFindAll,
+  IUserInflowContents,
+  IUserInflowContentsList
+} from '../interfaces/inflowContent'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -29,6 +34,19 @@ async function create(options: IUserCreateOne, connection: PoolConnection): Prom
       connection,
       sql: `INSERT INTO ?? SET ?`,
       values: [tableName, options]
+    })
+    return insertId
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createInflowContent(options: IInflowContentCreate, connection: PoolConnection): Promise<number> {
+  try {
+    const {insertId} = await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableInflowContent, options]
     })
     return insertId
   } catch (e) {
@@ -406,9 +424,24 @@ async function updateBadgeCount(id: number, connection?: PoolConnection): Promis
   }
 }
 
+async function deleteOneInflowContent(options: {id: number}, connection?: PoolConnection): Promise<{id: number}> {
+  const {id} = options
+  try {
+    const {affectedRows} = await db.query({
+      connection,
+      sql: `DELETE FROM ?? WHERE ? `,
+      values: [tableName, {id}]
+    })
+    if (affectedRows > 0) return options
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   tableName,
   create,
+  createInflowContent,
   createRelationsFranchises,
   findAllForTrainer,
   findUserInflowForTrainer,
@@ -420,5 +453,6 @@ export {
   updateOne,
   updateBadgeCount,
   findActivePersonalUsersForAdminWithTrainerId,
-  findActiveFitnessUsersForAdminWithTrainerId
+  findActiveFitnessUsersForAdminWithTrainerId,
+  deleteOneInflowContent
 }
