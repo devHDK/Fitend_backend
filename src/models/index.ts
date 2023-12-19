@@ -19,6 +19,7 @@ import * as Franchise from './franchise'
 import * as Thread from './thread'
 import * as Emoji from './emoji'
 import * as Comment from './comment'
+import * as WorkoutRequestDay from './workoutRequestDay'
 
 export {
   Administrator,
@@ -41,5 +42,6 @@ export {
   Franchise,
   Thread,
   Emoji,
-  Comment
+  Comment,
+  WorkoutRequestDay
 }

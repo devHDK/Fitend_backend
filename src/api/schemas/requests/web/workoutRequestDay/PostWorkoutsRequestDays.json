@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "integer"
+      },
+      "workoutDate": {
+        "type": "string",
+        "format": "date"
+      }
+    },
+    "required": ["userId", "workoutDate"],
+    "additionalProperties": false
+  }
+  

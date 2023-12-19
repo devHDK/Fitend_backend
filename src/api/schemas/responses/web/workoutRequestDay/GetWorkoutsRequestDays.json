@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "workoutDate": {
+            "type": "string"
+          }
+        },
+        "required": ["workoutDate"]
+      }
+    }
+  },
+  "required": ["data"],
+  "additionalProperties": false
+}
