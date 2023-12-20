@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "trainerId": {
+      "type": "integer",
+      "nullable": true
+    }
+  },
+  "required": [],
+
+  "additionalProperties": false
+}

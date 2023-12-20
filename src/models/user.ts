@@ -17,6 +17,7 @@ import {tableTicketRelation} from './ticket'
 import {
   IInflowContentCreate,
   IInflowContentFindAll,
+  IInflowContentUpdate,
   IUserInflowContents,
   IUserInflowContentsList
 } from '../interfaces/inflowContent'
@@ -412,11 +413,36 @@ async function updateOne(options: IUserUpdate, connection?: PoolConnection): Pro
   }
 }
 
+async function updateOneInflowContent(options: IInflowContentUpdate, connection?: PoolConnection): Promise<void> {
+  const {id, ...data} = options
+  try {
+    await db.query({
+      connection,
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableInflowContent, data, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updateBadgeCount(id: number, connection?: PoolConnection): Promise<void> {
   try {
     await db.query({
       connection,
       sql: `UPDATE ?? SET badgeCount = badgeCount + 1 WHERE ? `,
+      values: [tableName, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function updateInflowContentComplete(id: number, connection?: PoolConnection): Promise<void> {
+  try {
+    await db.query({
+      connection,
+      sql: `UPDATE ?? SET inflowComplete = true WHERE ? `,
       values: [tableName, {id}]
     })
   } catch (e) {
@@ -451,7 +477,9 @@ export {
   findActivePersonalUsers,
   findActiveFitnessUsers,
   updateOne,
+  updateOneInflowContent,
   updateBadgeCount,
+  updateInflowContentComplete,
   findActivePersonalUsersForAdminWithTrainerId,
   findActiveFitnessUsersForAdminWithTrainerId,
   deleteOneInflowContent

@@ -1,0 +1,68 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "number"
+      },
+      "nickname": {
+        "type": "string"
+      },
+      "phone": {
+        "type": "string"
+      },
+      "gender": {
+        "type": "string"
+      },
+      "birth": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "string"
+      },
+      "inflowComplete": {
+        "type": "boolean"
+      },
+      "trainers": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "nickname": {
+              "type": "string"
+            }
+          },
+          "required": ["id", "nickname"]
+        },
+        "nullable": true
+      },
+      "inflowContents": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "memo": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "complete": {
+              "type": "boolean"
+            }
+          },
+          "required": ["id", "name", "complete"]
+        },
+        "nullable": true
+      }
+    },
+    "required": ["id", "nickname", "phone", "gender", "createdAt"]
+  }
+}

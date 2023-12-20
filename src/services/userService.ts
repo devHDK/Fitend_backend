@@ -11,6 +11,13 @@ import {
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'
 import {db} from '../loaders'
+import {
+  IInflowContentCreate,
+  IInflowContentFindAll,
+  IInflowContentUpdate,
+  IUserInflowContentsList
+} from '../interfaces/inflowContent'
+import {UserService} from '.'
 
 interface IUserCreateData extends IUserCreateOne {
   franchiseId: number
@@ -54,6 +61,19 @@ async function create(options: IUserCreateData): Promise<void> {
   }
 }
 
+async function createInflowContent(options: IInflowContentCreate): Promise<{id: number}> {
+  const connection = await db.beginTransaction()
+  try {
+    const inflowContentId = await User.createInflowContent(options, connection)
+    await db.commit(connection)
+
+    return {id: inflowContentId}
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
 async function confirmPassword(options: {id: number; password: string}): Promise<void> {
   const {id, password} = options
   try {
@@ -78,8 +98,6 @@ async function getMe(options: {id: number}): Promise<IUser> {
     const isActive = await Ticket.findOneWithUserId(user.id)
     if (!isActive) throw new Error('ticket_expired')
     delete user.password
-
-    console.log(user)
 
     return {...user, isNotification: userDevice.isNotification, activeTrainers}
   } catch (e) {
@@ -126,6 +144,14 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
   }
 }
 
+async function findAllInflowForTrainer(options: IInflowContentFindAll): Promise<IUserInflowContentsList> {
+  try {
+    return await User.findUserInflowForTrainer(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllForAdmin(options: IUserFindAll): Promise<IUserListForAdmin> {
   try {
     return await User.findAllForAdmin(options)
@@ -144,6 +170,25 @@ async function update(options: IUserUpdate): Promise<void> {
     if (e.code === 'ER_DUP_ENTRY') {
       throw new Error('already_in_use')
     }
+    throw e
+  }
+}
+
+async function updateInflowContent(options: IInflowContentUpdate): Promise<void> {
+  try {
+    await User.updateOneInflowContent(options)
+  } catch (e) {
+    if (e.code === 'ER_DUP_ENTRY') {
+      throw new Error('already_in_use')
+    }
+    throw e
+  }
+}
+
+async function updateInflowComplete(options: {id: number}): Promise<void> {
+  try {
+    await User.updateInflowContentComplete(options.id)
+  } catch (e) {
     throw e
   }
 }
@@ -197,16 +242,29 @@ async function updatePassword(options: {id: number; password: string; newPasswor
   }
 }
 
+async function deleteInflowContentWithId(options: {id: number}): Promise<void> {
+  try {
+    await User.deleteOneInflowContent(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   create,
+  createInflowContent,
   confirmPassword,
   getMe,
   findOne,
   findOneWithId,
   findOneForAdmin,
   findAllForTrainer,
+  findAllInflowForTrainer,
   findAllForAdmin,
   update,
+  updateInflowContent,
+  updateInflowComplete,
   updateFCMToken,
-  updatePassword
+  updatePassword,
+  deleteInflowContentWithId
 }

@@ -12,6 +12,21 @@ async function postUsers(req: IRequest, res: Response, next: Function): Promise<
   }
 }
 
+async function postUserInflowContents(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {userId, name, complete, memo} = req.options
+    const ret = await UserService.createInflowContent({
+      userId,
+      name,
+      complete,
+      memo
+    })
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function getUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {search, status, trainerId, start, perPage} = req.options
@@ -21,6 +36,19 @@ async function getUsers(req: IRequest, res: Response, next: Function): Promise<v
       perPage,
       search,
       status,
+      trainerId
+    })
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
+async function getUsersInflow(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {trainerId} = req.options
+    const ret = await UserService.findAllInflowForTrainer({
+      franchiseId: req.franchiseId,
       trainerId
     })
     res.status(200).json(ret)
@@ -49,4 +77,44 @@ async function putUsers(req: IRequest, res: Response, next: Function): Promise<v
   }
 }
 
-export {postUsers, getUsers, getUsersWithId, putUsers}
+async function PutUserInflowComplete(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id} = req.options
+    await UserService.updateInflowComplete({id})
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+async function putUsersInflowContent(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, name, complete, memo} = req.options
+    await UserService.updateInflowContent({id, name, complete, memo})
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+async function deleteInflowContentWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id} = req.options
+    await UserService.deleteInflowContentWithId(id)
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+export {
+  postUsers,
+  postUserInflowContents,
+  getUsers,
+  getUsersInflow,
+  getUsersWithId,
+  putUsers,
+  PutUserInflowComplete,
+  putUsersInflowContent,
+  deleteInflowContentWithId
+}

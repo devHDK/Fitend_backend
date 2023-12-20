@@ -5,6 +5,13 @@ export type IInflowContentCreate = {
   memo?: string
 }
 
+export type IInflowContentUpdate = {
+  id: number
+  name: string
+  complete: boolean
+  memo?: string
+}
+
 export type IInflowContentFindAll = {
   trainerId?: number
   franchiseId: number
