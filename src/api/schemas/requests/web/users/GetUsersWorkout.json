@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "trainerId": {
+      "type": "integer",
+      "nullable": true
+    },
+    "startDate": {
+      "type": "string"
+    },
+    "interval": {
+      "type": "integer"
+    }
+  },
+  "required": ["startDate"],
+
+  "additionalProperties": false
+}

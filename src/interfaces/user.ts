@@ -1,3 +1,5 @@
+import {IWorkoutScheduleList} from './workoutSchedules'
+
 export interface IUser {
   id?: number
   nickname?: string
@@ -50,6 +52,13 @@ export interface IUserDataForAdmin {
   createdAt: Date
 }
 
+export type IUsersWorkoutSchedulesFindAll = {
+  trainerId?: number
+  franchiseId: number
+  startDate: Date
+  interval?: number
+}
+
 export type IUserListForTrainer = IResponseList<IUserData>
 
 export type IUserListForAdmin = IResponseList<IUserDataForAdmin>
@@ -85,3 +94,16 @@ export interface IUserUpdate {
   deviceId?: string
   inflowComplete?: boolean
 }
+
+export interface IUsersWorkoutSchedules {
+  id: number
+  nickname: string
+  phone: string
+  gender: 'male' | 'female'
+  birth: string
+  workouts: IWorkoutScheduleList[]
+  createdAt?: string
+  deletedAt?: Date | string
+}
+
+export type IUserWithWorkoutList = IUsersWorkoutSchedules[]

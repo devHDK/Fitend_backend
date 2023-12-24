@@ -6,7 +6,9 @@ import {
   IUserFindAll,
   IUserListForTrainer,
   IUserCreateOne,
-  IUserListForAdmin
+  IUserListForAdmin,
+  IUsersWorkoutSchedulesFindAll,
+  IUserWithWorkoutList
 } from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'
@@ -152,6 +154,24 @@ async function findAllInflowForTrainer(options: IInflowContentFindAll): Promise<
   }
 }
 
+async function findAllUsersWorkout(options: IUsersWorkoutSchedulesFindAll): Promise<IUserWithWorkoutList> {
+  try {
+    const {startDate, interval} = options
+    const users: IUserWithWorkoutList = await User.findUsersWorkoutSchedules(options)
+
+    const ret = await Promise.all(
+      users.map(async (user) => ({
+        ...user,
+        workout: await WorkoutSchedule.findAll({userId: user.id, startDate, interval: interval || 13})
+      }))
+    )
+
+    return ret
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllForAdmin(options: IUserFindAll): Promise<IUserListForAdmin> {
   try {
     return await User.findAllForAdmin(options)
@@ -260,6 +280,7 @@ export {
   findOneForAdmin,
   findAllForTrainer,
   findAllInflowForTrainer,
+  findAllUsersWorkout,
   findAllForAdmin,
   update,
   updateInflowContent,

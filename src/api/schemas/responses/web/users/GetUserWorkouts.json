@@ -1,0 +1,67 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "number"
+      },
+      "nickname": {
+        "type": "string"
+      },
+      "phone": {
+        "type": "string"
+      },
+      "gender": {
+        "type": "string"
+      },
+      "birth": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "string"
+      },
+      "workout": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "startDate": {
+              "type": "string"
+            },
+            "workouts": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "seq": {
+                    "type": "number"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "isRecord": {
+                    "type": "boolean"
+                  },
+                  "subTitle": {
+                    "type": "string"
+                  },
+                  "isComplete": {
+                    "type": "boolean"
+                  },
+                  "workoutScheduleId": {
+                    "type": "number"
+                  }
+                },
+                "required": ["seq", "title", "isRecord", "subTitle", "isComplete", "workoutScheduleId"]
+              }
+            }
+          },
+          "required": ["startDate", "workouts"]
+        }
+      }
+    },
+    "required": ["id", "nickname", "phone", "gender", "birth", "createdAt", "workout"]
+  },
+  "additionalProperties": false
+}

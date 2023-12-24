@@ -57,6 +57,21 @@ async function getUsersInflow(req: IRequest, res: Response, next: Function): Pro
   }
 }
 
+async function getUsersWorkouts(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {trainerId, startDate, interval} = req.options
+    const ret = await UserService.findAllUsersWorkout({
+      franchiseId: req.franchiseId,
+      startDate,
+      interval,
+      trainerId
+    })
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function getUsersWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const ret = await UserService.findOneWithId(req.options.id)
@@ -112,6 +127,7 @@ export {
   postUserInflowContents,
   getUsers,
   getUsersInflow,
+  getUsersWorkouts,
   getUsersWithId,
   putUsers,
   PutUserInflowComplete,

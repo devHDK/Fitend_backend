@@ -10,9 +10,12 @@ import {
   IUserListForTrainer,
   IUserData,
   IUserListForAdmin,
-  IUserDataForAdmin
+  IUserDataForAdmin,
+  IUsersWorkoutSchedulesFindAll,
+  IUsersWorkoutSchedules,
+  IUserWithWorkoutList
 } from '../interfaces/user'
-import {Trainer, Ticket, TicketHolding, User} from './'
+import {Trainer, Ticket, TicketHolding, User, WorkoutSchedule, WorkoutPlan, WorkoutFeedbacks, WorkoutRecords} from './'
 import {tableTicketRelation} from './ticket'
 import {
   IInflowContentCreate,
@@ -21,6 +24,7 @@ import {
   IUserInflowContents,
   IUserInflowContentsList
 } from '../interfaces/inflowContent'
+import {IWorkoutScheduleList} from '../interfaces/workoutSchedules'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -209,6 +213,32 @@ async function findUserInflowForTrainer(options: IInflowContentFindAll): Promise
       ]
     })
 
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findUsersWorkoutSchedules(options: IUsersWorkoutSchedulesFindAll): Promise<IUserWithWorkoutList> {
+  try {
+    const {franchiseId, trainerId} = options
+
+    const currentTime = moment().format('YYYY-MM-DD')
+    const rows = await db.query({
+      sql: `SELECT t.id, t.nickname, t.phone, t.gender, t.birth, t.createdAt
+            FROM ?? t
+            JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
+            ${
+              trainerId
+                ? `JOIN TicketsRelations tr ON tr.trainerId = ${escape(trainerId)} AND tr.userId = t.id
+                   JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt >= '${currentTime}'`
+                : ''
+            }
+            GROUP BY t.id
+            ORDER BY t.createdAt DESC
+            `,
+      values: [tableName, tableFranchiseUser, franchiseId]
+    })
     return rows
   } catch (e) {
     throw e
@@ -471,6 +501,7 @@ export {
   createRelationsFranchises,
   findAllForTrainer,
   findUserInflowForTrainer,
+  findUsersWorkoutSchedules,
   findAllForAdmin,
   findOne,
   findOneWithId,

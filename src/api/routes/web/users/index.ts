@@ -50,6 +50,18 @@ const getUsersInflow = new ApiRouter({
   handler: ctrl.getUsersInflow
 })
 
+const getUsersWorkout = new ApiRouter({
+  name: 'workout',
+  method: 'get',
+  summary: '회원목록 + 운동스케줄',
+  tags: ['User'],
+  schema: 'requests/web/users/GetUsersWorkout',
+  responses: {
+    200: {schema: 'responses/web/users/GetUserWorkouts'}
+  },
+  handler: ctrl.getUsersWorkouts
+})
+
 const getUsersWithId = new ApiRouter({
   name: ':id',
   method: 'get',
@@ -118,6 +130,7 @@ export {
   postUsersInflow,
   getUsers,
   getUsersInflow,
+  getUsersWorkout,
   getUsersWithId,
   putUsers,
   putUsersInflowContent,
