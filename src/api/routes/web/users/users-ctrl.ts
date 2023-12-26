@@ -115,7 +115,7 @@ async function putUsersInflowContent(req: IRequest, res: Response, next: Functio
 async function deleteInflowContentWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id} = req.options
-    await UserService.deleteInflowContentWithId(id)
+    await UserService.deleteInflowContentWithId({id})
     res.status(200).json()
   } catch (e) {
     next(e)

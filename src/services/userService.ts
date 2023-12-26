@@ -263,6 +263,7 @@ async function updatePassword(options: {id: number; password: string; newPasswor
 }
 
 async function deleteInflowContentWithId(options: {id: number}): Promise<void> {
+  const {id} = options
   try {
     await User.deleteOneInflowContent(options)
   } catch (e) {

@@ -486,7 +486,7 @@ async function deleteOneInflowContent(options: {id: number}, connection?: PoolCo
     const {affectedRows} = await db.query({
       connection,
       sql: `DELETE FROM ?? WHERE ? `,
-      values: [tableName, {id}]
+      values: [tableInflowContent, {id}]
     })
     if (affectedRows > 0) return options
   } catch (e) {
