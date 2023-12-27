@@ -37,9 +37,25 @@ interface IUserDetail extends IUser {
     doneCount: number
     recentDate: string
   }
+  trainers: {
+    id: number
+    nickname: string
+    profileImage: string
+  }[]
 }
 
-interface IUserDetailForAdmin extends IUserDetail {
+interface IUserDetailForAdmin extends IUser {
+  tickets: {
+    personalCount: number
+    fitnessCount: number
+    expiredCount: number
+  }
+  workouts: {
+    thisMonthCount: number
+    asOfTodayCount: number
+    doneCount: number
+    recentDate: string
+  }
   franchises: {
     franchiseId: number
     name: string
@@ -120,7 +136,8 @@ async function findOneWithId(id: number): Promise<IUserDetail> {
     const user = await User.findOneWithId(id)
     const tickets = await Ticket.findCounts(id)
     const workouts = await WorkoutSchedule.findCounts(id)
-    return {...user, tickets, workouts}
+    const trainers = await Trainer.findActiveTrainersWithUserId(id)
+    return {...user, tickets, workouts, trainers}
   } catch (e) {
     throw e
   }
