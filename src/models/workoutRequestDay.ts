@@ -1,7 +1,12 @@
 import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
-import {IWorkoutRequestDayCreate, IWorkoutRequestDayDelete, IWorkoutRequestDayFindAll, IWorkoutRequestDayList} from '../interfaces/workoutRequestDay'
+import {
+  IWorkoutRequestDayCreate,
+  IWorkoutRequestDayDelete,
+  IWorkoutRequestDayFindAll,
+  IWorkoutRequestDayList
+} from '../interfaces/workoutRequestDay'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -24,7 +29,7 @@ async function findAll(options: IWorkoutRequestDayFindAll): Promise<[IWorkoutReq
   const {userId, startDate, endDate} = options
   try {
     return await db.query({
-      sql: `SELECT workoutDate FROM ?? 
+      sql: `SELECT DATE_FORMAT(workoutDate, '%Y-%m-%d') as workoutDate FROM ?? 
             WHERE userId = ${escape(userId)} AND
             workoutDate BETWEEN 
             ${escape(startDate)} AND 
