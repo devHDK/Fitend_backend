@@ -5,7 +5,8 @@ import {
   ITrainerFindAllForAdmin,
   ITrainerList,
   ITrainerListForAdmin,
-  ITrainerDetailForUser
+  ITrainerDetailForUser,
+  ITrainerListForUser
 } from '../interfaces/trainer'
 import {Franchise, Reservation, Ticket, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
@@ -51,6 +52,14 @@ async function signIn(options: {email: string; password: string}): Promise<{acce
 async function findAll(franchiseId: number): Promise<[ITrainerList]> {
   try {
     return await Trainer.findAll(franchiseId)
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllForUserSelect(): Promise<[ITrainerListForUser]> {
+  try {
+    return await Trainer.findAllForUserSelect()
   } catch (e) {
     throw e
   }
@@ -130,4 +139,13 @@ async function updatePassword({
   }
 }
 
-export {create, signIn, findAll, findAllForAdmin, findOneWithIdForUser, findOneWithIdForAdmin, updatePassword}
+export {
+  create,
+  signIn,
+  findAll,
+  findAllForAdmin,
+  findAllForUserSelect,
+  findOneWithIdForUser,
+  findOneWithIdForAdmin,
+  updatePassword
+}

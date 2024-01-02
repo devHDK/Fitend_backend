@@ -19,6 +19,14 @@ export type ITrainerList = {
   nickname: string
 }
 
+export type ITrainerListForUser = {
+  id: number
+  nickname: string
+  profileImage: string
+  largeProfileImage: string
+  shortIntro: string
+}
+
 export interface ITrainerDataForAdmin {
   id: number
   nickname: string
@@ -73,6 +81,7 @@ export type ITrainerDetailForUser = {
   nickname: string
   email: string
   profileImage: string
+  largeProfileImage: string
   franchises: [{id: number; name: string}]
   shortIntro: string
   intro: string

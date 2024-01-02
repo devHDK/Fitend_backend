@@ -11,6 +11,7 @@ import {
   ITrainerFindOneWageInfo,
   ITrainerList,
   ITrainerListForAdmin,
+  ITrainerListForUser,
   ITrainerUpdate
 } from '../interfaces/trainer'
 import {IWageInfo} from '../interfaces/payroll'
@@ -98,6 +99,19 @@ async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrain
   }
 }
 
+async function findAllForUserSelect(): Promise<[ITrainerListForUser]> {
+  try {
+    return await db.query({
+      sql: `SELECT t.id, t.nickname, t.profileImage, ti.largeProfileImage, ti.shortIntro
+            FROM ?? t
+            JOIN ?? ti ON ti.trainerId = t.id`,
+      values: [tableName, tableTrainerInfo]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findActiveTrainersWithUserId(
   userId: number
 ): Promise<[{id: number; nickname: string; profileImage: string}]> {
@@ -147,7 +161,7 @@ async function findOneWithIdForUser(id: number): Promise<ITrainerDetailForUser> 
   try {
     const [row] = await db.query({
       sql: `SELECT t.id, t.nickname, t.email, t.createdAt, t.profileImage,
-            ti.shortIntro, ti.intro, ti.qualification, ti.speciality, ti.coachingStyle, ti.favorite,
+            ti.largeProfileImage, ti.shortIntro, ti.intro, ti.qualification, ti.speciality, ti.coachingStyle, ti.favorite,
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', f.id, 'name', f.name)) FROM ?? f
             JOIN ?? ft ON ft.trainerId = t.id AND ft.franchiseId = f.id) as franchises
             FROM ?? t 
@@ -210,6 +224,7 @@ export {
   findAll,
   findActiveTrainersWithUserId,
   findAllForAdmin,
+  findAllForUserSelect,
   findOneWithIdForAdmin,
   findOneWithIdForUser,
   findDeviceList,

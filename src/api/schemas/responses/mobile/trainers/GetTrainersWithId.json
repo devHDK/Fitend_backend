@@ -16,6 +16,9 @@
     "profileImage": {
       "type": "string"
     },
+    "largeProfileImage": {
+      "type": "string"
+    },
     "shortIntro": {
       "type": "string"
     },
