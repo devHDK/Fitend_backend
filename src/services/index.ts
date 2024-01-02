@@ -18,6 +18,7 @@ import * as ThreadService from './threadService'
 import * as CommentService from './commentService'
 import * as EmojiService from './emojiService'
 import * as WorkoutRequestDayService from './workoutRequestDayService'
+import * as ProductService from './productService'
 
 export {
   AdministratorService,
@@ -39,5 +40,6 @@ export {
   ThreadService,
   CommentService,
   EmojiService,
-  WorkoutRequestDayService
+  WorkoutRequestDayService,
+  ProductService
 }

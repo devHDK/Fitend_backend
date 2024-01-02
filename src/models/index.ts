@@ -20,6 +20,7 @@ import * as Thread from './thread'
 import * as Emoji from './emoji'
 import * as Comment from './comment'
 import * as WorkoutRequestDay from './workoutRequestDay'
+import * as Product from './product'
 
 export {
   Administrator,
@@ -43,5 +44,6 @@ export {
   Thread,
   Emoji,
   Comment,
-  WorkoutRequestDay
+  WorkoutRequestDay,
+  Product
 }

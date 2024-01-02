@@ -121,9 +121,9 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
                 WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
                 ) as isHolding
               FROM ?? t
-              JOIN ?? tr ON tr.ticketId = t.id ${
-                trainerId ? `AND tr.trainerId = ${trainerId}` : ``
-              } ${userId ? `AND tr.userId = ${userId}` : ``}
+              JOIN ?? tr ON tr.ticketId = t.id ${trainerId ? `AND tr.trainerId = ${trainerId}` : ``} ${
+        userId ? `AND tr.userId = ${userId}` : ``
+      }
               JOIN ?? u ON u.id = tr.userId ${
                 search ? `AND (u.nickname like '%${search}%' OR u.phone = '%${search}%')` : ``
               }

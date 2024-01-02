@@ -1,0 +1,24 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "number"
+      },
+      "name": {
+        "type": "string"
+      },
+      "price": {
+        "type": "number"
+      },
+      "month": {
+        "type": "number"
+      },
+      "discountRate": {
+        "type": "number"
+      }
+    },
+    "required": ["id", "name", "price", "month", "discountRate"]
+  }
+}

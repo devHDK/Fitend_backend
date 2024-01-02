@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import moment from 'moment-timezone'
-import {print} from 'redis'
 import {
   IReservationFindAll,
   IReservationList,
