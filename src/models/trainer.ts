@@ -121,7 +121,7 @@ async function findActiveTrainersWithUserId(
       sql: `SELECT t.id, t.nickname, t.profileImage
             FROM ?? t
             JOIN ?? tr ON tr.trainerId = t.id AND tr.userId = ?
-            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= ${currentTime}
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= ${escape(currentTime)}
             GROUP BY t.id`,
       values: [tableName, Ticket.tableTicketRelation, userId, Ticket.tableName]
     })

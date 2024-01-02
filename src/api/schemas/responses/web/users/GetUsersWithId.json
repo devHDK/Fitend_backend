@@ -63,17 +63,25 @@
           "type": "string"
         }
       }
+    },
+    "trainers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "profileImage": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
-  "required": [
-    "id",
-    "nickname",
-    "email",
-    "phone",
-    "gender",
-    "createdAt",
-    "isHolding"
-  ],
+  "required": ["id", "nickname", "email", "phone", "gender", "createdAt", "isHolding"],
   "additionalProperties": false
 }
-
