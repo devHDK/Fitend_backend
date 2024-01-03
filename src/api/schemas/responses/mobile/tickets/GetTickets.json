@@ -1,68 +1,54 @@
 {
-  "type": "object",
-  "properties": {
-    "data": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["personal", "fitness"]
-          },
-          "users": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "totalSession": {
-            "type": "integer"
-          },
-          "restSession": {
-            "type": "integer"
-          },
-          "availSession": {
-            "type": "integer"
-          },
-          "startedAt": {
-            "type": "string"
-          },
-          "expiredAt": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string"
-          },
-          "isHolding": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "users",
-          "totalSession",
-          "restSession",
-          "startedAt",
-          "expiredAt",
-          "createdAt",
-          "isHolding"
-        ],
-        "additionalProperties": false
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "integer"
+      },
+      "type": {
+        "type": "string",
+        "enum": ["personal", "fitness"]
+      },
+      "users": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "totalSession": {
+        "type": "integer"
+      },
+      "restSession": {
+        "type": "integer"
+      },
+      "availSession": {
+        "type": "integer"
+      },
+      "startedAt": {
+        "type": "string"
+      },
+      "expiredAt": {
+        "type": "string"
+      },
+      "createdAt": {
+        "type": "string"
+      },
+      "isHolding": {
+        "type": "boolean"
       }
     },
-    "total": {
-      "type": "integer",
-      "minimum": 0
-    }
-  },
-  "required": [
-    "data",
-    "total"
-  ],
-  "additionalProperties": false
+    "required": [
+      "id",
+      "type",
+      "users",
+      "totalSession",
+      "restSession",
+      "startedAt",
+      "expiredAt",
+      "createdAt",
+      "isHolding"
+    ],
+    "additionalProperties": false
+  }
 }

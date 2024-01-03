@@ -58,6 +58,9 @@ async function signIn(options: {
       }
 
       const activeTrainers = await Trainer.findActiveTrainersWithUserId(user.id)
+      const activeTickets = await Ticket.findAllForUser({
+        userId: user.id
+      })
 
       delete user.password
       await db.commit(connection)
@@ -67,7 +70,8 @@ async function signIn(options: {
         user: {
           ...user,
           isNotification: userDevice ? userDevice.isNotification : true,
-          activeTrainers
+          activeTrainers,
+          activeTickets
         }
       }
     }

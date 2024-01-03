@@ -1,3 +1,4 @@
+import {ITicket, ITicketList} from './tickets'
 import {IWorkoutScheduleList} from './workoutSchedules'
 
 export interface IUser {
@@ -20,6 +21,7 @@ export interface IUser {
       nickname: string
     }
   ]
+  activeTickets: ITicketList
   createdAt?: string
   deletedAt?: Date | string
 }

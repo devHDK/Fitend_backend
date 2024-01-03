@@ -19,7 +19,7 @@ import {
   IInflowContentUpdate,
   IUserInflowContentsList
 } from '../interfaces/inflowContent'
-import {UserService} from '.'
+import {TicketService, UserService} from '.'
 
 interface IUserCreateData extends IUserCreateOne {
   franchiseId: number
@@ -115,9 +115,14 @@ async function getMe(options: {id: number}): Promise<IUser> {
     if (!userDevice || !userDevice.token) throw new Error('no_token')
     const isActive = await Ticket.findOneWithUserId(user.id)
     if (!isActive) throw new Error('ticket_expired')
+
+    const activeTickets = await Ticket.findAllForUser({
+      userId: id
+    })
+
     delete user.password
 
-    return {...user, isNotification: userDevice.isNotification, activeTrainers}
+    return {...user, isNotification: userDevice.isNotification, activeTrainers, activeTickets}
   } catch (e) {
     throw e
   }

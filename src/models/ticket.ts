@@ -142,6 +142,57 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   }
 }
 
+async function findAllForUser(options: {userId: number}): Promise<ITicketList> {
+  try {
+    const {userId} = options
+    const status = 'active'
+    const where = []
+    const currentTime = moment().format('YYYY-MM-DD')
+
+    where.push(`t.expiredAt >= '${currentTime}'`)
+
+    const rows = await db.query({
+      sql: `SELECT t.id, t.type, (t.totalSession + t.serviceSession) as totalSession,
+            ((t.totalSession + t.serviceSession) - (SELECT COUNT(*) FROM ?? r
+            WHERE r.ticketId = t.id AND 
+            (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession,
+            ((t.totalSession + t.serviceSession) - (SELECT COUNT(*) FROM ?? r
+            WHERE r.ticketId = t.id AND r.times = 1)) as availSession,
+            DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
+            DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
+            JSON_ARRAY(u.nickname) as users,
+            (SELECT IF(EXISTS(SELECT * FROM ?? th 
+            WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
+            ) as isHolding
+            FROM ?? t
+            JOIN ?? tr ON tr.ticketId = t.id AND tr.userId = ${userId}
+            JOIN ?? u ON u.id = tr.userId 
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY t.id
+            ${status === 'active' ? `HAVING isHolding IS FALSE` : ``}
+            ORDER BY t.createdAt DESC`,
+      values: [
+        Reservation.tableName,
+        Reservation.tableName,
+        TicketHolding.tableName,
+        tableName,
+        tableTicketRelation,
+        User.tableName
+      ]
+    })
+
+    rows.forEach((value) => {
+      if (value.isHolding === null) {
+        value.isHolding = false
+      }
+    })
+
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOne(options: ITicketFindOne): Promise<ITicket> {
   try {
     const [row] = await db.query({
@@ -460,6 +511,7 @@ export {
   create,
   createRelationExercises,
   findAll,
+  findAllForUser,
   findOne,
   findOneWithId,
   findOneWithUserId,

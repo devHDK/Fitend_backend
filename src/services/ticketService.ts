@@ -123,6 +123,15 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   }
 }
 
+async function findAllForUser(options: {userId: number}): Promise<ITicketList> {
+  try {
+    const {userId} = options
+    return await Ticket.findAllForUser({userId})
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneWithId(id: number): Promise<ITicketDetailWithReservationsAndHoldings> {
   try {
     const ticket = await Ticket.findOneWithId(id)
@@ -272,6 +281,7 @@ export {
   create,
   createTicketHolding,
   findAll,
+  findAllForUser,
   findOneWithId,
   update,
   updateTicketHolding,
