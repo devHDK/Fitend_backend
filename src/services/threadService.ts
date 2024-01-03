@@ -20,9 +20,9 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
     const threadId = await Thread.create(options, connection)
     const user = await User.findOne({id: userId})
     if (writerType === 'user') {
-      await firebase.sendToTopic(`trainer_${options.trainerId}`, {
-        notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
-      })
+      // await firebase.sendToTopic(`trainer_${options.trainerId}`, {
+      //   notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
+      // })
     } else {
       const userDevices = await UserDevice.findAllWithUserId(user.id)
       const contents = `새로운 스레드가 올라왔어요 👀\n${title ? `${title}·` : ``}${content}`

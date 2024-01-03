@@ -132,9 +132,9 @@ async function createFeedbacks(options: IWorkoutFeedbackData): Promise<void> {
     }
 
     const workoutScheduleData = await WorkoutSchedule.findUsernameWithWorkoutScheduleId(data.workoutScheduleId)
-    await firebase.sendToTopic(`trainer_${workoutSchedule.trainerId}`, {
-      notification: {body: `${workoutScheduleData.userNickname}님이 오늘의 운동을 완료하였습니다.`}
-    })
+    // await firebase.sendToTopic(`trainer_${workoutSchedule.trainerId}`, {
+    //   notification: {body: `${workoutScheduleData.userNickname}님이 오늘의 운동을 완료하였습니다.`}
+    // })
 
     await db.commit(connection)
   } catch (e) {
