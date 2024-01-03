@@ -13,9 +13,9 @@ async function create(options: ICommentCreateOne): Promise<any> {
     const user = await User.findOne({id: thread.user.id})
     if (userId) {
       await Thread.updateOne({id: threadId, commentChecked: false}, connection)
-      await firebase.sendToTopic(`trainer_${trainerId}`, {
-        notification: {body: `${user.nickname}님이 스레드에 댓글을 달았어요`}
-      })
+      // await firebase.sendToTopic(`trainer_${trainerId}`, {
+      //   notification: {body: `${user.nickname}님이 스레드에 댓글을 달았어요`}
+      // })
     } else {
       const userDevices = await UserDevice.findAllWithUserId(user.id)
       const contents = `스레드에 댓글이 달렸어요 📥\n${content}`
