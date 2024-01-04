@@ -39,8 +39,4 @@ async function deleteWorkoutsRequestDays(req: IRequest, res: Response, next: Fun
   }
 }
 
-export {
-  postWorkoutsRequestDays,
-  getWorkoutsRequestDays,
-  deleteWorkoutsRequestDays
-}
+export {postWorkoutsRequestDays, getWorkoutsRequestDays, deleteWorkoutsRequestDays}
