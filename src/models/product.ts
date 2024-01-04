@@ -6,7 +6,7 @@ const tableName = 'Products'
 async function findAll(): Promise<IProductsList> {
   try {
     return await db.query({
-      sql: `SELECT t.id, t.name, t.price, t.month, t.discountRate
+      sql: `SELECT t.id, t.name, t.price, t.originPrice, t.month, t.discountRate
             FROM ?? t
             WHERE t.isAvailable is TRUE`,
       values: [tableName]

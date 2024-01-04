@@ -1,24 +1,33 @@
 {
-  "type": "array",
-  "items": {
-    "type": "object",
-    "properties": {
-      "id": {
-        "type": "number"
-      },
-      "name": {
-        "type": "string"
-      },
-      "price": {
-        "type": "number"
-      },
-      "month": {
-        "type": "number"
-      },
-      "discountRate": {
-        "type": "number"
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "originPrice": {
+            "type": "number"
+          },
+          "month": {
+            "type": "number"
+          },
+          "discountRate": {
+            "type": "number"
+          }
+        },
+        "required": ["id", "name", "price", "originPrice", "month", "discountRate"]
       }
-    },
-    "required": ["id", "name", "price", "month", "discountRate"]
-  }
+    }
+  },
+  "required": ["data"]
 }
