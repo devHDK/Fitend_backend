@@ -1,4 +1,5 @@
-import {Ticket, Trainer, User, UserDevice, WorkoutSchedule, Franchise} from '../models'
+import moment from 'moment'
+import {Ticket, Trainer, User, UserDevice, WorkoutSchedule, Franchise, WorkoutRequestDay} from '../models'
 import {
   IUser,
   IUserFindOne,
@@ -175,10 +176,17 @@ async function findAllUsersWorkout(options: IUsersWorkoutSchedulesFindAll): Prom
   try {
     const {startDate, interval} = options
     const users: IUserWithWorkoutList = await User.findUsersWorkoutSchedules(options)
+    const startDateToString = moment(startDate).format('YYYY-MM-DD')
+    const endDate = moment(startDate).add(interval, 'day').format('YYYY-MM-DD')
 
     const ret = await Promise.all(
       users.map(async (user) => ({
         ...user,
+        requestDates: await WorkoutRequestDay.findAll({
+          userId: user.id,
+          startDate: startDateToString,
+          endDate
+        }),
         workout: await WorkoutSchedule.findAll({userId: user.id, startDate, interval: interval || 13})
       }))
     )

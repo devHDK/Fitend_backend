@@ -1,3 +1,4 @@
+import {IWorkoutRequestDayList} from './workoutRequestDay'
 import {IWorkoutScheduleList} from './workoutSchedules'
 
 export interface IUser {
@@ -101,6 +102,7 @@ export interface IUsersWorkoutSchedules {
   phone: string
   gender: 'male' | 'female'
   birth: string
+  requestDates: IWorkoutRequestDayList[]
   workouts: IWorkoutScheduleList[]
   createdAt?: string
   deletedAt?: Date | string

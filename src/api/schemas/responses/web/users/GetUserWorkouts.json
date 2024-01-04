@@ -21,6 +21,18 @@
       "createdAt": {
         "type": "string"
       },
+      "requestDates": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "workoutDate": {
+              "type": "string"
+            }
+          },
+          "required": ["workoutDate"]
+        }
+      },
       "workout": {
         "type": "array",
         "items": {
@@ -61,7 +73,7 @@
         }
       }
     },
-    "required": ["id", "nickname", "phone", "gender", "birth", "createdAt", "workout"]
+    "required": ["id", "nickname", "phone", "gender", "birth", "createdAt", "workout", "requestDates"]
   },
   "additionalProperties": false
 }
