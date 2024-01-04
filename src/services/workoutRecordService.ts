@@ -69,9 +69,9 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
         },
         connection
       )
-      await firebase.sendToTopic(`trainer_${trainerId}`, {
-        notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
-      })
+      // await firebase.sendToTopic(`trainer_${trainerId}`, {
+      //   notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
+      // })
     }
 
     await db.commit(connection)
