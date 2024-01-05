@@ -142,7 +142,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   }
 }
 
-async function findAllForUser(options: {userId: number}): Promise<ITicketList> {
+async function findAllForUser(options: {userId: number}, connection?: PoolConnection): Promise<ITicketList> {
   try {
     const {userId} = options
     const status = 'active'
@@ -152,6 +152,7 @@ async function findAllForUser(options: {userId: number}): Promise<ITicketList> {
     where.push(`t.expiredAt >= '${currentTime}'`)
 
     const rows = await db.query({
+      connection,
       sql: `SELECT t.id, t.type, (t.totalSession + t.serviceSession) as totalSession,
             ((t.totalSession + t.serviceSession) - (SELECT COUNT(*) FROM ?? r
             WHERE r.ticketId = t.id AND 
@@ -170,7 +171,7 @@ async function findAllForUser(options: {userId: number}): Promise<ITicketList> {
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ${status === 'active' ? `HAVING isHolding IS FALSE` : ``}
-            ORDER BY t.createdAt DESC`,
+            ORDER BY t.id ASC`,
       values: [
         Reservation.tableName,
         Reservation.tableName,

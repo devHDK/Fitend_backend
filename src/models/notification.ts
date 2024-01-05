@@ -43,8 +43,7 @@ async function findAll(options: INotificationFindAll): Promise<INotificationList
               SELECT t.id
               FROM ?? t
               ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
-            ) t
-            `,
+            ) t`,
       values: [tableName]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}

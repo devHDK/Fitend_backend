@@ -21,6 +21,7 @@ import * as Emoji from './emoji'
 import * as Comment from './comment'
 import * as WorkoutRequestDay from './workoutRequestDay'
 import * as Product from './product'
+import * as Payment from './payment'
 
 export {
   Administrator,
@@ -45,5 +46,6 @@ export {
   Emoji,
   Comment,
   WorkoutRequestDay,
-  Product
+  Product,
+  Payment
 }

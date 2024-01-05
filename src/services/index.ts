@@ -19,6 +19,7 @@ import * as CommentService from './commentService'
 import * as EmojiService from './emojiService'
 import * as WorkoutRequestDayService from './workoutRequestDayService'
 import * as ProductService from './productService'
+import * as PaymentService from './paymentService'
 
 export {
   AdministratorService,
@@ -41,5 +42,6 @@ export {
   CommentService,
   EmojiService,
   WorkoutRequestDayService,
-  ProductService
+  ProductService,
+  PaymentService
 }

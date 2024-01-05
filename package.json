@@ -34,6 +34,7 @@
     ]
   },
   "dependencies": {
+    "@bootpay/backend-js": "^2.1.9",
     "@types/nodemailer": "^6.4.0",
     "agenda": "^3.1.0",
     "agendash": "^1.0.0",

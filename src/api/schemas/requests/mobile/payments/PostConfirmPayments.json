@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "receiptId": {
+      "type": "string"
+    },
+    "orderId": {
+      "type": "string"
+    },
+    "price": {
+      "type": "integer"
+    },
+    "orderName": {
+      "type": "string"
+    },
+    "startedAt": {
+      "type": "string"
+    },
+    "expiredAt": {
+      "type": "string"
+    },
+    "trainerId": {
+      "type": "integer"
+    },
+    "userId": {
+      "type": "integer"
+    },
+    "month": {
+      "type": "integer"
+    }
+  },
+  "required": ["receiptId", "orderId", "price", "orderName", "startedAt", "expiredAt", "trainerId", "userId", "month"],
+  "additionalProperties": false
+}
