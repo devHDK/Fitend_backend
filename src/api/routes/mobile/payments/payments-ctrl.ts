@@ -18,8 +18,7 @@ async function postConfirmPayments(req: IRequest, res: Response, next: Function)
 
     res.status(200).json({data: activeTickets})
   } catch (e) {
-    if (e.message === 'not_allowed') e.status = 403
-    if (e.message === 'duplicate_record') e.status = 409
+    if (e.message === 'wrong_payment') e.status = 405
     next(e)
   }
 }

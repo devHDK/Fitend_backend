@@ -1,0 +1,61 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string"
+          },
+          "totalSession": {
+            "type": "number"
+          },
+          "restSession": {
+            "type": "number"
+          },
+          "availSession": {
+            "type": "number"
+          },
+          "startedAt": {
+            "type": "string"
+          },
+          "expiredAt": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isHolding": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "totalSession",
+          "restSession",
+          "availSession",
+          "startedAt",
+          "expiredAt",
+          "createdAt",
+          "users",
+          "isHolding"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["data"],
+  "additionalProperties": false
+}

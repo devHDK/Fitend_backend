@@ -9,8 +9,10 @@ async function confirmPayments(options: IPaymentConfirm): Promise<ITicketList> {
   try {
     const {receiptId, orderId, price, orderName, userId, trainerId, ...data} = options
     const result = await bootpay.getReceipt({receiptId})
+    if (price !== result.price || result.status !== 2 || receiptId !== result.receipt_id)
+      throw new Error('wrong_payment')
 
-    if (price !== result.price || !result.status || receiptId !== result.receipt_id) throw new Error('wrong_payment')
+    await bootpay.serverConfirm({receiptId})
 
     const ticketId = await Ticket.create(
       {
@@ -34,7 +36,6 @@ async function confirmPayments(options: IPaymentConfirm): Promise<ITicketList> {
     return activeTickets
   } catch (e) {
     if (connection) await db.rollback(connection)
-
     throw e
   }
 }
