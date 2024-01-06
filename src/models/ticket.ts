@@ -2,7 +2,7 @@ import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
 import {ITicket, ITicketDetail, ITicketFindAll, ITicketList, ITicketFindOne} from '../interfaces/tickets'
-import {Reservation, TicketHolding, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
+import {Payment, Reservation, TicketHolding, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
 import {ICoaching, ICoachingForAdmin} from '../interfaces/payroll'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -162,12 +162,14 @@ async function findAllForUser(options: {userId: number}, connection?: PoolConnec
             DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
             JSON_ARRAY(u.nickname) as users,
+            p.receiptId,
             (SELECT IF(EXISTS(SELECT * FROM ?? th 
             WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
             ) as isHolding
             FROM ?? t
             JOIN ?? tr ON tr.ticketId = t.id AND tr.userId = ${userId}
             JOIN ?? u ON u.id = tr.userId 
+            LEFT JOIN ?? p on p.ticketId = t.id
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ${status === 'active' ? `HAVING isHolding IS FALSE` : ``}
@@ -178,7 +180,8 @@ async function findAllForUser(options: {userId: number}, connection?: PoolConnec
         TicketHolding.tableName,
         tableName,
         tableTicketRelation,
-        User.tableName
+        User.tableName,
+        Payment.tableName
       ]
     })
 

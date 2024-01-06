@@ -83,6 +83,10 @@
               "createdAt": {
                 "type": "string"
               },
+              "receiptId": {
+                "type": "string",
+                "nullable": true
+              },
               "isHolding": {
                 "type": "boolean"
               }

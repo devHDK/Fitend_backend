@@ -23,4 +23,16 @@ async function postConfirmPayments(req: IRequest, res: Response, next: Function)
   }
 }
 
-export {postConfirmPayments}
+async function deletePayment(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id} = req.options
+    await PaymentService.deletePayment({id})
+
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'wrong_payment_cancel') e.status = 405
+    next(e)
+  }
+}
+
+export {postConfirmPayments, deletePayment}

@@ -64,4 +64,5 @@ export type ITicketList = IResponseList<{
   startedAt: string
   expiredAt: string
   createdAt: string
+  receiptId: string
 }>

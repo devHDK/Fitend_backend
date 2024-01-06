@@ -14,4 +14,17 @@ const confirmPayments = new ApiRouter({
   handler: ctrl.postConfirmPayments
 })
 
-export {confirmPayments}
+const deletePayment = new ApiRouter({
+  name: ':id',
+  paths: ['common/IdPath'],
+  method: 'delete',
+  summary: '결제 내역 삭제',
+  tags: ['Payments'],
+  responses: {
+    200: {description: 'success'},
+    405: {description: '결제에 실패했습니다.'}
+  },
+  handler: ctrl.deletePayment
+})
+
+export {confirmPayments, deletePayment}

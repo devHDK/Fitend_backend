@@ -1,6 +1,6 @@
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
-import {IPaymentCreate} from '../interfaces/payments'
+import {IPayment, IPaymentCreate} from '../interfaces/payments'
 
 const tableName = 'Payments'
 
@@ -17,6 +17,19 @@ async function create(options: IPaymentCreate, connection: PoolConnection): Prom
   }
 }
 
+async function findOneWithTicketId(options: {ticketId: number}, connection?: PoolConnection): Promise<IPayment> {
+  try {
+    const [row] = await db.query({
+      connection,
+      sql: `SELECT * FROM ?? WHERE ?`,
+      values: [tableName, options]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function DeleteWithTicketId(ticketId: number, connection?: PoolConnection): Promise<void> {
   try {
     await db.query({
@@ -28,4 +41,4 @@ async function DeleteWithTicketId(ticketId: number, connection?: PoolConnection)
   }
 }
 
-export {tableName, create, DeleteWithTicketId}
+export {tableName, findOneWithTicketId, create, DeleteWithTicketId}

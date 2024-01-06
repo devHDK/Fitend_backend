@@ -40,4 +40,23 @@ async function confirmPayments(options: IPaymentConfirm): Promise<ITicketList> {
   }
 }
 
-export {confirmPayments}
+async function deletePayment(options: {id: number}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {id} = options
+    const payment = await Payment.findOneWithTicketId({ticketId: id})
+
+    const result = await bootpay.getReceipt({receiptId: payment.receiptId})
+    if (result.status !== 1 || payment.receiptId !== result.receipt_id) throw new Error('wrong_payment_cancel')
+
+    await Ticket.deleteOne(id)
+    await bootpay.cancel({receiptId: payment.receiptId})
+
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
+export {confirmPayments, deletePayment}
