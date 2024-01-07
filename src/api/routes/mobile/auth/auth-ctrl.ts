@@ -38,7 +38,8 @@ async function postCreateAccount(req: IRequest, res: Response, next: Function): 
       password,
       phone,
       birth,
-      gender
+      gender,
+      place
     } = req.options
     const ret = await AuthService.createAccountForUser({
       trainerId,
@@ -53,7 +54,8 @@ async function postCreateAccount(req: IRequest, res: Response, next: Function): 
       password,
       phone,
       birth,
-      gender
+      gender,
+      place
     })
     res.status(200).json(ret)
   } catch (e) {

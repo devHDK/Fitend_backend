@@ -57,6 +57,10 @@
       },
       "minItems": 1,
       "uniqueItems": true
+    },
+    "place": {
+      "type": "string",
+      "enum": ["home", "gym"]
     }
   },
   "required": [
@@ -69,7 +73,8 @@
     "height",
     "weight",
     "experience",
-    "purpose"
+    "purpose",
+    "place"
   ],
   "additionalProperties": false
 }

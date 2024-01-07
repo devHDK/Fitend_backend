@@ -122,6 +122,7 @@ export interface IUserPreSurveyCreate {
   purpose: number
   achievement: string
   obstacle: string
+  place: 'home' | 'gym'
 }
 
 export type IUserWithWorkoutList = IUsersWorkoutSchedules[]
