@@ -9,7 +9,9 @@ import {
   IUserCreateOne,
   IUserListForAdmin,
   IUsersWorkoutSchedulesFindAll,
-  IUserWithWorkoutList
+  IUserWithWorkoutList,
+  IUserBodySpecCreate,
+  IUserPreSurveyCreate
 } from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'

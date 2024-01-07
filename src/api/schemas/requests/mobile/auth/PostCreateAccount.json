@@ -1,0 +1,75 @@
+{
+  "type": "object",
+  "properties": {
+    "trainerId": {
+      "type": "number"
+    },
+    "nickname": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,20}$"
+    },
+    "password": {
+      "type": "string",
+      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=/]{6,40}$"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "phone": {
+      "type": "string",
+      "pattern": "^01([016789]{1})([0-9]{4})([0-9]{4})$"
+    },
+    "birth": {
+      "type": "string",
+      "format": "date"
+    },
+    "gender": {
+      "type": "string",
+      "enum": ["male", "female"]
+    },
+    "height": {
+      "type": "number"
+    },
+    "weight": {
+      "type": "number"
+    },
+    "experience": {
+      "type": "number"
+    },
+    "purpose": {
+      "type": "number"
+    },
+    "achievement": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "obstacle": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "nickname",
+    "password",
+    "email",
+    "phone",
+    "gender",
+    "birth",
+    "height",
+    "weight",
+    "experience",
+    "purpose"
+  ],
+  "additionalProperties": false
+}

@@ -110,4 +110,18 @@ export interface IUsersWorkoutSchedules {
   deletedAt?: Date | string
 }
 
+export interface IUserBodySpecCreate {
+  userId?: number
+  height: number
+  weight: number
+}
+
+export interface IUserPreSurveyCreate {
+  userId?: number
+  experience: number
+  purpose: number
+  achievement: string
+  obstacle: string
+}
+
 export type IUserWithWorkoutList = IUsersWorkoutSchedules[]

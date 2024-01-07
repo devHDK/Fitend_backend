@@ -13,7 +13,9 @@ import {
   IUserDataForAdmin,
   IUsersWorkoutSchedulesFindAll,
   IUsersWorkoutSchedules,
-  IUserWithWorkoutList
+  IUserWithWorkoutList,
+  IUserBodySpecCreate,
+  IUserPreSurveyCreate
 } from '../interfaces/user'
 import {Trainer, Ticket, TicketHolding, User, WorkoutSchedule, WorkoutPlan, WorkoutFeedbacks, WorkoutRecords} from './'
 import {tableTicketRelation} from './ticket'
@@ -32,6 +34,8 @@ const tableName = 'Users'
 const tableFranchiseUser = 'Franchises-Users'
 const tableFranchise = 'Franchises'
 const tableInflowContent = 'InflowContents'
+const tableUserBodySpec = 'UserBodySpecs'
+const tableUserPreSurvey = 'UserPreSurveys'
 
 async function create(options: IUserCreateOne, connection: PoolConnection): Promise<number> {
   try {
@@ -52,6 +56,32 @@ async function createInflowContent(options: IInflowContentCreate, connection: Po
       connection,
       sql: `INSERT INTO ?? SET ?`,
       values: [tableInflowContent, options]
+    })
+    return insertId
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createBodySpec(options: IUserBodySpecCreate, connection: PoolConnection): Promise<number> {
+  try {
+    const {insertId} = await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableUserBodySpec, options]
+    })
+    return insertId
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createPreSurvey(options: IUserPreSurveyCreate, connection: PoolConnection): Promise<number> {
+  try {
+    const {insertId} = await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableUserPreSurvey, options]
     })
     return insertId
   } catch (e) {
@@ -498,6 +528,8 @@ export {
   tableName,
   create,
   createInflowContent,
+  createBodySpec,
+  createPreSurvey,
   createRelationsFranchises,
   findAllForTrainer,
   findUserInflowForTrainer,

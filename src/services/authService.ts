@@ -1,7 +1,21 @@
+import moment from 'moment-timezone'
 import {code as Code, jwt as JWT} from '../libs'
-import {IUser} from '../interfaces/user'
+import {IUser, IUserBodySpecCreate, IUserCreateOne, IUserPreSurveyCreate} from '../interfaces/user'
 import {User, Ticket, UserDevice, Trainer} from '../models'
 import {db} from '../loaders'
+import {passwordIterations} from '../libs/code'
+
+moment.tz.setDefault('Asia/Seoul')
+
+interface IUserAccountCreate extends IUserCreateOne {
+  trainerId: number
+  height: number
+  weight: number
+  experience: number
+  purpose: number
+  achievement: [number]
+  obstacle: [number]
+}
 
 async function signIn(options: {
   email: string
@@ -82,6 +96,49 @@ async function signIn(options: {
   }
 }
 
+async function createAccountForUser(options: IUserAccountCreate): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {password, height, weight, experience, purpose, achievement, obstacle, trainerId, ...data} = options
+    const passwordHash = Code.createPasswordHash(password, passwordIterations.mobile)
+    const userId = await User.create({password: JSON.stringify(passwordHash), ...data}, connection)
+    await User.createRelationsFranchises({userId, franchiseId: 1}, connection)
+    await User.createBodySpec({userId, height, weight}, connection)
+    await User.createPreSurvey(
+      {
+        userId,
+        experience,
+        purpose,
+        achievement: JSON.stringify(achievement),
+        obstacle: JSON.stringify(obstacle)
+      },
+      connection
+    )
+
+    const ticketId = await Ticket.create(
+      {
+        type: 'fitness',
+        serviceSession: 0,
+        totalSession: 0,
+        sessionPrice: 0,
+        coachingPrice: 0,
+        startedAt: moment().format('YYYY-MM-DD'),
+        expiredAt: moment().add(14, 'day').format('YYYY-MM-DD')
+      },
+      connection
+    )
+    await Ticket.createRelationExercises({userId, trainerIds: [trainerId], ticketId, franchiseId: 1}, connection)
+
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    if (e.code === 'ER_DUP_ENTRY') {
+      throw new Error('already_in_use')
+    }
+    throw e
+  }
+}
+
 async function signOut(userId: number, platform: 'ios' | 'android', deviceId: string): Promise<void> {
   try {
     await UserDevice.updateOne({userId, platform, deviceId, isNotification: false})
@@ -109,4 +166,4 @@ async function refreshToken(accessToken: string, refreshToken: string): Promise<
   }
 }
 
-export {signIn, signOut, refreshToken}
+export {signIn, createAccountForUser, signOut, refreshToken}
