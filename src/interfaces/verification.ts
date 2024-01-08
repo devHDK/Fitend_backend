@@ -1,7 +1,7 @@
 export interface IVerification {
   id: number
   phone: string
-  type: 'register' | 'reset' | 'id' | 'profile'
+  type: 'register' | 'reset' | 'id'
   code: number
   confirmed: boolean
   used: boolean
@@ -10,13 +10,13 @@ export interface IVerification {
 
 export interface IVerificationCreate {
   phone: string
-  type: 'register' | 'reset' | 'id' | 'profile'
+  type: 'register' | 'reset' | 'id'
 }
 
 export interface IVerificationFindOne {
   id?: number
   phone?: string
-  type?: 'register' | 'reset' | 'id' | 'profile'
+  type?: 'register' | 'reset' | 'id'
   code?: number
   confirmed?: boolean
   used?: boolean
@@ -25,7 +25,7 @@ export interface IVerificationFindOne {
 export interface IVerificationUpdate {
   id: number
   phone?: string
-  type?: 'register' | 'reset' | 'id' | 'profile'
+  type?: 'register' | 'reset' | 'id'
   code?: number
   confirmed?: boolean
   used?: boolean
