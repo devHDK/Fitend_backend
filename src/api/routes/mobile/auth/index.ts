@@ -17,19 +17,6 @@ const postAuth = new ApiRouter({
   handler: ctrl.postAuth
 })
 
-const postCreateAccount = new ApiRouter({
-  name: 'create',
-  method: 'post',
-  summary: '가입',
-  tags: ['Auth'],
-  schema: 'requests/mobile/auth/PostCreateAccount',
-  isPublic: true,
-  responses: {
-    200: {descrpittion: 'success'}
-  },
-  handler: ctrl.postCreateAccount
-})
-
 const postAuthLogout = new ApiRouter({
   name: 'logout',
   method: 'post',
@@ -56,4 +43,4 @@ const postAuthRefresh = new ApiRouter({
   handler: ctrl.postAuthRefresh
 })
 
-export {postAuth, postCreateAccount, postAuthLogout, postAuthRefresh}
+export {postAuth, postAuthLogout, postAuthRefresh}

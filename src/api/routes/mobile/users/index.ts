@@ -1,6 +1,19 @@
 import {ApiRouter} from '../../default'
 import * as ctrl from './users-ctrl'
 
+const postUserRegister = new ApiRouter({
+  name: 'register',
+  method: 'post',
+  summary: '가입',
+  tags: ['Users'],
+  schema: 'requests/mobile/users/PostUserRegister',
+  isPublic: true,
+  responses: {
+    200: {descrpittion: 'success'}
+  },
+  handler: ctrl.postUserRegister
+})
+
 const postUsersPasswordConfirm = new ApiRouter({
   name: 'password/confirm',
   method: 'post',
@@ -49,4 +62,4 @@ const putUsersPassword = new ApiRouter({
   handler: ctrl.putUsersPassword
 })
 
-export {postUsersPasswordConfirm, getMe, putFCMToken, putUsersPassword}
+export {postUserRegister, postUsersPasswordConfirm, getMe, putFCMToken, putUsersPassword}

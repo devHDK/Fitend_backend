@@ -23,46 +23,6 @@ async function postAuth(req: IRequest, res: Response, next: Function): Promise<v
   }
 }
 
-async function postCreateAccount(req: IRequest, res: Response, next: Function): Promise<void> {
-  try {
-    const {
-      trainerId,
-      height,
-      weight,
-      experience,
-      purpose,
-      achievement,
-      obstacle,
-      nickname,
-      email,
-      password,
-      phone,
-      birth,
-      gender,
-      place
-    } = req.options
-    const ret = await AuthService.createAccountForUser({
-      trainerId,
-      height,
-      weight,
-      experience,
-      purpose,
-      achievement,
-      obstacle,
-      nickname,
-      email,
-      password,
-      phone,
-      birth,
-      gender,
-      place
-    })
-    res.status(200).json(ret)
-  } catch (e) {
-    next(e)
-  }
-}
-
 async function postAuthLogout(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     await AuthService.signOut(req.userId, req.options.platform, req.options.deviceId)
@@ -86,4 +46,4 @@ async function postAuthRefresh(req: IRequest, res: Response, next: Function): Pr
   }
 }
 
-export {postAuth, postCreateAccount, postAuthLogout, postAuthRefresh}
+export {postAuth, postAuthLogout, postAuthRefresh}
