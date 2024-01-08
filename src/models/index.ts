@@ -22,6 +22,7 @@ import * as Comment from './comment'
 import * as WorkoutRequestDay from './workoutRequestDay'
 import * as Product from './product'
 import * as Payment from './payment'
+import * as Verification from './verification'
 
 export {
   Administrator,
@@ -47,5 +48,6 @@ export {
   Comment,
   WorkoutRequestDay,
   Product,
-  Payment
+  Payment,
+  Verification
 }

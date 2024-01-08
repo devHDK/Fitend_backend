@@ -1,7 +1,7 @@
 import {PoolConnection} from 'mysql'
 import {IVerification, IVerificationCreate, IVerificationFindOne, IVerificationUpdate} from '../interfaces/verification'
 
-const db = require('../components/db')
+const db = require('../loaders/mysql')
 const Code = require('../libs/code')
 
 const tableName = 'Verifications'

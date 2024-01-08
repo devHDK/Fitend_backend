@@ -70,6 +70,7 @@ export interface IUserFindOne {
   uniqueKey?: string
   id?: number
   email?: string
+  phone?: string
   referralCode?: string
   nickname?: string
 }

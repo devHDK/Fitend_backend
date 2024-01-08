@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "codeToken": {
+      "type": "string"
+    },
+    "code": {
+      "type": "integer"
+    }
+  },
+  "required": ["codeToken", "code"]
+}

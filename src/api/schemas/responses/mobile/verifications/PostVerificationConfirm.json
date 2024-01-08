@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "nullable": true
+    },
+    "phoneToken": {
+      "type": "string",
+      "nullable": true
+    }
+  }
+}
