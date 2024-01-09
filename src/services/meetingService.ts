@@ -28,7 +28,7 @@ async function create(options: {trainerId: number; userId: number; startTime: st
 
     const user = await User.findOne({id: userId})
     const userDevices = await UserDevice.findAllWithUserId(user.id)
-    const contents = `예약이 확정 되었어요 😊\n${util.defaultTimeFormatForPush(startTime)}`
+    const contents = `미팅이 확정 되었어요 😊\n${util.defaultTimeFormatForPush(startTime)}`
     await Notification.create(
       {
         userId,

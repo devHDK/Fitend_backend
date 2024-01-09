@@ -14,7 +14,7 @@
           },
           "type": {
             "type": "string",
-            "enum": ["reservation", "workoutSchedule", "thread", "noFeedback"]
+            "enum": ["reservation", "workoutSchedule", "thread", "noFeedback", "meeting"]
           },
           "contents": {
             "type": "string"
