@@ -123,6 +123,7 @@ export interface IUserPreSurveyCreate {
   purpose: number
   achievement: string
   obstacle: string
+  preferDays: string
   place: 'home' | 'gym'
 }
 

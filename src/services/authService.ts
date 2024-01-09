@@ -15,6 +15,7 @@ interface IUserAccountCreate extends IUserCreateOne {
   purpose: number
   achievement: [number]
   obstacle: [number]
+  preferDays: [number]
   place: 'home' | 'gym'
 }
 
@@ -100,7 +101,19 @@ async function signIn(options: {
 async function createAccountForUser(options: IUserAccountCreate): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {password, height, weight, experience, purpose, achievement, obstacle, trainerId, place, ...data} = options
+    const {
+      password,
+      height,
+      weight,
+      experience,
+      purpose,
+      achievement,
+      obstacle,
+      trainerId,
+      place,
+      preferDays,
+      ...data
+    } = options
     const passwordHash = Code.createPasswordHash(password, passwordIterations.mobile)
     const userId = await User.create({password: JSON.stringify(passwordHash), ...data}, connection)
     await User.createRelationsFranchises({userId, franchiseId: 1}, connection)
@@ -112,7 +125,8 @@ async function createAccountForUser(options: IUserAccountCreate): Promise<void> 
         purpose,
         achievement: JSON.stringify(achievement),
         obstacle: JSON.stringify(obstacle),
-        place
+        place,
+        preferDays: JSON.stringify(preferDays)
       },
       connection
     )
