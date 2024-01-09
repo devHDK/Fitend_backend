@@ -74,7 +74,7 @@ async function sendKakao(phone, contents, templateCode): Promise<void> {
   })
 }
 
-async function sendVerificationCodeWithMessage(phone: string, code: string): Promise<void> {
+async function sendVerificationCodeWithMessage(phone: string, code: number): Promise<void> {
   const message = `[FITEND] 인증번호는 ${code} 입니다.`
   await sendSMS(phone, message)
 }
