@@ -1,9 +1,9 @@
 import express from 'express'
 import path from 'path'
 import helmet from 'helmet'
+import cors from 'cors'
 import {assignId, morgan} from '../api/middlewares'
 import {logger} from './'
-import cors from 'cors'
 import routes from '../api/routes'
 
 const app = express()

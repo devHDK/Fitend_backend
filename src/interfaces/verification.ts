@@ -10,6 +10,7 @@ export interface IVerification {
 
 export interface IVerificationCreate {
   phone: string
+  email?: string
   type: 'register' | 'reset' | 'id'
 }
 

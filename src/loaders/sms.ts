@@ -79,4 +79,4 @@ async function sendVerificationCodeWithMessage(phone: string, code: string): Pro
   await sendSMS(phone, message)
 }
 
-export {sendSMS, sendKakao, sendVerificationCodeWithMessage}
+export {sendVerificationCodeWithMessage}

@@ -21,6 +21,7 @@ import * as WorkoutRequestDayService from './workoutRequestDayService'
 import * as ProductService from './productService'
 import * as PaymentService from './paymentService'
 import * as MeetingService from './meetingService'
+import * as VerificationService from './verificationService'
 
 export {
   AdministratorService,
@@ -45,5 +46,6 @@ export {
   WorkoutRequestDayService,
   ProductService,
   PaymentService,
-  MeetingService
+  MeetingService,
+  VerificationService
 }

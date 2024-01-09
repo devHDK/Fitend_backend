@@ -49,7 +49,5 @@ export {
   Comment,
   WorkoutRequestDay,
   Product,
-  Payment,
-  Verification,
-  Meeting
+  Payment
 }
