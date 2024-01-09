@@ -23,6 +23,7 @@ import * as WorkoutRequestDay from './workoutRequestDay'
 import * as Product from './product'
 import * as Payment from './payment'
 import * as Verification from './verification'
+import * as Meeting from './meeting'
 
 export {
   Administrator,
@@ -49,5 +50,6 @@ export {
   WorkoutRequestDay,
   Product,
   Payment,
-  Verification
+  Verification,
+  Meeting
 }

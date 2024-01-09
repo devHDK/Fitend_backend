@@ -1,0 +1,57 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string"
+          },
+          "meetings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "endTime": {
+                  "type": "string"
+                },
+                "trainer": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number"
+                    },
+                    "nickname": {
+                      "type": "string"
+                    },
+                    "profileImage": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["id", "nickname", "profileImage"]
+                },
+                "startTime": {
+                  "type": "string"
+                },
+                "userNickname": {
+                  "type": "string"
+                }
+              },
+              "required": ["id", "status", "endTime", "trainer", "startTime", "userNickname"]
+            }
+          }
+        },
+        "required": ["startDate", "meetings"]
+      }
+    }
+  },
+  "required": ["data"]
+}

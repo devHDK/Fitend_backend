@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "startDate": {
+      "type": "string"
+    },
+    "interval": {
+      "type": "integer"
+    }
+  },
+  "required": ["startDate"],
+  "additionalProperties": false
+}

@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "trainerId": {
+      "type": "integer"
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endTime": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": ["trainerId", "startTime", "endTime"],
+  "additionalProperties": false
+}

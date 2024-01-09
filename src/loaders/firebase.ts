@@ -4,6 +4,7 @@ import {aws, logger} from './'
 import {IReservationPushType} from '../interfaces/reservation'
 import {IWorkoutSchedulePushType} from '../interfaces/workoutSchedules'
 import {IThreadPushType} from '../interfaces/thread'
+import {IMeetingPushType} from '../interfaces/meetings'
 
 const awsSecrets: string = config.get('aws.firebase')
 
@@ -80,6 +81,19 @@ const sendReservationMessage = async (options: IReservationPushType): Promise<vo
   }
 }
 
+const sendMeetingMessage = async (options: IMeetingPushType): Promise<void> => {
+  const {tokens, type, data, badge, contents} = options
+  try {
+    const payload = {
+      notification: {title: '', body: contents},
+      data: {type, ...data}
+    }
+    await sendPush(tokens, badge, 'default', payload)
+  } catch (e) {
+    throw e
+  }
+}
+
 const sendWorkoutScheduleMessage = async (options: IWorkoutSchedulePushType): Promise<void> => {
   const {tokens, type, data, badge} = options
   try {
@@ -105,4 +119,12 @@ const sendThreadMessage = async (options: IThreadPushType): Promise<void> => {
   }
 }
 
-export {init, sendPush, sendToTopic, sendReservationMessage, sendWorkoutScheduleMessage, sendThreadMessage}
+export {
+  init,
+  sendPush,
+  sendToTopic,
+  sendReservationMessage,
+  sendMeetingMessage,
+  sendWorkoutScheduleMessage,
+  sendThreadMessage
+}
