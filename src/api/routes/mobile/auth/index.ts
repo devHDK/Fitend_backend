@@ -43,4 +43,19 @@ const postAuthRefresh = new ApiRouter({
   handler: ctrl.postAuthRefresh
 })
 
-export {postAuth, postAuthLogout, postAuthRefresh}
+const putPasswordReset = new ApiRouter({
+  name: 'reset',
+  method: 'put',
+  summary: '비밀번호 리셋',
+  tags: ['Auth'],
+  schema: 'requests/mobile/auth/PutPasswordReset',
+  isPublic: true,
+  responses: {
+    200: {description: 'success'},
+    403: {description: '코드 인증을 다시 시도해주세요'},
+    404: {description: '이메일을 다시 확인해주세요'}
+  },
+  handler: ctrl.putPasswordReset
+})
+
+export {postAuth, postAuthLogout, postAuthRefresh, putPasswordReset}

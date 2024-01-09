@@ -27,6 +27,7 @@ import {
   IUserInflowContentsList
 } from '../interfaces/inflowContent'
 import {IWorkoutScheduleList} from '../interfaces/workoutSchedules'
+import {createPasswordHash, passwordIterations} from '../libs/code'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -473,6 +474,36 @@ async function updateOne(options: IUserUpdate, connection?: PoolConnection): Pro
   }
 }
 
+async function updatePasswordForUser(
+  options: {password: string; id: number},
+  connection?: PoolConnection
+): Promise<string> {
+  try {
+    const {password, id} = options
+    const passwordHash = await createPasswordHash(password, passwordIterations.mobile)
+    await db.query(
+      {
+        connection,
+        sql: `UPDATE ?? SET ? WHERE ?`,
+        values: [
+          this.tableName,
+          {
+            password: JSON.stringify({
+              password: passwordHash.password,
+              salt: passwordHash.salt
+            })
+          },
+          {id}
+        ]
+      },
+      'MASTER'
+    )
+    return passwordHash.salt
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updateOneInflowContent(options: IInflowContentUpdate, connection?: PoolConnection): Promise<void> {
   const {id, ...data} = options
   try {
@@ -536,6 +567,7 @@ export {
   findUsersWorkoutSchedules,
   findAllForAdmin,
   findOne,
+  updatePasswordForUser,
   findOneWithId,
   findActivePersonalUsers,
   findActiveFitnessUsers,

@@ -1,7 +1,7 @@
 import moment from 'moment-timezone'
 import {code as Code, jwt as JWT} from '../libs'
-import {IUser, IUserBodySpecCreate, IUserCreateOne, IUserPreSurveyCreate} from '../interfaces/user'
-import {User, Ticket, UserDevice, Trainer} from '../models'
+import {IUser, IUserCreateOne} from '../interfaces/user'
+import {User, Ticket, UserDevice, Trainer, Verification} from '../models'
 import {db} from '../loaders'
 import {passwordIterations} from '../libs/code'
 
@@ -168,4 +168,30 @@ async function refreshToken(accessToken: string, refreshToken: string): Promise<
   }
 }
 
-export {signIn, createAccountForUser, signOut, refreshToken}
+async function passwordReset(options: {
+  email: string
+  phone: string
+  phoneToken: string
+  password: string
+}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {email, phone, phoneToken, password} = options
+
+    const verification = await Verification.findOne({phone, type: 'reset', confirmed: true, used: false})
+    if (!verification) {
+      throw new Error('not_found_verification')
+    }
+
+    await JWT.decodeToken(phoneToken, {algorithms: ['RS256']})
+    await Verification.updateVerification({id: verification.id, used: true}, connection)
+
+    const user = await User.findOne({phone, email})
+    if (!user) throw new Error('not_found')
+    await User.updatePasswordForUser({id: user.id, password}, connection)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {signIn, createAccountForUser, signOut, refreshToken, passwordReset}

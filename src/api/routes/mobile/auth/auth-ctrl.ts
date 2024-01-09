@@ -46,4 +46,17 @@ async function postAuthRefresh(req: IRequest, res: Response, next: Function): Pr
   }
 }
 
-export {postAuth, postAuthLogout, postAuthRefresh}
+async function putPasswordReset(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {email, phone, phoneToken, password} = req.options
+    await AuthService.passwordReset({email, phone, phoneToken, password})
+
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'not_found_verification') e.status = 403
+    if (e.message === 'not_found') e.status = 404
+    next(e)
+  }
+}
+
+export {postAuth, postAuthLogout, postAuthRefresh, putPasswordReset}

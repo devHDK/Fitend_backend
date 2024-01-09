@@ -1,15 +1,15 @@
 import {PoolConnection} from 'mysql'
 import {IVerification, IVerificationCreate, IVerificationFindOne, IVerificationUpdate} from '../interfaces/verification'
+import {db} from '../loaders'
 
-const db = require('../components/db')
-const Code = require('../libs/code')
+import {code as Code} from '../libs'
 
 const tableName = 'Verifications'
 
 async function createVerification(
   options: IVerificationCreate,
   connection: PoolConnection
-): Promise<{id: number; phone: string; code: string; type: string}> {
+): Promise<{id: number; phone: string; code: number; type: string}> {
   const {phone, type} = options
   try {
     const code = Code.generateRandomCode(6)
