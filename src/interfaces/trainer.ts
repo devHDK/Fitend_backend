@@ -85,10 +85,10 @@ export type ITrainerDetailForUser = {
   franchises: [{id: number; name: string}]
   shortIntro: string
   intro: string
-  qualification: [{description: string}]
-  speciality: [{description: string}]
-  coachingStyle: [{description: string}]
-  favorite: [{description: string}]
+  qualification: {data: [string]}
+  speciality: {data: [string]}
+  coachingStyle: {data: [string]}
+  favorite: {data: [string]}
 }
 
 export type ActiveUsers = {

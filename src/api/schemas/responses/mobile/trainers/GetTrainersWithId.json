@@ -26,52 +26,52 @@
       "type": "string"
     },
     "qualification": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "description": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
             "type": "string"
           }
-        },
-        "required": ["description"]
-      }
+        }
+      },
+      "required": ["data"]
     },
     "speciality": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "description": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
             "type": "string"
           }
-        },
-        "required": ["description"]
-      }
+        }
+      },
+      "required": ["data"]
     },
     "coachingStyle": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "description": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
             "type": "string"
           }
-        },
-        "required": ["description"]
-      }
+        }
+      },
+      "required": ["data"]
     },
     "favorite": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "description": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
             "type": "string"
           }
-        },
-        "required": ["description"]
-      }
+        }
+      },
+      "required": ["data"]
     },
     "franchises": {
       "type": "array",
@@ -87,7 +87,8 @@
         },
         "required": ["id", "name"]
       }
-    }
+    },
+    "additionalProperties": false
   },
   "required": [
     "id",
@@ -95,6 +96,7 @@
     "email",
     "createdAt",
     "profileImage",
+    "largeProfileImage",
     "shortIntro",
     "intro",
     "qualification",
