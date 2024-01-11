@@ -440,6 +440,50 @@ async function findActiveFitnessUsersForAdminWithTrainerId(
   }
 }
 
+async function findBodySpecWithId(
+  id: number
+): Promise<{
+  height: number
+  weight: number
+}> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT ub.height, ub.weight
+            FROM ?? ub
+            WHERE ub.userId = ?
+            ORDER BY ub.createdAt DESC LIMIT 1
+            `,
+      values: [tableUserBodySpec, id]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findPreSurveyWithId(
+  id: number
+): Promise<{
+  experience: number
+  purpose: number
+  achievement: number[]
+  obstacle: number[]
+  place: string
+  preferDays: number[]
+}> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT up.experience, up.purpose, up.obstacle, up.place, up.preferDays, up.achievement
+            FROM ?? up
+            WHERE up.userId = ?`,
+      values: [tableUserPreSurvey, id]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneWithId(id: number): Promise<IUser> {
   try {
     const currentTime = moment().format('YYYY-MM-DD')
@@ -571,6 +615,8 @@ export {
   findOneWithId,
   findActivePersonalUsers,
   findActiveFitnessUsers,
+  findPreSurveyWithId,
+  findBodySpecWithId,
   updateOne,
   updateOneInflowContent,
   updateBadgeCount,

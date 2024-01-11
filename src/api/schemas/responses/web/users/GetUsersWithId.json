@@ -80,6 +80,49 @@
           }
         }
       }
+    },
+    "bodySpec": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer"
+        },
+        "weight": {
+          "type": "integer"
+        }
+      }
+    },
+    "preSurvey": {
+      "type": "object",
+      "properties": {
+        "experience": {
+          "type": "integer"
+        },
+        "purpose": {
+          "type": "integer"
+        },
+        "achievement": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "obstacle": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "place": {
+          "type": "string"
+        },
+        "preferDays": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
     }
   },
   "required": ["id", "nickname", "email", "phone", "gender", "createdAt", "isHolding"],
