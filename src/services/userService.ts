@@ -139,6 +139,18 @@ async function findOne(options: IUserFindOne): Promise<IUser> {
   }
 }
 
+async function findOneIsExist(options: IUserFindOne): Promise<Boolean> {
+  try {
+    const ret = await User.findOne(options)
+
+    if (ret) throw Error('already_in_use')
+
+    return false
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneWithId(id: number): Promise<IUserDetail> {
   try {
     const user = await User.findOneWithId(id)
@@ -309,6 +321,7 @@ export {
   confirmPassword,
   getMe,
   findOne,
+  findOneIsExist,
   findOneWithId,
   findOneForAdmin,
   findAllForTrainer,

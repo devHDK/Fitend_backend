@@ -53,6 +53,20 @@ async function postUsersPasswordConfirm(req: IRequest, res: Response, next: Func
   }
 }
 
+async function postIsExist(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {email} = req.options
+
+    await UserService.findOneIsExist({email})
+
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'already_in_use') e.status = 409
+
+    next(e)
+  }
+}
+
 async function getMe(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const user = await UserService.getMe({id: req.userId})
@@ -91,4 +105,4 @@ async function putUsersPassword(req: IRequest, res: Response, next: Function): P
   }
 }
 
-export {postUserRegister, postUsersPasswordConfirm, getMe, putFCMToken, putUsersPassword}
+export {postUserRegister, postUsersPasswordConfirm, postIsExist, getMe, putFCMToken, putUsersPassword}

@@ -10,14 +10,9 @@
     },
     "password": {
       "type": "string",
-      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=\/]{8,20}$"
+      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=/]{8,20}$"
     }
   },
-  "required": [
-    "email",
-    "nickname",
-    "password"
-
-  ],
+  "required": ["email", "nickname", "password"],
   "additionalProperties": false
 }
