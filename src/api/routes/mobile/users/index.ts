@@ -27,6 +27,20 @@ const postUsersPasswordConfirm = new ApiRouter({
   handler: ctrl.postUsersPasswordConfirm
 })
 
+const postIsExist = new ApiRouter({
+  name: 'exist',
+  method: 'post',
+  summary: '이메일 중복 확인용',
+  tags: ['Users'],
+  schema: 'requests/mobile/users/PostUserExist',
+  isPublic: true,
+  responses: {
+    200: {description: 'success'},
+    409: {description: '이미 사용중입니다.'}
+  },
+  handler: ctrl.postIsExist
+})
+
 const getMe = new ApiRouter({
   name: 'getMe',
   method: 'get',
@@ -62,4 +76,4 @@ const putUsersPassword = new ApiRouter({
   handler: ctrl.putUsersPassword
 })
 
-export {postUserRegister, postUsersPasswordConfirm, getMe, putFCMToken, putUsersPassword}
+export {postUserRegister, postUsersPasswordConfirm, postIsExist, getMe, putFCMToken, putUsersPassword}

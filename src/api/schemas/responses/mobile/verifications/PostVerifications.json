@@ -5,7 +5,8 @@
       "type": "string"
     },
     "expireAt": {
-      "type": "string"
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": ["codeToken", "expireAt"]

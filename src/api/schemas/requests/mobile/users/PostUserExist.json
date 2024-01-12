@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "nullable": true
+    }
+  },
+  "additionalProperties": false
+}

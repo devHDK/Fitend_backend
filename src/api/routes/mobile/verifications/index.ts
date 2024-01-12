@@ -28,7 +28,7 @@ const postVerificationsConfirm = new ApiRouter({
   responses: {
     200: {schema: 'responses/mobile/verifications/PostVerificationConfirm'},
     401: {description: '인증시간이 만료되었습니다.'},
-    409: {description: '코드가 일치하지 않습니다.'}
+    403: {description: '코드가 일치하지 않습니다.'}
   },
   handler: ctrl.postVerificationsConfirm
 })
