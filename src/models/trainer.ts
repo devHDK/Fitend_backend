@@ -104,7 +104,8 @@ async function findAllForUserSelect(): Promise<[ITrainerListForUser]> {
     return await db.query({
       sql: `SELECT t.id, t.nickname, t.profileImage, ti.largeProfileImage, ti.shortIntro
             FROM ?? t
-            JOIN ?? ti ON ti.trainerId = t.id`,
+            JOIN ?? ti ON ti.trainerId = t.id
+            ORDER BY t.id ASC`,
       values: [tableName, tableTrainerInfo]
     })
   } catch (e) {
@@ -161,7 +162,7 @@ async function findOneWithIdForUser(id: number): Promise<ITrainerDetailForUser> 
   try {
     const [row] = await db.query({
       sql: `SELECT t.id, t.nickname, t.email, t.createdAt, t.profileImage,
-            ti.largeProfileImage, ti.shortIntro, ti.intro, ti.qualification, ti.speciality, ti.coachingStyle, ti.favorite,
+            ti.largeProfileImage, ti.shortIntro, ti.intro, ti.instagram, ti.qualification, ti.speciality, ti.coachingStyle, ti.favorite,
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', f.id, 'name', f.name)) FROM ?? f
             JOIN ?? ft ON ft.trainerId = t.id AND ft.franchiseId = f.id) as franchises
             FROM ?? t 

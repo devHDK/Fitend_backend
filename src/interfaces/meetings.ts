@@ -65,6 +65,17 @@ export interface IMeetingList {
   ]
 }
 
+export interface IMeetingListForMeetingSelect {
+  startDate: string
+  data: [
+    {
+      startTime: string
+      endTime: string
+      type: string
+    }
+  ]
+}
+
 export interface IMeetingListForTicket {
   id: number
   seq: number

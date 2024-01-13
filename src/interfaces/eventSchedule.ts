@@ -49,6 +49,17 @@ export interface IEventScheduleList {
   }
 }
 
+export interface IEventListForMeetingSelect {
+  startDate: string
+  data: [
+    {
+      startTime: string
+      endTime: string
+      type: string
+    }
+  ]
+}
+
 export interface IEventScheduleUpdate {
   id: number
   trainerId: number

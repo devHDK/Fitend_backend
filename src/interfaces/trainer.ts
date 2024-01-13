@@ -82,9 +82,10 @@ export type ITrainerDetailForUser = {
   email: string
   profileImage: string
   largeProfileImage: string
-  franchises: [{id: number; name: string}]
+  franchises?: [{id: number; name: string}]
   shortIntro: string
   intro: string
+  instagram: string
   qualification: {data: [string]}
   speciality: {data: [string]}
   coachingStyle: {data: [string]}

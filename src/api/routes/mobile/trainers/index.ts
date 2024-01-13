@@ -26,4 +26,19 @@ const getTrainersWithId = new ApiRouter({
   handler: ctrl.getTrainersWithId
 })
 
-export {getTrainers, getTrainersWithId}
+const getTrainerschedules = new ApiRouter({
+  name: ':id/schedules',
+  method: 'get',
+  paths: ['common/IdPath'],
+  summary: '트레이너 스케줄 조회',
+  isPublic: true,
+  tags: ['Trainers'],
+  schema: 'requests/mobile/trainers/GetTrainerSchedules',
+  responses: {
+    // 200: {schema: 'responses/mobile/trainers/GetTrainersWithId'}
+    200: {description: 'success'}
+  },
+  handler: ctrl.getTrainerschedules
+})
+
+export {getTrainers, getTrainersWithId, getTrainerschedules}

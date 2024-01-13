@@ -55,6 +55,42 @@ async function findAll(options: IReservationFindAll): Promise<[IReservationList]
   }
 }
 
+async function findAllWithTrainerIdForMeetingSelect(options: {
+  startDate: string
+  endDate: string
+  trainerId: number
+}): Promise<
+  [
+    {
+      startDate: string
+      data: [
+        {
+          startTime: string
+          endTime: string
+          type: string
+        }
+      ]
+    }
+  ]
+> {
+  const {trainerId, startDate, endDate} = options
+  try {
+    const where = [`t.times = 1`, `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`]
+    where.push(`t.trainerId = ${escape(trainerId)}`)
+    return await db.query({
+      sql: `SELECT DATE_FORMAT(DATE_ADD(t.startTime, INTERVAL 9 HOUR), '%Y-%m-%d') as startDate,
+            JSON_ARRAYAGG(JSON_OBJECT('startTime', t.startTime, 'endTime',t.endTime, 'type', 'reservation')) as data
+            FROM ?? t
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY startDate
+            `,
+      values: [tableName]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllForUser(options: IReservationFindAllForUser): Promise<[IReservationList]> {
   const {userId, startDate, interval} = options
   try {
@@ -417,6 +453,7 @@ export {
   create,
   findAll,
   findAllForUser,
+  findAllWithTrainerIdForMeetingSelect,
   findAllWithTicketId,
   findOneWithId,
   findOne,

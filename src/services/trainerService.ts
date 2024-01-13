@@ -8,7 +8,7 @@ import {
   ITrainerDetailForUser,
   ITrainerListForUser
 } from '../interfaces/trainer'
-import {Franchise, Reservation, Ticket, Trainer, User} from '../models/index'
+import {EventSchedule, Franchise, Meeting, Reservation, Ticket, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
 import {passwordIterations} from '../libs/code'
 import {db} from '../loaders'
@@ -60,6 +60,62 @@ async function findAll(franchiseId: number): Promise<[ITrainerList]> {
 async function findAllForUserSelect(): Promise<[ITrainerListForUser]> {
   try {
     return await Trainer.findAllForUserSelect()
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllTrainerScheduleWithId(options: {
+  startDate: string
+  endDate: string
+  trainerId: number
+}): Promise<
+  {
+    startDate: string
+    schedules: {
+      startTime: string
+      endTime: string
+      type: string
+    }[]
+  }[]
+> {
+  try {
+    const {startDate, endDate, trainerId} = options
+
+    const retArr: {startDate: string; schedules: {startTime: string; endTime: string; type: string}[]}[] = []
+
+    const diff = moment.duration(moment(endDate).diff(moment(startDate))).asDays()
+
+    const reservation = await Reservation.findAllWithTrainerIdForMeetingSelect({startDate, endDate, trainerId})
+    const meeting = await Meeting.findAllWithTrainerIdForMeetingSelect({startDate, endDate, trainerId})
+    const event = await EventSchedule.findAllWithTrainerIdForMeetingSelect({startDate, endDate, trainerId})
+
+    for (let index = 0; index < diff + 1; index++) {
+      const date = moment(startDate).add(index, 'day').format('YYYY-MM-DD')
+      const reservationIndex = reservation.findIndex((element) => element.startDate === date)
+      const meetingIndex = meeting.findIndex((element) => element.startDate === date)
+      const eventIndex = event.findIndex((element) => element.startDate === date)
+      const ret: {startDate: string; schedules: {startTime: string; endTime: string; type: string}[]} = {
+        startDate: date,
+        schedules: []
+      }
+
+      if (reservationIndex !== -1) {
+        ret.schedules = [...ret.schedules, ...reservation[reservationIndex].data]
+      }
+
+      if (meetingIndex !== -1) {
+        ret.schedules = [...ret.schedules, ...meeting[meetingIndex].data]
+      }
+      if (eventIndex !== -1) {
+        ret.schedules = [...ret.schedules, ...event[eventIndex].data]
+      }
+
+      if (ret.schedules.length > 0) {
+        retArr.push(ret)
+      }
+    }
+    return retArr
   } catch (e) {
     throw e
   }
@@ -145,6 +201,7 @@ export {
   findAll,
   findAllForAdmin,
   findAllForUserSelect,
+  findAllTrainerScheduleWithId,
   findOneWithIdForUser,
   findOneWithIdForAdmin,
   updatePassword

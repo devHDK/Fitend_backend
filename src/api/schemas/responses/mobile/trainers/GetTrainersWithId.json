@@ -25,6 +25,9 @@
     "intro": {
       "type": "string"
     },
+    "instagram": {
+      "type": "string"
+    },
     "qualification": {
       "type": "object",
       "properties": {
@@ -86,7 +89,8 @@
           }
         },
         "required": ["id", "name"]
-      }
+      },
+      "nullable": true
     },
     "additionalProperties": false
   },
@@ -102,7 +106,6 @@
     "qualification",
     "speciality",
     "coachingStyle",
-    "favorite",
-    "franchises"
+    "favorite"
   ]
 }

@@ -88,4 +88,12 @@ const deleteThreadsWithId = new ApiRouter({
   handler: ctrl.deleteThreadsWithId
 })
 
-export {postThreads, getThreads, getThreadsUsers, getThreadsWithId, putThreadsWithId, putThreadsCheck, deleteThreadsWithId}
+export {
+  postThreads,
+  getThreads,
+  getThreadsUsers,
+  getThreadsWithId,
+  putThreadsWithId,
+  putThreadsCheck,
+  deleteThreadsWithId
+}

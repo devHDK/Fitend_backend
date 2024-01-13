@@ -1,9 +1,6 @@
 {
   "type": "object",
   "properties": {
-    "trainerId": {
-      "type": "integer"
-    },
     "startDate": {
       "type": "string"
     },

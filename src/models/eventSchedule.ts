@@ -5,7 +5,8 @@ import {
   IEventScheduleFindAll,
   IEventScheduleCreate,
   IEventScheduleList,
-  IEventScheduleUpdate
+  IEventScheduleUpdate,
+  IEventListForMeetingSelect
 } from '../interfaces/eventSchedule'
 import {Trainer} from './index'
 
@@ -40,6 +41,42 @@ async function findAll(options: IEventScheduleFindAll): Promise<[IEventScheduleL
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id`,
       values: [tableName, Trainer.tableName]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllWithTrainerIdForMeetingSelect(options: {
+  startDate: string
+  endDate: string
+  trainerId: number
+}): Promise<
+  [
+    {
+      startDate: string
+      data: [
+        {
+          startTime: string
+          endTime: string
+          type: string
+        }
+      ]
+    }
+  ]
+> {
+  const {trainerId, startDate, endDate} = options
+  try {
+    const where = [`t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`]
+    where.push(`t.trainerId = ${escape(trainerId)}`)
+    return await db.query({
+      sql: `SELECT DATE_FORMAT(DATE_ADD(t.startTime, INTERVAL 9 HOUR), '%Y-%m-%d') as startDate,
+            JSON_ARRAYAGG(JSON_OBJECT('startTime', t.startTime, 'endTime',t.endTime, 'type', 'event')) as data
+            FROM ?? t
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY startDate
+            `,
+      values: [tableName]
     })
   } catch (e) {
     throw e
@@ -122,4 +159,4 @@ async function deleteOne(id: number): Promise<void> {
   }
 }
 
-export {tableName, create, findAll, findOneWithId, update, deleteOne}
+export {tableName, create, findAll, findAllWithTrainerIdForMeetingSelect, findOneWithId, update, deleteOne}

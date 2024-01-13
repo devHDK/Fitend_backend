@@ -10,6 +10,7 @@ import {
   IMeetingFindAllForUser,
   IMeetingFindOne,
   IMeetingList,
+  IMeetingListForMeetingSelect,
   IMeetingUpdate
 } from '../interfaces/meetings'
 
@@ -77,6 +78,46 @@ async function findAllForUser(options: IMeetingFindAllForUser): Promise<[IMeetin
   }
 }
 
+async function findAllWithTrainerIdForMeetingSelect(options: {
+  startDate: string
+  endDate: string
+  trainerId: number
+}): Promise<
+  [
+    {
+      startDate: string
+      data: [
+        {
+          startTime: string
+          endTime: string
+          type: string
+        }
+      ]
+    }
+  ]
+> {
+  const {trainerId, startDate, endDate} = options
+  try {
+    const where = [
+      `t.status = 'complete'`,
+      `t.status = 'attendance'`,
+      `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`
+    ]
+    where.push(`t.trainerId = ${escape(trainerId)}`)
+    return await db.query({
+      sql: `SELECT DATE_FORMAT(DATE_ADD(t.startTime, INTERVAL 9 HOUR), '%Y-%m-%d') as startDate,
+            JSON_ARRAYAGG(JSON_OBJECT('startTime', t.startTime, 'endTime',t.endTime, 'type', 'meeting')) as data
+            FROM ?? t
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY startDate
+            `,
+      values: [tableName]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneWithId(id: number): Promise<IMeetingDetail> {
   try {
     const [row] = await db.query({
@@ -121,4 +162,13 @@ async function update(options: IMeetingUpdate, connection: PoolConnection): Prom
   }
 }
 
-export {tableName, create, findAll, findAllForUser, findOneWithId, findOne, update}
+export {
+  tableName,
+  create,
+  findAll,
+  findAllForUser,
+  findAllWithTrainerIdForMeetingSelect,
+  findOneWithId,
+  findOne,
+  update
+}
