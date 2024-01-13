@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string"
+          },
+          "schedules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "endTime": {
+                  "type": "string"
+                },
+                "startTime": {
+                  "type": "string"
+                }
+              },
+              "required": ["type", "endTime", "startTime"]
+            }
+          }
+        },
+        "required": ["startDate", "schedules"]
+      }
+    }
+  },
+  "required": ["data"]
+}

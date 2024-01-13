@@ -35,8 +35,7 @@ const getTrainerschedules = new ApiRouter({
   tags: ['Trainers'],
   schema: 'requests/mobile/trainers/GetTrainerSchedules',
   responses: {
-    // 200: {schema: 'responses/mobile/trainers/GetTrainersWithId'}
-    200: {description: 'success'}
+    200: {schema: 'responses/mobile/trainers/GetTrainersSchedules'}
   },
   handler: ctrl.getTrainerschedules
 })

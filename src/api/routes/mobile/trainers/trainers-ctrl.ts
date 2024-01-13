@@ -24,7 +24,7 @@ async function getTrainerschedules(req: IRequest, res: Response, next: Function)
   try {
     const {startDate, endDate} = req.options
     const ret = await TrainerService.findAllTrainerScheduleWithId({startDate, endDate, trainerId: req.options.id})
-    res.status(200).json({date: ret})
+    res.status(200).json({data: ret})
   } catch (e) {
     if (e.message === 'not_found') e.status = 404
     next(e)
