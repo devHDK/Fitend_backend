@@ -45,6 +45,18 @@ interface IUserDetail extends IUser {
     nickname: string
     profileImage: string
   }[]
+  bodySpec: {
+    height: number
+    weight: number
+  }
+  preSurvey: {
+    experience: number
+    purpose: number
+    achievement: number[]
+    obstacle: number[]
+    place: string
+    preferDays: number[]
+  }
 }
 
 interface IUserDetailForAdmin extends IUser {
@@ -157,7 +169,9 @@ async function findOneWithId(id: number): Promise<IUserDetail> {
     const tickets = await Ticket.findCounts(id)
     const workouts = await WorkoutSchedule.findCounts(id)
     const trainers = await Trainer.findActiveTrainersWithUserId(id)
-    return {...user, tickets, workouts, trainers}
+    const preSurvey = await User.findPreSurveyWithId(id)
+    const bodySpec = await User.findBodySpecWithId(id)
+    return {...user, tickets, workouts, trainers, bodySpec, preSurvey}
   } catch (e) {
     throw e
   }
