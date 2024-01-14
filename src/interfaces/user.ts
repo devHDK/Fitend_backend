@@ -23,6 +23,13 @@ export interface IUser {
     }
   ]
   activeTickets: ITicketList
+  lastTickets: ITicketList
+  lastTrainers?: [
+    {
+      id: number
+      nickname: string
+    }
+  ]
   createdAt?: string
   deletedAt?: Date | string
 }

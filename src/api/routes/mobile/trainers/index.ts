@@ -31,7 +31,6 @@ const getTrainerschedules = new ApiRouter({
   method: 'get',
   paths: ['common/IdPath'],
   summary: '트레이너 스케줄 조회',
-  isPublic: true,
   tags: ['Trainers'],
   schema: 'requests/mobile/trainers/GetTrainerSchedules',
   responses: {

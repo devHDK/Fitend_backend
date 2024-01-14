@@ -79,7 +79,8 @@ async function findAllWithTrainerIdForMeetingSelect(options: {
     where.push(`t.trainerId = ${escape(trainerId)}`)
     return await db.query({
       sql: `SELECT DATE_FORMAT(DATE_ADD(t.startTime, INTERVAL 9 HOUR), '%Y-%m-%d') as startDate,
-            JSON_ARRAYAGG(JSON_OBJECT('startTime', t.startTime, 'endTime',t.endTime, 'type', 'reservation')) as data
+            JSON_ARRAYAGG(JSON_OBJECT('startTime', DATE_FORMAT(t.startTime, '%Y-%m-%dT%H:%i:%s.000Z'),
+            'endTime',DATE_FORMAT(t.endTime, '%Y-%m-%dT%H:%i:%s.000Z'), 'type', 'reservation')) as data
             FROM ?? t
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY startDate

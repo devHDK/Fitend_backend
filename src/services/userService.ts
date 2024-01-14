@@ -124,20 +124,32 @@ async function confirmPassword(options: {id: number; password: string}): Promise
 async function getMe(options: {id: number}): Promise<IUser> {
   try {
     const {id} = options
+    let activeTickets, activeTrainers, lastTickets, lastTrainers
     const user = await User.findOne({id})
     const userDevice = await UserDevice.findOne(user.id, user.deviceId, user.platform)
-    const activeTrainers = await Trainer.findActiveTrainersWithUserId(id)
     if (!userDevice || !userDevice.token) throw new Error('no_token')
     const isActive = await Ticket.findOneWithUserId(user.id)
-    if (!isActive) throw new Error('ticket_expired')
 
-    const activeTickets = await Ticket.findAllForUser({
-      userId: id
-    })
+    if (isActive) {
+      activeTrainers = await Trainer.findActiveTrainersWithUserId(id)
+      activeTickets = await Ticket.findAllForUser({
+        userId: id
+      })
+    } else {
+      lastTickets = await Ticket.findLastTicketUser({userId: id})
+      lastTrainers = await Trainer.findLastTrainersWithUserId({userId: id, ticketId: lastTickets[0].id})
+    }
 
     delete user.password
 
-    return {...user, isNotification: userDevice.isNotification, activeTrainers, activeTickets}
+    return {
+      ...user,
+      isNotification: userDevice.isNotification,
+      activeTrainers: isActive ? activeTrainers : [],
+      activeTickets: isActive ? activeTickets : [],
+      lastTickets: isActive ? [] : lastTickets,
+      lastTrainers: isActive ? [] : lastTrainers
+    }
   } catch (e) {
     throw e
   }

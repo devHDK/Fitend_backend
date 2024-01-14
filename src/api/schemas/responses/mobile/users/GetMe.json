@@ -40,11 +40,105 @@
               },
               "nickname": {
                 "type": "string"
+              },
+              "profileImage": {
+                "type": "string"
+              },
+              "workStartTime": {
+                "type": "string",
+                "example": "13:00:00"
+              },
+              "workEndTime": {
+                "type": "string",
+                "example": "20:00:00"
               }
             }
           }
         },
         "activeTickets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["personal", "fitness"]
+              },
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "totalSession": {
+                "type": "integer"
+              },
+              "restSession": {
+                "type": "integer"
+              },
+              "availSession": {
+                "type": "integer"
+              },
+              "startedAt": {
+                "type": "string"
+              },
+              "expiredAt": {
+                "type": "string"
+              },
+              "createdAt": {
+                "type": "string"
+              },
+              "receiptId": {
+                "type": "string",
+                "nullable": true
+              },
+              "isHolding": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "users",
+              "totalSession",
+              "restSession",
+              "startedAt",
+              "expiredAt",
+              "createdAt",
+              "isHolding"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "lastTrainers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "nickname": {
+                "type": "string"
+              },
+              "profileImage": {
+                "type": "string"
+              },
+              "workStartTime": {
+                "type": "string",
+                "example": "13:00:00"
+              },
+              "workEndTime": {
+                "type": "string",
+                "example": "20:00:00"
+              }
+            }
+          }
+        },
+        "lastTickets": {
           "type": "array",
           "items": {
             "type": "object",

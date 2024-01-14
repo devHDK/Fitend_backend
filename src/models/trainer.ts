@@ -119,12 +119,36 @@ async function findActiveTrainersWithUserId(
   try {
     const currentTime = moment().format('YYYY-MM-DD')
     return await db.query({
-      sql: `SELECT t.id, t.nickname, t.profileImage
+      sql: `SELECT t.id, t.nickname, t.profileImage, tin.workStartTime, tin.workEndTime
             FROM ?? t
             JOIN ?? tr ON tr.trainerId = t.id AND tr.userId = ?
             JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= ${escape(currentTime)}
+            JOIN ?? tin ON tin.trainerId = t.id
             GROUP BY t.id`,
-      values: [tableName, Ticket.tableTicketRelation, userId, Ticket.tableName]
+      values: [tableName, Ticket.tableTicketRelation, userId, Ticket.tableName, tableTrainerInfo]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findLastTrainersWithUserId(options: {
+  userId: number
+  ticketId: number
+}): Promise<[{id: number; nickname: string; profileImage: string}]> {
+  try {
+    const {userId, ticketId} = options
+
+    const currentTime = moment().format('YYYY-MM-DD')
+    return await db.query({
+      sql: `SELECT t.id, t.nickname, t.profileImage, tin.workStartTime, tin.workEndTime
+            FROM ?? t
+            JOIN ?? tr ON tr.trainerId = t.id AND tr.userId = ?
+            JOIN ?? ti ON ti.id = ?
+            JOIN ?? tin ON tin.trainerId = t.id
+            GROUP BY t.id
+            `,
+      values: [tableName, Ticket.tableTicketRelation, userId, Ticket.tableName, tableTrainerInfo, ticketId]
     })
   } catch (e) {
     throw e
@@ -224,6 +248,7 @@ export {
   findTrainerWageInfo,
   findAll,
   findActiveTrainersWithUserId,
+  findLastTrainersWithUserId,
   findAllForAdmin,
   findAllForUserSelect,
   findOneWithIdForAdmin,
