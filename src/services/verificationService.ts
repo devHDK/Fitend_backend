@@ -11,10 +11,10 @@ async function postVerifications(options: IVerificationCreate): Promise<{codeTok
 
     if (type === 'register') {
       const user = await User.findOne({phone})
-      if (user) throw new Error('already_in_use')
+      // if (user) throw new Error('already_in_use')
     } else if (type === 'reset') {
-      if (email === null) throw new Error('wrong_input')
-      const user = await User.findOne({phone, email})
+      // if (email === null) throw new Error('wrong_input')
+      const user = await User.findOne({phone})
       if (!user) throw new Error('wrong_input')
     } else if (type === 'id') {
       const user = await User.findOne({phone})
@@ -35,6 +35,7 @@ async function postVerifications(options: IVerificationCreate): Promise<{codeTok
     const expireAt = new Date(exp * 1000)
     const codeToken = await JWT.createToken({sub: id, exp, type}, {algorithm: 'RS256'})
     const ret = {codeToken, expireAt}
+
     if (process.env.NODE_ENV !== 'production') {
       ret.codeToken = codeToken
       await sendVerificationCodeWithMessage(phone, code)
@@ -66,17 +67,29 @@ async function postVerificationsConfirm(options: {
     if (verification) {
       const {code: savedCode} = verification
       if (code === savedCode) {
-        if (type === 'id') {
+        if (type === 'id' || type === 'reset') {
           const {email} = await User.findOne({phone: verification.phone})
-          return {email}
+          await Verification.updateVerification({id, confirmed: true}, connection)
+          const exp = Math.floor(Date.now() / 1000) + 30 * 60
+          const phoneToken = await JWT.createToken({sub: id, exp}, {algorithm: 'RS256'})
+
+          await db.commit(connection)
+          return {email, phoneToken}
         }
-        await Verification.updateVerification({id, confirmed: true}, connection)
-        const exp = Math.floor(Date.now() / 1000) + 30 * 60
-        const phoneToken = await JWT.createToken({sub: id, exp}, {algorithm: 'RS256'})
+        if (type === 'register') {
+          const {email} = await User.findOne({phone: verification.phone})
 
-        await db.commit(connection)
+          if (email) {
+            await db.commit(connection)
+            return {email}
+          }
 
-        return {phoneToken}
+          await Verification.updateVerification({id, confirmed: true}, connection)
+          const exp = Math.floor(Date.now() / 1000) + 30 * 60
+          const phoneToken = await JWT.createToken({sub: id, exp}, {algorithm: 'RS256'})
+          await db.commit(connection)
+          return {phoneToken}
+        }
       }
       throw new Error('wrong_code')
     } else {
