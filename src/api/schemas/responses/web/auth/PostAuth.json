@@ -19,6 +19,14 @@
         "profileImage": {
           "type": "string"
         },
+        "workStartTime": {
+          "type": "string",
+          "example": "00:00:00"
+        },
+        "workEndTime": {
+          "type": "string",
+          "example": "00:00:00"
+        },
         "createdAt": {
           "type": "string"
         }
@@ -26,9 +34,6 @@
       "additionalProperties": false
     }
   },
-  "required": [
-    "accessToken",
-    "trainer"
-  ],
+  "required": ["accessToken", "trainer"],
   "additionalProperties": false
 }

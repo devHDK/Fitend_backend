@@ -12,4 +12,17 @@ const getTrainers = new ApiRouter({
   handler: ctrl.getTrainers
 })
 
-export {getTrainers}
+const putTrainerMeetingBoundary = new ApiRouter({
+  name: ':id/meetingBoundary',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '트레이너 미팅바운더리 설정',
+  tags: ['Trainer'],
+  schema: 'requests/web/trainers/PutTrainerMeetingBoundary',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putTrainerMeetingBoundary
+})
+
+export {getTrainers, putTrainerMeetingBoundary}

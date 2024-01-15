@@ -12,7 +12,8 @@ import {
   ITrainerList,
   ITrainerListForAdmin,
   ITrainerListForUser,
-  ITrainerUpdate
+  ITrainerUpdate,
+  ITrainerUpdateMeetingBoundary
 } from '../interfaces/trainer'
 import {IWageInfo} from '../interfaces/payroll'
 import {Ticket, User} from './'
@@ -158,10 +159,11 @@ async function findLastTrainersWithUserId(options: {
 async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.*
+      sql: `SELECT t.*, ti.workStartTime, ti.workEndTime
             FROM ?? t
+            JOIN ?? ti ON ti.trainerId = t.id
             WHERE ?`,
-      values: [tableName, options]
+      values: [tableName, tableTrainerInfo, options]
     })
     return row
   } catch (e) {
@@ -240,6 +242,18 @@ async function updateOne(options: ITrainerUpdate): Promise<void> {
   }
 }
 
+async function updateTrainerMeetingBoundary(options: ITrainerUpdateMeetingBoundary): Promise<void> {
+  const {trainerId, ...data} = options
+  try {
+    await db.query({
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableTrainerInfo, data, {trainerId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   tableName,
   tableFranchiseTrainer,
@@ -254,5 +268,6 @@ export {
   findOneWithIdForAdmin,
   findOneWithIdForUser,
   findDeviceList,
-  updateOne
+  updateOne,
+  updateTrainerMeetingBoundary
 }

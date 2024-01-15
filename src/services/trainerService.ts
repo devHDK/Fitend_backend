@@ -6,7 +6,8 @@ import {
   ITrainerList,
   ITrainerListForAdmin,
   ITrainerDetailForUser,
-  ITrainerListForUser
+  ITrainerListForUser,
+  ITrainerUpdateMeetingBoundary
 } from '../interfaces/trainer'
 import {EventSchedule, Franchise, Meeting, Reservation, Ticket, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
@@ -195,6 +196,14 @@ async function updatePassword({
   }
 }
 
+async function updateMeetingBoundary(options: ITrainerUpdateMeetingBoundary): Promise<void> {
+  try {
+    await Trainer.updateTrainerMeetingBoundary(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   create,
   signIn,
@@ -204,5 +213,6 @@ export {
   findAllTrainerScheduleWithId,
   findOneWithIdForUser,
   findOneWithIdForAdmin,
-  updatePassword
+  updatePassword,
+  updateMeetingBoundary
 }
