@@ -11,8 +11,6 @@ export interface ITrainer {
   }
   salt?: string
   profileImage?: string
-  workStartTime: string
-  workEndTime: string
   createdAt?: string
 }
 
@@ -68,7 +66,7 @@ export interface ITrainerUpdate {
   password?: string
 }
 
-export interface ITrainerUpdateMeetingBoundary {
+export interface ITrainerMeetingBoundary {
   trainerId: number
   workStartTime: string
   workEndTime: string

@@ -10,6 +10,15 @@ async function getTrainers(req: IRequest, res: Response, next: Function): Promis
   }
 }
 
+async function getTrainersMeetingBoundary(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const ret = await TrainerService.findTrainersMeetingBoundaryWithId(req.options.id)
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function putTrainerMeetingBoundary(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id, workStartTime, workEndTime} = req.options
@@ -20,4 +29,4 @@ async function putTrainerMeetingBoundary(req: IRequest, res: Response, next: Fun
   }
 }
 
-export {getTrainers, putTrainerMeetingBoundary}
+export {getTrainers, getTrainersMeetingBoundary, putTrainerMeetingBoundary}
