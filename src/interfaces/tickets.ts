@@ -66,3 +66,17 @@ export type ITicketList = IResponseList<{
   createdAt: string
   receiptId: string
 }>
+
+export interface ITicketForUser {
+  id: number
+  type: 'personal' | 'fitness'
+  totalSession: number
+  serviceSession: number
+  availSession: number
+  sessionPrice: number
+  coachingPrice: number
+  startedAt: string
+  expiredAt: string
+  createdAt: string
+  isHolding?: boolean
+}

@@ -126,7 +126,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
 async function findAllForUser(options: {userId: number}): Promise<ITicketList> {
   try {
     const {userId} = options
-    return await Ticket.findAllForUser({userId})
+    return await Ticket.findAllTicketsForUser({userId})
   } catch (e) {
     throw e
   }
