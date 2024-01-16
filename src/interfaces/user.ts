@@ -16,6 +16,8 @@ export interface IUser {
   deviceId?: string
   badgeCount?: number
   isNotification?: boolean
+  weight?: number
+  height?: number
   activeTrainers?: [
     {
       id: number

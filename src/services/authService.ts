@@ -84,6 +84,8 @@ async function signIn(options: {
         lastTrainers = await Trainer.findLastTrainersWithUserId({userId: user.id, ticketId: lastTickets[0].id})
       }
 
+      const userBodySpec = await User.findUserBodySpecWithId({userId: user.id})
+
       delete user.password
       await db.commit(connection)
       return {
@@ -95,7 +97,9 @@ async function signIn(options: {
           activeTrainers: isActive ? activeTrainers : [],
           activeTickets: isActive ? activeTickets : [],
           lastTickets: isActive ? [] : lastTickets,
-          lastTrainers: isActive ? [] : lastTrainers
+          lastTrainers: isActive ? [] : lastTrainers,
+          weight: userBodySpec ? userBodySpec.weight : null,
+          height: userBodySpec ? userBodySpec.height : null
         }
       }
     }

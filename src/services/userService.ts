@@ -129,6 +129,7 @@ async function getMe(options: {id: number}): Promise<IUser> {
     const userDevice = await UserDevice.findOne(user.id, user.deviceId, user.platform)
     if (!userDevice || !userDevice.token) throw new Error('no_token')
     const isActive = await Ticket.findOneWithUserId(user.id)
+    const userBodySpec = await User.findUserBodySpecWithId({userId: id})
 
     if (isActive) {
       activeTrainers = await Trainer.findActiveTrainersWithUserId(id)
@@ -148,7 +149,9 @@ async function getMe(options: {id: number}): Promise<IUser> {
       activeTrainers: isActive ? activeTrainers : [],
       activeTickets: isActive ? activeTickets : [],
       lastTickets: isActive ? [] : lastTickets,
-      lastTrainers: isActive ? [] : lastTrainers
+      lastTrainers: isActive ? [] : lastTrainers,
+      weight: userBodySpec ? userBodySpec.weight : null,
+      height: userBodySpec ? userBodySpec.height : null
     }
   } catch (e) {
     throw e

@@ -342,6 +342,25 @@ async function findOne(options: IUserFindOne): Promise<IUser> {
   }
 }
 
+async function findUserBodySpecWithId(options: {userId: number}): Promise<{height: number; weight: number}> {
+  try {
+    const {userId} = options
+
+    const [row] = await db.query({
+      sql: `SELECT t.height, t.weight
+            FROM ?? t
+            WHERE ?
+            ORDER BY t.createdAt DESC
+            LIMIT 1
+            `,
+      values: [tableUserBodySpec, {userId}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findActivePersonalUsers(
   franchiseId: number,
   startDate: string,
@@ -613,6 +632,7 @@ export {
   findOne,
   updatePasswordForUser,
   findOneWithId,
+  findUserBodySpecWithId,
   findActivePersonalUsers,
   findActiveFitnessUsers,
   findPreSurveyWithId,

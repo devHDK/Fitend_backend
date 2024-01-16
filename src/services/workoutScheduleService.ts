@@ -127,11 +127,39 @@ async function createFeedbacks(options: IWorkoutFeedbackData): Promise<void> {
     if (workoutFeedback) throw new Error('duplicate_feedback')
     const workoutFeedbackId = await WorkoutFeedbacks.create(data, connection)
 
+    //몸무게 / 운동시간 METs
+    const userBodySpec = await User.findUserBodySpecWithId({userId})
+
+    if (userBodySpec) {
+      const record = await WorkoutSchedule.findOneScheduleRecord(data.workoutScheduleId)
+
+      if (record && record.workoutDuration != null) {
+        const workoutMin = record.workoutDuration / 60
+
+        const METs =
+          data.strengthIndex === 1 || data.strengthIndex === 2
+            ? 3.5
+            : data.strengthIndex === 3 || data.strengthIndex === 4
+            ? 5
+            : 6
+
+        // [(x)METs * 3.5mL/kg/min * 체중(kg) /1000] * 5kcal * 운동시간(min)
+        const calories = Math.ceil(METs * userBodySpec.weight * workoutMin * 0.0172)
+        record.calories = calories
+
+        await WorkoutSchedule.updateWorkoutScheduleRecords(
+          {workoutScheduleId: data.workoutScheduleId, ...record},
+          connection
+        )
+      }
+    }
+
     if (issueIndexes && issueIndexes.length > 0) {
       await WorkoutFeedbacks.createRelationIssues({workoutFeedbackId, issueIndexes}, connection)
     }
 
-    const workoutScheduleData = await WorkoutSchedule.findUsernameWithWorkoutScheduleId(data.workoutScheduleId)
+    // const workoutScheduleData = await WorkoutSchedule.findUsernameWithWorkoutScheduleId(data.workoutScheduleId)
+
     // await firebase.sendToTopic(`trainer_${workoutSchedule.trainerId}`, {
     //   notification: {body: `${workoutScheduleData.userNickname}님이 오늘의 운동을 완료하였습니다.`}
     // })
