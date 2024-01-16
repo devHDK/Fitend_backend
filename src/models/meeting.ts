@@ -57,7 +57,8 @@ async function findAllForUser(options: IMeetingFindAllForUser): Promise<[IMeetin
     const startDateUtc = moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss')
     const where = [
       `t.startTime BETWEEN ${escape(startDateUtc)} AND DATE_ADD('${startDateUtc}', 
-      INTERVAL ${interval ? escape(interval) : 30} DAY)`
+      INTERVAL ${interval ? escape(interval) : 30} DAY)`,
+      `t.userId = ${escape(userId)}`
     ]
     return await db.query({
       sql: `SELECT DATE_FORMAT(DATE_ADD(t.startTime, INTERVAL 9 HOUR), '%Y-%m-%d') as startDate,
@@ -66,7 +67,7 @@ async function findAllForUser(options: IMeetingFindAllForUser): Promise<[IMeetin
             'endTime', DATE_FORMAT(t.endTime, '%Y-%m-%dT%H:%i:%s.000Z'), 'status', t.status, 
             'userNickname', u.nickname, 'trainer', JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage)
             )) as meetings
-            FROM ?? t
+            FROM ?? t 
             JOIN ?? u ON u.id = ${escape(userId)}
             JOIN ?? tra ON tra.id = t.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}

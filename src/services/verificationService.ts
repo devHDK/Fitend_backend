@@ -77,11 +77,11 @@ async function postVerificationsConfirm(options: {
           return {email, phoneToken}
         }
         if (type === 'register') {
-          const {email} = await User.findOne({phone: verification.phone})
+          const user = await User.findOne({phone: verification.phone})
 
-          if (email) {
+          if (user) {
             await db.commit(connection)
-            return {email}
+            return {email: user.email}
           }
 
           await Verification.updateVerification({id, confirmed: true}, connection)
