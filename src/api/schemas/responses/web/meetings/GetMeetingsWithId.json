@@ -22,6 +22,9 @@
     "userNickname": {
       "type": "string"
     },
+    "meetingLink": {
+      "type": "string"
+    },
     "trainer": {
       "type": "object",
       "properties": {

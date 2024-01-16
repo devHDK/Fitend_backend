@@ -122,14 +122,15 @@ async function findOneWithId(id: number): Promise<IMeetingDetail> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id, t.startTime, t.endTime, t.status,
-            u.id as userId, u.nickname as userNickname, 
+            u.id as userId, u.nickname as userNickname, tri.meetingLink,
             JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer
             FROM ?? t
             JOIN ?? u ON u.id = t.userId
             JOIN ?? tra ON tra.id = t.trainerId
+            JOIN ?? tri ON tri.trainerId = t.trainerId
             WHERE t.id = ${escape(id)}
             GROUP BY t.id`,
-      values: [tableName, User.tableName, Trainer.tableName]
+      values: [tableName, User.tableName, Trainer.tableName, Trainer.tableTrainerInfo]
     })
     return row
   } catch (e) {
