@@ -123,7 +123,7 @@ async function findOneWithId(id: number): Promise<IMeetingDetail> {
             u.id as userId, u.nickname as userNickname, 
             JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer
             FROM ?? t
-            JOIN ?? u ON u.id = tr.userId
+            JOIN ?? u ON u.id = t.userId
             JOIN ?? tra ON tra.id = t.trainerId
             WHERE t.id = ${escape(id)}
             GROUP BY t.id`,
@@ -160,6 +160,17 @@ async function update(options: IMeetingUpdate, connection: PoolConnection): Prom
   }
 }
 
+async function deleteOne(id: number): Promise<void> {
+  try {
+    await db.query({
+      sql: `DELETE FROM ?? WHERE ?`,
+      values: [tableName, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   tableName,
   create,
@@ -168,5 +179,6 @@ export {
   findAllWithTrainerIdForMeetingSelect,
   findOneWithId,
   findOne,
-  update
+  update,
+  deleteOne
 }
