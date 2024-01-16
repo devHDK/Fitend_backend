@@ -56,6 +56,7 @@ export interface IMeetingList {
       endTime: string
       status: string
       userNickname: string
+      meetingLink?: string
       trainer: {
         id: number
         nickname: string

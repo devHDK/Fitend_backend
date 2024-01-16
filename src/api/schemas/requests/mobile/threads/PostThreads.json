@@ -11,6 +11,10 @@
     "content": {
       "type": "string"
     },
+    "isMeetingThread": {
+      "type": "boolean",
+      "nullable": true
+    },
     "gallery": {
       "type": "array",
       "items": {
@@ -30,6 +34,7 @@
       }
     }
   },
+
   "required": ["trainerId", "content"],
   "additionalProperties": false
 }

@@ -23,6 +23,15 @@
                 "endTime": {
                   "type": "string"
                 },
+                "startTime": {
+                  "type": "string"
+                },
+                "userNickname": {
+                  "type": "string"
+                },
+                "meetingLink": {
+                  "type": "string"
+                },
                 "trainer": {
                   "type": "object",
                   "properties": {
@@ -37,12 +46,6 @@
                     }
                   },
                   "required": ["id", "nickname", "profileImage"]
-                },
-                "startTime": {
-                  "type": "string"
-                },
-                "userNickname": {
-                  "type": "string"
                 }
               },
               "required": ["id", "status", "endTime", "trainer", "startTime", "userNickname"]

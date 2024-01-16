@@ -3,7 +3,7 @@ import {ThreadService} from '../../../../services'
 
 async function postThreads(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {trainerId, title, content, gallery} = req.options
+    const {trainerId, title, content, gallery, isMeetingThread} = req.options
     const threadId = await ThreadService.create({
       userId: req.userId,
       trainerId,
@@ -11,7 +11,8 @@ async function postThreads(req: IRequest, res: Response, next: Function): Promis
       type: 'general',
       title,
       content,
-      gallery: gallery && gallery.length > 0 ? JSON.stringify(gallery) : null
+      gallery: gallery && gallery.length > 0 ? JSON.stringify(gallery) : null,
+      isMeetingThread
     })
     res.status(200).json(threadId)
   } catch (e) {

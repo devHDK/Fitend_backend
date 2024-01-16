@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import moment from 'moment-timezone'
-import {Ticket, Notification, User, UserDevice, Meeting} from '../models/index'
+import {Ticket, Notification, User, UserDevice, Meeting, Thread, Trainer} from '../models/index'
 import {db} from '../loaders'
 import {util} from '../libs'
 import {meetingSubscriber} from '../subscribers'
@@ -22,6 +22,20 @@ async function create(options: {trainerId: number; userId: number; startTime: st
         userId,
         startTime,
         endTime
+      },
+      connection
+    )
+
+    const trainerThread = await Trainer.findOneTrainerThread({id: trainerId})
+
+    await Thread.create(
+      {
+        content: trainerThread.welcomeThreadContent,
+        gallery: JSON.stringify(trainerThread.welcomeThreadGallery),
+        trainerId,
+        userId,
+        type: 'general',
+        writerType: 'trainer'
       },
       connection
     )

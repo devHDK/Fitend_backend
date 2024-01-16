@@ -65,14 +65,16 @@ async function findAllForUser(options: IMeetingFindAllForUser): Promise<[IMeetin
             JSON_ARRAYAGG(JSON_OBJECT(
             'id', t.id, 'startTime', DATE_FORMAT(t.startTime, '%Y-%m-%dT%H:%i:%s.000Z'), 
             'endTime', DATE_FORMAT(t.endTime, '%Y-%m-%dT%H:%i:%s.000Z'), 'status', t.status, 
-            'userNickname', u.nickname, 'trainer', JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage)
+            'userNickname', u.nickname, 'meetingLink', ti.meetingLink,
+            'trainer', JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage)
             )) as meetings
             FROM ?? t 
             JOIN ?? u ON u.id = ${escape(userId)}
             JOIN ?? tra ON tra.id = t.trainerId
+            JOIN ?? ti ON ti.trainerId = tra.id
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY startDate`,
-      values: [tableName, User.tableName, Trainer.tableName]
+      values: [tableName, User.tableName, Trainer.tableName, Trainer.tableTrainerInfo]
     })
   } catch (e) {
     throw e
