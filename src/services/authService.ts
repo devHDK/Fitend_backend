@@ -29,6 +29,7 @@ async function signIn(options: {
   const connection = await db.beginTransaction()
   try {
     const {email, password, deviceId, platform, token} = options
+    let activeTickets, activeTrainers, lastTickets, lastTrainers
     const user = await User.findOne({email})
     if (!user) throw new Error('not_found')
     if (
@@ -37,7 +38,7 @@ async function signIn(options: {
     ) {
       const userDevice = await UserDevice.findOne(user.id, user.deviceId, user.platform)
       const isActive = await Ticket.findOneWithUserId(user.id)
-      if (!isActive) throw new Error('not_allowed')
+      // if (!isActive) throw new Error('not_allowed')
       const accessToken = await JWT.createAccessToken({id: user.id, type: 'user'})
       const refreshToken = await JWT.createRefreshToken({id: user.id, type: 'user'}, user.password.salt)
 
@@ -73,10 +74,15 @@ async function signIn(options: {
         }
       }
 
-      const activeTrainers = await Trainer.findActiveTrainersWithUserId(user.id)
-      const activeTickets = await Ticket.findAllForUser({
-        userId: user.id
-      })
+      if (isActive) {
+        activeTrainers = await Trainer.findActiveTrainersWithUserId(user.id)
+        activeTickets = await Ticket.findAllForUser({
+          userId: user.id
+        })
+      } else {
+        lastTickets = await Ticket.findLastTicketUser({userId: user.id})
+        lastTrainers = await Trainer.findLastTrainersWithUserId({userId: user.id, ticketId: lastTickets[0].id})
+      }
 
       delete user.password
       await db.commit(connection)
@@ -86,8 +92,10 @@ async function signIn(options: {
         user: {
           ...user,
           isNotification: userDevice ? userDevice.isNotification : true,
-          activeTrainers,
-          activeTickets
+          activeTrainers: isActive ? activeTrainers : [],
+          activeTickets: isActive ? activeTickets : [],
+          lastTickets: isActive ? [] : lastTickets,
+          lastTrainers: isActive ? [] : lastTrainers
         }
       }
     }
@@ -200,10 +208,14 @@ async function passwordReset(options: {
     await JWT.decodeToken(phoneToken, {algorithms: ['RS256']})
     await Verification.updateVerification({id: verification.id, used: true}, connection)
 
-    const user = await User.findOne({phone, email})
-    if (!user) throw new Error('not_found')
+    const user = await User.findOne({phone})
+    if (!user || email !== user.email) throw new Error('not_found')
+
     await User.updatePasswordForUser({id: user.id, password}, connection)
+
+    await db.commit(connection)
   } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }
