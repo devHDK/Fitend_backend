@@ -30,7 +30,7 @@ async function create(options: IMeetingCreate, connection?: PoolConnection): Pro
 }
 
 async function findAll(options: IMeetingFindAll): Promise<[IMeetingList]> {
-  const {franchiseId, userId, trainerId, startDate, endDate} = options
+  const {userId, trainerId, startDate, endDate} = options
   try {
     const where = [`t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`]
     if (trainerId) where.push(`t.trainerId = ${escape(trainerId)}`)
@@ -43,7 +43,7 @@ async function findAll(options: IMeetingFindAll): Promise<[IMeetingList]> {
             JOIN ?? tra ON tra.id = t.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
-            ORDER BY t.seq`,
+            `,
       values: [tableName, User.tableName, Trainer.tableName]
     })
   } catch (e) {

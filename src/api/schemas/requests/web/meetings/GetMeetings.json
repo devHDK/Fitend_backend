@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "integer"
+    },
+    "trainerId": {
+      "type": "integer"
+    },
+    "startDate": {
+      "type": "string"
+    },
+    "endDate": {
+      "type": "string"
+    }
+  },
+  "required": ["startDate", "endDate"],
+  "additionalProperties": false
+}
