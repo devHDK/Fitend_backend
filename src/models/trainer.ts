@@ -170,6 +170,24 @@ async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
   }
 }
 
+async function findOneTrainerThread(
+  options: ITrainerFindOne
+): Promise<{welcomeThreadContent: string; welcomeThreadGallery: string}> {
+  const {id} = options
+
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.*
+            FROM ?? t
+            WHERE t.trainerId = ${escape(id)}`,
+      values: [tableTrainerInfo]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
   try {
     const [row] = await db.query({
@@ -270,8 +288,10 @@ async function updateTrainerMeetingBoundary(options: ITrainerMeetingBoundary): P
 export {
   tableName,
   tableFranchiseTrainer,
+  tableTrainerInfo,
   create,
   findOne,
+  findOneTrainerThread,
   findTrainerWageInfo,
   findAll,
   findActiveTrainersWithUserId,

@@ -1,4 +1,4 @@
-import {Thread, User, UserDevice, Notification} from '../models/index'
+import {Thread, User, UserDevice, Notification, Trainer} from '../models/index'
 import {
   IThreadFindAll,
   IThreadList,
@@ -16,13 +16,60 @@ import {threadSubscriber} from '../subscribers'
 async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
   const connection = await db.beginTransaction()
   try {
-    const {userId, writerType, title, content} = options
+    const {userId, writerType, title, content, isMeetingThread, trainerId} = options
+
+    delete options.isMeetingThread
+
     const threadId = await Thread.create(options, connection)
     const user = await User.findOne({id: userId})
     if (writerType === 'user') {
       // await firebase.sendToTopic(`trainer_${options.trainerId}`, {
       //   notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
       // })
+
+      if (isMeetingThread) {
+        // await User.createInflowContent({complete: false, name: '사전상담여부', userId}, connection)
+        const trainerThread = await Trainer.findOneTrainerThread({id: trainerId})
+
+        await Thread.create(
+          {
+            content: trainerThread.welcomeThreadContent,
+            gallery: JSON.stringify(trainerThread.welcomeThreadGallery),
+            trainerId,
+            userId,
+            type: 'general',
+            writerType: 'trainer'
+          },
+          connection
+        )
+
+        const contents = `새로운 스레드가 올라왔어요 👀\n${title ? `${title}·` : ``}${
+          trainerThread.welcomeThreadContent
+        }`
+        await Notification.create(
+          {
+            userId,
+            type: 'thread',
+            contents,
+            info: JSON.stringify({threadId})
+          },
+          connection
+        )
+        const userDevices = await UserDevice.findAllWithUserId(user.id)
+        if (userDevices && userDevices.length > 0) {
+          await User.updateBadgeCount(userId, connection)
+          threadSubscriber.publishThreadPushEvent({
+            tokens: userDevices.map((device: IUserDevice) => device.token),
+            type: 'threadCreate',
+            contents,
+            badge: user.badgeCount + 1,
+            sound: 'default',
+            data: {
+              threadId: threadId.toString()
+            }
+          })
+        }
+      }
     } else {
       const userDevices = await UserDevice.findAllWithUserId(user.id)
       const contents = `새로운 스레드가 올라왔어요 👀\n${title ? `${title}·` : ``}${content}`
