@@ -33,6 +33,14 @@
           "type": "string",
           "nullable": true
         },
+        "weight": {
+          "type": "number",
+          "nullable": true
+        },
+        "height": {
+          "type": "number",
+          "nullable": true
+        },
         "activeTrainers": {
           "type": "array",
           "items": {

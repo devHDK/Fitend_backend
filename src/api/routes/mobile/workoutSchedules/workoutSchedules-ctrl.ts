@@ -1,7 +1,5 @@
 import {Response} from 'express'
 import {WorkoutScheduleService} from '../../../../services'
-import {firebase} from '../../../../loaders'
-import {WorkoutSchedule} from '../../../../models'
 
 async function postWorkoutSchedulesFeedbacks(req: IRequest, res: Response, next: Function): Promise<void> {
   try {

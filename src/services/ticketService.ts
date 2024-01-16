@@ -1,7 +1,7 @@
 import moment from 'moment-timezone'
 import {Reservation, Ticket, TicketHolding} from '../models/index'
 import {db} from '../loaders'
-import {ITicketFindAll, ITicketList, ITicketDetail} from '../interfaces/tickets'
+import {ITicketFindAll, ITicketList, ITicketDetail, ITicketForUser} from '../interfaces/tickets'
 import {IReservationListForTicket} from '../interfaces/reservation'
 import {ITicketHolding, ITicketHoldingFindAll, ITicketHoldingUpdate} from '../interfaces/ticketHoldings'
 
@@ -123,7 +123,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   }
 }
 
-async function findAllForUser(options: {userId: number}): Promise<ITicketList> {
+async function findAllForUser(options: {userId: number}): Promise<ITicketForUser> {
   try {
     const {userId} = options
     return await Ticket.findAllTicketsForUser({userId})

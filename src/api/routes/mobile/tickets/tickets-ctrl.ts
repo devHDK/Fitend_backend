@@ -7,7 +7,7 @@ async function getTickets(req: IRequest, res: Response, next: Function): Promise
     const ret = await TicketService.findAllForUser({
       userId
     })
-    res.status(200).json(ret)
+    res.status(200).json({data: ret})
   } catch (e) {
     next(e)
   }

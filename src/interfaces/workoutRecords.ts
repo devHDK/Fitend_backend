@@ -33,6 +33,13 @@ export interface IWorkoutRecordDetail {
   setInfo: string | [{index: number; reps: number; weight: number; seconds: number}]
 }
 
+export interface IWorkoutRecordScheduleUpdate {
+  workoutScheduleId: number
+  heartRates?: [number]
+  workoutDuration?: number
+  calories?: number
+}
+
 export interface IWorkoutHistory {
   startDate: DateTime
   exerciseName: string

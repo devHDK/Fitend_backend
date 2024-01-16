@@ -1,7 +1,14 @@
 import moment from 'moment-timezone'
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
-import {ITicket, ITicketDetail, ITicketFindAll, ITicketList, ITicketFindOne} from '../interfaces/tickets'
+import {
+  ITicket,
+  ITicketDetail,
+  ITicketFindAll,
+  ITicketList,
+  ITicketFindOne,
+  ITicketForUser
+} from '../interfaces/tickets'
 import {Payment, Reservation, TicketHolding, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
 import {ICoaching, ICoachingForAdmin} from '../interfaces/payroll'
 
@@ -197,7 +204,7 @@ async function findAllForUser(options: {userId: number}, connection?: PoolConnec
   }
 }
 
-async function findAllTicketsForUser(options: {userId: number}, connection?: PoolConnection): Promise<ITicketList> {
+async function findAllTicketsForUser(options: {userId: number}, connection?: PoolConnection): Promise<ITicketForUser> {
   try {
     const {userId} = options
     const currentTime = moment().format('YYYY-MM-DD')

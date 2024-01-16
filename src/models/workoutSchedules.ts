@@ -12,6 +12,7 @@ import {
 } from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
 import {WorkoutPlan, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords, User, WorkoutSchedule} from './index'
+import {IWorkoutRecordScheduleUpdate} from '../interfaces/workoutRecords'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -358,6 +359,22 @@ async function update(options: IWorkoutScheduleUpdate, connection?: PoolConnecti
   }
 }
 
+async function updateWorkoutScheduleRecords(
+  options: IWorkoutRecordScheduleUpdate,
+  connection?: PoolConnection
+): Promise<void> {
+  const {workoutScheduleId, ...data} = options
+  try {
+    await db.query({
+      connection,
+      sql: `UPDATE ?? SET ? WHERE ?`,
+      values: [tableWorkoutScheduleRecords, data, {workoutScheduleId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function deleteOne(id: number, connection: PoolConnection): Promise<void> {
   try {
     await db.query({
@@ -386,5 +403,6 @@ export {
   findOneWithWorkoutPlanId,
   findCounts,
   update,
+  updateWorkoutScheduleRecords,
   deleteOne
 }

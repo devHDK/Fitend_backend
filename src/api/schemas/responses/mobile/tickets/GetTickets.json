@@ -1,63 +1,79 @@
 {
-  "type": "array",
-  "items": {
-    "type": "object",
-    "properties": {
-      "id": {
-        "type": "integer"
-      },
-      "type": {
-        "type": "string",
-        "enum": ["personal", "fitness"]
-      },
-      "users": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
-      },
-      "totalSession": {
-        "type": "integer"
-      },
-      "serviceSession": {
-        "type": "integer"
-      },
-      "restSession": {
-        "type": "integer"
-      },
-      "availSession": {
-        "type": "integer"
-      },
-      "sessionPrice": {
-        "type": "integer"
-      },
-      "coachingPrice": {
-        "type": "integer"
-      },
-      "startedAt": {
-        "type": "string"
-      },
-      "expiredAt": {
-        "type": "string"
-      },
-      "createdAt": {
-        "type": "string"
-      },
-      "isHolding": {
-        "type": "boolean"
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["personal", "fitness"]
+          },
+          "totalSession": {
+            "type": "number"
+          },
+          "serviceSession": {
+            "type": "number"
+          },
+          "restSession": {
+            "type": "number"
+          },
+          "availSession": {
+            "type": "number"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date"
+          },
+          "expiredAt": {
+            "type": "string",
+            "format": "date"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sessionPrice": {
+            "type": "number"
+          },
+          "coachingPrice": {
+            "type": "number"
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "receiptId": {
+            "type": "string",
+            "nullable": true
+          },
+          "isHolding": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "totalSession",
+          "serviceSession",
+          "restSession",
+          "availSession",
+          "startedAt",
+          "expiredAt",
+          "createdAt",
+          "sessionPrice",
+          "coachingPrice",
+          "users",
+          "isHolding"
+        ]
       }
-    },
-    "required": [
-      "id",
-      "type",
-      "users",
-      "totalSession",
-      "restSession",
-      "startedAt",
-      "expiredAt",
-      "createdAt",
-      "isHolding"
-    ],
-    "additionalProperties": false
-  }
+    }
+  },
+  "required": ["data"]
 }
