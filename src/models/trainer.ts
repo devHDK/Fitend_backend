@@ -149,7 +149,7 @@ async function findLastTrainersWithUserId(options: {
             JOIN ?? tin ON tin.trainerId = t.id
             GROUP BY t.id
             `,
-      values: [tableName, Ticket.tableTicketRelation, userId, Ticket.tableName, tableTrainerInfo, ticketId]
+      values: [tableName, Ticket.tableTicketRelation, userId, Ticket.tableName, ticketId, tableTrainerInfo]
     })
   } catch (e) {
     throw e
