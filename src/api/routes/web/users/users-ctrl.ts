@@ -27,6 +27,20 @@ async function postUserInflowContents(req: IRequest, res: Response, next: Functi
   }
 }
 
+async function postUserBodySpecs(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, height, weight} = req.options
+    await UserService.createUserBodySpec({
+      userId: id,
+      height,
+      weight
+    })
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function getUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {search, status, trainerId, start, perPage} = req.options
@@ -81,6 +95,15 @@ async function getUsersWithId(req: IRequest, res: Response, next: Function): Pro
   }
 }
 
+async function getUsersBodySpecsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, start, perPage} = req.options
+    const ret = await UserService.findBodySpecsWithId({id, start, perPage})
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
 async function putUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id, nickname, email, password, phone, birth, gender, memo} = req.options
@@ -125,10 +148,12 @@ async function deleteInflowContentWithId(req: IRequest, res: Response, next: Fun
 export {
   postUsers,
   postUserInflowContents,
+  postUserBodySpecs,
   getUsers,
   getUsersInflow,
   getUsersWorkouts,
   getUsersWithId,
+  getUsersBodySpecsWithId,
   putUsers,
   PutUserInflowComplete,
   putUsersInflowContent,

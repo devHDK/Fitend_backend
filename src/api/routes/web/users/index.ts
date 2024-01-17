@@ -26,6 +26,19 @@ const postUsersInflow = new ApiRouter({
   handler: ctrl.postUserInflowContents
 })
 
+const postUsersBodySpec = new ApiRouter({
+  name: ':id/bodySpec',
+  method: 'post',
+  paths: ['common/IdPath'],
+  summary: 'bodySpec 생성',
+  tags: ['User'],
+  schema: 'requests/web/users/PostUserBodySpecs',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.postUserBodySpecs
+})
+
 const getUsers = new ApiRouter({
   name: '',
   method: 'get',
@@ -72,6 +85,19 @@ const getUsersWithId = new ApiRouter({
     200: {schema: 'responses/web/users/GetUsersWithId'}
   },
   handler: ctrl.getUsersWithId
+})
+
+const getUsersBodySpecsWithId = new ApiRouter({
+  name: ':id/bodySpec',
+  method: 'get',
+  paths: ['common/IdPath'],
+  summary: '회원 bodySpec 조회',
+  tags: ['User'],
+  schema: 'requests/web/users/GetUsersBodySpecsWithId',
+  responses: {
+    200: {schema: 'responses/web/users/GetUsersBodySpecsWithId'}
+  },
+  handler: ctrl.getUsersBodySpecsWithId
 })
 
 const putUsers = new ApiRouter({
@@ -128,10 +154,12 @@ const deleteUsersInflowContent = new ApiRouter({
 export {
   postUsers,
   postUsersInflow,
+  postUsersBodySpec,
   getUsers,
   getUsersInflow,
   getUsersWorkout,
   getUsersWithId,
+  getUsersBodySpecsWithId,
   putUsers,
   putUsersInflowContent,
   putUsersInflowComplete,

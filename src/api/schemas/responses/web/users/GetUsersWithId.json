@@ -79,18 +79,8 @@
             "type": "string"
           }
         }
-      }
-    },
-    "bodySpec": {
-      "type": "object",
-      "properties": {
-        "height": {
-          "type": "integer"
-        },
-        "weight": {
-          "type": "integer"
-        }
-      }
+      },
+      "nullable": true
     },
     "preSurvey": {
       "type": "object",
@@ -125,6 +115,6 @@
       }
     }
   },
-  "required": ["id", "nickname", "email", "phone", "gender", "createdAt", "isHolding"],
+  "required": ["id", "nickname", "email", "phone", "gender", "trainers", "createdAt", "isHolding"],
   "additionalProperties": false
 }

@@ -75,6 +75,8 @@ export type IUserListForTrainer = IResponseList<IUserData>
 
 export type IUserListForAdmin = IResponseList<IUserDataForAdmin>
 
+export type IUserBodySpecList = IResponseList<IUserBodySpecsData>
+
 export interface IUserFindOne {
   uniqueKey?: string
   id?: number
@@ -124,6 +126,13 @@ export interface IUserBodySpecCreate {
   userId?: number
   height: number
   weight: number
+}
+
+export interface IUserBodySpecsData {
+  bodySpecId: number
+  height: number
+  weight: number
+  createdAt: Date
 }
 
 export interface IUserPreSurveyCreate {

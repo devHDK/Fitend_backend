@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "weight": {
+      "type": "integer"
+    },
+    "height": {
+      "type": "integer"
+    }
+  },
+  "required": ["weight", "height"],
+
+  "additionalProperties": false
+}

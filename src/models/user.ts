@@ -15,7 +15,9 @@ import {
   IUsersWorkoutSchedules,
   IUserWithWorkoutList,
   IUserBodySpecCreate,
-  IUserPreSurveyCreate
+  IUserPreSurveyCreate,
+  IUserBodySpecsData,
+  IUserBodySpecList
 } from '../interfaces/user'
 import {Trainer, Ticket, TicketHolding, User, WorkoutSchedule, WorkoutPlan, WorkoutFeedbacks, WorkoutRecords} from './'
 import {tableTicketRelation} from './ticket'
@@ -361,6 +363,39 @@ async function findUserBodySpecWithId(options: {userId: number}): Promise<{heigh
   }
 }
 
+async function findUserBodySpecWithIdForTrainer(options: {
+  id: number
+  start: number
+  perPage: number
+}): Promise<IUserBodySpecList> {
+  const {id, start, perPage} = options
+  try {
+    const rows: IUserBodySpecsData[] = await db.query({
+      sql: `SELECT t.id as bodySpecId, t.height, t.weight, t.createdAt
+            FROM ?? t
+            WHERE t.userId = ?
+            GROUP BY t.id
+            ORDER BY t.createdAt DESC
+            LIMIT ${start}, ${perPage}
+            `,
+      values: [tableUserBodySpec, id]
+    })
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total FROM (
+            SELECT t.id as bodySpecId, t.height, t.weight, t.createdAt
+            FROM ?? t
+            WHERE t.userId = ?
+            GROUP BY t.id
+            ) t
+            `,
+      values: [tableUserBodySpec, id]
+    })
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findActivePersonalUsers(
   franchiseId: number,
   startDate: string,
@@ -454,27 +489,6 @@ async function findActiveFitnessUsersForAdminWithTrainerId(
       values: [tableName, tableTicketRelation, trainerId, Ticket.tableName]
     })
     return row ? row.count : 0
-  } catch (e) {
-    throw e
-  }
-}
-
-async function findBodySpecWithId(
-  id: number
-): Promise<{
-  height: number
-  weight: number
-}> {
-  try {
-    const [row] = await db.query({
-      sql: `SELECT ub.height, ub.weight
-            FROM ?? ub
-            WHERE ub.userId = ?
-            ORDER BY ub.createdAt DESC LIMIT 1
-            `,
-      values: [tableUserBodySpec, id]
-    })
-    return row
   } catch (e) {
     throw e
   }
@@ -633,10 +647,10 @@ export {
   updatePasswordForUser,
   findOneWithId,
   findUserBodySpecWithId,
+  findUserBodySpecWithIdForTrainer,
   findActivePersonalUsers,
   findActiveFitnessUsers,
   findPreSurveyWithId,
-  findBodySpecWithId,
   updateOne,
   updateOneInflowContent,
   updateBadgeCount,

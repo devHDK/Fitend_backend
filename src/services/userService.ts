@@ -11,7 +11,9 @@ import {
   IUsersWorkoutSchedulesFindAll,
   IUserWithWorkoutList,
   IUserBodySpecCreate,
-  IUserPreSurveyCreate
+  IUserPreSurveyCreate,
+  IUserBodySpecsData,
+  IUserBodySpecList
 } from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'
@@ -45,10 +47,6 @@ interface IUserDetail extends IUser {
     nickname: string
     profileImage: string
   }[]
-  bodySpec: {
-    height: number
-    weight: number
-  }
   preSurvey: {
     experience: number
     purpose: number
@@ -101,6 +99,17 @@ async function createInflowContent(options: IInflowContentCreate): Promise<{id: 
     await db.commit(connection)
 
     return {id: inflowContentId}
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
+async function createUserBodySpec(options: IUserBodySpecCreate): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    await User.createBodySpec(options, connection)
+    await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e
@@ -185,8 +194,15 @@ async function findOneWithId(id: number): Promise<IUserDetail> {
     const workouts = await WorkoutSchedule.findCounts(id)
     const trainers = await Trainer.findActiveTrainersWithUserId(id)
     const preSurvey = await User.findPreSurveyWithId(id)
-    const bodySpec = await User.findBodySpecWithId(id)
-    return {...user, tickets, workouts, trainers, bodySpec, preSurvey}
+    return {...user, tickets, workouts, trainers, preSurvey}
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findBodySpecsWithId(options: {id: number; start: number; perPage: number}): Promise<IUserBodySpecList> {
+  try {
+    return await User.findUserBodySpecWithIdForTrainer(options)
   } catch (e) {
     throw e
   }
@@ -347,11 +363,13 @@ async function deleteInflowContentWithId(options: {id: number}): Promise<void> {
 export {
   create,
   createInflowContent,
+  createUserBodySpec,
   confirmPassword,
   getMe,
   findOne,
   findOneIsExist,
   findOneWithId,
+  findBodySpecsWithId,
   findOneForAdmin,
   findAllForTrainer,
   findAllInflowForTrainer,
