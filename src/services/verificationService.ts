@@ -15,7 +15,7 @@ async function postVerifications(options: IVerificationCreate): Promise<{codeTok
     } else if (type === 'reset') {
       // if (email === null) throw new Error('wrong_input')
       const user = await User.findOne({phone})
-      if (!user) throw new Error('wrong_input')
+      if (!user) throw new Error('not_found')
     } else if (type === 'id') {
       const user = await User.findOne({phone})
       if (!user) throw new Error('not_found')
