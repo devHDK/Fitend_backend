@@ -12,7 +12,8 @@ import {
   ITrainerList,
   ITrainerListForAdmin,
   ITrainerListForUser,
-  ITrainerUpdate
+  ITrainerUpdate,
+  ITrainerMeetingBoundary
 } from '../interfaces/trainer'
 import {IWageInfo} from '../interfaces/payroll'
 import {Ticket, User} from './'
@@ -246,12 +247,38 @@ async function findTrainerWageInfo(options: ITrainerFindOneWageInfo): Promise<IW
   }
 }
 
+async function findTrainersMeetingBoundaryWithId(trainerId: number): Promise<ITrainerMeetingBoundary> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT ti.trainerId, ti.workStartTime, ti.workEndTime
+            FROM ?? ti 
+            WHERE ?`,
+      values: [tableTrainerInfo, {trainerId}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updateOne(options: ITrainerUpdate): Promise<void> {
   const {id, ...data} = options
   try {
     await db.query({
       sql: `UPDATE ?? SET ? WHERE ? `,
       values: [tableName, data, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function updateTrainerMeetingBoundary(options: ITrainerMeetingBoundary): Promise<void> {
+  const {trainerId, ...data} = options
+  try {
+    await db.query({
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableTrainerInfo, data, {trainerId}]
     })
   } catch (e) {
     throw e
@@ -274,5 +301,7 @@ export {
   findOneWithIdForAdmin,
   findOneWithIdForUser,
   findDeviceList,
-  updateOne
+  findTrainersMeetingBoundaryWithId,
+  updateOne,
+  updateTrainerMeetingBoundary
 }

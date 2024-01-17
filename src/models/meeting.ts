@@ -30,7 +30,7 @@ async function create(options: IMeetingCreate, connection?: PoolConnection): Pro
 }
 
 async function findAll(options: IMeetingFindAll): Promise<[IMeetingList]> {
-  const {franchiseId, userId, trainerId, startDate, endDate} = options
+  const {userId, trainerId, startDate, endDate} = options
   try {
     const where = [`t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`]
     if (trainerId) where.push(`t.trainerId = ${escape(trainerId)}`)
@@ -43,7 +43,7 @@ async function findAll(options: IMeetingFindAll): Promise<[IMeetingList]> {
             JOIN ?? tra ON tra.id = t.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
-            ORDER BY t.seq`,
+            `,
       values: [tableName, User.tableName, Trainer.tableName]
     })
   } catch (e) {
@@ -122,14 +122,15 @@ async function findOneWithId(id: number): Promise<IMeetingDetail> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id, t.startTime, t.endTime, t.status,
-            u.id as userId, u.nickname as userNickname, 
+            u.id as userId, u.nickname as userNickname, tri.meetingLink,
             JSON_OBJECT('id', tra.id, 'nickname', tra.nickname, 'profileImage', tra.profileImage) as trainer
             FROM ?? t
-            JOIN ?? u ON u.id = tr.userId
+            JOIN ?? u ON u.id = t.userId
             JOIN ?? tra ON tra.id = t.trainerId
+            JOIN ?? tri ON tri.trainerId = t.trainerId
             WHERE t.id = ${escape(id)}
             GROUP BY t.id`,
-      values: [tableName, User.tableName, Trainer.tableName]
+      values: [tableName, User.tableName, Trainer.tableName, Trainer.tableTrainerInfo]
     })
     return row
   } catch (e) {
@@ -162,6 +163,17 @@ async function update(options: IMeetingUpdate, connection: PoolConnection): Prom
   }
 }
 
+async function deleteOne(id: number): Promise<void> {
+  try {
+    await db.query({
+      sql: `DELETE FROM ?? WHERE ?`,
+      values: [tableName, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   tableName,
   create,
@@ -170,5 +182,6 @@ export {
   findAllWithTrainerIdForMeetingSelect,
   findOneWithId,
   findOne,
-  update
+  update,
+  deleteOne
 }

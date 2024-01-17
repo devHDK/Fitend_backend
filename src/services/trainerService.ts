@@ -6,7 +6,8 @@ import {
   ITrainerList,
   ITrainerListForAdmin,
   ITrainerDetailForUser,
-  ITrainerListForUser
+  ITrainerListForUser,
+  ITrainerMeetingBoundary
 } from '../interfaces/trainer'
 import {EventSchedule, Franchise, Meeting, Reservation, Ticket, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
@@ -172,6 +173,14 @@ async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
   }
 }
 
+async function findTrainersMeetingBoundaryWithId(id: number): Promise<ITrainerMeetingBoundary> {
+  try {
+    return await Trainer.findTrainersMeetingBoundaryWithId(id)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updatePassword({
   trainerId,
   password,
@@ -195,6 +204,14 @@ async function updatePassword({
   }
 }
 
+async function updateMeetingBoundary(options: ITrainerMeetingBoundary): Promise<void> {
+  try {
+    await Trainer.updateTrainerMeetingBoundary(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   create,
   signIn,
@@ -204,5 +221,7 @@ export {
   findAllTrainerScheduleWithId,
   findOneWithIdForUser,
   findOneWithIdForAdmin,
-  updatePassword
+  findTrainersMeetingBoundaryWithId,
+  updatePassword,
+  updateMeetingBoundary
 }

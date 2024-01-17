@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "trainerId": {
+      "type": "integer"
+    },
+    "workStartTime": {
+      "type": "string",
+      "example": "00:00:00"
+    },
+    "workEndTime": {
+      "type": "string",
+      "example": "00:00:00"
+    }
+  },
+  "required": ["trainerId", "workStartTime", "workEndTime"],
+  "additionalProperties": false
+}

@@ -66,6 +66,12 @@ export interface ITrainerUpdate {
   password?: string
 }
 
+export interface ITrainerMeetingBoundary {
+  trainerId: number
+  workStartTime: string
+  workEndTime: string
+}
+
 export type ITrainerDetail = {
   id: number
   nickname: string

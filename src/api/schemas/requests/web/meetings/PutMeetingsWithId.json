@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["complete", "attendance", "cancel"]
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endTime": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": ["startTime", "endTime"],
+  "additionalProperties": false
+}

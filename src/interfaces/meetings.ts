@@ -33,6 +33,7 @@ export interface IMeetingDetail {
   status: string
   userId: number
   userNickname: string
+  meetingLink: string
   trainer: {
     id: number
     nickname: string

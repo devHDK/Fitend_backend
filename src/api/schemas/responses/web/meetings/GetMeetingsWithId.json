@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["complete", "attendance", "cancel"]
+    },
+    "userId": {
+      "type": "integer"
+    },
+    "userNickname": {
+      "type": "string"
+    },
+    "meetingLink": {
+      "type": "string"
+    },
+    "trainer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "profileImage": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "nickname", "profileImage"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["id", "startTime", "endTime", "userId", "userNickname", "trainer"],
+  "additionalProperties": false
+}

@@ -5,7 +5,13 @@ import {db} from '../loaders'
 import {util} from '../libs'
 import {meetingSubscriber} from '../subscribers'
 import {IUserDevice} from '../interfaces/userDevice'
-import {IMeetingDetail, IMeetingFindAll, IMeetingFindAllForUser, IMeetingList} from '../interfaces/meetings'
+import {
+  IMeetingDetail,
+  IMeetingFindAll,
+  IMeetingFindAllForUser,
+  IMeetingList,
+  IMeetingUpdate
+} from '../interfaces/meetings'
 
 async function create(options: {trainerId: number; userId: number; startTime: string; endTime: string}): Promise<void> {
   const connection = await db.beginTransaction()
@@ -94,4 +100,23 @@ async function findOneWithId(id: number): Promise<IMeetingDetail> {
   }
 }
 
-export {create, findAll, findAllForUser, findOneWithId}
+async function update(options: IMeetingUpdate): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    await Meeting.update(options, connection)
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
+async function deleteOne(id: number): Promise<void> {
+  try {
+    await Meeting.deleteOne(id)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {create, findAll, findAllForUser, findOneWithId, update, deleteOne}

@@ -26,9 +26,6 @@
       "additionalProperties": false
     }
   },
-  "required": [
-    "accessToken",
-    "trainer"
-  ],
+  "required": ["accessToken", "trainer"],
   "additionalProperties": false
 }

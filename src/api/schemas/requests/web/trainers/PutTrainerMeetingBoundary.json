@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "workStartTime": {
+      "type": "string",
+      "example": "00:00:00"
+    },
+    "workEndTime": {
+      "type": "string",
+      "example": "00:00:00"
+    }
+  },
+  "required": ["workStartTime", "workEndTime"],
+  "additionalProperties": false
+}
