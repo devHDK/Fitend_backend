@@ -9,6 +9,16 @@ export interface IPayment {
   createdAt: Date
 }
 
+export interface IPaymentDataForTrainer {
+  id: number
+  ticketId: number
+  userNickname: string
+  price: number
+  orderName: string
+  status: boolean
+  createdAt: Date
+}
+
 export interface IPaymentConfirm {
   receiptId: string
   orderId: string
@@ -39,3 +49,5 @@ export interface IPaymentUpdate {
   orderName?: string
   status?: boolean
 }
+
+export type IPaymentList = IResponseList<IPaymentDataForTrainer>

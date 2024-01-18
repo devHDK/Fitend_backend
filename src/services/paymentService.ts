@@ -1,6 +1,6 @@
 import * as bootpay from '../libs/bootpay'
 import {db} from '../loaders'
-import {IPaymentConfirm} from '../interfaces/payments'
+import {IPaymentConfirm, IPaymentList} from '../interfaces/payments'
 import {Payment, Ticket} from '../models'
 import {ITicketList} from '../interfaces/tickets'
 
@@ -40,6 +40,14 @@ async function confirmPayments(options: IPaymentConfirm): Promise<ITicketList> {
   }
 }
 
+async function findAll(options: {search: string; start: number; perPage: number}): Promise<IPaymentList> {
+  try {
+    return await Payment.findAll(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function deletePayment(options: {id: number}): Promise<void> {
   const connection = await db.beginTransaction()
   try {
@@ -59,4 +67,4 @@ async function deletePayment(options: {id: number}): Promise<void> {
   }
 }
 
-export {confirmPayments, deletePayment}
+export {confirmPayments, findAll, deletePayment}

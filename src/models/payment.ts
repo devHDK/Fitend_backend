@@ -1,6 +1,7 @@
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
-import {IPayment, IPaymentCreate} from '../interfaces/payments'
+import {IPayment, IPaymentCreate, IPaymentList} from '../interfaces/payments'
+import {Ticket, User} from '.'
 
 const tableName = 'Payments'
 
@@ -12,6 +13,43 @@ async function create(options: IPaymentCreate, connection: PoolConnection): Prom
       values: [tableName, options]
     })
     return insertId
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAll(options: {search: string; start: number; perPage: number}): Promise<IPaymentList> {
+  try {
+    const {search, start, perPage} = options
+    const where = []
+
+    if (search) where.push(`(u.nickname like '%${search}%'`)
+    const rows = await db.query({
+      sql: `SELECT t.id, t.ticketId, u.nickname as userNickname,
+            t.price, t.orderName, t.status, t.createdAt
+            FROM ?? t
+            JOIN ?? tr ON tr.ticketId = t.ticketId
+            JOIN ?? u ON u.id = tr.userId
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''} 
+            GROUP BY t.id
+            ORDER BY t.createdAt DESC
+            LIMIT ${start}, ${perPage}
+            `,
+      values: [tableName, Ticket.tableTicketRelation, User.tableName]
+    })
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total FROM (SELECT t.id, t.ticketId, u.nickname as userNickname, 
+        t.price, t.orderName, t.status, t.createdAt
+        FROM ?? t
+        JOIN ?? tr ON tr.ticketId = t.ticketId
+        JOIN ?? u ON u.id = tr.userId
+        ${where.length ? `WHERE ${where.join(' AND ')}` : ''} 
+        GROUP BY t.ticketId
+        ORDER BY t.createdAt DESC
+        ) t`,
+      values: [tableName, Ticket.tableTicketRelation, User.tableName]
+    })
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
     throw e
   }
@@ -41,4 +79,4 @@ async function DeleteWithTicketId(ticketId: number, connection?: PoolConnection)
   }
 }
 
-export {tableName, findOneWithTicketId, create, DeleteWithTicketId}
+export {tableName, findAll, findOneWithTicketId, create, DeleteWithTicketId}
