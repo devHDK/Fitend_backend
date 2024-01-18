@@ -39,6 +39,9 @@
           },
           "isHolding": {
             "type": "boolean"
+          },
+          "isOnline": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -60,9 +63,6 @@
       "minimum": 0
     }
   },
-  "required": [
-    "data",
-    "total"
-  ],
+  "required": ["data", "total"],
   "additionalProperties": false
 }

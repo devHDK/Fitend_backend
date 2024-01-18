@@ -90,7 +90,10 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             JSON_ARRAY(u.nickname) as users,
             (SELECT IF(EXISTS(SELECT * FROM ?? th 
             WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
-            ) as isHolding
+            ) as isHolding,
+            (SELECT IF(EXISTS(SELECT * FROM ?? p
+            WHERE p.ticketID = t.id), TRUE, FALSE)
+              ) as isOnline
             FROM ?? t
             JOIN ?? tr ON tr.ticketId = t.id AND tr.franchiseId = ? ${
               trainerId ? `AND tr.trainerId = ${trainerId}` : ``
@@ -108,6 +111,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
         Reservation.tableName,
         Reservation.tableName,
         TicketHolding.tableName,
+        Payment.tableName,
         tableName,
         tableTicketRelation,
         franchiseId,
@@ -126,7 +130,10 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
               SELECT t.id,
               (SELECT IF(EXISTS(SELECT * FROM ?? th 
                 WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
-                ) as isHolding
+                ) as isHolding,
+                (SELECT IF(EXISTS(SELECT * FROM ?? p
+                  WHERE p.ticketID = t.id), TRUE, FALSE)
+                    ) as isOnline
               FROM ?? t
               JOIN ?? tr ON tr.ticketId = t.id ${trainerId ? `AND tr.trainerId = ${trainerId}` : ``} ${
         userId ? `AND tr.userId = ${userId}` : ``
@@ -140,7 +147,7 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
               ${status === 'hold' ? `HAVING isHolding IS TRUE` : ``}
             ) t
             `,
-      values: [TicketHolding.tableName, tableName, tableTicketRelation, User.tableName]
+      values: [TicketHolding.tableName, Payment.tableName, tableName, tableTicketRelation, User.tableName]
     })
 
     return {data: rows, total: rowTotal ? rowTotal.total : 0}

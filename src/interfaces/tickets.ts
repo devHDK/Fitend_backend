@@ -65,6 +65,7 @@ export type ITicketList = IResponseList<{
   expiredAt: string
   createdAt: string
   receiptId: string
+  isOnline?: boolean
 }>
 
 export interface ITicketForUser {
