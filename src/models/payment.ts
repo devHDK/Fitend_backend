@@ -23,7 +23,7 @@ async function findAll(options: {search: string; start: number; perPage: number}
     const {search, start, perPage} = options
     const where = []
 
-    if (search) where.push(`(u.nickname like '%${search}%'`)
+    if (search) where.push(`(u.nickname like '%${search}%')`)
     const rows = await db.query({
       sql: `SELECT t.id, t.ticketId, u.nickname as userNickname,
             t.price, t.orderName, t.status, t.createdAt
