@@ -32,9 +32,11 @@ async function create(options: {trainerId: number; userId: number; startTime: st
       connection
     )
 
-    const trainerThread = await Trainer.findOneTrainerThread({id: trainerId})
+    const user = await User.findOne({id: userId})
+    const userDevices = await UserDevice.findAllWithUserId(user.id)
 
-    await Thread.create(
+    const trainerThread = await Trainer.findOneTrainerThread({id: trainerId})
+    const threadId = await Thread.create(
       {
         content: trainerThread.welcomeThreadContent,
         gallery: JSON.stringify(trainerThread.welcomeThreadGallery),
@@ -46,8 +48,17 @@ async function create(options: {trainerId: number; userId: number; startTime: st
       connection
     )
 
-    const user = await User.findOne({id: userId})
-    const userDevices = await UserDevice.findAllWithUserId(user.id)
+    const threadContents = `새로운 스레드가 올라왔어요 👀\n${trainerThread.welcomeThreadContent}`
+    await Notification.create(
+      {
+        userId,
+        type: 'thread',
+        contents: threadContents,
+        info: JSON.stringify({threadId})
+      },
+      connection
+    )
+
     const contents = `미팅이 확정 되었어요 😊\n${util.defaultTimeFormatForPush(startTime)}`
     await Notification.create(
       {
