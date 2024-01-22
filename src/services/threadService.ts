@@ -31,7 +31,7 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
         // await User.createInflowContent({complete: false, name: '사전상담여부', userId}, connection)
         const trainerThread = await Trainer.findOneTrainerThread({id: trainerId})
 
-        await Thread.create(
+        const trainerThreadId = await Thread.create(
           {
             content: trainerThread.welcomeThreadContent,
             gallery: JSON.stringify(trainerThread.welcomeThreadGallery),
@@ -51,7 +51,7 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
             userId,
             type: 'thread',
             contents,
-            info: JSON.stringify({threadId})
+            info: JSON.stringify({threadId: trainerThreadId})
           },
           connection
         )
