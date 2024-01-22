@@ -22,6 +22,7 @@ import * as ProductService from './productService'
 import * as PaymentService from './paymentService'
 import * as MeetingService from './meetingService'
 import * as VerificationService from './verificationService'
+import * as StandardExerciseService from './standardExerciseService'
 
 export {
   AdministratorService,
@@ -47,5 +48,6 @@ export {
   ProductService,
   PaymentService,
   MeetingService,
-  VerificationService
+  VerificationService,
+  StandardExerciseService
 }

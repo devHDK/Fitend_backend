@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 21
+    },
+    "nameEn": {
+      "type": "string",
+      "pattern": "^[0-9a-zA-Z!_\\s]{1,21}$"
+    },
+    "devisionId": {
+      "type": "integer"
+    },
+    "trackingFieldId": {
+      "type": "integer"
+    },
+    "machineType": {
+      "type": "string",
+      "enum": ["bodyweight", "kettlebell", "barbell", "dumbbell", "machine", "etc"]
+    },
+    "jointType": {
+      "type": "string",
+      "enum": ["one", "multi"]
+    },
+    "targetMuscleIds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["main", "sub"]
+          }
+        }
+      }
+    }
+  },
+  "required": ["name", "nameEn", "targetMuscleIds", "trackingFieldId", "devisionId", "machineType", "jointType"],
+  "additionalProperties": false
+}
