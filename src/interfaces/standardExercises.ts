@@ -4,5 +4,5 @@ export interface IStandardExerciseCreate {
   devisionId: number
   trackingFieldId: number
   machineType: 'bodyweight' | 'kettlebell' | 'barbell' | 'dumbbell' | 'machine' | 'etc'
-  jointType: 'one' | 'multi'
+  jointType?: 'one' | 'multi'
 }

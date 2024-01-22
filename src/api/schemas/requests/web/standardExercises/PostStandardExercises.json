@@ -40,6 +40,6 @@
       }
     }
   },
-  "required": ["name", "nameEn", "targetMuscleIds", "trackingFieldId", "devisionId", "machineType", "jointType"],
+  "required": ["name", "nameEn", "targetMuscleIds", "trackingFieldId", "devisionId", "machineType"],
   "additionalProperties": false
 }
