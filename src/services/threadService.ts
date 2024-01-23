@@ -33,6 +33,7 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
 
         const trainerThreadId = await Thread.create(
           {
+            title: `${user.nickname.substring(1)}님 안녕하세요!`,
             content: trainerThread.welcomeThreadContent,
             gallery: JSON.stringify(trainerThread.welcomeThreadGallery),
             trainerId,
