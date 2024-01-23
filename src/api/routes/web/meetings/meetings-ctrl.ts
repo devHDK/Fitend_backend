@@ -4,7 +4,7 @@ import {MeetingService} from '../../../../services'
 async function postMeeting(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {userId, trainerId, startTime, endTime} = req.options
-    const ret = await MeetingService.create({
+    const ret = await MeetingService.createForTrainer({
       userId,
       trainerId,
       startTime,
