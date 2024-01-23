@@ -10,10 +10,10 @@
             "type": "integer"
           },
           "height": {
-            "type": "integer"
+            "type": "number"
           },
           "weight": {
-            "type": "integer"
+            "type": "number"
           },
           "createdAt": {
             "type": "string",
