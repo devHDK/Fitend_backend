@@ -142,7 +142,7 @@ export interface IUserPreSurveyCreate {
   achievement: string
   obstacle: string
   preferDays: string
-  place: 'home' | 'gym'
+  place: 'home' | 'gym' | 'both'
 }
 
 export type IUserWithWorkoutList = IUsersWorkoutSchedules[]

@@ -60,7 +60,7 @@
     },
     "place": {
       "type": "string",
-      "enum": ["home", "gym"]
+      "enum": ["home", "gym", "both"]
     },
     "preferDays": {
       "type": "array",

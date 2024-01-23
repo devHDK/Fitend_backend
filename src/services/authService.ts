@@ -16,7 +16,7 @@ interface IUserAccountCreate extends IUserCreateOne {
   achievement: [number]
   obstacle: [number]
   preferDays: [number]
-  place: 'home' | 'gym'
+  place: 'home' | 'gym' | 'both'
 }
 
 async function signIn(options: {
