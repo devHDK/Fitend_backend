@@ -115,7 +115,37 @@ async function findOneWithId(id: number): Promise<IMeetingDetail> {
 async function update(options: IMeetingUpdate): Promise<void> {
   const connection = await db.beginTransaction()
   try {
+    const meetingDetail = await Meeting.findOneWithId(options.id)
+
     await Meeting.update(options, connection)
+
+    const user = await User.findOne({id: meetingDetail.userId})
+    const userDevices = await UserDevice.findAllWithUserId(user.id)
+
+    const contents = `미팅이 변경 되었어요 ✍️\n${util.changeTimeFormatForPush(
+      meetingDetail.startTime,
+      options.startTime
+    )}`
+    await Notification.create(
+      {
+        userId: meetingDetail.userId,
+        type: 'meeting',
+        contents,
+        info: JSON.stringify({meetingId: options.id})
+      },
+      connection
+    )
+
+    if (userDevices && userDevices.length > 0) {
+      await User.updateBadgeCount(meetingDetail.userId, connection)
+      meetingSubscriber.publishMeetingPushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'meetingChangeDate',
+        contents,
+        badge: user.badgeCount + 1
+      })
+    }
+
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -124,9 +154,39 @@ async function update(options: IMeetingUpdate): Promise<void> {
 }
 
 async function deleteOne(id: number): Promise<void> {
+  const connection = await db.beginTransaction()
   try {
+    const meetingDetail = await Meeting.findOneWithId(id)
+
     await Meeting.deleteOne(id)
+
+    const user = await User.findOne({id: meetingDetail.userId})
+    const userDevices = await UserDevice.findAllWithUserId(user.id)
+
+    const contents = `미팅이 취소 되었어요 🥺\n${util.defaultTimeFormatForPush(meetingDetail.startTime)}`
+    await Notification.create(
+      {
+        userId: meetingDetail.userId,
+        type: 'meeting',
+        contents,
+        info: JSON.stringify({meetingId: id})
+      },
+      connection
+    )
+
+    if (userDevices && userDevices.length > 0) {
+      await User.updateBadgeCount(meetingDetail.userId, connection)
+      meetingSubscriber.publishMeetingPushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'meetingCancel',
+        contents,
+        badge: user.badgeCount + 1
+      })
+    }
+
+    await db.commit(connection)
   } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }
