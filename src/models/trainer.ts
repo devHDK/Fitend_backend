@@ -172,7 +172,7 @@ async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
 
 async function findOneTrainerThread(
   options: ITrainerFindOne
-): Promise<{welcomeThreadContent: string; welcomeThreadGallery: string}> {
+): Promise<{welcomeThreadContent: string; welcomeThreadGallery?: string}> {
   const {id} = options
 
   try {
