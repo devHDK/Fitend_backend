@@ -88,11 +88,11 @@ async function createTicketHolding(options: ITicketHolding): Promise<void> {
         }
       })
     }
-    const days = moment(endAt).diff(moment(startAt), 'days')
+    const days = moment(endAt).diff(moment(startAt), 'days') + 1
     const ticket = await Ticket.findOne({id: ticketId})
     const newExpiredAt = moment(ticket.expiredAt).add(days, 'days').format('YYYY-MM-DD')
 
-    await TicketHolding.create({ticketId, startAt, endAt, days: days + 1}, connection)
+    await TicketHolding.create({ticketId, startAt, endAt, days}, connection)
     await Ticket.update(
       {
         id: ticket.id,
@@ -212,13 +212,13 @@ async function updateTicketHolding(options: ITicketHoldingUpdate): Promise<void>
     }
 
     const beforeDays = beforeTicketHolding.days
-    const afterDays = moment(endAt).diff(moment(startAt), 'days')
+    const afterDays = moment(endAt).diff(moment(startAt), 'days') + 1
     const ticket = await Ticket.findOne({id: beforeTicketHolding.ticketId})
     const newExpiredAt = moment(ticket.expiredAt)
       .add(afterDays - beforeDays, 'days')
       .format('YYYY-MM-DD')
 
-    await TicketHolding.update({id, startAt, endAt, days: afterDays + 1}, connection)
+    await TicketHolding.update({id, startAt, endAt, days: afterDays}, connection)
     await Ticket.update(
       {
         id: ticket.id,
