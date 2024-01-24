@@ -13,7 +13,8 @@ import {
   IUserBodySpecCreate,
   IUserPreSurveyCreate,
   IUserBodySpecsData,
-  IUserBodySpecList
+  IUserBodySpecList,
+  IUserPreSurveyUpdate
 } from '../interfaces/user'
 import {passwordIterations} from '../libs/code'
 import {code as Code} from '../libs'
@@ -24,7 +25,6 @@ import {
   IInflowContentUpdate,
   IUserInflowContentsList
 } from '../interfaces/inflowContent'
-import {TicketService, UserService} from '.'
 
 interface IUserCreateData extends IUserCreateOne {
   franchiseId: number
@@ -126,6 +126,29 @@ async function confirmPassword(options: {id: number; password: string}): Promise
     )
       throw new Error('not_found')
   } catch (e) {
+    throw e
+  }
+}
+
+async function createPreSurvey(options: IUserPreSurveyCreate): Promise<void> {
+  const connection = await db.beginTransaction()
+  const {userId, experience, purpose, achievement, obstacle, place, preferDays} = options
+  try {
+    await User.createPreSurvey(
+      {
+        userId,
+        experience,
+        purpose,
+        achievement: JSON.stringify(achievement),
+        obstacle: JSON.stringify(obstacle),
+        place,
+        preferDays: JSON.stringify(preferDays)
+      },
+      connection
+    )
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }
@@ -283,6 +306,29 @@ async function update(options: IUserUpdate): Promise<void> {
   }
 }
 
+async function updatePreSurvey(options: IUserPreSurveyUpdate): Promise<void> {
+  const connection = await db.beginTransaction()
+  const {userId, experience, purpose, achievement, obstacle, place, preferDays} = options
+  try {
+    await User.updateOnePreSurvey(
+      {
+        userId,
+        experience,
+        purpose,
+        achievement: JSON.stringify(achievement),
+        obstacle: JSON.stringify(obstacle),
+        place,
+        preferDays: JSON.stringify(preferDays)
+      },
+      connection
+    )
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
 async function updateInflowContent(options: IInflowContentUpdate): Promise<void> {
   try {
     await User.updateOneInflowContent(options)
@@ -365,6 +411,7 @@ export {
   createInflowContent,
   createUserBodySpec,
   confirmPassword,
+  createPreSurvey,
   getMe,
   findOne,
   findOneIsExist,
@@ -376,6 +423,7 @@ export {
   findAllUsersWorkout,
   findAllForAdmin,
   update,
+  updatePreSurvey,
   updateInflowContent,
   updateInflowComplete,
   updateFCMToken,

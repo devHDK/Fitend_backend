@@ -12,14 +12,14 @@ import {
   IUserListForAdmin,
   IUserDataForAdmin,
   IUsersWorkoutSchedulesFindAll,
-  IUsersWorkoutSchedules,
   IUserWithWorkoutList,
   IUserBodySpecCreate,
   IUserPreSurveyCreate,
   IUserBodySpecsData,
-  IUserBodySpecList
+  IUserBodySpecList,
+  IUserPreSurveyUpdate
 } from '../interfaces/user'
-import {Trainer, Ticket, TicketHolding, User, WorkoutSchedule, WorkoutPlan, WorkoutFeedbacks, WorkoutRecords} from './'
+import {Trainer, Ticket, TicketHolding, User} from './'
 import {tableTicketRelation} from './ticket'
 import {
   IInflowContentCreate,
@@ -28,7 +28,6 @@ import {
   IUserInflowContents,
   IUserInflowContentsList
 } from '../interfaces/inflowContent'
-import {IWorkoutScheduleList} from '../interfaces/workoutSchedules'
 import {createPasswordHash, passwordIterations} from '../libs/code'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -581,6 +580,19 @@ async function updatePasswordForUser(
   }
 }
 
+async function updateOnePreSurvey(options: IUserPreSurveyUpdate, connection?: PoolConnection): Promise<void> {
+  const {userId, ...data} = options
+  try {
+    await db.query({
+      connection,
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableUserPreSurvey, data, {userId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updateOneInflowContent(options: IInflowContentUpdate, connection?: PoolConnection): Promise<void> {
   const {id, ...data} = options
   try {
@@ -653,6 +665,7 @@ export {
   findPreSurveyWithId,
   updateOne,
   updateOneInflowContent,
+  updateOnePreSurvey,
   updateBadgeCount,
   updateInflowContentComplete,
   findActivePersonalUsersForAdminWithTrainerId,

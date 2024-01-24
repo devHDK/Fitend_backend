@@ -145,4 +145,14 @@ export interface IUserPreSurveyCreate {
   place: 'home' | 'gym' | 'both'
 }
 
+export interface IUserPreSurveyUpdate {
+  userId?: number
+  experience?: number
+  purpose?: number
+  achievement?: string
+  obstacle?: string
+  preferDays?: string
+  place?: 'home' | 'gym' | 'both'
+}
+
 export type IUserWithWorkoutList = IUsersWorkoutSchedules[]

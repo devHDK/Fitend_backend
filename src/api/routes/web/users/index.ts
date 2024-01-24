@@ -39,6 +39,19 @@ const postUsersBodySpec = new ApiRouter({
   handler: ctrl.postUserBodySpecs
 })
 
+const postUsersPreSuvey = new ApiRouter({
+  name: ':id/PreSurvey',
+  method: 'post',
+  paths: ['common/IdPath'],
+  summary: '사전 설문 생성',
+  tags: ['User'],
+  schema: 'requests/web/users/PostUserPreSurvey',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.postUserPreSurvey
+})
+
 const getUsers = new ApiRouter({
   name: '',
   method: 'get',
@@ -139,6 +152,19 @@ const putUsersInflowComplete = new ApiRouter({
   handler: ctrl.PutUserInflowComplete
 })
 
+const putUserPreSurvey = new ApiRouter({
+  name: ':id/PreSurvey',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '사전 설문 수정',
+  schema: 'requests/web/users/PutUserPreSurvey',
+  tags: ['User'],
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putUserPreSurvey
+})
+
 const deleteUsersInflowContent = new ApiRouter({
   name: 'inflow/:id',
   method: 'delete',
@@ -155,6 +181,7 @@ export {
   postUsers,
   postUsersInflow,
   postUsersBodySpec,
+  postUsersPreSuvey,
   getUsers,
   getUsersInflow,
   getUsersWorkout,
@@ -163,5 +190,6 @@ export {
   putUsers,
   putUsersInflowContent,
   putUsersInflowComplete,
+  putUserPreSurvey,
   deleteUsersInflowContent
 }

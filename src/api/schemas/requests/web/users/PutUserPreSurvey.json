@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "properties": {
+    "experience": {
+      "type": "number"
+    },
+    "purpose": {
+      "type": "number"
+    },
+    "achievement": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "obstacle": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "place": {
+      "type": "string",
+      "enum": ["home", "gym", "both"]
+    },
+    "preferDays": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": ["experience", "purpose", "achievement", "obstacle", "place", "preferDays"],
+  "additionalProperties": false
+}

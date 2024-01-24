@@ -41,6 +41,24 @@ async function postUserBodySpecs(req: IRequest, res: Response, next: Function): 
   }
 }
 
+async function postUserPreSurvey(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {experience, purpose, achievement, obstacle, place, preferDays} = req.options
+    await UserService.createPreSurvey({
+      userId: req.options.id,
+      experience,
+      purpose,
+      achievement,
+      obstacle,
+      place,
+      preferDays
+    })
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function getUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {search, status, trainerId, start, perPage} = req.options
@@ -135,6 +153,24 @@ async function putUsersInflowContent(req: IRequest, res: Response, next: Functio
   }
 }
 
+async function putUserPreSurvey(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {experience, purpose, achievement, obstacle, place, preferDays} = req.options
+    await UserService.updatePreSurvey({
+      userId: req.options.id,
+      experience,
+      purpose,
+      achievement,
+      obstacle,
+      place,
+      preferDays
+    })
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function deleteInflowContentWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id} = req.options
@@ -149,6 +185,7 @@ export {
   postUsers,
   postUserInflowContents,
   postUserBodySpecs,
+  postUserPreSurvey,
   getUsers,
   getUsersInflow,
   getUsersWorkouts,
@@ -157,5 +194,6 @@ export {
   putUsers,
   PutUserInflowComplete,
   putUsersInflowContent,
+  putUserPreSurvey,
   deleteInflowContentWithId
 }
