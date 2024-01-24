@@ -40,7 +40,7 @@ async function create(options: {trainerId: number; userId: number; startTime: st
       {
         title: `${user.nickname.substring(1)}님 안녕하세요!`,
         content: trainerThread.welcomeThreadContent,
-        gallery: trainerThread.welcomeThreadGallery ?? JSON.stringify(trainerThread.welcomeThreadGallery),
+        gallery: trainerThread.welcomeThreadGallery ? JSON.stringify(trainerThread.welcomeThreadGallery) : null,
         trainerId,
         userId,
         type: 'general',
