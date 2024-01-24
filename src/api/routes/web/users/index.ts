@@ -40,7 +40,7 @@ const postUsersBodySpec = new ApiRouter({
 })
 
 const postUsersPreSuvey = new ApiRouter({
-  name: ':id/PreSurvey',
+  name: ':id/preSurvey',
   method: 'post',
   paths: ['common/IdPath'],
   summary: '사전 설문 생성',
@@ -153,7 +153,7 @@ const putUsersInflowComplete = new ApiRouter({
 })
 
 const putUserPreSurvey = new ApiRouter({
-  name: ':id/PreSurvey',
+  name: ':id/preSurvey',
   method: 'put',
   paths: ['common/IdPath'],
   summary: '사전 설문 수정',
