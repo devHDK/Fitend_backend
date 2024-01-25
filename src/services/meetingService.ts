@@ -1,6 +1,16 @@
 import _ from 'lodash'
 import moment from 'moment-timezone'
-import {Ticket, Notification, User, UserDevice, Meeting, Thread, Trainer} from '../models/index'
+import {
+  Ticket,
+  Notification,
+  User,
+  UserDevice,
+  Meeting,
+  Thread,
+  Trainer,
+  EventSchedule,
+  Reservation
+} from '../models/index'
 import {db} from '../loaders'
 import {util} from '../libs'
 import {meetingSubscriber} from '../subscribers'
@@ -20,9 +30,16 @@ async function create(options: {trainerId: number; userId: number; startTime: st
     const isActive = await Ticket.findOneWithUserId(userId)
     if (!isActive) throw new Error('ticket_expired')
 
-    let meetingId = 0
+    const meetingCount = await Meeting.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
+    if (meetingCount > 0) throw new Error('schedule_dupplicate')
 
-    meetingId = await Meeting.create(
+    const reservationCount = await Reservation.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
+    if (reservationCount > 0) throw new Error('schedule_dupplicate')
+
+    const eventCount = await EventSchedule.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
+    if (eventCount > 0) throw new Error('schedule_dupplicate')
+
+    const meetingId = await Meeting.create(
       {
         trainerId,
         userId,
@@ -102,9 +119,16 @@ async function createForTrainer(options: {
     const isActive = await Ticket.findOneWithUserId(userId)
     if (!isActive) throw new Error('ticket_expired')
 
-    let meetingId = 0
+    const meetingCount = await Meeting.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
+    if (meetingCount > 0) throw new Error('schedule_dupplicate')
 
-    meetingId = await Meeting.create(
+    const reservationCount = await Reservation.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
+    if (reservationCount > 0) throw new Error('schedule_dupplicate')
+
+    const eventCount = await EventSchedule.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
+    if (eventCount > 0) throw new Error('schedule_dupplicate')
+
+    const meetingId = await Meeting.create(
       {
         trainerId,
         userId,
@@ -172,7 +196,19 @@ async function findOneWithId(id: number): Promise<IMeetingDetail> {
 async function update(options: IMeetingUpdate): Promise<void> {
   const connection = await db.beginTransaction()
   try {
+    const {startTime, endTime} = options
+
     const meetingDetail = await Meeting.findOneWithId(options.id)
+    const trainerId = meetingDetail.trainer.id
+
+    const meetingCount = await Meeting.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
+    if (meetingCount > 0) throw new Error('schedule_dupplicate')
+
+    const reservationCount = await Reservation.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
+    if (reservationCount > 0) throw new Error('schedule_dupplicate')
+
+    const eventCount = await EventSchedule.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
+    if (eventCount > 0) throw new Error('schedule_dupplicate')
 
     await Meeting.update(options, connection)
 

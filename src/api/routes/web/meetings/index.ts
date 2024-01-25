@@ -9,7 +9,8 @@ const postMeeting = new ApiRouter({
   schema: 'requests/web/meetings/PostMeeting',
   responses: {
     200: {description: 'success'},
-    404: {description: 'not_found'}
+    403: {description: 'ticket_expired'},
+    409: {description: 'schedule_dupplicate'}
   },
   handler: ctrl.postMeeting
 })
@@ -47,7 +48,8 @@ const putMeetingsWithId = new ApiRouter({
   tags: ['Meeting'],
   schema: 'requests/web/meetings/PutMeetingsWithId',
   responses: {
-    200: {description: 'success'}
+    200: {description: 'success'},
+    409: {description: 'schedule_dupplicate'}
   },
   handler: ctrl.putMeetingsWithId
 })

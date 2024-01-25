@@ -9,7 +9,8 @@ const postMeeting = new ApiRouter({
   schema: 'requests/mobile/meetings/PostMeeting',
   responses: {
     200: {description: 'success'},
-    404: {description: 'not_found'}
+    403: {description: 'ticket_expired'},
+    409: {description: 'schedule_dupplicate'}
   },
   handler: ctrl.postMeeting
 })

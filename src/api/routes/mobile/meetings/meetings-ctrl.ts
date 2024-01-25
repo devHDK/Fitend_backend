@@ -7,6 +7,8 @@ async function postMeeting(req: IRequest, res: Response, next: Function): Promis
     const ret = await MeetingService.create({userId: req.userId, trainerId, startTime, endTime})
     res.status(200).json()
   } catch (e) {
+    if (e.message === 'ticket_expired') e.status = 403
+    if (e.message === 'schedule_dupplicate') e.status = 409
     next(e)
   }
 }

@@ -12,6 +12,8 @@ async function postMeeting(req: IRequest, res: Response, next: Function): Promis
     })
     res.status(200).json({data: ret})
   } catch (e) {
+    if (e.message === 'ticket_expired') e.status = 403
+    if (e.message === 'schedule_dupplicate') e.status = 409
     next(e)
   }
 }
@@ -48,6 +50,7 @@ async function putMeetingsWithId(req: IRequest, res: Response, next: Function): 
     await MeetingService.update({id, status, startTime, endTime})
     res.status(200).json()
   } catch (e) {
+    if (e.message === 'schedule_dupplicate') e.status = 409
     next(e)
   }
 }

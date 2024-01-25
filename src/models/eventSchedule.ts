@@ -99,6 +99,31 @@ async function findOneWithId(id: number): Promise<IEventScheduleDetail> {
     throw e
   }
 }
+
+async function findOneWithTimeAndTrainerId(
+  options: {trainerId: number; startTime: string; endTime: string; reservedId?: number},
+  connection?: PoolConnection
+): Promise<number> {
+  const {trainerId, startTime, endTime, reservedId} = options
+  try {
+    const [row] = await db.query(
+      {
+        connection,
+        sql: `SELECT count(id) as count FROM ??  
+            WHERE trainerId = ${escape(trainerId)}
+            AND (((startTime < '${startTime}' AND '${startTime}' < endTime) OR (startTime < '${endTime}' AND '${endTime}'< endTime))
+            OR (startTime >= '${startTime}' AND endTime <= '${endTime}')) 
+            ${reservedId ? `AND id != ${escape(reservedId)}` : ``}`,
+        values: [tableName]
+      },
+      '*'
+    )
+    return row.count
+  } catch (err) {
+    throw err
+  }
+}
+
 //
 // async function findOne(id: number): Promise<IReservationFindOne> {
 //   try {
@@ -160,4 +185,13 @@ async function deleteOne(id: number): Promise<void> {
   }
 }
 
-export {tableName, create, findAll, findAllWithTrainerIdForMeetingSelect, findOneWithId, update, deleteOne}
+export {
+  tableName,
+  create,
+  findAll,
+  findAllWithTrainerIdForMeetingSelect,
+  findOneWithId,
+  findOneWithTimeAndTrainerId,
+  update,
+  deleteOne
+}
