@@ -5,6 +5,7 @@ import {ApiRouter} from './default'
 import {auth as authMiddleware, error as errorMiddleware, request as requestMiddleware} from '../middlewares'
 import {validate} from '../schemas'
 import {logger} from '../../loaders'
+import {multipart} from '../../api/middlewares'
 
 const {errorHandler, notFound} = errorMiddleware
 const excluded = ['/']
@@ -57,6 +58,7 @@ function getController(path: string, obj: any, router: Router): void {
 
         if (path.startsWith('/admin') && !ctrl.isPublic) args.unshift(authMiddleware.admin())
         if (path.startsWith('/web') && !ctrl.isPublic) args.unshift(authMiddleware.web())
+        if (ctrl.contentType === 'multipart/form-data') args.unshift(multipart(ctrl.fileNames))
         else if (!ctrl.isPublic) args.unshift(authMiddleware.user())
         args.unshift(validateResponse(ctrl))
         router[ctrl.method](url, args)

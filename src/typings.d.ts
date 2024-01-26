@@ -20,6 +20,7 @@ declare global {
     userType?: any
     franchiseId?: any
     role: string
+    files: []
     clientIp: string
     useragent: string
     options: {[p: string]: any}

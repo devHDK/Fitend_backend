@@ -20,4 +20,13 @@ async function postStandardExercises(req: IRequest, res: Response, next: Functio
   }
 }
 
-export {postStandardExercises}
+async function postStandardExercisesUpload(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'ER_DUP_ENTRY') e.status = 409
+    next(e)
+  }
+}
+
+export {postStandardExercises, postStandardExercisesUpload}

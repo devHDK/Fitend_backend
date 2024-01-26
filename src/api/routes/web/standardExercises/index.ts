@@ -13,4 +13,19 @@ const postStandardExercises = new ApiRouter({
   handler: ctrl.postStandardExercises
 })
 
-export {postStandardExercises}
+const postStandardExercisesUpload = new ApiRouter({
+  name: 'upload',
+  method: 'post',
+  contentType: 'multipart/form-data',
+  fileNames: ['file'],
+  summary: '스탠다드 운동 생성',
+  tags: ['StandardExercises'],
+  isPublic: true,
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.postStandardExercisesUpload
+})
+
+export {postStandardExercises, postStandardExercisesUpload}
+ 
