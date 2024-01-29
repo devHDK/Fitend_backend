@@ -30,6 +30,7 @@ async function postVerifications(options: IVerificationCreate): Promise<{codeTok
         throw new Error('already_sended')
       }
     }
+
     const {id, code} = await Verification.createVerification({phone, type}, connection)
     const exp = Math.floor(Date.now() / 1000) + 3 * 60
     const expireAt = new Date(exp * 1000)
