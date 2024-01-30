@@ -17,3 +17,26 @@ export interface IStandardExerciseUpload {
   primary: string
   secondary?: string
 }
+
+export interface IStandardExerciseFindAll {
+  search?: string
+  devisionId?: number
+  machineType?: string
+  targetMuscleIds?: number[]
+  start: number
+  perPage: number
+}
+
+export interface IStandardExercises {
+  id: number
+  name: string
+  devision: string
+  machineType: string
+  jointType?: string
+  targetMuscles: {
+    id: number
+    name: string
+  }[]
+}
+
+export type IStandardExercisesList = IResponseList<IStandardExercises>

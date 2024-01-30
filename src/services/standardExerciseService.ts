@@ -1,4 +1,9 @@
-import {IStandardExerciseCreate, IStandardExerciseUpload} from '../interfaces/standardExercises'
+import {
+  IStandardExerciseCreate,
+  IStandardExerciseFindAll,
+  IStandardExerciseUpload,
+  IStandardExercisesList
+} from '../interfaces/standardExercises'
 import {db} from '../loaders'
 import {StandardExercise} from '../models'
 
@@ -255,4 +260,12 @@ async function uploadExcel(data: IStandardExerciseUpload[]): Promise<any[]> {
   }
 }
 
-export {create, uploadExcel}
+async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExercisesList> {
+  try {
+    return await StandardExercise.findAll(options)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {create, uploadExcel, findAll}

@@ -44,4 +44,22 @@ async function excelToData(file) {
   }
 }
 
-export {postStandardExercises, postStandardExercisesUpload}
+async function getStandardExercises(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {search, targetMuscleIds, devisionId, machineType, start, perPage} = req.options
+    const ret = await StandardExerciseService.findAll({
+      search,
+      targetMuscleIds,
+      devisionId,
+      machineType,
+      start,
+      perPage
+    })
+    res.status(200).json(ret)
+  } catch (e) {
+    if (e.message === 'ER_DUP_ENTRY') e.status = 409
+    next(e)
+  }
+}
+
+export {postStandardExercises, postStandardExercisesUpload, getStandardExercises}
