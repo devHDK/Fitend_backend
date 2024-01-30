@@ -4,5 +4,16 @@ export interface IStandardExerciseCreate {
   devisionId: number
   trackingFieldId: number
   machineType: 'bodyweight' | 'kettlebell' | 'barbell' | 'dumbbell' | 'machine' | 'etc'
-  jointType?: 'one' | 'multi'
+  jointType?: 'single' | 'multi'
+}
+
+export interface IStandardExerciseUpload {
+  name: string
+  nameEn: string
+  devision: string
+  trackingField: string
+  machineType: string
+  jointType?: string
+  primary: string
+  secondary?: string
 }

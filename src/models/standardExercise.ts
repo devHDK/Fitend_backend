@@ -23,7 +23,7 @@ async function create(options: IStandardExerciseCreate, connection: PoolConnecti
 
 async function createRelationTargetMuscle(
   options: {
-    targetMuscleIds: [{id: number; type: 'main' | 'sub'}]
+    targetMuscleIds: {id: number; type: string}[]
     standardExerciseId: number
   },
   connection: PoolConnection

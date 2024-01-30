@@ -4,11 +4,11 @@
     "name": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 21
+      "maxLength": 18
     },
     "nameEn": {
       "type": "string",
-      "pattern": "^[0-9a-zA-Z!_\\s]{1,21}$"
+      "pattern": "^[0-9a-zA-Z!_\\s]{1,18}$"
     },
     "devisionId": {
       "type": "integer"

@@ -10,11 +10,11 @@ const storage = multer.diskStorage({
   }
 })
 
-const upload = multer({ storage: storage })
+const upload = multer({storage})
 
 export default (names) => {
   if (names.length === 1) {
     return upload.array(names[0])
   }
-  return upload.fields(names.map(name => ({name})))
+  return upload.fields(names.map((name) => ({name})))
 }

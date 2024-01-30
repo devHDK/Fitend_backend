@@ -28,4 +28,3 @@ const postStandardExercisesUpload = new ApiRouter({
 })
 
 export {postStandardExercises, postStandardExercisesUpload}
- 
