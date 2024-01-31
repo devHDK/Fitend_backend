@@ -88,7 +88,8 @@ const deleteTicketsWithId = new ApiRouter({
   summary: '수강권 삭제',
   tags: ['Ticket'],
   responses: {
-    200: {description: 'success'}
+    200: {description: 'success'},
+    403: {description: 'last_ticket'}
   },
   handler: ctrl.deleteTicketsWithId
 })

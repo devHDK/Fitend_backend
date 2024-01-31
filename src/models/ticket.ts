@@ -156,6 +156,21 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   }
 }
 
+async function findUserTicketCountWithUserId(userId: number): Promise<number | null> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT COUNT(*) as total
+            FROM ?? tr
+            WHERE tr.userId = ${escape(userId)}
+            `,
+      values: [tableTicketRelation]
+    })
+    return row.total
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllForUser(options: {userId: number}, connection?: PoolConnection): Promise<ITicketList> {
   try {
     const {userId} = options
@@ -634,6 +649,7 @@ export {
   findAll,
   findAllForUser,
   findAllTicketsForUser,
+  findUserTicketCountWithUserId,
   findLastTicketUser,
   findOne,
   findOneWithId,

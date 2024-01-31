@@ -243,8 +243,22 @@ async function updateTicketHolding(options: ITicketHoldingUpdate): Promise<void>
 
 async function deleteOne(id: number): Promise<void> {
   try {
+    const ticket = await Ticket.findOneWithId(id)
+    const ticketUsers = ticket.users
+
+    await Promise.all(
+      ticketUsers.map(async (user) => {
+        const ticketCount = await Ticket.findUserTicketCountWithUserId(user.id)
+
+        if (ticketCount <= 1) {
+          throw Error('last_ticket')
+        }
+      })
+    )
+
     await Ticket.deleteOne(id)
   } catch (e) {
+    if (e.message === 'last_ticket') e.status = 403
     throw e
   }
 }
