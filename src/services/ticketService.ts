@@ -88,8 +88,14 @@ async function createTicketHolding(options: ITicketHolding): Promise<void> {
         }
       })
     }
+
     const days = moment(endAt).diff(moment(startAt), 'days') + 1
     const ticket = await Ticket.findOne({id: ticketId})
+
+    if (moment(ticket.startedAt).isBefore(currentTime)) {
+      throw Error('future_ticket')
+    }
+
     const newExpiredAt = moment(ticket.expiredAt).add(days, 'days').format('YYYY-MM-DD')
 
     await TicketHolding.create({ticketId, startAt, endAt, days}, connection)
@@ -106,11 +112,39 @@ async function createTicketHolding(options: ITicketHolding): Promise<void> {
       },
       connection
     )
+
+    const ticketDetail = await Ticket.findOneWithId(ticketId)
+    const userTickets = await Ticket.findActiveTickets({userId: ticketDetail.users[0].id})
+
+    await Promise.all(
+      userTickets.map(async (ticket) => {
+        const tempTicket = await Ticket.findOne({id: ticket.id})
+
+        const newExpiredAt = moment(tempTicket.expiredAt).add(days, 'days').format('YYYY-MM-DD')
+        const newstartedAt = moment(tempTicket.startedAt).add(days, 'days').format('YYYY-MM-DD')
+
+        await Ticket.update(
+          {
+            id: tempTicket.id,
+            coachingPrice: tempTicket.coachingPrice,
+            sessionPrice: tempTicket.sessionPrice,
+            serviceSession: tempTicket.serviceSession,
+            totalSession: tempTicket.totalSession,
+            type: tempTicket.type,
+            startedAt: newstartedAt,
+            expiredAt: newExpiredAt
+          },
+          connection
+        )
+      })
+    )
+
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
     if (e.message === 'past_date_error') e.status = 402
     if (e.message === 'date_overlap') e.status = 403
+    if (e.message === 'future_ticket') e.status = 405
     throw e
   }
 }

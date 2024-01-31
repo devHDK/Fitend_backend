@@ -23,7 +23,8 @@ const postTicketHoldings = new ApiRouter({
   responses: {
     200: {description: 'success'},
     402: {description: 'past_date_error'},
-    403: {description: 'date_overlap'}
+    403: {description: 'date_overlap'},
+    405: {description: 'future_ticket'}
   },
   handler: ctrl.postTicketHoldings
 })
