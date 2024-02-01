@@ -257,7 +257,6 @@ async function updateTicketRefund(options: {id: number}): Promise<void> {
       },
       connection
     )
-    await Ticket.deleteRelations(id, connection)
 
     await db.commit(connection)
   } catch (e) {
