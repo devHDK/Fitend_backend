@@ -22,7 +22,8 @@ async function confirmPayments(options: IPaymentConfirm): Promise<ITicketList> {
         sessionPrice: 0,
         coachingPrice: data.month === 1 ? 90000 : data.month === 3 ? 80000 : 70000,
         startedAt: data.startedAt,
-        expiredAt: data.expiredAt
+        expiredAt: data.expiredAt,
+        month: data.month
       },
       connection
     )

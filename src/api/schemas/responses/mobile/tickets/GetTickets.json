@@ -43,6 +43,10 @@
           "coachingPrice": {
             "type": "number"
           },
+          "month": {
+            "type": "number",
+            "nullable": true
+          },
           "users": {
             "type": "array",
             "items": {

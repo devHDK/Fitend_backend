@@ -27,6 +27,7 @@ async function create(
     serviceSession: number
     sessionPrice: number
     coachingPrice: number
+    month?: number
   },
   connection: PoolConnection
 ): Promise<number> {
@@ -193,6 +194,7 @@ async function findAllForUser(options: {userId: number}, connection?: PoolConnec
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
             JSON_ARRAY(u.nickname) as users,
             p.receiptId,
+            t.month,
             (SELECT IF(EXISTS(SELECT * FROM ?? th 
             WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
             ) as isHolding
@@ -288,6 +290,7 @@ async function findAllTicketsForUser(options: {userId: number}, connection?: Poo
             t.createdAt, t.sessionPrice, t.coachingPrice,
             JSON_ARRAY(u.nickname) as users,
             p.receiptId,
+            t.month,
             (SELECT IF(EXISTS(SELECT * FROM ?? th 
             WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
             ) as isHolding
@@ -338,6 +341,7 @@ async function findLastTicketUser(options: {userId: number}, connection?: PoolCo
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
             JSON_ARRAY(u.nickname) as users,
             p.receiptId,
+            t.month,
             (SELECT IF(EXISTS(SELECT * FROM ?? th 
             WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
             ) as isHolding

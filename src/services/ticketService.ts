@@ -225,6 +225,48 @@ async function update(options: {
   }
 }
 
+async function updateTicketRefund(options: {id: number}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {id} = options
+
+    const ticket = await Ticket.findOne({id})
+
+    if (ticket.type !== 'fitness') {
+      throw Error('not_allowed')
+    }
+
+    const startDate = moment(ticket.startedAt)
+    const today = moment()
+
+    const monthDiff = moment(today).diff(moment(startDate), 'months')
+    const newExpiredAt = moment(ticket.startedAt)
+      .subtract(1, 'days')
+      .add(monthDiff + 1, 'months')
+
+    await Ticket.update(
+      {
+        id,
+        type: ticket.type,
+        totalSession: ticket.totalSession,
+        serviceSession: ticket.serviceSession,
+        sessionPrice: ticket.sessionPrice,
+        coachingPrice: ticket.coachingPrice,
+        startedAt: ticket.startedAt,
+        expiredAt: newExpiredAt.format('YYYY-MM-DD')
+      },
+      connection
+    )
+    await Ticket.deleteRelations(id, connection)
+
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    if (e.message === 'not_allowed') e.status = 403
+    throw e
+  }
+}
+
 async function updateTicketHolding(options: ITicketHoldingUpdate): Promise<void> {
   const connection = await db.beginTransaction()
   try {
@@ -332,6 +374,7 @@ export {
   findAllForUser,
   findOneWithId,
   update,
+  updateTicketRefund,
   updateTicketHolding,
   deleteOne,
   deleteTicketHolding

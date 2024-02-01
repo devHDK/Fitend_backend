@@ -66,6 +66,7 @@ export type ITicketList = IResponseList<{
   createdAt: string
   receiptId: string
   isOnline?: boolean
+  month?: number
 }>
 
 export type IActiveTicketList = [
@@ -96,4 +97,5 @@ export interface ITicketForUser {
   expiredAt: string
   createdAt: string
   isHolding?: boolean
+  month?: number
 }
