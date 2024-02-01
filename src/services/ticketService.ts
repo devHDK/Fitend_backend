@@ -88,8 +88,14 @@ async function createTicketHolding(options: ITicketHolding): Promise<void> {
         }
       })
     }
+
     const days = moment(endAt).diff(moment(startAt), 'days') + 1
     const ticket = await Ticket.findOne({id: ticketId})
+
+    if (moment(ticket.startedAt).isBefore(currentTime)) {
+      throw Error('future_ticket')
+    }
+
     const newExpiredAt = moment(ticket.expiredAt).add(days, 'days').format('YYYY-MM-DD')
 
     await TicketHolding.create({ticketId, startAt, endAt, days}, connection)
@@ -106,11 +112,39 @@ async function createTicketHolding(options: ITicketHolding): Promise<void> {
       },
       connection
     )
+
+    const ticketDetail = await Ticket.findOneWithId(ticketId)
+    const userTickets = await Ticket.findActiveTickets({userId: ticketDetail.users[0].id})
+
+    await Promise.all(
+      userTickets.map(async (ticket) => {
+        const tempTicket = await Ticket.findOne({id: ticket.id})
+
+        const newExpiredAt = moment(tempTicket.expiredAt).add(days, 'days').format('YYYY-MM-DD')
+        const newstartedAt = moment(tempTicket.startedAt).add(days, 'days').format('YYYY-MM-DD')
+
+        await Ticket.update(
+          {
+            id: tempTicket.id,
+            coachingPrice: tempTicket.coachingPrice,
+            sessionPrice: tempTicket.sessionPrice,
+            serviceSession: tempTicket.serviceSession,
+            totalSession: tempTicket.totalSession,
+            type: tempTicket.type,
+            startedAt: newstartedAt,
+            expiredAt: newExpiredAt
+          },
+          connection
+        )
+      })
+    )
+
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
     if (e.message === 'past_date_error') e.status = 402
     if (e.message === 'date_overlap') e.status = 403
+    if (e.message === 'future_ticket') e.status = 405
     throw e
   }
 }
@@ -191,6 +225,48 @@ async function update(options: {
   }
 }
 
+async function updateTicketRefund(options: {id: number}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {id} = options
+
+    const ticket = await Ticket.findOne({id})
+
+    if (ticket.type !== 'fitness') {
+      throw Error('not_allowed')
+    }
+
+    const startDate = moment(ticket.startedAt)
+    const today = moment()
+
+    const monthDiff = moment(today).diff(moment(startDate), 'months')
+    const newExpiredAt = moment(ticket.startedAt)
+      .subtract(1, 'days')
+      .add(monthDiff + 1, 'months')
+
+    await Ticket.update(
+      {
+        id,
+        type: ticket.type,
+        totalSession: ticket.totalSession,
+        serviceSession: ticket.serviceSession,
+        sessionPrice: ticket.sessionPrice,
+        coachingPrice: ticket.coachingPrice,
+        startedAt: ticket.startedAt,
+        expiredAt: newExpiredAt.format('YYYY-MM-DD')
+      },
+      connection
+    )
+    await Ticket.deleteRelations(id, connection)
+
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    if (e.message === 'not_allowed') e.status = 403
+    throw e
+  }
+}
+
 async function updateTicketHolding(options: ITicketHoldingUpdate): Promise<void> {
   const connection = await db.beginTransaction()
   try {
@@ -243,8 +319,22 @@ async function updateTicketHolding(options: ITicketHoldingUpdate): Promise<void>
 
 async function deleteOne(id: number): Promise<void> {
   try {
+    const ticket = await Ticket.findOneWithId(id)
+    const ticketUsers = ticket.users
+
+    await Promise.all(
+      ticketUsers.map(async (user) => {
+        const ticketCount = await Ticket.findUserTicketCountWithUserId(user.id)
+
+        if (ticketCount <= 1) {
+          throw Error('last_ticket')
+        }
+      })
+    )
+
     await Ticket.deleteOne(id)
   } catch (e) {
+    if (e.message === 'last_ticket') e.status = 403
     throw e
   }
 }
@@ -284,6 +374,7 @@ export {
   findAllForUser,
   findOneWithId,
   update,
+  updateTicketRefund,
   updateTicketHolding,
   deleteOne,
   deleteTicketHolding
