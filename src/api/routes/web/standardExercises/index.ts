@@ -38,4 +38,17 @@ const getStandardExercises = new ApiRouter({
   handler: ctrl.getStandardExercises
 })
 
-export {postStandardExercises, postStandardExercisesUpload, getStandardExercises}
+const putStandardExercisesWithId = new ApiRouter({
+  name: ':id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '스탠다드 운동 수정',
+  tags: ['StandardExercises'],
+  schema: 'requests/web/standardExercises/PutStandardExercisesWithId',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putStandardExercisesWithId
+})
+
+export {postStandardExercises, postStandardExercisesUpload, getStandardExercises, putStandardExercisesWithId}

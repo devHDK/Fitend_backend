@@ -260,6 +260,19 @@ async function findOneWithWorkoutScheduleId(workoutScheduleId: number): Promise<
   }
 }
 
+async function findOneWithName(name: string): Promise<[{id: number}]> {
+  try {
+    return await db.query({
+      sql: `SELECT t.id FROM ?? t 
+            WHERE t.name = ?
+            GROUP BY t.id`,
+      values: [tableName, name]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function update(options: IExerciseUpdate, connection: PoolConnection): Promise<void> {
   const {id, ...data} = options
   try {
@@ -326,6 +339,7 @@ export {
   findAllTags,
   findOneWithId,
   findOneWithWorkoutScheduleId,
+  findOneWithName,
   update,
   deleteRelationTargetMuscle,
   deleteRelationTag,

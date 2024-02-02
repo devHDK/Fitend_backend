@@ -5,7 +5,7 @@ import {
   IStandardExercisesList
 } from '../interfaces/standardExercises'
 import {db} from '../loaders'
-import {StandardExercise} from '../models'
+import {Exercise, StandardExercise} from '../models'
 
 async function create(options: {
   name: string
@@ -248,6 +248,13 @@ async function uploadExcel(data: IStandardExerciseUpload[]): Promise<any[]> {
             connection
           )
         }
+        if (standard.linkedExercises) {
+          const linkedExercises = standard.linkedExercises.split(', ')
+          for (const exerciseName of linkedExercises) {
+            const exerciseIds = await Exercise.findOneWithName(exerciseName)
+            await StandardExercise.createRelationExercises({exerciseIds, standardExerciseId}, connection)
+          }
+        }
       } catch (e) {
         duplicatedArr.push(standard)
       }
@@ -268,4 +275,29 @@ async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExer
   }
 }
 
-export {create, uploadExcel, findAll}
+async function update(options: {
+  id: number
+  name: string
+  nameEn: string
+  trackingFieldId: number
+  targetMuscleIds?: [{id: number; type: 'main' | 'sub'}]
+  devisionId: number
+  machineType: 'bodyweight' | 'kettlebell' | 'barbell' | 'dumbbell' | 'machine' | 'etc'
+  jointType?: 'single' | 'multi'
+}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {id, targetMuscleIds, ...data} = options
+    await StandardExercise.update({id, ...data}, connection)
+    if (targetMuscleIds && targetMuscleIds.length) {
+      await StandardExercise.deleteRelationTargetMuscle(id, connection)
+      await StandardExercise.createRelationTargetMuscle({targetMuscleIds, standardExerciseId: id}, connection)
+    }
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
+export {create, uploadExcel, findAll, update}

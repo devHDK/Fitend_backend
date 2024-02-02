@@ -62,4 +62,24 @@ async function getStandardExercises(req: IRequest, res: Response, next: Function
   }
 }
 
-export {postStandardExercises, postStandardExercisesUpload, getStandardExercises}
+async function putStandardExercisesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, name, nameEn, trackingFieldId, targetMuscleIds, devisionId, machineType, jointType} = req.options
+    await StandardExerciseService.update({
+      id,
+      name,
+      nameEn,
+      trackingFieldId,
+      targetMuscleIds,
+      devisionId,
+      machineType,
+      jointType
+    })
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'ER_DUP_ENTRY') e.status = 409
+    next(e)
+  }
+}
+
+export {postStandardExercises, postStandardExercisesUpload, getStandardExercises, putStandardExercisesWithId}

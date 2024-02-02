@@ -16,6 +16,7 @@ export interface IStandardExerciseUpload {
   jointType?: string
   primary: string
   secondary?: string
+  linkedExercises?: string
 }
 
 export interface IStandardExerciseFindAll {
@@ -37,6 +38,16 @@ export interface IStandardExercises {
     id: number
     name: string
   }[]
+}
+
+export interface IStandardExerciseUpdate {
+  id: number
+  name?: string
+  nameEn?: string
+  trackingFieldId?: number
+  devisionId?: number
+  machineType?: string
+  jointType?: string
 }
 
 export type IStandardExercisesList = IResponseList<IStandardExercises>

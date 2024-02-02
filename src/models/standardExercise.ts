@@ -4,6 +4,7 @@ import {db} from '../loaders'
 import {
   IStandardExerciseCreate,
   IStandardExerciseFindAll,
+  IStandardExerciseUpdate,
   IStandardExercisesList
 } from '../interfaces/standardExercises'
 import {TargetMuscle} from '.'
@@ -12,6 +13,7 @@ moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'StandardExercises'
 const tableStandardExerciseTargetMuscle = 'StandardExercises-TargetMuscles'
+const tableStandardExercisesExercises = 'StandardExercises-Exercises'
 const tableExercisesDevision = 'ExercisesDevision'
 
 async function create(options: IStandardExerciseCreate, connection: PoolConnection): Promise<number> {
@@ -43,6 +45,26 @@ async function createRelationTargetMuscle(
       connection,
       sql: `INSERT INTO ?? (standardExerciseId, targetMuscleId, type) VALUES ${values}`,
       values: [tableStandardExerciseTargetMuscle]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createRelationExercises(
+  options: {
+    exerciseIds: {id: number}[]
+    standardExerciseId: number
+  },
+  connection: PoolConnection
+): Promise<void> {
+  const {exerciseIds, standardExerciseId} = options
+  const values = exerciseIds.map((exercise) => `(${standardExerciseId}, '${exercise.id}')`).join(',')
+  try {
+    await db.query({
+      connection,
+      sql: `INSERT INTO ?? (standardExerciseId, exerciseId) VALUES ${values}`,
+      values: [tableStandardExercisesExercises]
     })
   } catch (e) {
     throw e
@@ -96,4 +118,29 @@ async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExer
   }
 }
 
-export {create, createRelationTargetMuscle, findAll}
+async function update(options: IStandardExerciseUpdate, connection: PoolConnection): Promise<void> {
+  const {id, ...data} = options
+  try {
+    await db.query({
+      connection,
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableName, data, {id}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function deleteRelationTargetMuscle(standardExerciseId: number, connection: PoolConnection): Promise<void> {
+  try {
+    await db.query({
+      connection,
+      sql: `DELETE FROM ?? WHERE ?`,
+      values: [tableStandardExerciseTargetMuscle, {standardExerciseId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+export {create, createRelationTargetMuscle, createRelationExercises, findAll, update, deleteRelationTargetMuscle}
