@@ -2,6 +2,8 @@ import {
   IStandardExerciseCreate,
   IStandardExerciseFindAll,
   IStandardExerciseUpload,
+  IStandardExercises,
+  IStandardExercisesFindOne,
   IStandardExercisesList
 } from '../interfaces/standardExercises'
 import {db} from '../loaders'
@@ -275,6 +277,14 @@ async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExer
   }
 }
 
+async function findOne(id: number): Promise<IStandardExercisesFindOne> {
+  try {
+    return await StandardExercise.findOneWithId(id)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function update(options: {
   id: number
   name: string
@@ -300,4 +310,4 @@ async function update(options: {
   }
 }
 
-export {create, uploadExcel, findAll, update}
+export {create, uploadExcel, findAll, findOne, update}

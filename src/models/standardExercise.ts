@@ -5,6 +5,7 @@ import {
   IStandardExerciseCreate,
   IStandardExerciseFindAll,
   IStandardExerciseUpdate,
+  IStandardExercisesFindOne,
   IStandardExercisesList
 } from '../interfaces/standardExercises'
 import {TargetMuscle} from '.'
@@ -118,6 +119,24 @@ async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExer
   }
 }
 
+async function findOneWithId(id: number): Promise<IStandardExercisesFindOne> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT t.id, t.name, t.nameEn, t.machineType, t.jointType, ed.name as devision,
+            JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', st.type)) as targetMuscles
+            FROM ?? t
+            JOIN ?? ed ON ed.id = t.devisionId
+            JOIN ?? st ON st.standardExerciseId = t.id
+            JOIN ?? tm ON tm.id = st.targetMuscleId
+            WHERE t.?`,
+      values: [tableName, tableExercisesDevision, tableStandardExerciseTargetMuscle, TargetMuscle.tableName, {id}]
+    })
+    return row
+  } catch (e) {
+    throw e
+  }
+}
+
 async function update(options: IStandardExerciseUpdate, connection: PoolConnection): Promise<void> {
   const {id, ...data} = options
   try {
@@ -143,4 +162,12 @@ async function deleteRelationTargetMuscle(standardExerciseId: number, connection
   }
 }
 
-export {create, createRelationTargetMuscle, createRelationExercises, findAll, update, deleteRelationTargetMuscle}
+export {
+  create,
+  createRelationTargetMuscle,
+  createRelationExercises,
+  findAll,
+  findOneWithId,
+  update,
+  deleteRelationTargetMuscle
+}

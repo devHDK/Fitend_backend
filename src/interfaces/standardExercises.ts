@@ -28,6 +28,21 @@ export interface IStandardExerciseFindAll {
   perPage: number
 }
 
+export interface IStandardExercisesFindOne {
+  id: number
+  name: string
+  nameEn: string
+  devision: string
+  machineType: string
+  jointType?: string
+  targetMuscles: {
+    id: number
+    name: string
+    muscleType: string
+    type: string
+  }[]
+}
+
 export interface IStandardExercises {
   id: number
   name: string

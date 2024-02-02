@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "name": {
+      "type": "string"
+    },
+    "nameEn": {
+      "type": "string"
+    },
+    "devision": {
+      "type": "string"
+    },
+    "machineType": {
+      "type": "string"
+    },
+    "jointType": {
+      "type": "string",
+      "nullable": true
+    },
+    "targetMuscles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "muscleType": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["main", "sub"]
+          }
+        }
+      }
+    }
+  },
+  "required": ["id", "name", "nameEn", "machineType", "targetMuscles", "devision", "jointType"],
+  "additionalProperties": false
+}

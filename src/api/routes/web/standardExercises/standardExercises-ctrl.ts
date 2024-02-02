@@ -62,6 +62,16 @@ async function getStandardExercises(req: IRequest, res: Response, next: Function
   }
 }
 
+async function getStandardExercisesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const ret = await StandardExerciseService.findOne(req.options.id)
+    res.status(200).json(ret)
+  } catch (e) {
+    if (e.message === 'ER_DUP_ENTRY') e.status = 409
+    next(e)
+  }
+}
+
 async function putStandardExercisesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id, name, nameEn, trackingFieldId, targetMuscleIds, devisionId, machineType, jointType} = req.options
@@ -82,4 +92,10 @@ async function putStandardExercisesWithId(req: IRequest, res: Response, next: Fu
   }
 }
 
-export {postStandardExercises, postStandardExercisesUpload, getStandardExercises, putStandardExercisesWithId}
+export {
+  postStandardExercises,
+  postStandardExercisesUpload,
+  getStandardExercises,
+  getStandardExercisesWithId,
+  putStandardExercisesWithId
+}
