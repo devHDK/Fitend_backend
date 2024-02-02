@@ -151,7 +151,8 @@ async function createAccountForUser(options: IUserAccountCreate): Promise<void> 
         sessionPrice: 0,
         coachingPrice: 0,
         startedAt: moment().format('YYYY-MM-DD'),
-        expiredAt: moment().add(14, 'day').format('YYYY-MM-DD')
+        expiredAt: moment().add(14, 'day').format('YYYY-MM-DD'),
+        month: 0
       },
       connection
     )

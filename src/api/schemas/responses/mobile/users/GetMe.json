@@ -105,6 +105,10 @@
               },
               "isHolding": {
                 "type": "boolean"
+              },
+              "month": {
+                "type": "number",
+                "nullable": true
               }
             },
             "required": [
@@ -188,6 +192,10 @@
               },
               "isHolding": {
                 "type": "boolean"
+              },
+              "month": {
+                "type": "number",
+                "nullable": true
               }
             },
             "required": [
