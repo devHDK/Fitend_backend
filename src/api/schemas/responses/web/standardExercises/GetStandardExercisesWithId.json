@@ -40,6 +40,27 @@
           }
         }
       }
+    },
+    "linkedExercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "trainerId": {
+            "type": "integer"
+          },
+          "trainerNickname": {
+            "type": "string"
+          }
+        }
+      },
+      "nullable": true
     }
   },
   "required": ["id", "name", "nameEn", "machineType", "targetMuscles", "devision", "jointType"],

@@ -41,6 +41,12 @@ export interface IStandardExercisesFindOne {
     muscleType: string
     type: string
   }[]
+  linkedExercises: {
+    id: number
+    description: string
+    trainerId: number
+    trainerNickname: string
+  }[]
 }
 
 export interface IStandardExercises {
