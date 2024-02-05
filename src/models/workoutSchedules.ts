@@ -11,7 +11,16 @@ import {
   IWorkoutHistory
 } from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
-import {WorkoutPlan, WorkoutFeedbacks, Exercise, Trainer, WorkoutRecords, User, WorkoutSchedule} from './index'
+import {
+  WorkoutPlan,
+  WorkoutFeedbacks,
+  Exercise,
+  Trainer,
+  WorkoutRecords,
+  User,
+  WorkoutSchedule,
+  StandardExercise
+} from './index'
 import {IWorkoutRecordScheduleUpdate} from '../interfaces/workoutRecords'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -134,8 +143,10 @@ async function findOneWithId(workoutScheduleId: number): Promise<IWorkoutSchedul
             (
               SELECT JSON_ARRAYAGG(tm.type) 
               FROM ?? tm
-              JOIN ?? et ON et.targetMuscleId = tm.id AND et.type = 'main'
-              JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = et.exerciseId
+              JOIN ?? setm ON setm.targetMuscleId = tm.id AND tm.type = 'main'
+              JOIN ?? stde2 ON stde2.id = setm.standardExerciseId
+              JOIN ?? se2 ON se2.standardExerciseId = stde2.id
+              JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = se2.exerciseId
             ) as targetMuscleTypes,
             t.totalTime as workoutTotalTime, 
             IF(wf.workoutScheduleId, true, false) as isWorkoutComplete,
@@ -148,7 +159,9 @@ async function findOneWithId(workoutScheduleId: number): Promise<IWorkoutSchedul
             GROUP BY t.id`,
       values: [
         Exercise.tableTargetMuscle,
-        Exercise.tableExerciseTargetMuscle,
+        StandardExercise.tableStandardExerciseTargetMuscle,
+        StandardExercise.tableName,
+        StandardExercise.tableStandardExercisesExercises,
         WorkoutPlan.tableName,
         tableName,
         WorkoutPlan.tableName,

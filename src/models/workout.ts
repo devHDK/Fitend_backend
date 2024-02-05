@@ -2,7 +2,7 @@ import moment from 'moment-timezone'
 import {escape, PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {IWorkoutCreate, IWorkoutDetail, IWorkoutFindAll, IWorkoutList, IWorkUpdate} from '../interfaces/workout'
-import {Trainer, Exercise} from './'
+import {Trainer, Exercise, StandardExercise} from './'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -177,6 +177,8 @@ async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDet
             FROM ?? t
             JOIN ?? we ON we.workoutId = t.id
             JOIN ?? e ON e.id = we.exerciseId
+            JOIN ?? se ON se.exerciseId = e.id
+            JOIN ?? stde ON stde.id = se.standardExercisId
             JOIN ?? tr ON tr.id = t.trainerId
             LEFT JOIN ?? tw ON tw.workoutId = t.id AND tw.trainerId = ${escape(trainerId)}
             WHERE t.?
@@ -191,6 +193,8 @@ async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDet
         tableName,
         tableWorkoutExercise,
         Exercise.tableName,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableName,
         Trainer.tableName,
         tableTrainerWorkout,
         {id}

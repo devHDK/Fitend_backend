@@ -270,17 +270,32 @@ async function findOneWithId(id: number, trainerId: number): Promise<IExerciseFi
 async function findOneWithWorkoutScheduleId(workoutScheduleId: number): Promise<IWorkoutScheduleExercise[]> {
   try {
     return await db.query({
-      sql: `SELECT wp.id as workoutPlanId, e.name, e.description, e.trackingFieldId, e.videos, wp.setInfo, wp.circuitGroupNum,
+      sql: `SELECT wp.id as workoutPlanId, stde.name, e.description, stde.trackingFieldId, e.videos, wp.setInfo, wp.circuitGroupNum,
             wp.setType, wp.circuitSeq, wp.isVideoRecord,
-            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', et.type))
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', setm.type))
             FROM ?? tm
-            JOIN ?? et ON et.exerciseId = e.id AND et.targetMuscleId = tm.id) as targetMuscles,
+            JOIN ?? setm ON setm.targetMuscleId = tm.id 
+            JOIN ?? stde ON stde.id = setm.standardExerciseId
+            JOIN ?? se ON se.standardExerciseId = stde.id AND se.exerciseId = e.id
+            ) as targetMuscles,
             tra.nickname as trainerNickname, tra.profileImage as trainerProfileImage
             FROM ?? e
+            JOIN ?? se ON se.exerciseId = e.id
+            JOIN ?? stde ON stde.id = se.standardExerciseId
             JOIN ?? wp ON wp.workoutScheduleId = ${escape(workoutScheduleId)} AND wp.exerciseId = e.id
             JOIN ?? tra ON tra.id = e.trainerId
             ORDER BY wp.id`,
-      values: [tableTargetMuscle, tableExerciseTargetMuscle, tableName, WorkoutPlan.tableName, Trainer.tableName]
+      values: [
+        tableTargetMuscle,
+        StandardExercise.tableStandardExerciseTargetMuscle,
+        StandardExercise.tableName,
+        StandardExercise.tableStandardExercisesExercises,
+        tableName,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableName,
+        WorkoutPlan.tableName,
+        Trainer.tableName
+      ]
     })
   } catch (e) {
     throw e

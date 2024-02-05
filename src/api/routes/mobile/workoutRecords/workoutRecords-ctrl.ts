@@ -34,7 +34,6 @@ async function getWorkoutHistoryWithPlanId(req: IRequest, res: Response, next: F
     const userId = req.userId
 
     const ret = await WorkoutRecordService.findWorkoutHistoryWithPlanId(workoutPlanId, userId, start, perPage)
-    console.log(ret)
     res.status(200).json(ret)
   } catch (e) {
     next(e)

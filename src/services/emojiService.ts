@@ -102,8 +102,6 @@ async function updateEmoji(options: {
           connection
         )
 
-        console.log('trainerId', trainerId)
-
         if (trainerId) {
           const comment = await Comment.findOne(commentId)
           const thread = await Thread.findOne(comment.threadId)

@@ -9,6 +9,7 @@ import {
 import {db} from '../loaders'
 import {
   Exercise,
+  StandardExercise,
   Ticket,
   Trainer,
   User,
@@ -50,20 +51,24 @@ async function findOneWithWorkoutPlanId(workoutPlanId: number): Promise<IWorkout
 async function findAllWithWorkoutScheduleId(workoutScheduleId: number): Promise<[IWorkoutRecordDetail]> {
   try {
     return await db.query({
-      sql: `SELECT e.name as exerciseName, JSON_ARRAYAGG(tm.name) as targetMuscles,
-            t.setInfo, e.trackingFieldId, t.workoutPlanId
+      sql: `SELECT stde.name as exerciseName, JSON_ARRAYAGG(tm.name) as targetMuscles,
+            t.setInfo, stde.trackingFieldId, t.workoutPlanId
             FROM ?? t
             JOIN ?? wp ON wp.id = t.workoutPlanId AND wp.workoutScheduleId = ?
             JOIN ?? e ON e.id = wp.exerciseId 
-            JOIN ?? etm ON etm.exerciseId = e.id
-            JOIN ?? tm ON tm.id = etm.targetMuscleId 
+            JOIN ?? se ON se.exerciseId = e.id
+            JOIN ?? stde ON stde.id = se.standardExerciseId
+            JOIN ?? setm ON setm.standardExerciseId = stde.id
+            JOIN ?? tm ON tm.id = setm.targetMuscleId 
             GROUP BY t.id`,
       values: [
         tableName,
         WorkoutPlan.tableName,
         workoutScheduleId,
         Exercise.tableName,
-        Exercise.tableExerciseTargetMuscle,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableName,
+        StandardExercise.tableStandardExerciseTargetMuscle,
         Exercise.tableTargetMuscle
       ]
     })
@@ -221,14 +226,25 @@ async function findWorkoutHistoryWithExerciseId(
 
     const rows = await db.query({
       sql: `SELECT t.startDate, wr.id as workoutRecordId, wr.workoutPlanId, wr.setInfo,
-            (SELECT e.name FROM ?? e WHERE e.id = ${escape(exerciseId)}) as exerciseName
+            (SELECT stde.name FROM ?? e
+             JOIN ?? se ON se.exerciseId = ${escape(exerciseId)} 
+             JOIN ?? stde ON stde.id = se.standardExerciseId
+             WHERE e.id = ${escape(exerciseId)}
+            ) as exerciseName
             FROM ?? t 
             JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = ${escape(exerciseId)}
             JOIN ?? wr ON wr.workoutPlanId = wp.id 
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             ORDER BY t.startDate DESC
             LIMIT ${start}, ${perPage}`,
-      values: [Exercise.tableName, WorkoutSchedule.tableName, WorkoutPlan.tableName, tableName]
+      values: [
+        Exercise.tableName,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableName,
+        WorkoutSchedule.tableName,
+        WorkoutPlan.tableName,
+        tableName
+      ]
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total 
