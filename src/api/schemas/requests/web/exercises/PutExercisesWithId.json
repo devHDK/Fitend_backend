@@ -29,6 +29,6 @@
       }
     }
   },
-  "required": ["name", "type", "trackingFieldId", "description", "videos"],
+  "required": ["description", "videos"],
   "additionalProperties": false
 }
