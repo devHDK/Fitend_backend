@@ -15,7 +15,7 @@ import {IWorkoutScheduleExercise} from '../interfaces/workoutSchedules'
 moment.tz.setDefault('Asia/Seoul')
 
 const tableName = 'Exercises'
-const tableExerciseTargetMuscle = 'Exercises-TargetMuscles'
+// const tableExerciseTargetMuscle = 'Exercises-TargetMuscles'
 const tableExerciseExerciseTag = 'Exercises-ExerciseTags'
 const tableExerciseTag = 'ExerciseTags'
 const tableTrainerExercise = 'Trainers-Exercises'
@@ -34,27 +34,27 @@ async function create(options: IExerciseCreate, connection: PoolConnection): Pro
   }
 }
 
-async function createRelationTargetMuscle(
-  options: {
-    targetMuscleIds: [{id: number; type: 'main' | 'sub'}]
-    exerciseId: number
-  },
-  connection: PoolConnection
-): Promise<void> {
-  const {targetMuscleIds, exerciseId} = options
-  const values = targetMuscleIds
-    .map((targetMuscle) => `(${exerciseId}, '${targetMuscle.id}', '${targetMuscle.type}')`)
-    .join(',')
-  try {
-    await db.query({
-      connection,
-      sql: `INSERT INTO ?? (exerciseId, targetMuscleId, type) VALUES ${values}`,
-      values: [tableExerciseTargetMuscle]
-    })
-  } catch (e) {
-    throw e
-  }
-}
+// async function createRelationTargetMuscle(
+//   options: {
+//     targetMuscleIds: [{id: number; type: 'main' | 'sub'}]
+//     exerciseId: number
+//   },
+//   connection: PoolConnection
+// ): Promise<void> {
+//   const {targetMuscleIds, exerciseId} = options
+//   const values = targetMuscleIds
+//     .map((targetMuscle) => `(${exerciseId}, '${targetMuscle.id}', '${targetMuscle.type}')`)
+//     .join(',')
+//   try {
+//     await db.query({
+//       connection,
+//       sql: `INSERT INTO ?? (exerciseId, targetMuscleId, type) VALUES ${values}`,
+//       values: [tableExerciseTargetMuscle]
+//     })
+//   } catch (e) {
+//     throw e
+//   }
+// }
 
 async function createRelationTag(
   options: {
@@ -328,17 +328,17 @@ async function update(options: IExerciseUpdate, connection: PoolConnection): Pro
   }
 }
 
-async function deleteRelationTargetMuscle(exerciseId: number, connection: PoolConnection): Promise<void> {
-  try {
-    await db.query({
-      connection,
-      sql: `DELETE FROM ?? WHERE ?`,
-      values: [tableExerciseTargetMuscle, {exerciseId}]
-    })
-  } catch (e) {
-    throw e
-  }
-}
+// async function deleteRelationTargetMuscle(exerciseId: number, connection: PoolConnection): Promise<void> {
+//   try {
+//     await db.query({
+//       connection,
+//       sql: `DELETE FROM ?? WHERE ?`,
+//       values: [tableExerciseTargetMuscle, {exerciseId}]
+//     })
+//   } catch (e) {
+//     throw e
+//   }
+// }
 
 async function deleteRelationTag(exerciseId: number, connection: PoolConnection): Promise<void> {
   try {
@@ -365,13 +365,11 @@ async function deleteRelationBookmark(exerciseId: number, trainerId: number): Pr
 
 export {
   tableName,
-  tableExerciseTargetMuscle,
   tableExerciseExerciseTag,
   tableExerciseTag,
   tableTargetMuscle,
   tableTrainerExercise,
   create,
-  createRelationTargetMuscle,
   createRelationTag,
   createRelationBookmark,
   createExerciseTag,
@@ -383,7 +381,6 @@ export {
   findOneWithWorkoutScheduleId,
   findOneWithName,
   update,
-  deleteRelationTargetMuscle,
   deleteRelationTag,
   deleteRelationBookmark
 }
