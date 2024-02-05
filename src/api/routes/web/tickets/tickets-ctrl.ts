@@ -108,6 +108,17 @@ async function putTicketsWithId(req: IRequest, res: Response, next: Function): P
   }
 }
 
+async function putTicketsRefund(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id} = req.options
+    await TicketService.updateTicketRefund({id})
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'not_allowed') e.status = 403
+    next(e)
+  }
+}
+
 async function putTicketHoldingsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {startAt, endAt} = req.options
@@ -146,6 +157,7 @@ export {
   getTicketsWithId,
   putTicketsWithId,
   putTicketHoldingsWithId,
+  putTicketsRefund,
   deleteTicketsWithId,
   deleteTicketHoldingsWithId
 }

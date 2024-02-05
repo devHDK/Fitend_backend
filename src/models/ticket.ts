@@ -7,7 +7,8 @@ import {
   ITicketFindAll,
   ITicketList,
   ITicketFindOne,
-  ITicketForUser
+  ITicketForUser,
+  IActiveTicketList
 } from '../interfaces/tickets'
 import {Payment, Reservation, TicketHolding, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
 import {ICoaching, ICoachingForAdmin} from '../interfaces/payroll'
@@ -26,6 +27,7 @@ async function create(
     serviceSession: number
     sessionPrice: number
     coachingPrice: number
+    month?: number
   },
   connection: PoolConnection
 ): Promise<number> {
@@ -156,6 +158,21 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
   }
 }
 
+async function findUserTicketCountWithUserId(userId: number): Promise<number | null> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT COUNT(*) as total
+            FROM ?? tr
+            WHERE tr.userId = ${escape(userId)}
+            `,
+      values: [tableTicketRelation]
+    })
+    return row.total
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllForUser(options: {userId: number}, connection?: PoolConnection): Promise<ITicketList> {
   try {
     const {userId} = options
@@ -177,6 +194,7 @@ async function findAllForUser(options: {userId: number}, connection?: PoolConnec
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
             JSON_ARRAY(u.nickname) as users,
             p.receiptId,
+            t.month,
             (SELECT IF(EXISTS(SELECT * FROM ?? th 
             WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
             ) as isHolding
@@ -211,6 +229,49 @@ async function findAllForUser(options: {userId: number}, connection?: PoolConnec
   }
 }
 
+async function findActiveTickets(options: {userId: number}, connection?: PoolConnection): Promise<IActiveTicketList> {
+  try {
+    const {userId} = options
+    const where = []
+    const currentTime = moment().format('YYYY-MM-DD')
+
+    where.push(`t.startedAt >= '${currentTime}'`)
+
+    const rows = await db.query({
+      connection,
+      sql: `SELECT t.id, t.type, (t.totalSession + t.serviceSession) as totalSession,
+            ((t.totalSession + t.serviceSession) - (SELECT COUNT(*) FROM ?? r
+            WHERE r.ticketId = t.id AND 
+            (r.status = 'attendance' OR (r.status = 'cancel' AND r.times = 1)))) as restSession,
+            ((t.totalSession + t.serviceSession) - (SELECT COUNT(*) FROM ?? r
+            WHERE r.ticketId = t.id AND r.times = 1)) as availSession,
+            DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
+            DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
+            JSON_ARRAY(u.nickname) as users,
+            p.receiptId
+            FROM ?? t
+            JOIN ?? tr ON tr.ticketId = t.id AND tr.userId = ${userId}
+            JOIN ?? u ON u.id = tr.userId 
+            LEFT JOIN ?? p on p.ticketId = t.id
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY t.id
+            ORDER BY t.id ASC`,
+      values: [
+        Reservation.tableName,
+        Reservation.tableName,
+        tableName,
+        tableTicketRelation,
+        User.tableName,
+        Payment.tableName
+      ]
+    })
+
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAllTicketsForUser(options: {userId: number}, connection?: PoolConnection): Promise<ITicketForUser> {
   try {
     const {userId} = options
@@ -229,6 +290,7 @@ async function findAllTicketsForUser(options: {userId: number}, connection?: Poo
             t.createdAt, t.sessionPrice, t.coachingPrice,
             JSON_ARRAY(u.nickname) as users,
             p.receiptId,
+            t.month,
             (SELECT IF(EXISTS(SELECT * FROM ?? th 
             WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
             ) as isHolding
@@ -279,6 +341,7 @@ async function findLastTicketUser(options: {userId: number}, connection?: PoolCo
             DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
             JSON_ARRAY(u.nickname) as users,
             p.receiptId,
+            t.month,
             (SELECT IF(EXISTS(SELECT * FROM ?? th 
             WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
             ) as isHolding
@@ -634,6 +697,7 @@ export {
   findAll,
   findAllForUser,
   findAllTicketsForUser,
+  findUserTicketCountWithUserId,
   findLastTicketUser,
   findOne,
   findOneWithId,
@@ -643,6 +707,7 @@ export {
   findCounts,
   findExpiredSevenDays,
   findExpiredThreeSessions,
+  findActiveTickets,
   update,
   deleteOne,
   deleteRelations

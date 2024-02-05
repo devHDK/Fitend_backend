@@ -23,7 +23,8 @@ const postTicketHoldings = new ApiRouter({
   responses: {
     200: {description: 'success'},
     402: {description: 'past_date_error'},
-    403: {description: 'date_overlap'}
+    403: {description: 'date_overlap'},
+    405: {description: 'future_ticket'}
   },
   handler: ctrl.postTicketHoldings
 })
@@ -67,6 +68,19 @@ const putTicketsWithId = new ApiRouter({
   handler: ctrl.putTicketsWithId
 })
 
+const putTicketsRefund = new ApiRouter({
+  name: 'refund/:id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '수강권 부분환불 => expiredAt 자동지정',
+  tags: ['Ticket'],
+  responses: {
+    200: {description: 'success'},
+    403: {description: 'not_allowed/FCticket이 아닙니다'}
+  },
+  handler: ctrl.putTicketsRefund
+})
+
 const putTicketHoldingWithId = new ApiRouter({
   name: 'ticketHoldings/:id',
   method: 'put',
@@ -88,7 +102,8 @@ const deleteTicketsWithId = new ApiRouter({
   summary: '수강권 삭제',
   tags: ['Ticket'],
   responses: {
-    200: {description: 'success'}
+    200: {description: 'success'},
+    403: {description: 'last_ticket'}
   },
   handler: ctrl.deleteTicketsWithId
 })
@@ -111,6 +126,7 @@ export {
   getTickets,
   getTicketsWithId,
   putTicketsWithId,
+  putTicketsRefund,
   putTicketHoldingWithId,
   deleteTicketsWithId,
   deleteTicketHoldingsWithId

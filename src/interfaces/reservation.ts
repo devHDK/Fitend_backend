@@ -103,6 +103,7 @@ export interface IReservationUpdate {
   seq?: number
   status?: string
   times?: number
+  expiredAt?: string
 }
 
 export interface IReservationPushType {

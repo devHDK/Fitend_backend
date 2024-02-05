@@ -183,8 +183,31 @@ async function update(options: {id: number; startTime: string; endTime: string; 
       times: reservedTimes,
       seq: reservedSeq
     } = reservedReservation
+
     const tickets = await Ticket.findOneWithId(reservedReservation.ticketId)
     const userId = tickets.users[0].id
+
+    if (tickets.type === 'personal' && (status === 'attendance' || status === 'noShow')) {
+      const usedSessionCount = await Reservation.findValidCount(reservedReservation.ticketId)
+
+      if (tickets.totalSession + tickets.serviceSession <= usedSessionCount + 1) {
+        const ticket = await Ticket.findOne({id: reservedReservation.ticketId})
+
+        await Ticket.update(
+          {
+            id: ticket.id,
+            type: ticket.type,
+            totalSession: ticket.totalSession,
+            serviceSession: ticket.serviceSession,
+            sessionPrice: ticket.sessionPrice,
+            coachingPrice: ticket.coachingPrice,
+            startedAt: ticket.startedAt,
+            expiredAt: moment().format('YYYY-MM-DD')
+          },
+          connection
+        )
+      }
+    }
 
     await Reservation.update(
       {
