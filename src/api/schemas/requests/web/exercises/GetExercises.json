@@ -16,15 +16,15 @@
         "type": "number"
       }
     },
+    "devisionId": {
+      "type": "integer"
+    },
     "trainerId": {
       "type": "integer"
     },
-    "types": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": ["barbell", "dumbbell", "kettlebell", "machine", "bodyweight", "etc"]
-      }
+    "machineType": {
+      "type": "string",
+      "enum": ["barbell", "dumbbell", "kettlebell", "machine", "bodyweight", "etc"]
     },
     "trackingFieldIds": {
       "type": "array",

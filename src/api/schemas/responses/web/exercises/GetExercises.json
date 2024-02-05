@@ -32,7 +32,7 @@
           "trackingFieldId": {
             "type": "integer"
           },
-          "type": {
+          "machineType": {
             "type": "string",
             "enum": ["barbell", "dumbbell", "kettlebell", "machine", "bodyweight", "etc"]
           },
@@ -50,6 +50,9 @@
               }
             }
           },
+          "devisionId": {
+            "type": "integer"
+          },
           "trainerId": {
             "type": "integer"
           },
@@ -64,7 +67,17 @@
             "type": "boolean"
           }
         },
-        "required": ["id", "name", "type", "targetMuscles", "trainerId", "trainerNickname", "updatedAt", "isBookmark"],
+        "required": [
+          "id",
+          "name",
+          "machineType",
+          "targetMuscles",
+          "trainerId",
+          "devisionId",
+          "trainerNickname",
+          "updatedAt",
+          "isBookmark"
+        ],
         "additionalProperties": false
       }
     },

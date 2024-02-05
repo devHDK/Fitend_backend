@@ -7,11 +7,13 @@ export interface IExercise {
     thumbnail: string
   }
   trackingFieldId: number
-  type: 'barbell' | 'dumbbell' | 'kettlebell' | 'machine' | 'bodyweight' | 'etc'
+  machineType: 'barbell' | 'dumbbell' | 'kettlebell' | 'machine' | 'bodyweight' | 'etc'
   targetMuscles: {
     id: number
     name: string
   }
+  jointType?: 'multi' | 'single'
+  devisionId: number
   trainerId: number
   trainerNickname: string
   updatedAt: Date
@@ -35,7 +37,9 @@ export interface IExerciseFindAll {
   isBookmark?: boolean
   tagIds?: number[]
   trainerFilterId?: number
-  types: string[]
+  devisionId?: number
+  targetMuscleId?: number
+  machineType?: 'barbell' | 'dumbbell' | 'kettlebell' | 'machine' | 'bodyweight' | 'etc'
   trackingFieldIds: number[]
   targetMuscleIds: number[]
   trainerId: number
@@ -51,6 +55,7 @@ export interface IExerciseFindOne {
     index: number
     thumbnail: string
   }
+  devisionId: number
   trainerId: number
   trainerNickname: string
   trainerProfileImage: string
@@ -67,10 +72,6 @@ export interface IExerciseFindOne {
 
 export interface IExerciseUpdate {
   id: number
-  name?: string
-  nameEn?: string
-  type?: 'barbell' | 'dumbbell' | 'kettlebell' | 'machine' | 'bodyweight' | 'etc'
-  trackingFieldId?: number
   description?: string
   videos?: string
 }

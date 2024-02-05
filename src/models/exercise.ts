@@ -9,7 +9,7 @@ import {
   IExerciseTag,
   IExerciseUpdate
 } from '../interfaces/exercise'
-import {StandardExercise, Trainer, WorkoutPlan} from './index'
+import {Exercise, StandardExercise, Trainer, WorkoutPlan} from './index'
 import {IWorkoutScheduleExercise} from '../interfaces/workoutSchedules'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -127,10 +127,11 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
     search,
     trainerId,
     isMe = true,
+    devisionId,
+    machineType,
     isBookmark,
     tagIds,
     trainerFilterId,
-    types,
     trackingFieldIds,
     targetMuscleIds,
     start,
@@ -147,15 +148,23 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
       Trainer.tableName,
       tableTrainerExercise
     ]
-    const totalValues = [tableName, tableTrainerExercise]
+    const totalValues = [
+      tableName,
+      StandardExercise.tableStandardExercisesExercises,
+      StandardExercise.tableName,
+      Exercise.tableTrainerExercise
+    ]
     const join = []
 
-    if (search) where.push(`t.name like ${escape(`%${search}%`)}`)
+    if (search) where.push(`(stde.name like ${escape(`%${search}%`)} OR stde.nameEn like ${escape(`%${search}%`)} )`)
     if (isMe) where.push(`t.trainerId = ${escape(trainerId)}`)
     else if (trainerFilterId) where.push(`t.trainerId = ${escape(trainerFilterId)}`)
-    if (types && types.length > 0) where.push(`t.type IN ('${types.join(`','`)}')`)
+
+    if (machineType) where.push(`stde.machineType = ${escape(machineType)}`)
+    if (devisionId) where.push(`stde.devisionId = ${escape(devisionId)}`)
     if (trackingFieldIds && trackingFieldIds.length > 0)
-      where.push(`t.trackingFieldId IN (${trackingFieldIds.join(`,`)})`)
+      // if (types && types.length > 0) where.push(`t.type IN ('${types.join(`','`)}')`)
+      where.push(`stde.trackingFieldId IN (${trackingFieldIds.join(`,`)})`)
     if (tagIds && tagIds.length > 0) {
       for (let i = 0; i < tagIds.length; i++) {
         join.push(
@@ -169,16 +178,16 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
     }
     if (targetMuscleIds && targetMuscleIds.length > 0) {
       join.push(
-        `JOIN ?? etm ON etm.exerciseId = t.id AND etm.targetMuscleId IN (${targetMuscleIds.join(
+        `JOIN ?? setm2 ON setm2.standardExerciseId = stde.id AND setm2.targetMuscleId IN (${targetMuscleIds.join(
           ','
-        )}) AND etm.type = 'main'`
+        )}) AND setm2.type = 'main'`
       )
-      values.push(tableExerciseTargetMuscle)
-      totalValues.push(tableExerciseTargetMuscle)
+      values.push(StandardExercise.tableStandardExerciseTargetMuscle)
+      totalValues.push(StandardExercise.tableStandardExerciseTargetMuscle)
     }
 
     const rows = await db.query({
-      sql: `SELECT t.id, stde.name, t.videos, stde.machineType as type , stde.trackingFieldId,
+      sql: `SELECT t.id, stde.name, t.videos, stde.machineType, stde.trackingFieldId, stde.devisionId, stde.jointType,
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name)) as targetMuscles,
             t.trainerId, tr.nickname as trainerNickname, t.updatedAt, IF(te.trainerId, true, false) as isBookmark  
             FROM ?? t
@@ -197,8 +206,11 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM ?? t
-            ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.exerciseId = t.id AND te.trainerId = t.trainerId
+            JOIN ?? se ON se.exerciseId = t.id
+            JOIN ?? stde ON stde.id = se.standardExerciseId
+            ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.trainerId = t.trainerId
             ${join.length ? `${join.join(' ')}` : ''}
+
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}`,
       values: totalValues
     })

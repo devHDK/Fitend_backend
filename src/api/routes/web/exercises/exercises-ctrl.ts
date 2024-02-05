@@ -27,9 +27,10 @@ async function getExercises(req: IRequest, res: Response, next: Function): Promi
       isBookmark,
       tagIds,
       trainerId,
-      types,
       trackingFieldIds,
       targetMuscleIds,
+      machineType,
+      devisionId,
       start,
       perPage
     } = req.options
@@ -39,13 +40,16 @@ async function getExercises(req: IRequest, res: Response, next: Function): Promi
       isMe,
       isBookmark,
       tagIds,
+      machineType,
+      devisionId,
       trainerFilterId: trainerId,
-      types,
       trackingFieldIds,
       targetMuscleIds,
       start,
       perPage
     })
+
+    console.log(ret)
 
     res.status(200).json(ret)
   } catch (e) {
