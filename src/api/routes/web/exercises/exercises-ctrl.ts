@@ -49,8 +49,6 @@ async function getExercises(req: IRequest, res: Response, next: Function): Promi
       perPage
     })
 
-    console.log(ret)
-
     res.status(200).json(ret)
   } catch (e) {
     if (e.message === 'ER_DUP_ENTRY') e.status = 409

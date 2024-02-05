@@ -7,9 +7,17 @@
     "name": {
       "type": "string"
     },
-    "type": {
+    "nameEn": {
+      "type": "string"
+    },
+    "machineType": {
       "type": "string",
       "enum": ["barbell", "dumbbell", "kettlebell", "machine", "bodyweight", "etc"]
+    },
+    "jointType": {
+      "type": "string",
+      "enum": ["multi", "single"],
+      "nullable": true
     },
     "videos": {
       "type": "array",
@@ -27,6 +35,9 @@
           }
         }
       }
+    },
+    "devisionId": {
+      "type": "integer"
     },
     "trackingFieldId": {
       "type": "integer"
@@ -81,11 +92,13 @@
   "required": [
     "id",
     "name",
-    "type",
+    "nameEn",
+    "machineType",
     "videos",
     "trackingFieldId",
     "description",
     "trainerId",
+    "devisionId",
     "trainerNickname",
     "trainerProfileImage",
     "updatedAt",

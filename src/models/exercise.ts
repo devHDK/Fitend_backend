@@ -234,8 +234,9 @@ async function findAllTags(search: string): Promise<[{id: number; name: string}]
 async function findOneWithId(id: number, trainerId: number): Promise<IExerciseFindOne> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, stde.name, stde.machineType as type, t.videos, t.trainerId, tr.nickname as trainerNickname,
-            tr.profileImage as trainerProfileImage, t.updatedAt, t.description, stde.trackingFieldId,
+      sql: `SELECT t.id, stde.name,stde.nameEn,stde.machineType as type, t.videos, t.trainerId, tr.nickname as trainerNickname,
+            tr.profileImage as trainerProfileImage, t.updatedAt, t.description,
+            stde.trackingFieldId, stde.devisionId, stde.jointType,
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', setm.type)) as targetMuscles,
             (SELECT JSON_ARRAYAGG(ta.name) FROM ?? ta JOIN ?? eet ON eet.exerciseTagId = ta.id AND eet.exerciseId = t.id) as tags,
             IF(te.trainerId, true, false) as isBookmark

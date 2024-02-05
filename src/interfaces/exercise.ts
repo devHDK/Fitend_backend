@@ -50,12 +50,14 @@ export interface IExerciseFindAll {
 export interface IExerciseFindOne {
   id: number
   name: string
+  nameEn: string
   videos: {
     url: string
     index: number
     thumbnail: string
   }
   devisionId: number
+  jointType?: 'multi' | 'single'
   trainerId: number
   trainerNickname: string
   trainerProfileImage: string
