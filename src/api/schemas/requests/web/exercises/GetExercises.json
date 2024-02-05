@@ -23,7 +23,7 @@
       "type": "array",
       "items": {
         "type": "string",
-        "enum": ["resistance", "flexibility", "cardio"]
+        "enum": ["barbell", "dumbbell", "kettlebell", "machine", "bodyweight", "etc"]
       }
     },
     "trackingFieldIds": {
@@ -52,10 +52,6 @@
       "default:": 25
     }
   },
-  "required": [
-    "start",
-    "perPage"
-
-  ],
+  "required": ["start", "perPage"],
   "additionalProperties": false
 }

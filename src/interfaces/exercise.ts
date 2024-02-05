@@ -7,7 +7,7 @@ export interface IExercise {
     thumbnail: string
   }
   trackingFieldId: number
-  type: 'resistance' | 'flexibility' | 'cardio'
+  type: 'barbell' | 'dumbbell' | 'kettlebell' | 'machine' | 'bodyweight' | 'etc'
   targetMuscles: {
     id: number
     name: string
@@ -22,7 +22,7 @@ export interface IExerciseCreate {
   franchiseId: number
   name: string
   nameEn: string
-  type: 'resistance' | 'flexibility' | 'cardio'
+  type: 'barbell' | 'dumbbell' | 'kettlebell' | 'machine' | 'bodyweight' | 'etc'
   trackingFieldId: number
   description: string
   videos: string
@@ -73,7 +73,7 @@ export interface IExerciseUpdate {
   id: number
   name?: string
   nameEn?: string
-  type?: 'resistance' | 'flexibility' | 'cardio'
+  type?: 'barbell' | 'dumbbell' | 'kettlebell' | 'machine' | 'bodyweight' | 'etc'
   trackingFieldId?: number
   description?: string
   videos?: string

@@ -179,6 +179,10 @@ async function deleteRelationTargetMuscle(standardExerciseId: number, connection
 }
 
 export {
+  tableName,
+  tableExercisesDevision,
+  tableStandardExerciseTargetMuscle,
+  tableStandardExercisesExercises,
   create,
   createRelationTargetMuscle,
   createRelationExercises,

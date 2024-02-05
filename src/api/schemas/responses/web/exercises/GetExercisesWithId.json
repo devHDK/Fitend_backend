@@ -9,7 +9,7 @@
     },
     "type": {
       "type": "string",
-      "enum": ["resistance", "flexibility", "cardio"]
+      "enum": ["barbell", "dumbbell", "kettlebell", "machine", "bodyweight", "etc"]
     },
     "videos": {
       "type": "array",
@@ -95,4 +95,3 @@
   ],
   "additionalProperties": false
 }
-

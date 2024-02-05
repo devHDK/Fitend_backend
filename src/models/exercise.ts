@@ -9,7 +9,7 @@ import {
   IExerciseTag,
   IExerciseUpdate
 } from '../interfaces/exercise'
-import {Trainer, WorkoutPlan} from './index'
+import {StandardExercise, Trainer, WorkoutPlan} from './index'
 import {IWorkoutScheduleExercise} from '../interfaces/workoutSchedules'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -126,7 +126,7 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
   const {
     search,
     trainerId,
-    isMe,
+    isMe = true,
     isBookmark,
     tagIds,
     trainerFilterId,
@@ -138,7 +138,15 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
   } = options
   try {
     const where = []
-    const values = [tableName, tableExerciseTargetMuscle, tableTargetMuscle, Trainer.tableName, tableTrainerExercise]
+    const values = [
+      tableName,
+      StandardExercise.tableStandardExercisesExercises,
+      StandardExercise.tableName,
+      StandardExercise.tableStandardExerciseTargetMuscle,
+      tableTargetMuscle,
+      Trainer.tableName,
+      tableTrainerExercise
+    ]
     const totalValues = [tableName, tableTrainerExercise]
     const join = []
 
@@ -170,12 +178,14 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
     }
 
     const rows = await db.query({
-      sql: `SELECT t.id, t.name, t.videos, t.type, t.trackingFieldId,
+      sql: `SELECT t.id, stde.name, t.videos, stde.machineType as type , stde.trackingFieldId,
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name)) as targetMuscles,
             t.trainerId, tr.nickname as trainerNickname, t.updatedAt, IF(te.trainerId, true, false) as isBookmark  
             FROM ?? t
-            JOIN ?? et ON et.exerciseId = t.id AND et.type = 'main'
-            JOIN ?? tm ON tm.id = et.targetMuscleId
+            JOIN ?? se ON se.exerciseId = t.id
+            JOIN ?? stde ON stde.id = se.standardExerciseId
+            JOIN ?? setm ON setm.standardExerciseId = stde.id AND setm.type = 'main'
+            JOIN ?? tm ON tm.id = setm.targetMuscleId
             JOIN ?? tr ON tr.id = t.trainerId
             ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.exerciseId = t.id AND te.trainerId = ${escape(trainerId)}
             ${join.length ? `${join.join(' ')}` : ''}
@@ -212,23 +222,27 @@ async function findAllTags(search: string): Promise<[{id: number; name: string}]
 async function findOneWithId(id: number, trainerId: number): Promise<IExerciseFindOne> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.name, t.type, t.videos, t.trainerId, tr.nickname as trainerNickname,
-            tr.profileImage as trainerProfileImage, t.updatedAt, t.description, t.trackingFieldId,
-            JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', et.type)) as targetMuscles,
+      sql: `SELECT t.id, stde.name, stde.machineType as type, t.videos, t.trainerId, tr.nickname as trainerNickname,
+            tr.profileImage as trainerProfileImage, t.updatedAt, t.description, stde.trackingFieldId,
+            JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', setm.type)) as targetMuscles,
             (SELECT JSON_ARRAYAGG(ta.name) FROM ?? ta JOIN ?? eet ON eet.exerciseTagId = ta.id AND eet.exerciseId = t.id) as tags,
             IF(te.trainerId, true, false) as isBookmark
             FROM ?? t
+            JOIN ?? se ON se.exerciseId = t.id
+            JOIN ?? stde ON stde.id = se.standardExerciseId
             JOIN ?? tr ON tr.id = t.trainerId
-            JOIN ?? et ON et.exerciseId = t.id
-            JOIN ?? tm ON tm.id = et.targetMuscleId 
+            JOIN ?? setm ON setm.standardExerciseId = stde.id
+            JOIN ?? tm ON tm.id = setm.targetMuscleId 
             LEFT JOIN ?? te ON te.exerciseId = t.id AND te.trainerId = ${escape(trainerId)}
             WHERE t.?`,
       values: [
         tableExerciseTag,
         tableExerciseExerciseTag,
         tableName,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableName,
         Trainer.tableName,
-        tableExerciseTargetMuscle,
+        StandardExercise.tableStandardExerciseTargetMuscle,
         tableTargetMuscle,
         tableTrainerExercise,
         {id}

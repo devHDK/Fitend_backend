@@ -34,7 +34,7 @@
           },
           "type": {
             "type": "string",
-            "enum": ["resistance", "flexibility", "cardio"]
+            "enum": ["barbell", "dumbbell", "kettlebell", "machine", "bodyweight", "etc"]
           },
           "targetMuscles": {
             "type": "array",
@@ -64,16 +64,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "type",
-          "targetMuscles",
-          "trainerId",
-          "trainerNickname",
-          "updatedAt",
-          "isBookmark"
-        ],
+        "required": ["id", "name", "type", "targetMuscles", "trainerId", "trainerNickname", "updatedAt", "isBookmark"],
         "additionalProperties": false
       }
     },
@@ -82,9 +73,6 @@
       "minimum": 0
     }
   },
-  "required": [
-    "data",
-    "total"
-  ],
+  "required": ["data", "total"],
   "additionalProperties": false
 }
