@@ -20,10 +20,6 @@ export interface IExercise {
 export interface IExerciseCreate {
   trainerId: number
   franchiseId: number
-  name: string
-  nameEn: string
-  type: 'barbell' | 'dumbbell' | 'kettlebell' | 'machine' | 'bodyweight' | 'etc'
-  trackingFieldId: number
   description: string
   videos: string
 }

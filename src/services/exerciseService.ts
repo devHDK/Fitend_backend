@@ -1,47 +1,30 @@
 import {IExerciseFindAll, IExerciseList, IExerciseFindOne} from '../interfaces/exercise'
-import {Exercise} from '../models/index'
+import {Exercise, StandardExercise} from '../models/index'
 import {db} from '../loaders'
 
 async function create(options: {
   trainerId: number
   franchiseId: number
-  name: string
-  nameEn: string
-  type: 'resistance' | 'flexibility' | 'cardio'
-  trackingFieldId: number
-  targetMuscleIds: [{id: number; type: 'main' | 'sub'}]
+  standardExerciseId: number
   description: string
   tags: string[]
   videos: [{url: string; index: number; thumbnail: string}]
 }): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {
-      trainerId,
-      franchiseId,
-      name,
-      nameEn,
-      type,
-      trackingFieldId,
-      targetMuscleIds,
-      description,
-      tags,
-      videos
-    } = options
+    const {trainerId, franchiseId, standardExerciseId, description, tags, videos} = options
     const exerciseId = await Exercise.create(
       {
         trainerId,
         franchiseId,
-        name,
-        nameEn,
-        type,
-        trackingFieldId,
         description,
         videos: JSON.stringify(videos)
       },
       connection
     )
-    await Exercise.createRelationTargetMuscle({targetMuscleIds, exerciseId}, connection)
+
+    await StandardExercise.createRelationExercises({exerciseIds: [{id: exerciseId}], standardExerciseId}, connection)
+
     if (tags && tags.length > 0) {
       for (let i = 0; i < tags.length; i++) {
         const name = tags[i]
@@ -83,24 +66,11 @@ async function findOne(id: number, trainerId: number): Promise<IExerciseFindOne>
   }
 }
 
-async function update(options: {
-  id: number
-  name: string
-  type: 'resistance' | 'flexibility' | 'cardio'
-  trackingFieldId: number
-  targetMuscleIds?: [{id: number; type: 'main' | 'sub'}]
-  description: string
-  tags?: string[]
-  videos: string
-}): Promise<void> {
+async function update(options: {id: number; description: string; tags?: string[]; videos: string}): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {id, targetMuscleIds, tags, ...data} = options
+    const {id, tags, ...data} = options
     await Exercise.update({id, ...data}, connection)
-    if (targetMuscleIds && targetMuscleIds.length) {
-      await Exercise.deleteRelationTargetMuscle(id, connection)
-      await Exercise.createRelationTargetMuscle({targetMuscleIds, exerciseId: id}, connection)
-    }
     if (tags && tags.length > 0) {
       await Exercise.deleteRelationTag(id, connection)
       for (let i = 0; i < tags.length; i++) {

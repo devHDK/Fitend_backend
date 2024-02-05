@@ -3,15 +3,11 @@ import {ExerciseService} from '../../../../services'
 
 async function postExercises(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {name, nameEn, type, trackingFieldId, targetMuscleIds, description, tags, videos} = req.options
+    const {standardExerciseId, description, tags, videos} = req.options
     await ExerciseService.create({
       trainerId: req.userId,
       franchiseId: req.franchiseId,
-      name,
-      nameEn,
-      type,
-      trackingFieldId,
-      targetMuscleIds,
+      standardExerciseId,
       description,
       tags,
       videos
@@ -80,13 +76,9 @@ async function getExercisesWithId(req: IRequest, res: Response, next: Function):
 
 async function putExercisesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {id, name, type, trackingFieldId, targetMuscleIds, description, tags, videos} = req.options
+    const {id, description, tags, videos} = req.options
     await ExerciseService.update({
       id,
-      name,
-      type,
-      trackingFieldId,
-      targetMuscleIds,
       description,
       tags,
       videos: videos && videos.length > 0 ? JSON.stringify(videos) : videos

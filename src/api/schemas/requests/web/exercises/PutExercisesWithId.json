@@ -1,33 +1,6 @@
 {
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 21
-    },
-    "type": {
-      "type": "string",
-      "enum": ["resistance", "flexibility", "cardio"]
-    },
-    "trackingFieldId": {
-      "type": "integer"
-    },
-    "targetMuscleIds": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["main", "sub"]
-          }
-        }
-      }
-    },
     "description": {
       "type": "string",
       "maxLength": 200
@@ -56,12 +29,6 @@
       }
     }
   },
-  "required": [
-    "name",
-    "type",
-    "trackingFieldId",
-    "description",
-    "videos"
-  ],
+  "required": ["name", "type", "trackingFieldId", "description", "videos"],
   "additionalProperties": false
 }
