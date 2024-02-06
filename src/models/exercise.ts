@@ -208,9 +208,8 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
       sql: `SELECT COUNT(1) as total FROM ?? t
             JOIN ?? se ON se.exerciseId = t.id
             JOIN ?? stde ON stde.id = se.standardExerciseId
-            ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.trainerId = t.trainerId
+            ${isBookmark ? `JOIN` : `LEFT JOIN`} ?? te ON te.exerciseId = t.id AND te.trainerId = ${escape(trainerId)}
             ${join.length ? `${join.join(' ')}` : ''}
-
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}`,
       values: totalValues
     })
