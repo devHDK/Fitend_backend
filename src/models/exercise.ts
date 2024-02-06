@@ -126,7 +126,7 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
   const {
     search,
     trainerId,
-    isMe = true,
+    isMe,
     devisionId,
     machineType,
     isBookmark,
@@ -158,7 +158,7 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
 
     if (search) where.push(`(stde.name like ${escape(`%${search}%`)} OR stde.nameEn like ${escape(`%${search}%`)} )`)
     if (isMe) where.push(`t.trainerId = ${escape(trainerId)}`)
-    else if (trainerFilterId) where.push(`t.trainerId = ${escape(trainerFilterId)}`)
+    // else if (trainerFilterId) where.push(`t.trainerId = ${escape(trainerFilterId)}`)
 
     if (machineType) where.push(`stde.machineType = ${escape(machineType)}`)
     if (devisionId) where.push(`stde.devisionId = ${escape(devisionId)}`)
