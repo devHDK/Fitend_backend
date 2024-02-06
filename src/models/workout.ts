@@ -99,8 +99,9 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
             t.trainerId, tr.nickname as trainerNickname, t.updatedAt, IF(tw.trainerId, true, false) as isBookmark
             FROM ?? t
             JOIN ?? we ON we.workoutId = t.id
-            JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
-            JOIN ?? tm ON tm.id = et.targetMuscleId ${
+            JOIN ?? se ON se.exerciseId = we.exerciseId
+            JOIN ?? setm ON setm.standardExerciseId = se.standardExerciseId AND setm.type = 'main'
+            JOIN ?? tm ON tm.id = setm.targetMuscleId ${
               types && types.length > 0 ? `AND tm.type IN ('${types.join(`','`)}')` : ``
             }
             JOIN ?? tr ON tr.id = t.trainerId
@@ -112,7 +113,8 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
       values: [
         tableName,
         tableWorkoutExercise,
-        Exercise.tableExerciseTargetMuscle,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableStandardExerciseTargetMuscle,
         Exercise.tableTargetMuscle,
         Trainer.tableName,
         tableTrainerWorkout
@@ -125,8 +127,9 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
               types && types.length > 0
                 ? `
                   JOIN ?? we ON we.workoutId = t.id
-                  JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
-                  JOIN ?? tm ON tm.id = et.targetMuscleId AND tm.type IN ('${types.join(`','`)}')
+                  JOIN ?? se ON se.exerciseId = we.exerciseId
+                  JOIN ?? setm ON setm.standardExerciseId = se.standardExerciseId AND setm.type = 'main'
+                  JOIN ?? tm ON tm.id = setm.targetMuscleId AND tm.type IN ('${types.join(`','`)}')
                   `
                 : ``
             }
@@ -136,7 +139,8 @@ async function findAll(options: IWorkoutFindAll): Promise<IWorkoutList> {
         tableName,
         tableTrainerWorkout,
         tableWorkoutExercise,
-        Exercise.tableExerciseTargetMuscle,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableStandardExerciseTargetMuscle,
         Exercise.tableTargetMuscle
       ]
     })
@@ -154,21 +158,24 @@ async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDet
               FROM (
                 SELECT DISTINCT tm.type
                 FROM ?? we
-                JOIN ?? et ON et.exerciseId = we.exerciseId AND et.type = 'main'
-                JOIN ?? tm ON tm.id = et.targetMuscleId
+                JOIN ?? se ON se.exerciseId = we.exerciseId
+                JOIN ?? setm ON setm.standardExerciseId = se.standardExerciseId AND setm.type = 'main'
+                JOIN ?? tm ON tm.id = setm.targetMuscleId
                 WHERE we.workoutId = t.id
               ) t
             ) as primaryTypes,
             t.trainerId, tr.nickname as trainerNickname, tr.profileImage as trainerProfileImage, t.updatedAt,
             JSON_ARRAYAGG(
-              JSON_OBJECT('id', e.id, 'videos', e.videos, 'name', e.name, 'trackingFieldId', e.trackingFieldId ,
+              JSON_OBJECT('id', e.id, 'videos', e.videos, 'name', stde.name, 'trackingFieldId', stde.trackingFieldId ,
               'setInfo', we.setInfo, 'circuitGroupNum', we.circuitGroupNum, 'setType', we.setType, 'circuitSeq', we.circuitSeq,
               'targetMuscles', (SELECT JSON_ARRAYAGG(t.name) 
                 FROM (
                   SELECT DISTINCT tm.name
                   FROM ?? we
-                  JOIN ?? et ON et.exerciseId = e.id AND et.type = 'main'
-                  JOIN ?? tm ON tm.id = et.targetMuscleId
+                  JOIN ?? se ON se.exerciseId = we.exerciseId
+                  JOIN ?? stde ON stde.id = se.standardExerciseId
+                  JOIN ?? setm ON setm.standardExerciseId = se.standardExerciseId AND setm.type = 'main'
+                  JOIN ?? tm ON tm.id = setm.targetMuscleId
                   WHERE we.workoutId = t.id
                 ) t
                ) 
@@ -178,17 +185,20 @@ async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDet
             JOIN ?? we ON we.workoutId = t.id
             JOIN ?? e ON e.id = we.exerciseId
             JOIN ?? se ON se.exerciseId = e.id
-            JOIN ?? stde ON stde.id = se.standardExercisId
+            JOIN ?? stde ON stde.id = se.standardExerciseId
             JOIN ?? tr ON tr.id = t.trainerId
             LEFT JOIN ?? tw ON tw.workoutId = t.id AND tw.trainerId = ${escape(trainerId)}
             WHERE t.?
             GROUP BY t.id`,
       values: [
         tableWorkoutExercise,
-        Exercise.tableExerciseTargetMuscle,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableStandardExerciseTargetMuscle,
         Exercise.tableTargetMuscle,
         tableWorkoutExercise,
-        Exercise.tableExerciseTargetMuscle,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableName,
+        StandardExercise.tableStandardExerciseTargetMuscle,
         Exercise.tableTargetMuscle,
         tableName,
         tableWorkoutExercise,
