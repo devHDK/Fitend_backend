@@ -40,6 +40,7 @@ export interface IExerciseFindAll {
   devisionId?: number
   targetMuscleId?: number
   machineType?: 'barbell' | 'dumbbell' | 'kettlebell' | 'machine' | 'bodyweight' | 'etc'
+  jointType?: 'multi' | 'single'
   trackingFieldIds: number[]
   targetMuscleIds: number[]
   trainerId: number
