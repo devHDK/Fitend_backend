@@ -234,8 +234,9 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutSch
             (
               SELECT JSON_ARRAYAGG(tm.type) 
               FROM ?? tm
-              JOIN ?? et ON et.targetMuscleId = tm.id AND et.type = 'main'
-              JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = et.exerciseId
+              JOIN ?? setm ON setm.targetMuscleId = tm.id 
+              JOIN ?? stde ON stde.id = setm.standardExerciseId
+              JOIN ?? se ON se.standardExerciseId = stde.id AND se.exerciseId = e.id
             ) as targetMuscleTypes,
             t.totalTime as workoutTotalTime, IF(wf.workoutScheduleId, true, false) as isWorkoutComplete,
             wf.strengthIndex, wf.contents,
@@ -248,23 +249,28 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutSch
             (
               SELECT JSON_ARRAYAGG(
                 JSON_OBJECT(
-                'workoutPlanId', wp.id, 'exerciseId', wp.exerciseId, 'name', e.name, 'description', e.description,
-                'trackingFieldId', e.trackingFieldId, 'isVideoRecord', wp.isVideoRecord,
+                'workoutPlanId', wp.id, 'exerciseId', wp.exerciseId, 'name', stde.name, 'description', e2.description,
+                'trackingFieldId', stde.trackingFieldId, 'isVideoRecord', wp.isVideoRecord,
                 'targetMuscles', 
-                (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', tm.name, 'type', et.type))
+                (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', tm.name, 'type', setm.type))
                 FROM ?? tm
-                JOIN ?? et ON et.exerciseId = e.id AND et.targetMuscleId = tm.id),
-                'videos', e.videos, 'setInfo', wp.setInfo, 'circuitGroupNum', wp.circuitGroupNum, 'isVideoRecord', wp.isVideoRecord,
+                JOIN ?? se ON se.exerciseId = e2.id
+                JOIN ?? setm ON setm.targetMuscleId = tm.id AND setm.standardExerciseId = se.standardExerciseId
+                ),
+                'videos', e2.videos, 'setInfo', wp.setInfo, 'circuitGroupNum', wp.circuitGroupNum, 'isVideoRecord', wp.isVideoRecord,
                 'setType', wp.setType, 'circuitSeq', wp.circuitSeq,
                 'recordSetInfo', wr.setInfo
                 )
               )
-              FROM ?? e
-              JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = e.id
+              FROM ?? e2
+              JOIN ?? se ON se.exerciseId = e2.id
+              JOIN ?? stde ON stde.id = se.standardExerciseId
+              JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = e2.id
               LEFT JOIN ?? wr ON wr.workoutPlanId = wp.id
             ) exercises
             FROM ?? t
             JOIN ?? wp ON wp.workoutScheduleId = t.id
+            JOIN ?? e ON e.id = wp.exerciseId
             JOIN ?? tra ON tra.id = t.trainerId
             LEFT JOIN ?? wf ON wf.workoutScheduleId = t.id
             LEFT JOIN ?? wsr ON wsr.workoutScheduleId = t.id
@@ -272,17 +278,22 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutSch
             GROUP BY t.id`,
       values: [
         Exercise.tableTargetMuscle,
-        Exercise.tableExerciseTargetMuscle,
-        WorkoutPlan.tableName,
+        StandardExercise.tableStandardExerciseTargetMuscle,
+        StandardExercise.tableName,
+        StandardExercise.tableStandardExercisesExercises,
         WorkoutFeedbacks.tableWorkoutIssue,
         WorkoutFeedbacks.tableWorkoutFeedbackWorkoutIssue,
         Exercise.tableTargetMuscle,
-        Exercise.tableExerciseTargetMuscle,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableStandardExerciseTargetMuscle,
         Exercise.tableName,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableName,
         WorkoutPlan.tableName,
         WorkoutRecords.tableName,
         tableName,
         WorkoutPlan.tableName,
+        Exercise.tableName,
         Trainer.tableName,
         WorkoutFeedbacks.tableName,
         tableWorkoutScheduleRecords,
