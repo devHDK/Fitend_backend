@@ -132,6 +132,7 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
     isBookmark,
     tagIds,
     trainerFilterId,
+    jointType,
     trackingFieldIds,
     targetMuscleIds,
     start,
@@ -161,6 +162,7 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
     // else if (trainerFilterId) where.push(`t.trainerId = ${escape(trainerFilterId)}`)
 
     if (machineType) where.push(`stde.machineType = ${escape(machineType)}`)
+    if (jointType) where.push(`stde.jointType = ${escape(jointType)}`)
     if (devisionId) where.push(`stde.devisionId = ${escape(devisionId)}`)
     if (trackingFieldIds && trackingFieldIds.length > 0)
       // if (types && types.length > 0) where.push(`t.type IN ('${types.join(`','`)}')`)

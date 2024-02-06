@@ -30,6 +30,7 @@ async function getExercises(req: IRequest, res: Response, next: Function): Promi
       trackingFieldIds,
       targetMuscleIds,
       machineType,
+      jointType,
       devisionId,
       start,
       perPage
@@ -41,6 +42,7 @@ async function getExercises(req: IRequest, res: Response, next: Function): Promi
       isBookmark,
       tagIds,
       machineType,
+      jointType,
       devisionId,
       trainerFilterId: trainerId,
       trackingFieldIds,
