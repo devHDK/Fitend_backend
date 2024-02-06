@@ -57,6 +57,9 @@
           },
           "trainerNickname": {
             "type": "string"
+          },
+          "isBookmark": {
+            "type": "boolean"
           }
         }
       },

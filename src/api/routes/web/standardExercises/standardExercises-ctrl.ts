@@ -64,7 +64,7 @@ async function getStandardExercises(req: IRequest, res: Response, next: Function
 
 async function getStandardExercisesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const ret = await StandardExerciseService.findOne(req.options.id)
+    const ret = await StandardExerciseService.findOne({id: req.options.id, trainerId: req.userId})
     res.status(200).json(ret)
   } catch (e) {
     if (e.message === 'ER_DUP_ENTRY') e.status = 409

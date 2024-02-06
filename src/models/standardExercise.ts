@@ -119,17 +119,19 @@ async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExer
   }
 }
 
-async function findOneWithId(id: number): Promise<IStandardExercisesFindOne> {
+async function findOneWithId({id, trainerId}: {id: number; trainerId: number}): Promise<IStandardExercisesFindOne> {
   try {
     const [row] = await db.query({
       sql: `SELECT t.id, t.name, t.nameEn, t.machineType, t.jointType, ed.name as devision,
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', st.type)) as targetMuscles,
             (SELECT JSON_ARRAYAGG(
-              JSON_OBJECT('id', e.id, 'description', e.description, 'trainerId', e.trainerId, 'trainerNickname', tra.nickname 
+              JSON_OBJECT('id', e.id, 'description', e.description, 'trainerId', e.trainerId, 'trainerNickname', tra.nickname,
+              'isBookmark', IF(te.trainerId, true, false)
             ))
             FROM ?? e
             JOIN ?? see ON see.standardExerciseId = t.id AND see.exerciseId = e.id
             JOIN ?? tra ON e.trainerId = tra.id
+            LEFT JOIN ?? te ON te.exerciseId = e.id AND te.trainerId = ${escape(trainerId)}
             ) as linkedExercises
             FROM ?? t
             JOIN ?? ed ON ed.id = t.devisionId
@@ -140,6 +142,7 @@ async function findOneWithId(id: number): Promise<IStandardExercisesFindOne> {
         Exercise.tableName,
         tableStandardExercisesExercises,
         Trainer.tableName,
+        Exercise.tableTrainerExercise,
         tableName,
         tableExercisesDevision,
         tableStandardExerciseTargetMuscle,

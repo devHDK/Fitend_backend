@@ -277,9 +277,9 @@ async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExer
   }
 }
 
-async function findOne(id: number): Promise<IStandardExercisesFindOne> {
+async function findOne({id, trainerId}: {id: number; trainerId: number}): Promise<IStandardExercisesFindOne> {
   try {
-    return await StandardExercise.findOneWithId(id)
+    return await StandardExercise.findOneWithId({id, trainerId})
   } catch (e) {
     throw e
   }
