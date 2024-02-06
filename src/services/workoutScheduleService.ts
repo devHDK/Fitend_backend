@@ -201,6 +201,10 @@ async function findOne(workoutScheduleId: number): Promise<IWorkoutScheduleDetai
   try {
     const schedule = await WorkoutSchedule.findOneWithId(workoutScheduleId)
     const exercises = await Exercise.findOneWithWorkoutScheduleId(workoutScheduleId)
+
+    console.log(schedule)
+    console.log(exercises)
+
     return {...schedule, exercises}
   } catch (e) {
     throw e

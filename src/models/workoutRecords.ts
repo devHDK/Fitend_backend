@@ -216,7 +216,7 @@ async function findAllUsers(
 }
 
 async function findWorkoutHistoryWithExerciseId(
-  exerciseId: number,
+  exerciseIds: number[],
   userId: number,
   start: number,
   perPage: number
@@ -224,26 +224,36 @@ async function findWorkoutHistoryWithExerciseId(
   try {
     const where = [`t.userId = ${escape(userId)}`]
 
+    // SELECT t.startDate, wr.id AS workoutRecordId, wr.workoutPlanId, wr.setInfo, stde.name AS exerciseName
+    // FROM WorkoutSchedules t
+    // JOIN WorkoutPlans wp ON wp.workoutScheduleId = t.id AND wp.exerciseId IN (70, 80, 90)
+    // JOIN WorkoutRecords wr ON wr.workoutPlanId = wp.id
+    // LEFT JOIN Exercises e ON e.id = wp.exerciseId
+    // LEFT JOIN StandardExercises-Exercises se ON se.exerciseId = e.id
+    // LEFT JOIN StandardExercises stde ON stde.id = se.standardExerciseId
+    // WHERE t.userId = 79
+    // ORDER BY t.startDate DESC
+    // LIMIT 0, 20;
+
     const rows = await db.query({
       sql: `SELECT t.startDate, wr.id as workoutRecordId, wr.workoutPlanId, wr.setInfo,
-            (SELECT stde.name FROM ?? e
-             JOIN ?? se ON se.exerciseId = ${escape(exerciseId)} 
-             JOIN ?? stde ON stde.id = se.standardExerciseId
-             WHERE e.id = ${escape(exerciseId)}
-            ) as exerciseName
+                   stde.name as exerciseName
             FROM ?? t 
-            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = ${escape(exerciseId)}
+            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId IN (${exerciseIds.join(',')}) 
             JOIN ?? wr ON wr.workoutPlanId = wp.id 
+            LEFT JOIN ?? e ON e.id = wp.exerciseId
+            LEFT JOIN ?? se ON se.exerciseId = e.id
+            LEFT JOIN ?? stde ON stde.id = se.standardExerciseId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             ORDER BY t.startDate DESC
             LIMIT ${start}, ${perPage}`,
       values: [
-        Exercise.tableName,
-        StandardExercise.tableStandardExercisesExercises,
-        StandardExercise.tableName,
         WorkoutSchedule.tableName,
         WorkoutPlan.tableName,
-        tableName
+        tableName,
+        Exercise.tableName,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableName
       ]
     })
     const [rowTotal] = await db.query({
@@ -251,7 +261,7 @@ async function findWorkoutHistoryWithExerciseId(
             FROM
             (SELECT wr.*
             FROM ?? t 
-            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = ${escape(exerciseId)}
+            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId IN (${exerciseIds.join(',')}) 
             JOIN ?? wr ON wr.workoutPlanId = wp.id 
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             ) t
