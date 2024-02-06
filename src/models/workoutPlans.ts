@@ -2,6 +2,7 @@ import moment from 'moment-timezone'
 import {PoolConnection} from 'mysql'
 import {db} from '../loaders'
 import {IWorkoutPlan, IWorkoutPlanFind, IWorkoutPlanCreate} from '../interfaces/workoutPlans'
+import {StandardExercise} from '.'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -34,6 +35,21 @@ async function findOne(options: IWorkoutPlanFind): Promise<IWorkoutPlan> {
   }
 }
 
+async function findStandardExerciseId(options: IWorkoutPlanFind): Promise<[number]> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT JSON_ARRAY(se.exerciseId) as exerciseIds
+            FROM ?? t
+            JOIN ?? se ON se.exerciseId = t.exerciseId 
+            WHERE ?`,
+      values: [tableName, StandardExercise.tableStandardExercisesExercises, options]
+    })
+    return row.exerciseIds
+  } catch (e) {
+    throw e
+  }
+}
+
 async function deleteAllWithWorkoutScheduleId(workoutScheduleId: number, connection?: PoolConnection): Promise<void> {
   try {
     await db.query({
@@ -45,4 +61,4 @@ async function deleteAllWithWorkoutScheduleId(workoutScheduleId: number, connect
   }
 }
 
-export {tableName, create, findOne, deleteAllWithWorkoutScheduleId}
+export {tableName, create, findOne, findStandardExerciseId as findExerciseIds, deleteAllWithWorkoutScheduleId}

@@ -1,6 +1,16 @@
 import moment from 'moment-timezone'
 import {db, firebase} from '../loaders'
-import {WorkoutSchedule, WorkoutRecords, WorkoutFeedbacks, WorkoutStat, Thread, User, WorkoutPlan} from '../models'
+import {
+  WorkoutSchedule,
+  WorkoutRecords,
+  WorkoutFeedbacks,
+  WorkoutStat,
+  Thread,
+  User,
+  WorkoutPlan,
+  StandardExercise,
+  Exercise
+} from '../models'
 import {IWorkoutRecordDetail, IWorkoutRecordsCreate, IWorkoutHistory} from '../interfaces/workoutRecords'
 import {IWorkoutScheduleList} from '../interfaces/workoutSchedules'
 import {IThread, IThreadCreatedId} from '../interfaces/thread'
@@ -110,8 +120,10 @@ async function findWorkoutHistoryWithPlanId(
   perPage: number
 ): Promise<{data: [IWorkoutHistory]; total: number}> {
   try {
-    const workoutPlan = await WorkoutPlan.findOne({id: workoutPlanId})
-    return await WorkoutRecords.findWorkoutHistoryWithExerciseId(workoutPlan.exerciseId, userId, start, perPage)
+    const exerciseIds = await WorkoutPlan.findExerciseIds({id: workoutPlanId})
+    const ret = await WorkoutRecords.findWorkoutHistoryWithExerciseId(exerciseIds, userId, start, perPage)
+
+    return ret
   } catch (e) {
     throw e
   }

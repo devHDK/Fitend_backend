@@ -138,25 +138,31 @@ async function findAllHistory(
 async function findOneWithId(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id as workoutScheduleId, DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
-            t.workoutTitle, t.workoutSubTitle, t.trainerId,
-            (
-              SELECT JSON_ARRAYAGG(tm.type) 
-              FROM ?? tm
-              JOIN ?? setm ON setm.targetMuscleId = tm.id AND tm.type = 'main'
-              JOIN ?? stde2 ON stde2.id = setm.standardExerciseId
-              JOIN ?? se2 ON se2.standardExerciseId = stde2.id
-              JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = se2.exerciseId
-            ) as targetMuscleTypes,
-            t.totalTime as workoutTotalTime, 
-            IF(wf.workoutScheduleId, true, false) as isWorkoutComplete,
-            IF(wr.workoutPlanId, true, false) as isRecord
-            FROM ?? t
-            JOIN ?? wp ON wp.workoutScheduleId = t.id
-            LEFT JOIN ?? wf ON wf.workoutScheduleId = t.id
-            LEFT JOIN ?? wr ON wr.workoutPlanId = wp.id
-            WHERE t.?
-            GROUP BY t.id`,
+      sql: `SELECT t.id AS workoutScheduleId,
+      DATE_FORMAT(t.startDate, '%Y-%m-%d') AS startDate,
+      t.workoutTitle,
+      t.workoutSubTitle,
+      t.trainerId,
+      (
+          SELECT JSON_ARRAYAGG(tm.type)
+          FROM ?? tm
+          JOIN ?? setm ON setm.targetMuscleId = tm.id AND setm.type = 'main'
+          JOIN ?? stde ON stde.id = setm.standardExerciseId
+          JOIN ?? se ON se.standardExerciseId = stde.id
+          JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = se.exerciseId
+      ) AS targetMuscleTypes,
+      t.totalTime AS workoutTotalTime,
+      IF(wf.workoutScheduleId, TRUE, FALSE) AS isWorkoutComplete,
+      IF(wr.workoutPlanId, TRUE, FALSE) AS isRecord
+      FROM ?? t
+      LEFT JOIN ?? wf ON wf.workoutScheduleId = t.id
+      LEFT JOIN ?? wr ON wr.workoutPlanId IN (
+          SELECT wp.id
+          FROM ?? wp
+          WHERE wp.workoutScheduleId = t.id
+      )
+      WHERE t.?
+      GROUP BY t.id`,
       values: [
         Exercise.tableTargetMuscle,
         StandardExercise.tableStandardExerciseTargetMuscle,
@@ -164,9 +170,9 @@ async function findOneWithId(workoutScheduleId: number): Promise<IWorkoutSchedul
         StandardExercise.tableStandardExercisesExercises,
         WorkoutPlan.tableName,
         tableName,
-        WorkoutPlan.tableName,
         WorkoutFeedbacks.tableName,
         WorkoutRecords.tableName,
+        WorkoutPlan.tableName,
         {id: workoutScheduleId}
       ]
     })
