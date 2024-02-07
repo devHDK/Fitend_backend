@@ -156,6 +156,21 @@ async function findOneWithId({id, trainerId}: {id: number; trainerId: number}): 
   }
 }
 
+async function findExerciseIds(id: number): Promise<[number]> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT JSON_ARRAYAGG(se.exerciseId) as id
+            FROM ?? se
+            WHERE se.standardExerciseId = ${escape(id)}
+            `,
+      values: [tableStandardExercisesExercises]
+    })
+    return row.id
+  } catch (e) {
+    throw e
+  }
+}
+
 async function update(options: IStandardExerciseUpdate, connection: PoolConnection): Promise<void> {
   const {id, ...data} = options
   try {
@@ -191,6 +206,7 @@ export {
   createRelationExercises,
   findAll,
   findOneWithId,
+  findExerciseIds,
   update,
   deleteRelationTargetMuscle
 }
