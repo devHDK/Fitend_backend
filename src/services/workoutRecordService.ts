@@ -120,7 +120,8 @@ async function findWorkoutHistoryWithPlanId(
   perPage: number
 ): Promise<{data: [IWorkoutHistory]; total: number}> {
   try {
-    const exerciseIds = await WorkoutPlan.findExerciseIds({id: workoutPlanId})
+    const standardExerciseId = await WorkoutPlan.findStandardExerciseId({id: workoutPlanId})
+    const exerciseIds = await StandardExercise.findExerciseIds(standardExerciseId)
     const ret = await WorkoutRecords.findWorkoutHistoryWithExerciseId(exerciseIds, userId, start, perPage)
 
     return ret

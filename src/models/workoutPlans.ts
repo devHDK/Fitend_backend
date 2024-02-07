@@ -1,5 +1,5 @@
 import moment from 'moment-timezone'
-import {PoolConnection} from 'mysql'
+import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
 import {IWorkoutPlan, IWorkoutPlanFind, IWorkoutPlanCreate} from '../interfaces/workoutPlans'
 import {StandardExercise} from '.'
@@ -35,16 +35,16 @@ async function findOne(options: IWorkoutPlanFind): Promise<IWorkoutPlan> {
   }
 }
 
-async function findStandardExerciseId(options: IWorkoutPlanFind): Promise<[number]> {
+async function findStandardExerciseId(options: IWorkoutPlanFind): Promise<number> {
   try {
     const [row] = await db.query({
-      sql: `SELECT JSON_ARRAY(se.exerciseId) as exerciseIds
+      sql: `SELECT se.standardExerciseId as id
             FROM ?? t
-            JOIN ?? se ON se.exerciseId = t.exerciseId 
-            WHERE ?`,
+            JOIN ?? se ON se.exerciseId = t.exerciseId
+            WHERE t.?`,
       values: [tableName, StandardExercise.tableStandardExercisesExercises, options]
     })
-    return row.exerciseIds
+    return row.id
   } catch (e) {
     throw e
   }
@@ -61,4 +61,4 @@ async function deleteAllWithWorkoutScheduleId(workoutScheduleId: number, connect
   }
 }
 
-export {tableName, create, findOne, findStandardExerciseId as findExerciseIds, deleteAllWithWorkoutScheduleId}
+export {tableName, create, findOne, findStandardExerciseId, deleteAllWithWorkoutScheduleId}
