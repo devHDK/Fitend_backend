@@ -241,7 +241,7 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutSch
             (
               SELECT JSON_ARRAYAGG(tm.type) 
               FROM ?? tm
-              JOIN ?? setm ON setm.targetMuscleId = tm.id 
+              JOIN ?? setm ON setm.targetMuscleId = tm.id AND setm.type = 'main'
               JOIN ?? stde ON stde.id = setm.standardExerciseId
               JOIN ?? se ON se.standardExerciseId = stde.id AND se.exerciseId = e.id
             ) as targetMuscleTypes,
@@ -262,7 +262,7 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutSch
                 (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', tm.name, 'type', setm.type))
                 FROM ?? tm
                 JOIN ?? se ON se.exerciseId = e2.id
-                JOIN ?? setm ON setm.targetMuscleId = tm.id AND setm.standardExerciseId = se.standardExerciseId
+                JOIN ?? setm ON setm.targetMuscleId = tm.id AND setm.standardExerciseId = se.standardExerciseId AND setm.type = 'main'
                 ),
                 'videos', e2.videos, 'setInfo', wp.setInfo, 'circuitGroupNum', wp.circuitGroupNum, 'isVideoRecord', wp.isVideoRecord,
                 'setType', wp.setType, 'circuitSeq', wp.circuitSeq,
