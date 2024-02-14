@@ -44,9 +44,7 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
           connection
         )
 
-        const contents = `새로운 스레드가 올라왔어요 👀\n${user.nickname.substring(1)}님 안녕하세요!${
-          trainerThread.welcomeThreadContent
-        }`
+        const contents = `새로운 스레드가 올라왔어요 👀\n${user.nickname.substring(1)}님 안녕하세요!`
         await Notification.create(
           {
             userId,
