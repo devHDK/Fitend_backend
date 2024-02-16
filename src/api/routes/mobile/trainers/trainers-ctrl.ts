@@ -10,6 +10,16 @@ async function getTrainers(req: IRequest, res: Response, next: Function): Promis
   }
 }
 
+async function getTrainersExtend(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {search, start, perPage} = req.options
+    const ret = await TrainerService.findExtendTrainer({search, start, perPage})
+    res.status(200).json(ret)
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function getTrainersWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const ret = await TrainerService.findOneWithIdForUser(req.options.id)
@@ -31,4 +41,4 @@ async function getTrainerschedules(req: IRequest, res: Response, next: Function)
   }
 }
 
-export {getTrainers, getTrainersWithId, getTrainerschedules}
+export {getTrainers, getTrainersExtend, getTrainersWithId, getTrainerschedules}

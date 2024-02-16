@@ -45,6 +45,12 @@ export type ITrainerFindAllForAdmin = {
   search?: string
 }
 
+export type ITrainerFindExtend = {
+  start: number
+  perPage: number
+  search: string
+}
+
 export interface ITrainerFindOne {
   email?: string
   id?: number

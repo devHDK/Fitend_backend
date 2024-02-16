@@ -13,7 +13,8 @@ import {
   ITrainerListForAdmin,
   ITrainerListForUser,
   ITrainerUpdate,
-  ITrainerMeetingBoundary
+  ITrainerMeetingBoundary,
+  ITrainerFindExtend
 } from '../interfaces/trainer'
 import {IWageInfo} from '../interfaces/payroll'
 import {Ticket, User} from './'
@@ -109,6 +110,42 @@ async function findAllForUserSelect(): Promise<[ITrainerListForUser]> {
             ORDER BY t.id ASC`,
       values: [tableName, tableTrainerInfo]
     })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findExtendTrainer(
+  options: ITrainerFindExtend
+): Promise<{
+  data: ITrainerListForUser[]
+  total: number
+}> {
+  try {
+    const {start, perPage, search} = options
+    const where = []
+    const currentTime = moment().format('YYYY-MM-DD')
+    where.push('t.mainVisible = false')
+    if (search) where.push(`(t.nickname like '%${search}%')`)
+    const rows = await db.query({
+      sql: `SELECT t.id, t.nickname, t.profileImage, ti.largeProfileImage, ti.shortIntro
+            FROM ?? t
+            JOIN ?? ti ON ti.trainerId = t.id
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY t.id
+            LIMIT ${start}, ${perPage}`,
+      values: [tableName, tableTrainerInfo]
+    })
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total FROM (
+            SELECT t.id
+            FROM ?? t
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY t.id
+            ) t`,
+      values: [tableName]
+    })
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
     throw e
   }
@@ -298,6 +335,7 @@ export {
   findLastTrainersWithUserId,
   findAllForAdmin,
   findAllForUserSelect,
+  findExtendTrainer,
   findOneWithIdForAdmin,
   findOneWithIdForUser,
   findDeviceList,

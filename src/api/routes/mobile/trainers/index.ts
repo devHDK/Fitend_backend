@@ -4,13 +4,27 @@ import * as ctrl from './trainers-ctrl'
 const getTrainers = new ApiRouter({
   name: '',
   method: 'get',
-  summary: '트레이너 목록 조회',
+  summary: '트레이너 목록 조회(메인 노출)',
   isPublic: true,
   tags: ['Trainers'],
   responses: {
     200: {schema: 'responses/mobile/trainers/GetTrainers'}
   },
   handler: ctrl.getTrainers
+})
+
+const getTrainersExtend = new ApiRouter({
+  name: 'extend',
+  method: 'get',
+  summary: '트레이너 목록 조회(확장)',
+  schema: 'requests/mobile/trainers/GetTrainersExtend',
+  isPublic: true,
+  tags: ['Trainers'],
+  responses: {
+    // 200: {schema: 'responses/mobile/trainers/GetTrainersExtend'}
+    200: {description: 'success'}
+  },
+  handler: ctrl.getTrainersExtend
 })
 
 const getTrainersWithId = new ApiRouter({
@@ -39,4 +53,4 @@ const getTrainerschedules = new ApiRouter({
   handler: ctrl.getTrainerschedules
 })
 
-export {getTrainers, getTrainersWithId, getTrainerschedules}
+export {getTrainers, getTrainersExtend, getTrainersWithId, getTrainerschedules}

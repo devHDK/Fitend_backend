@@ -7,7 +7,8 @@ import {
   ITrainerListForAdmin,
   ITrainerDetailForUser,
   ITrainerListForUser,
-  ITrainerMeetingBoundary
+  ITrainerMeetingBoundary,
+  ITrainerFindExtend
 } from '../interfaces/trainer'
 import {EventSchedule, Franchise, Meeting, Reservation, Ticket, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
@@ -130,6 +131,19 @@ async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrain
   }
 }
 
+async function findExtendTrainer(
+  options: ITrainerFindExtend
+): Promise<{
+  data: ITrainerListForUser[]
+  total: number
+}> {
+  try {
+    return await Trainer.findExtendTrainer(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOneWithIdForUser(id: number): Promise<ITrainerDetailForUser> {
   try {
     return await Trainer.findOneWithIdForUser(id)
@@ -217,6 +231,7 @@ export {
   signIn,
   findAll,
   findAllForAdmin,
+  findExtendTrainer,
   findAllForUserSelect,
   findAllTrainerScheduleWithId,
   findOneWithIdForUser,
