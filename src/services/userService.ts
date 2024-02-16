@@ -1,4 +1,5 @@
 import moment from 'moment'
+import {Bool} from 'aws-sdk/clients/clouddirectory'
 import {Ticket, Trainer, User, UserDevice, WorkoutSchedule, Franchise, WorkoutRequestDay} from '../models'
 import {
   IUser,
@@ -109,6 +110,17 @@ async function createUserBodySpec(options: IUserBodySpecCreate): Promise<void> {
   const connection = await db.beginTransaction()
   try {
     await User.createBodySpec(options, connection)
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
+async function createNextWorkoutSurvey(options: {userId: number; mondayDate: string}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    await User.createNextWeekSurvey(options, connection)
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -254,6 +266,16 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
 async function findAllInflowForTrainer(options: IInflowContentFindAll): Promise<IUserInflowContentsList> {
   try {
     return await User.findUserInflowForTrainer(options)
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findNextWeekSurvey(mondayDate: string, userId: number): Promise<Bool> {
+  try {
+    const count = await User.findNextWeekSurvey(mondayDate, userId)
+
+    return count > 0
   } catch (e) {
     throw e
   }
@@ -412,6 +434,7 @@ export {
   createUserBodySpec,
   confirmPassword,
   createPreSurvey,
+  createNextWorkoutSurvey,
   getMe,
   findOne,
   findOneIsExist,
@@ -422,6 +445,7 @@ export {
   findAllInflowForTrainer,
   findAllUsersWorkout,
   findAllForAdmin,
+  findNextWeekSurvey,
   update,
   updatePreSurvey,
   updateInflowContent,

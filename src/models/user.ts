@@ -38,6 +38,7 @@ const tableFranchise = 'Franchises'
 const tableInflowContent = 'InflowContents'
 const tableUserBodySpec = 'UserBodySpecs'
 const tableUserPreSurvey = 'UserPreSurveys'
+const tableUserNexWeekSurvey = 'UserNextWeekSurvey'
 
 async function create(options: IUserCreateOne, connection: PoolConnection): Promise<number> {
   try {
@@ -58,6 +59,22 @@ async function createInflowContent(options: IInflowContentCreate, connection: Po
       connection,
       sql: `INSERT INTO ?? SET ?`,
       values: [tableInflowContent, options]
+    })
+    return insertId
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createNextWeekSurvey(
+  options: {userId: number; mondayDate: String},
+  connection: PoolConnection
+): Promise<number> {
+  try {
+    const {insertId} = await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableUserNexWeekSurvey, options]
     })
     return insertId
   } catch (e) {
@@ -395,6 +412,23 @@ async function findUserBodySpecWithIdForTrainer(options: {
   }
 }
 
+async function findNextWeekSurvey(mondayDate: string, userId: number): Promise<number> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT COUNT(*) as count
+            FROM (
+            SELECT userId
+            FROM ?? 
+            WHERE mondayDate = ${escape(mondayDate)} AND ?
+            ) t`,
+      values: [tableUserNexWeekSurvey, {userId}]
+    })
+    return row ? row.count : 0
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findActivePersonalUsers(
   franchiseId: number,
   startDate: string,
@@ -648,6 +682,7 @@ export {
   tableName,
   create,
   createInflowContent,
+  createNextWeekSurvey,
   createBodySpec,
   createPreSurvey,
   createRelationsFranchises,
@@ -656,6 +691,7 @@ export {
   findUsersWorkoutSchedules,
   findAllForAdmin,
   findOne,
+  findNextWeekSurvey,
   updatePasswordForUser,
   findOneWithId,
   findUserBodySpecWithId,

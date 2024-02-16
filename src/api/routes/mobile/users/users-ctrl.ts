@@ -67,6 +67,18 @@ async function postIsExist(req: IRequest, res: Response, next: Function): Promis
   }
 }
 
+async function postNextWorkoutSurvey(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {mondayDate} = req.options
+
+    await UserService.createNextWorkoutSurvey({userId: req.userId, mondayDate})
+
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function getMe(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const user = await UserService.getMe({id: req.userId})
@@ -74,6 +86,18 @@ async function getMe(req: IRequest, res: Response, next: Function): Promise<void
   } catch (e) {
     if (e.message === 'ticket_expired') e.status = 401
     if (e.message === 'no_token') e.status = 401
+    next(e)
+  }
+}
+
+async function getNextWorkoutSurvey(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {mondayDate} = req.options
+
+    const ret = await UserService.findNextWeekSurvey(mondayDate, req.userId)
+
+    res.status(200).json({data: ret})
+  } catch (e) {
     next(e)
   }
 }
@@ -105,4 +129,13 @@ async function putUsersPassword(req: IRequest, res: Response, next: Function): P
   }
 }
 
-export {postUserRegister, postUsersPasswordConfirm, postIsExist, getMe, putFCMToken, putUsersPassword}
+export {
+  postUserRegister,
+  postUsersPasswordConfirm,
+  postIsExist,
+  postNextWorkoutSurvey,
+  getMe,
+  getNextWorkoutSurvey,
+  putFCMToken,
+  putUsersPassword
+}

@@ -107,6 +107,7 @@ async function findAllForUserSelect(): Promise<[ITrainerListForUser]> {
       sql: `SELECT t.id, t.nickname, t.profileImage, ti.largeProfileImage, ti.shortIntro
             FROM ?? t
             JOIN ?? ti ON ti.trainerId = t.id
+            WHERE t.mainVisible = true
             ORDER BY t.id ASC`,
       values: [tableName, tableTrainerInfo]
     })

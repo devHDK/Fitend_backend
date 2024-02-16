@@ -21,8 +21,7 @@ const getTrainersExtend = new ApiRouter({
   isPublic: true,
   tags: ['Trainers'],
   responses: {
-    // 200: {schema: 'responses/mobile/trainers/GetTrainersExtend'}
-    200: {description: 'success'}
+    200: {schema: 'responses/mobile/trainers/GetTrainersExtend'}
   },
   handler: ctrl.getTrainersExtend
 })

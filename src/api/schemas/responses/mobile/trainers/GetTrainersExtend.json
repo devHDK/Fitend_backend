@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "profileImage": {
+            "type": "string"
+          },
+          "largeProfileImage": {
+            "type": "string"
+          },
+          "shortIntro": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "nickname", "profileImage", "largeProfileImage", "shortIntro"]
+      }
+    },
+    "total": {
+      "type": "number"
+    }
+  },
+  "required": ["data", "total"]
+}

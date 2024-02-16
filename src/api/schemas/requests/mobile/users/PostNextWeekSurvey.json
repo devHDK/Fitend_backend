@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "mondayDate": {
+      "type": "string"
+    }
+  },
+  "required": ["mondayDate"],
+  "additionalProperties": false
+}
