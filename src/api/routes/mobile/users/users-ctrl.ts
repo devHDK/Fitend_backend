@@ -69,9 +69,11 @@ async function postIsExist(req: IRequest, res: Response, next: Function): Promis
 
 async function postNextWorkoutSurvey(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {mondayDate} = req.options
+    const {mondayDate, selectedDates, noSchedule} = req.options
 
-    await UserService.createNextWorkoutSurvey({userId: req.userId, mondayDate})
+    console.log(selectedDates)
+
+    await UserService.createNextWorkoutSurvey({userId: req.userId, mondayDate, selectedDates, noSchedule})
 
     res.status(200).json()
   } catch (e) {

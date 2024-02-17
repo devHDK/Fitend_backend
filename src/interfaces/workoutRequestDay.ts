@@ -17,3 +17,9 @@ export interface IWorkoutRequestDayDelete {
   userId: number
   workoutDate: string
 }
+
+export interface IWorkoutRequestDayDeleteBetween {
+  userId: number
+  start: string
+  end: string
+}

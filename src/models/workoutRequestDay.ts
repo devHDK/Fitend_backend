@@ -4,6 +4,7 @@ import {db} from '../loaders'
 import {
   IWorkoutRequestDayCreate,
   IWorkoutRequestDayDelete,
+  IWorkoutRequestDayDeleteBetween,
   IWorkoutRequestDayFindAll,
   IWorkoutRequestDayList
 } from '../interfaces/workoutRequestDay'
@@ -52,4 +53,15 @@ async function deleteOne({userId, workoutDate}: IWorkoutRequestDayDelete): Promi
   }
 }
 
-export {tableName, create, findAll, deleteOne}
+async function deleteBetween({userId, start, end}: IWorkoutRequestDayDeleteBetween): Promise<void> {
+  try {
+    await db.query({
+      sql: `DELETE FROM ?? WHERE ? AND workoutDate BETWEEN ${escape(start)} AND ${escape(end)}`,
+      values: [tableName, {userId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+export {tableName, create, findAll, deleteOne, deleteBetween}

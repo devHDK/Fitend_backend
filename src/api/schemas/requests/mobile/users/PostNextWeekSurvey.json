@@ -3,6 +3,15 @@
   "properties": {
     "mondayDate": {
       "type": "string"
+    },
+    "noSchedule": {
+      "type": "boolean"
+    },
+    "selectedDates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": ["mondayDate"],

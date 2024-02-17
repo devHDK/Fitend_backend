@@ -8,7 +8,8 @@ import {
   WorkoutStat,
   WorkoutRecords,
   User,
-  UserDevice
+  UserDevice,
+  Thread
 } from '../models'
 import {
   IWorkoutScheduleList,
@@ -304,6 +305,7 @@ async function updateStartDate(options: {id: number; startDate: string; seq: num
     const today = moment().startOf('day').unix()
     const workoutStartDate = moment(workoutSchedule.startDate).unix()
     if (workoutStartDate < today) throw new Error('not_allowed')
+
     await WorkoutSchedule.update(options)
   } catch (e) {
     throw e

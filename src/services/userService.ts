@@ -117,10 +117,33 @@ async function createUserBodySpec(options: IUserBodySpecCreate): Promise<void> {
   }
 }
 
-async function createNextWorkoutSurvey(options: {userId: number; mondayDate: string}): Promise<void> {
+async function createNextWorkoutSurvey(options: {
+  userId: number
+  mondayDate: string
+  noSchedule: boolean
+  selectedDates?: string[]
+}): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    await User.createNextWeekSurvey(options, connection)
+    const {userId, mondayDate, noSchedule, selectedDates} = options
+
+    const monday = moment(mondayDate).format('YYYY-MM-DD')
+    const sunday = moment(mondayDate).add(6, 'days').format('YYYY-MM-DD')
+
+    await User.createNextWeekSurvey({userId, mondayDate}, connection)
+
+    if (noSchedule) {
+      await WorkoutRequestDay.deleteBetween({userId, start: monday, end: sunday})
+    } else if (selectedDates && selectedDates.length > 0) {
+      await WorkoutRequestDay.deleteBetween({userId, start: monday, end: sunday})
+
+      await Promise.all(
+        selectedDates.map(async (date) => {
+          await WorkoutRequestDay.create({userId, workoutDate: date}, connection)
+        })
+      )
+    }
+
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
