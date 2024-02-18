@@ -39,7 +39,7 @@ async function postVerifications(options: IVerificationCreate): Promise<{codeTok
 
     if (process.env.NODE_ENV !== 'production') {
       ret.codeToken = codeToken
-      await sendVerificationCodeWithMessage(phone, code)
+      // await sendVerificationCodeWithMessage(phone, code)
     } else {
       await sendVerificationCodeWithMessage(phone, code)
     }
