@@ -247,7 +247,7 @@ const prodWorkoutPlans = [
 ]
 const devWorkoutPlans = [
   {
-    exerciseId: 430,
+    exerciseId: 82,
     isVideoRecord: false,
     setInfo: [
       {
@@ -260,7 +260,7 @@ const devWorkoutPlans = [
     circuitSeq: null
   },
   {
-    exerciseId: 435,
+    exerciseId: 88,
     isVideoRecord: false,
     setInfo: [
       {
@@ -273,7 +273,7 @@ const devWorkoutPlans = [
     circuitSeq: null
   },
   {
-    exerciseId: 438,
+    exerciseId: 81,
     isVideoRecord: true,
     setInfo: [
       {
@@ -287,7 +287,7 @@ const devWorkoutPlans = [
     circuitSeq: null
   },
   {
-    exerciseId: 439,
+    exerciseId: 86,
     isVideoRecord: false,
     setInfo: [
       {
@@ -301,7 +301,7 @@ const devWorkoutPlans = [
     circuitSeq: null
   },
   {
-    exerciseId: 446,
+    exerciseId: 90,
     isVideoRecord: true,
     setInfo: [
       {
@@ -315,7 +315,7 @@ const devWorkoutPlans = [
     circuitSeq: null
   },
   {
-    exerciseId: 447,
+    exerciseId: 85,
     isVideoRecord: false,
     setInfo: [
       {
