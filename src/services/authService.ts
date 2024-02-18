@@ -1,9 +1,11 @@
 import moment from 'moment-timezone'
 import {code as Code, jwt as JWT} from '../libs'
 import {IUser, IUserCreateOne} from '../interfaces/user'
-import {User, Ticket, UserDevice, Trainer, Verification} from '../models'
+import {User, Ticket, UserDevice, Trainer, Verification, WorkoutSchedule, WorkoutPlan, WorkoutStat} from '../models'
 import {db} from '../loaders'
 import {passwordIterations} from '../libs/code'
+import {workoutScheduleSubscriber} from '../subscribers'
+import {IUserDevice} from '../interfaces/userDevice'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -110,6 +112,233 @@ async function signIn(options: {
   }
 }
 
+const isProd = process.env.NODE_ENV === 'production'
+const prodWorkoutPlans = [
+  {
+    exerciseId: 74,
+    isVideoRecord: false,
+    setInfo: [
+      {
+        index: 1,
+        reps: 10
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  },
+  {
+    exerciseId: 76,
+    isVideoRecord: false,
+    setInfo: [
+      {
+        index: 1,
+        reps: 10
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  },
+  {
+    exerciseId: 194,
+    isVideoRecord: true,
+    setInfo: [
+      {
+        index: 1,
+        reps: 12,
+        weight: 20
+      },
+      {
+        index: 2,
+        reps: 12,
+        weight: 30
+      },
+      {
+        index: 3,
+        reps: 10,
+        weight: 40
+      },
+      {
+        index: 4,
+        reps: 8,
+        weight: 50
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  },
+  {
+    exerciseId: 163,
+    isVideoRecord: false,
+    setInfo: [
+      {
+        index: 1,
+        reps: 10,
+        weight: 20
+      },
+      {
+        index: 2,
+        reps: 8,
+        weight: 30
+      },
+      {
+        index: 3,
+        reps: 6,
+        weight: 40
+      },
+      {
+        index: 4,
+        reps: 4,
+        weight: 50
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  },
+  {
+    exerciseId: 100,
+    isVideoRecord: true,
+    setInfo: [
+      {
+        index: 1,
+        reps: 12,
+        weight: 20
+      },
+      {
+        index: 2,
+        reps: 12,
+        weight: 20
+      },
+      {
+        index: 3,
+        reps: 10,
+        weight: 25
+      },
+      {
+        index: 4,
+        reps: 8,
+        weight: 30
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  },
+  {
+    exerciseId: 139,
+    isVideoRecord: false,
+    setInfo: [
+      {
+        index: 1,
+        reps: 5
+      },
+      {
+        index: 2,
+        reps: 5
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  }
+]
+const devWorkoutPlans = [
+  {
+    exerciseId: 430,
+    isVideoRecord: false,
+    setInfo: [
+      {
+        index: 1,
+        reps: 1
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  },
+  {
+    exerciseId: 435,
+    isVideoRecord: false,
+    setInfo: [
+      {
+        index: 1,
+        reps: 1
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  },
+  {
+    exerciseId: 438,
+    isVideoRecord: true,
+    setInfo: [
+      {
+        index: 1,
+        reps: 1,
+        weight: 1
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  },
+  {
+    exerciseId: 439,
+    isVideoRecord: false,
+    setInfo: [
+      {
+        index: 1,
+        reps: 1,
+        weight: 1
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  },
+  {
+    exerciseId: 446,
+    isVideoRecord: true,
+    setInfo: [
+      {
+        index: 1,
+        reps: 1,
+        weight: 1
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  },
+  {
+    exerciseId: 447,
+    isVideoRecord: false,
+    setInfo: [
+      {
+        index: 1,
+        reps: 1,
+        weight: 1
+      }
+    ],
+    circuitGroupNum: null,
+    setType: null,
+    circuitSeq: null
+  }
+]
+const demoWorkoutScheduleData = {
+  workoutId: isProd ? 68 : 66,
+  workoutTitle: '(예시) 오늘의 운동루틴 🗓️',
+  workoutSubTitle: '어떻게 사용하는지 미리 확인해보세요 :)',
+  totalTime: '00:40:00',
+  startDate: moment().format('YYYY-MM-DD'),
+  seq: 1,
+  workoutPlans: isProd ? prodWorkoutPlans : devWorkoutPlans
+}
+
 async function createAccountForUser(options: IUserAccountCreate): Promise<void> {
   const connection = await db.beginTransaction()
   try {
@@ -151,12 +380,55 @@ async function createAccountForUser(options: IUserAccountCreate): Promise<void> 
         sessionPrice: 0,
         coachingPrice: 0,
         startedAt: moment().format('YYYY-MM-DD'),
-        expiredAt: moment().add(14, 'day').format('YYYY-MM-DD'),
+        expiredAt: moment().add(13, 'day').format('YYYY-MM-DD'),
         month: 0
       },
       connection
     )
     await Ticket.createRelationExercises({userId, trainerIds: [trainerId], ticketId, franchiseId: 1}, connection)
+
+    const {workoutPlans, ...rest} = demoWorkoutScheduleData
+    const workoutScheduleId = await WorkoutSchedule.create(
+      {
+        userId,
+        trainerId,
+        franchiseId: 1,
+        ...rest
+      },
+      connection
+    )
+    const startDate = moment().format('YYYY-MM-DD')
+    for (let i = 0; i < workoutPlans.length; i++) {
+      const {exerciseId, setInfo, circuitGroupNum, isVideoRecord, setType, circuitSeq} = workoutPlans[i]
+      await WorkoutPlan.create(
+        {
+          exerciseId,
+          workoutScheduleId,
+          setInfo: JSON.stringify(setInfo),
+          circuitGroupNum: circuitGroupNum || null,
+          isVideoRecord,
+          setType: setType || null,
+          circuitSeq: circuitSeq || null
+        },
+        connection
+      )
+    }
+    await WorkoutStat.upsertOne(
+      {
+        userId,
+        franchiseId: 1,
+        month: moment(startDate).startOf('month').format('YYYY-MM-DD'),
+        monthCount: 1
+      },
+      connection
+    )
+    const userDevices = await UserDevice.findAllWithUserId(userId)
+    if (userDevices && userDevices.length > 0) {
+      workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'workoutScheduleCreate'
+      })
+    }
 
     await db.commit(connection)
   } catch (e) {
