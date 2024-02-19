@@ -79,6 +79,7 @@ export type ITrainerListForAdmin = IResponseList<ITrainerDataForAdmin>
 
 export type ITrainerFindAllForAdmin = {
   start: number
+  status: string
   perPage: number
   search?: string
 }

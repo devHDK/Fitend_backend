@@ -99,9 +99,10 @@ async function findAll(franchiseId: number): Promise<[ITrainerList]> {
 
 async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrainerListForAdmin> {
   try {
-    const {start, perPage, search} = options
+    const {start, status, perPage, search} = options
     const where = []
     if (search) where.push(`(t.nickname like '%${search}%')`)
+    if (status && status !== 'all') where.push(`(t.status = ${escape(status)})`)
     const rows: ITrainerDataForAdmin[] = await db.query({
       sql: `SELECT t.id, t.nickname, t.role, t.profileImage, tri.shortIntro, t.status, t.createdAt
             FROM ?? t

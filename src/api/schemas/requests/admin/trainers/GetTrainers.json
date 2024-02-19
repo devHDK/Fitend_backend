@@ -4,6 +4,10 @@
     "search": {
       "type": "string"
     },
+    "status": {
+      "type": "string",
+      "enum": ["all", "able", "disable"]
+    },
     "start": {
       "type": "integer",
       "minimum": 0,

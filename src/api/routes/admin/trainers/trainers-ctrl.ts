@@ -51,8 +51,8 @@ async function postTrainers(req: IRequest, res: Response, next: Function): Promi
 
 async function getTrainers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {search, start, perPage} = req.options
-    const ret = await TrainerService.findAllForAdmin({search, start, perPage})
+    const {search, status, start, perPage} = req.options
+    const ret = await TrainerService.findAllForAdmin({search, status, start, perPage})
     res.status(200).json(ret)
   } catch (e) {
     next(e)
