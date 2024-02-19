@@ -1,13 +1,37 @@
 import {Response} from 'express'
-import {TrainerService} from '../../../../services'
+import {AuthService, TrainerService} from '../../../../services'
 
 async function postAuth(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {email, password} = req.options
-    const ret = await TrainerService.signIn({email, password})
+    const {email, password, platform, deviceId, token} = req.options
+    const ret = await TrainerService.signIn({email, password, platform, deviceId, token})
     res.status(200).json(ret)
   } catch (e) {
     if (e.message === 'not_found') e.status = 404
+    if (e.message === 'invalid_password') e.status = 409
+    next(e)
+  }
+}
+
+async function postAuthRefresh(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {accessToken, refreshToken} = req.options
+    const ret = await AuthService.refreshToken(accessToken, refreshToken)
+    res.status(200).json({accessToken: ret})
+  } catch (e) {
+    if (e.message === 'invalid_token') {
+      e.status = 401
+      e.message = '유효하지 않은 토큰입니다.'
+    }
+    next(e)
+  }
+}
+
+async function postAuthLogout(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    await AuthService.signOutTrainer(req.userId, req.options.platform, req.options.deviceId)
+    res.status(200).json()
+  } catch (e) {
     next(e)
   }
 }
@@ -23,4 +47,4 @@ async function putAuthPassword(req: IRequest, res: Response, next: Function): Pr
   }
 }
 
-export {postAuth, putAuthPassword}
+export {postAuth, postAuthRefresh, postAuthLogout, putAuthPassword}

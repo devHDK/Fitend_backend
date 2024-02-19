@@ -1,17 +1,11 @@
 {
   "type": "object",
   "properties": {
-    "accessToken": {
-      "type": "string"
-    },
-    "refreshToken": {
-      "type": "string"
-    },
     "trainer": {
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer"
+          "type": "number"
         },
         "email": {
           "type": "string"
@@ -26,9 +20,10 @@
           "type": "string"
         }
       },
+      "required": ["id", "email", "nickname", "profileImage", "createdAt"],
       "additionalProperties": false
     }
   },
-  "required": ["accessToken", "refreshToken", "trainer"],
+  "required": ["trainer"],
   "additionalProperties": false
 }

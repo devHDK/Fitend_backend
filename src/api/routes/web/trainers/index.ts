@@ -12,6 +12,17 @@ const getTrainers = new ApiRouter({
   handler: ctrl.getTrainers
 })
 
+const getMe = new ApiRouter({
+  name: 'getMe',
+  method: 'get',
+  summary: '토큰 유효성 확인용(app)',
+  tags: ['Trainer'],
+  responses: {
+    200: {schema: 'responses/web/trainers/GetMe'}
+  },
+  handler: ctrl.getMe
+})
+
 const getTrainersMeetingBoundary = new ApiRouter({
   name: ':id/meetingBoundary',
   method: 'get',
@@ -37,4 +48,4 @@ const putTrainerMeetingBoundary = new ApiRouter({
   handler: ctrl.putTrainerMeetingBoundary
 })
 
-export {getTrainers, getTrainersMeetingBoundary, putTrainerMeetingBoundary}
+export {getTrainers, getMe, getTrainersMeetingBoundary, putTrainerMeetingBoundary}

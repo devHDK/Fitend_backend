@@ -69,4 +69,25 @@ async function createRefreshToken(data: IUserPayload, tokenSecret: Secret): Prom
   }
 }
 
-export {decodeToken, createToken, createAccessToken, createAccessTokenForTrainer, createRefreshToken}
+async function createRefreshTokenForTrainer(
+  data: {id: number; franchiseId: number},
+  tokenSecret: Secret
+): Promise<string> {
+  try {
+    const payload = {
+      sub: data.id
+    }
+    return await createToken(payload, {algorithm: 'HS256', expiresIn: 60 * 60 * 30}, tokenSecret)
+  } catch (e) {
+    throw e
+  }
+}
+
+export {
+  decodeToken,
+  createToken,
+  createAccessToken,
+  createAccessTokenForTrainer,
+  createRefreshToken,
+  createRefreshTokenForTrainer
+}

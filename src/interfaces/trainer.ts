@@ -50,6 +50,8 @@ export interface ITrainer {
   salt?: string
   profileImage?: string
   createdAt?: string
+  deviceId?: string
+  platform?: 'ios' | 'android'
 }
 
 export type ITrainerList = {
@@ -109,6 +111,8 @@ export interface ITrainerWageInfo {
 export interface ITrainerUpdate {
   id: number
   password?: string
+  deviceId?: string
+  platform?: 'ios' | 'android'
 }
 
 export interface ITrainerMeetingBoundary {
