@@ -54,7 +54,7 @@ async function signIn(options: {
         trainer.password.salt
       )
 
-      if (platform !== null) {
+      if (platform != null) {
         await Trainer.updateOne({id: trainer.id, deviceId, platform}, connection)
         await TrainerDevice.upsertOne({trainerId: trainer.id, platform, deviceId, token}, connection)
         await TrainerDevice.updateOne({trainerId: trainer.id, platform, deviceId, isNotification: true}, connection)
@@ -69,6 +69,23 @@ async function signIn(options: {
     throw new Error('not_found')
   } catch (e) {
     if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
+async function getMe(options: {id: number}): Promise<ITrainer> {
+  try {
+    const {id} = options
+    const trainer = await Trainer.findOne({id})
+    const trainerDevice = await TrainerDevice.findOne(trainer.id, trainer.deviceId, trainer.platform)
+    if (!trainerDevice || !trainerDevice.token) throw new Error('no_token')
+
+    delete trainer.password
+
+    return {
+      ...trainer
+    }
+  } catch (e) {
     throw e
   }
 }
@@ -256,6 +273,7 @@ async function updateMeetingBoundary(options: ITrainerMeetingBoundary): Promise<
 export {
   create,
   signIn,
+  getMe,
   findAll,
   findAllForAdmin,
   findExtendTrainer,

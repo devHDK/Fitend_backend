@@ -12,6 +12,8 @@ export interface ITrainer {
   salt?: string
   profileImage?: string
   createdAt?: string
+  deviceId?: string
+  platform?: 'ios' | 'android'
 }
 
 export type ITrainerList = {

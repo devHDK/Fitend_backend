@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "trainer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "email": {
+          "type": "string"
+        },
+        "nickname": {
+          "type": "string"
+        },
+        "profileImage": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "email", "nickname", "profileImage", "createdAt"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["trainer"],
+  "additionalProperties": false
+}

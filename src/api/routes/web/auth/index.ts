@@ -18,7 +18,7 @@ const postAuth = new ApiRouter({
 const postAuthRefresh = new ApiRouter({
   name: 'refresh',
   method: 'post',
-  summary: '만료 토큰 갱신',
+  summary: '만료 토큰 갱신(app)',
   tags: ['Auth'],
   schema: 'requests/web/auth/PostAuthRefresh',
   isPublic: true,
