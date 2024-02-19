@@ -35,6 +35,7 @@ export interface IStandardExercisesFindOne {
   devision: string
   machineType: string
   jointType?: string
+  trackingFieldId: number
   targetMuscles: {
     id: number
     name: string

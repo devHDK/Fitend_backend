@@ -122,7 +122,7 @@ async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExer
 async function findOneWithId({id, trainerId}: {id: number; trainerId: number}): Promise<IStandardExercisesFindOne> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.name, t.nameEn, t.machineType, t.jointType, ed.name as devision,
+      sql: `SELECT t.id, t.name, t.nameEn, t.machineType, t.jointType, t.trackingFieldId, ed.name as devision,
             JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name, 'muscleType', tm.type, 'type', st.type)) as targetMuscles,
             (SELECT JSON_ARRAYAGG(
               JSON_OBJECT('id', e.id, 'description', e.description, 'trainerId', e.trainerId, 'trainerNickname', tra.nickname,
