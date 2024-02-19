@@ -44,6 +44,7 @@ async function signIn(options: {
   try {
     const {email, password, platform, deviceId, token} = options
     const trainer = await Trainer.findOne({email})
+    if (!trainer) throw new Error('not_found')
     if (
       trainer &&
       Code.verifyPassword(password, trainer.password.password, trainer.password.salt, Code.passwordIterations.web)
@@ -66,7 +67,7 @@ async function signIn(options: {
 
       return {accessToken, refreshToken, trainer}
     }
-    throw new Error('not_found')
+    throw new Error('invalid_password')
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e

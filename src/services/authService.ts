@@ -1,7 +1,17 @@
 import moment from 'moment-timezone'
 import {code as Code, jwt as JWT} from '../libs'
 import {IUser, IUserCreateOne} from '../interfaces/user'
-import {User, Ticket, UserDevice, Trainer, Verification, WorkoutSchedule, WorkoutPlan, WorkoutStat} from '../models'
+import {
+  User,
+  Ticket,
+  UserDevice,
+  Trainer,
+  Verification,
+  WorkoutSchedule,
+  WorkoutPlan,
+  WorkoutStat,
+  TrainerDevice
+} from '../models'
 import {db} from '../loaders'
 import {passwordIterations} from '../libs/code'
 import {workoutScheduleSubscriber} from '../subscribers'
@@ -448,6 +458,14 @@ async function signOut(userId: number, platform: 'ios' | 'android', deviceId: st
   }
 }
 
+async function signOutTrainer(trainerId: number, platform: 'ios' | 'android', deviceId: string): Promise<void> {
+  try {
+    await TrainerDevice.updateOne({trainerId, platform, deviceId, isNotification: false})
+  } catch (e) {
+    throw e
+  }
+}
+
 async function refreshToken(accessToken: string, refreshToken: string): Promise<string> {
   try {
     const payload = await JWT.decodeToken(accessToken, {algorithms: ['RS256'], ignoreExpiration: true})
@@ -501,4 +519,4 @@ async function passwordReset(options: {
   }
 }
 
-export {signIn, createAccountForUser, signOut, refreshToken, passwordReset}
+export {signIn, createAccountForUser, signOut, signOutTrainer, refreshToken, passwordReset}

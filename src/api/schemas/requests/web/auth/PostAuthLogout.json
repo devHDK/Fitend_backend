@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "deviceId": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["ios", "android"]
+    }
+  },
+  "required": ["deviceId", "platform"],
+  "additionalProperties": false
+}

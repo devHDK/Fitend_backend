@@ -10,9 +10,22 @@ const postAuth = new ApiRouter({
   isPublic: true,
   responses: {
     200: {schema: 'responses/web/auth/PostAuth'},
-    404: {description: '이메일 또는 비밀번호 오류'}
+    404: {description: '이메일을 확인해주세요'},
+    409: {description: '비밀번호를 확인해주세요'}
   },
   handler: ctrl.postAuth
+})
+
+const postAuthLogout = new ApiRouter({
+  name: 'logout',
+  method: 'post',
+  summary: '로그아웃',
+  tags: ['Auth'],
+  schema: 'requests/web/auth/PostAuthLogout',
+  responses: {
+    200: {description: 'Success'}
+  },
+  handler: ctrl.postAuthLogout
 })
 
 const postAuthRefresh = new ApiRouter({
@@ -41,4 +54,4 @@ const putAuthPassword = new ApiRouter({
   handler: ctrl.putAuthPassword
 })
 
-export {postAuth, postAuthRefresh, putAuthPassword}
+export {postAuth, postAuthLogout, postAuthRefresh, putAuthPassword}
