@@ -4,6 +4,9 @@
     "accessToken": {
       "type": "string"
     },
+    "refreshToken": {
+      "type": "string"
+    },
     "trainer": {
       "type": "object",
       "properties": {
@@ -26,6 +29,6 @@
       "additionalProperties": false
     }
   },
-  "required": ["accessToken", "trainer"],
+  "required": ["accessToken", "refreshToken", "trainer"],
   "additionalProperties": false
 }

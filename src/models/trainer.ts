@@ -299,12 +299,13 @@ async function findTrainersMeetingBoundaryWithId(trainerId: number): Promise<ITr
   }
 }
 
-async function updateOne(options: ITrainerUpdate): Promise<void> {
+async function updateOne(options: ITrainerUpdate, connection: PoolConnection): Promise<void> {
   const {id, ...data} = options
   try {
     await db.query({
       sql: `UPDATE ?? SET ? WHERE ? `,
-      values: [tableName, data, {id}]
+      values: [tableName, data, {id}],
+      connection
     })
   } catch (e) {
     throw e

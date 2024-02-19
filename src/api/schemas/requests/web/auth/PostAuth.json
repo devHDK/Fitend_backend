@@ -7,13 +7,20 @@
     },
     "password": {
       "type": "string",
-      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=\/]{8,20}$",
+      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=/]{8,20}$",
       "example": "12341234"
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["ios", "android"]
+    },
+    "deviceId": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string"
     }
   },
-  "required": [
-    "email",
-    "password"
-  ],
+  "required": ["email", "password"],
   "additionalProperties": false
 }

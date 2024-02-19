@@ -457,6 +457,10 @@ async function refreshToken(accessToken: string, refreshToken: string): Promise<
         const user = await User.findOne(payload.sub)
         if (!user) throw new Error('not_found')
         refreshHash = user.password.salt
+      } else {
+        const trainer = await Trainer.findOne(payload.sub)
+        if (!trainer) throw new Error('not_found')
+        refreshHash = trainer.password.salt
       }
 
       await JWT.decodeToken(refreshToken, {algorithms: ['HS256']}, refreshHash)

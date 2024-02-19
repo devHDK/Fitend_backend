@@ -71,8 +71,6 @@ async function postNextWorkoutSurvey(req: IRequest, res: Response, next: Functio
   try {
     const {mondayDate, selectedDates, noSchedule} = req.options
 
-    console.log(selectedDates)
-
     await UserService.createNextWorkoutSurvey({userId: req.userId, mondayDate, selectedDates, noSchedule})
 
     res.status(200).json()

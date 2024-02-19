@@ -70,6 +70,8 @@ export interface ITrainerWageInfo {
 export interface ITrainerUpdate {
   id: number
   password?: string
+  deviceId?: string
+  platform?: 'ios' | 'android'
 }
 
 export interface ITrainerMeetingBoundary {

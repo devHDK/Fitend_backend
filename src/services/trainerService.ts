@@ -10,7 +10,7 @@ import {
   ITrainerMeetingBoundary,
   ITrainerFindExtend
 } from '../interfaces/trainer'
-import {EventSchedule, Franchise, Meeting, Reservation, Ticket, Trainer, User} from '../models/index'
+import {EventSchedule, Franchise, Meeting, Reservation, Ticket, Trainer, TrainerDevice, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
 import {passwordIterations} from '../libs/code'
 import {db} from '../loaders'
@@ -33,20 +33,42 @@ async function create(options: {nickname: string; email: string; password: strin
   }
 }
 
-async function signIn(options: {email: string; password: string}): Promise<{accessToken: string; trainer: ITrainer}> {
+async function signIn(options: {
+  email: string
+  password: string
+  platform: 'ios' | 'android'
+  deviceId: string
+  token: string
+}): Promise<{accessToken: string; refreshToken: string; trainer: ITrainer}> {
+  const connection = await db.beginTransaction()
   try {
-    const {email, password} = options
+    const {email, password, platform, deviceId, token} = options
     const trainer = await Trainer.findOne({email})
     if (
       trainer &&
       Code.verifyPassword(password, trainer.password.password, trainer.password.salt, Code.passwordIterations.web)
     ) {
       const accessToken = await JWT.createAccessTokenForTrainer({id: trainer.id, franchiseId: 1})
+      const refreshToken = await JWT.createRefreshTokenForTrainer(
+        {id: trainer.id, franchiseId: 1},
+        trainer.password.salt
+      )
+
+      if (platform !== null) {
+        await Trainer.updateOne({id: trainer.id, deviceId, platform}, connection)
+        await TrainerDevice.upsertOne({trainerId: trainer.id, platform, deviceId, token}, connection)
+        await TrainerDevice.updateOne({trainerId: trainer.id, platform, deviceId, isNotification: true}, connection)
+      }
+
       delete trainer.password
-      return {accessToken, trainer}
+
+      await db.commit(connection)
+
+      return {accessToken, refreshToken, trainer}
     }
     throw new Error('not_found')
   } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }
@@ -204,6 +226,8 @@ async function updatePassword({
   password: string
   newPassword: string
 }): Promise<void> {
+  const connection = await db.beginTransaction()
+
   try {
     const trainer = await Trainer.findOne({id: trainerId})
     if (
@@ -211,9 +235,12 @@ async function updatePassword({
       Code.verifyPassword(password, trainer.password.password, trainer.password.salt, Code.passwordIterations.web)
     ) {
       const passwordHash = Code.createPasswordHash(newPassword, passwordIterations.web)
-      await Trainer.updateOne({id: trainerId, password: JSON.stringify(passwordHash)})
+      await Trainer.updateOne({id: trainerId, password: JSON.stringify(passwordHash)}, connection)
     } else throw new Error('not_found')
+
+    await db.commit(connection)
   } catch (e) {
+    if (connection) await db.rollback(connection)
     throw e
   }
 }

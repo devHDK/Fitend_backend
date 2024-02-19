@@ -2,6 +2,7 @@ import * as Administrator from './administrator'
 import * as User from './user'
 import * as UserDevice from './userDevice'
 import * as Trainer from './trainer'
+import * as TrainerDevice from './trainerDevice'
 import * as Ticket from './ticket'
 import * as TicketHolding from './ticketHoldings'
 import * as Exercise from './exercise'
@@ -31,6 +32,7 @@ export {
   User,
   UserDevice,
   Trainer,
+  TrainerDevice,
   Ticket,
   TicketHolding,
   Exercise,
