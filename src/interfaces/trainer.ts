@@ -1,6 +1,44 @@
 import {IFranchise, IFranchiseWithWageInfo} from './franchise'
 import {IPayrollResponseForAdminWithTrainerId} from './payroll'
 
+export type ITrainerCreateOneForAdmin = {
+  nickname: string
+  password: string
+  email: string
+  fcPercentage: number
+  instagram: string
+  meetingLink: string
+  shortIntro: string
+  intro: string
+  welcomeThreadContent: string
+  qualification: CoachingStyle
+  speciality: CoachingStyle
+  coachingStyle: CoachingStyle
+  favorite: CoachingStyle
+  profileImage: string
+  largeProfileImage: string
+  mainVisible: boolean
+  role: 'master' | 'external'
+  status: 'able' | 'disable'
+}
+
+export type ICreateTrainerInfoForAdmin = {
+  trainerId: number
+  instagram: string
+  meetingLink: string
+  shortIntro: string
+  intro: string
+  welcomeThreadContent: string
+  qualification: string
+  speciality: string
+  coachingStyle: string
+  favorite: string
+  largeProfileImage: string
+}
+
+export type CoachingStyle = {
+  data: string[]
+}
 export interface ITrainer {
   id?: number
   nickname?: string
@@ -30,16 +68,16 @@ export type ITrainerListForUser = {
 export interface ITrainerDataForAdmin {
   id: number
   nickname: string
-  email: string
-  franchises: [{id: number; name: string}]
-  users: number
+  profileImage: string
+  status: string
+  role: string
+  shortIntro: string
   createdAt: Date
 }
 
 export type ITrainerListForAdmin = IResponseList<ITrainerDataForAdmin>
 
 export type ITrainerFindAllForAdmin = {
-  franchiseId: number
   start: number
   perPage: number
   search?: string

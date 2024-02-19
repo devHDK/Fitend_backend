@@ -7,17 +7,112 @@
     },
     "password": {
       "type": "string",
-      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=\/]{6,40}$"
+      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=/]{6,40}$"
     },
     "email": {
       "type": "string",
       "format": "email"
+    },
+    "fcPercentage": {
+      "type": "integer"
+    },
+    "instagram": {
+      "type": "string"
+    },
+    "meetingLink": {
+      "type": "string"
+    },
+    "shortIntro": {
+      "type": "string",
+      "maxLength": 10
+    },
+    "intro": {
+      "type": "string"
+    },
+    "welcomeThreadContent": {
+      "type": "string"
+    },
+    "qualification": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "speciality": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "coachingStyle": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "favorite": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "profileImage": {
+      "type": "string"
+    },
+    "largeProfileImage": {
+      "type": "string"
+    },
+    "mainVisible": {
+      "type": "boolean"
+    },
+    "role": {
+      "type": "string",
+      "enum": ["master", "external"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["able", "disable"]
     }
   },
   "required": [
     "nickname",
     "password",
-    "email"
+    "email",
+    "fcPercentage",
+    "instagram",
+    "meetingLink",
+    "shortIntro",
+    "intro",
+    "welcomeThreadContent",
+    "qualification",
+    "speciality",
+    "coachingStyle",
+    "favorite",
+    "profileImage",
+    "largeProfileImage",
+    "mainVisible",
+    "role",
+    "status"
   ],
   "additionalProperties": false
 }

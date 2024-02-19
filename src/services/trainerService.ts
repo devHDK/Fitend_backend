@@ -8,7 +8,8 @@ import {
   ITrainerDetailForUser,
   ITrainerListForUser,
   ITrainerMeetingBoundary,
-  ITrainerFindExtend
+  ITrainerFindExtend,
+  ITrainerCreateOneForAdmin
 } from '../interfaces/trainer'
 import {EventSchedule, Franchise, Meeting, Reservation, Ticket, Trainer, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
@@ -17,12 +18,60 @@ import {db} from '../loaders'
 
 moment.tz.setDefault('Asia/Seoul')
 
-async function create(options: {nickname: string; email: string; password: string}): Promise<void> {
+async function create(options: ITrainerCreateOneForAdmin): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {password, ...data} = options
-    const passwordHash = Code.createPasswordHash(password, passwordIterations.web)
-    await Trainer.create({password: JSON.stringify(passwordHash), ...data}, connection)
+    const {
+      nickname,
+      email,
+      password,
+      fcPercentage,
+      instagram,
+      meetingLink,
+      shortIntro,
+      intro,
+      welcomeThreadContent,
+      qualification,
+      speciality,
+      coachingStyle,
+      favorite,
+      profileImage,
+      largeProfileImage,
+      mainVisible,
+      role,
+      status
+    } = options
+    const passwordHash = Code.createPasswordHash(password, passwordIterations.admin)
+    const insertId = await Trainer.create(
+      {password: JSON.stringify(passwordHash), nickname, email, profileImage, mainVisible, role, status},
+      connection
+    )
+    await Trainer.createTrainerInfo(
+      {
+        trainerId: insertId,
+        largeProfileImage,
+        shortIntro,
+        intro,
+        qualification: JSON.stringify(qualification),
+        speciality: JSON.stringify(speciality),
+        coachingStyle: JSON.stringify(coachingStyle),
+        favorite: JSON.stringify(favorite),
+        instagram,
+        meetingLink,
+        welcomeThreadContent
+      },
+      connection
+    )
+    await Trainer.createRelationsFranchises(
+      {
+        franchiseId: 1,
+        trainerId: insertId,
+        fcPercentage,
+        ptPercentage: 30,
+        baseWage: 2100000
+      },
+      connection
+    )
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)

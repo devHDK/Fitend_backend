@@ -4,9 +4,6 @@
     "search": {
       "type": "string"
     },
-    "franchiseId": {
-      "type": "integer"
-    },
     "start": {
       "type": "integer",
       "minimum": 0,
@@ -19,9 +16,6 @@
       "default:": 25
     }
   },
-  "required": [
-    "start",
-    "perPage"
-  ],
+  "required": ["start", "perPage"],
   "additionalProperties": false
 }

@@ -14,7 +14,8 @@ import {
   ITrainerListForUser,
   ITrainerUpdate,
   ITrainerMeetingBoundary,
-  ITrainerFindExtend
+  ITrainerFindExtend,
+  ICreateTrainerInfoForAdmin
 } from '../interfaces/trainer'
 import {IWageInfo} from '../interfaces/payroll'
 import {Ticket, User} from './'
@@ -27,14 +28,56 @@ const tableFranchise = 'Franchises'
 const tableTrainerInfo = 'TrainerInfo'
 
 async function create(
-  options: {password: string; nickname: string; email: string},
+  options: {
+    password: string
+    nickname: string
+    email: string
+    profileImage: string
+    mainVisible: boolean
+    role: 'master' | 'external'
+    status: 'able' | 'disable'
+  },
+  connection: PoolConnection
+): Promise<number> {
+  try {
+    const {insertId} = await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableName, options]
+    })
+    return insertId
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createTrainerInfo(options: ICreateTrainerInfoForAdmin, connection: PoolConnection): Promise<void> {
+  try {
+    return await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableTrainerInfo, options]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createRelationsFranchises(
+  options: {
+    trainerId: number
+    franchiseId: number
+    fcPercentage: number
+    ptPercentage: number
+    baseWage: number
+  },
   connection: PoolConnection
 ): Promise<void> {
   try {
     await db.query({
       connection,
       sql: `INSERT INTO ?? SET ?`,
-      values: [tableName, options]
+      values: [tableFranchiseTrainer, options]
     })
   } catch (e) {
     throw e
@@ -56,44 +99,29 @@ async function findAll(franchiseId: number): Promise<[ITrainerList]> {
 
 async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrainerListForAdmin> {
   try {
-    const {franchiseId, start, perPage, search} = options
+    const {start, perPage, search} = options
     const where = []
-    const currentTime = moment().format('YYYY-MM-DD')
     if (search) where.push(`(t.nickname like '%${search}%')`)
     const rows: ITrainerDataForAdmin[] = await db.query({
-      sql: `SELECT t.id, t.nickname, t.email, t.createdAt,
-            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', f.id, 'name', f.name)) FROM ?? f
-            JOIN ?? ft ON ft.trainerId = t.id AND ft.franchiseId = f.id) as franchises,
-            COUNT(u.id) as userAvailableCount
+      sql: `SELECT t.id, t.nickname, t.role, t.profileImage, tri.shortIntro, t.status, t.createdAt
             FROM ?? t
-            JOIN ?? tr ON tr.trainerId = t.id
-            JOIN ?? u ON tr.userId = u.id
-            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= '${currentTime}'
-            JOIN ?? ft ON ft.trainerId = t.id ${franchiseId ? `AND ft.franchiseId = ${escape(franchiseId)}` : ''}
+            JOIN ?? tri ON tri.trainerId = t.id
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
-      values: [
-        tableFranchise,
-        tableFranchiseTrainer,
-        tableName,
-        Ticket.tableTicketRelation,
-        User.tableName,
-        Ticket.tableName,
-        tableFranchiseTrainer
-      ]
+      values: [tableName, tableTrainerInfo]
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM (
-            SELECT t.id
+            SELECT t.id, t.nickname, t.role, t.profileImage, tri.shortIntro, t.status, t.createdAt
             FROM ?? t
-            JOIN ?? ft ON ft.trainerId = t.id ${franchiseId ? `AND ft.franchiseId = ${escape(franchiseId)}` : ''}
+            JOIN ?? tri ON tri.trainerId = t.id
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             ) t`,
-      values: [tableName, tableFranchiseTrainer]
+      values: [tableName, tableTrainerInfo]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
@@ -328,6 +356,8 @@ export {
   tableFranchiseTrainer,
   tableTrainerInfo,
   create,
+  createTrainerInfo,
+  createRelationsFranchises,
   findOne,
   findOneTrainerThread,
   findTrainerWageInfo,

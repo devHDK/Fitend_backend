@@ -3,8 +3,46 @@ import {TrainerService} from '../../../../services'
 
 async function postTrainers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {nickname, email, password} = req.options
-    await TrainerService.create({nickname, email, password})
+    const {
+      nickname,
+      email,
+      password,
+      fcPercentage,
+      instagram,
+      meetingLink,
+      shortIntro,
+      intro,
+      welcomeThreadContent,
+      qualification,
+      speciality,
+      coachingStyle,
+      favorite,
+      profileImage,
+      largeProfileImage,
+      mainVisible,
+      role,
+      status
+    } = req.options
+    await TrainerService.create({
+      nickname,
+      email,
+      password,
+      fcPercentage,
+      instagram,
+      meetingLink,
+      shortIntro,
+      intro,
+      welcomeThreadContent,
+      qualification,
+      speciality,
+      coachingStyle,
+      favorite,
+      profileImage,
+      largeProfileImage,
+      mainVisible,
+      role,
+      status
+    })
     res.status(200).json()
   } catch (e) {
     next(e)
@@ -13,8 +51,8 @@ async function postTrainers(req: IRequest, res: Response, next: Function): Promi
 
 async function getTrainers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {search, franchiseId, start, perPage} = req.options
-    const ret = await TrainerService.findAllForAdmin({search, franchiseId, start, perPage})
+    const {search, start, perPage} = req.options
+    const ret = await TrainerService.findAllForAdmin({search, start, perPage})
     res.status(200).json(ret)
   } catch (e) {
     next(e)

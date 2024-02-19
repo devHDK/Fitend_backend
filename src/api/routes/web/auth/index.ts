@@ -22,7 +22,8 @@ const putAuthPassword = new ApiRouter({
   tags: ['Auth'],
   schema: 'requests/web/auth/PutAuthPassword',
   responses: {
-    200: {description: 'Success'}
+    200: {description: 'Success'},
+    404: {description: '비밀번호 오류'}
   },
   handler: ctrl.putAuthPassword
 })
