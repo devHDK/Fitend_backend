@@ -1,4 +1,4 @@
-import {PoolConnection} from 'mysql'
+import {PoolConnection, escape} from 'mysql'
 import moment from 'moment-timezone'
 import _ from 'lodash'
 import {db} from '../loaders'
@@ -122,7 +122,8 @@ async function findAllUsers(options: IThreadFindAllUsers): Promise<IThreadUserLi
     if (search) where.push(`t.nickname like '%${search}%'`)
     const rows = await db.query({
       sql: `SELECT t.id, t.nickname, t.gender,
-      JSON_ARRAYAGG(JSON_OBJECT('id', ti.id, 'isActive', ti.expiredAt >= '${currentTime}', 'type', ti.type)) as availableTickets,
+      JSON_ARRAYAGG(JSON_OBJECT('id', ti.id, 'isActive', ti.expiredAt >= ${escape(currentTime)}, 'type', ti.type,
+      'month', ti.month, 'expiredAt', ti.expiredAt)) as availableTickets,
       (SELECT th.updatedAt 
         FROM ?? th 
         WHERE th.userId = tr.userId AND th.trainerId = tr.trainerId 

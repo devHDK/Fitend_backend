@@ -1,64 +1,59 @@
 {
-    "type": "object",
-    "properties": {
-      "data": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "integer"
-            },
-            "nickname": {
-              "type": "string"
-            },
-            "gender": {
-              "type": "string",
-              "enum": ["male", "female"]
-            },
-            "availableTickets": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "integer"
-                  },
-                  "isActive": {
-                    "type": "boolean"
-                  },
-                  "type": {
-                    "type": "string",
-                    "enum": ["personal", "fitness"]
-                  }
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female"]
+          },
+          "availableTickets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "isActive": {
+                  "type": "boolean"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["personal", "fitness"]
+                },
+                "month": {
+                  "type": "integer"
+                },
+                "expiredAt": {
+                  "type": "string",
+                  "format": "date"
                 }
-                
               }
-            },
-            "updatedAt": {
-              "type": "string",
-              "nullable": true
-            },
-            "isChecked": {
-              "type": "boolean"
             }
           },
-          "required": [
-            "id",
-            "nickname",
-            "gender",
-            "availableTickets",
-            "updatedAt",
-            "isChecked"
-          ],
-          "additionalProperties": false
-        }
+          "updatedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "isChecked": {
+            "type": "boolean"
+          }
+        },
+        "required": ["id", "nickname", "gender", "availableTickets", "updatedAt", "isChecked"],
+        "additionalProperties": false
       }
-    },
-    "required": [
-      "data"
-    ],
-    "additionalProperties": false
-  }
-  
-  
+    }
+  },
+  "required": ["data"],
+  "additionalProperties": false
+}
