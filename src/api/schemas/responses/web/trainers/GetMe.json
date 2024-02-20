@@ -18,9 +18,12 @@
         },
         "createdAt": {
           "type": "string"
+        },
+        "meetingLink": {
+          "type": "string"
         }
       },
-      "required": ["id", "email", "nickname", "profileImage", "createdAt"],
+      "required": ["id", "email", "nickname", "profileImage", "createdAt", "meetingLink"],
       "additionalProperties": false
     }
   },

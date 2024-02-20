@@ -1,10 +1,12 @@
 import {Response} from 'express'
 import {AuthService, TrainerService} from '../../../../services'
+import {refreshToken} from '../../../../services/authService'
 
 async function postAuth(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {email, password, platform, deviceId, token} = req.options
     const ret = await TrainerService.signIn({email, password, platform, deviceId, token})
+
     res.status(200).json(ret)
   } catch (e) {
     if (e.message === 'not_found') e.status = 404

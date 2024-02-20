@@ -29,6 +29,22 @@ async function getTrainersMeetingBoundary(req: IRequest, res: Response, next: Fu
   }
 }
 
+async function putFCMToken(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    await TrainerService.updateFCMToken({
+      trainerId: req.userId,
+      token: req.options.token,
+      platform: req.options.platform,
+      deviceId: req.options.deviceId
+    })
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'ticket_expired') e.status = 401
+    if (e.message === 'no_token') e.status = 401
+    next(e)
+  }
+}
+
 async function putTrainerMeetingBoundary(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id, workStartTime, workEndTime} = req.options
@@ -39,4 +55,4 @@ async function putTrainerMeetingBoundary(req: IRequest, res: Response, next: Fun
   }
 }
 
-export {getTrainers, getMe, getTrainersMeetingBoundary, putTrainerMeetingBoundary}
+export {getTrainers, getMe, getTrainersMeetingBoundary, putFCMToken, putTrainerMeetingBoundary}

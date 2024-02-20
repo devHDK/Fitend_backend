@@ -35,6 +35,18 @@ const getTrainersMeetingBoundary = new ApiRouter({
   handler: ctrl.getTrainersMeetingBoundary
 })
 
+const putFCMToken = new ApiRouter({
+  name: 'fcmToken',
+  method: 'put',
+  summary: 'fcmToken update(app)',
+  schema: 'requests/web/trainers/PutFCMToken',
+  tags: ['Trainer'],
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putFCMToken
+})
+
 const putTrainerMeetingBoundary = new ApiRouter({
   name: ':id/meetingBoundary',
   method: 'put',
@@ -48,4 +60,4 @@ const putTrainerMeetingBoundary = new ApiRouter({
   handler: ctrl.putTrainerMeetingBoundary
 })
 
-export {getTrainers, getMe, getTrainersMeetingBoundary, putTrainerMeetingBoundary}
+export {getTrainers, getMe, getTrainersMeetingBoundary, putFCMToken, putTrainerMeetingBoundary}

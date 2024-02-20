@@ -44,6 +44,7 @@ async function signIn(options: {
   try {
     const {email, password, platform, deviceId, token} = options
     const trainer = await Trainer.findOne({email})
+
     if (!trainer) throw new Error('not_found')
     if (
       trainer &&
@@ -263,6 +264,35 @@ async function updatePassword({
   }
 }
 
+async function updateFCMToken(options: {
+  trainerId: number
+  deviceId: string
+  token: string
+  platform: 'android' | 'ios'
+}): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {trainerId, deviceId, token, platform} = options
+
+    const trainer = await Trainer.findOne({id: trainerId})
+
+    if (token) {
+      await Trainer.updateOne({id: trainer.id, deviceId, platform}, connection)
+      await TrainerDevice.upsertOne({trainerId: trainer.id, platform, deviceId, token}, connection)
+      await TrainerDevice.updateOne({trainerId: trainer.id, platform, deviceId, isNotification: true}, connection)
+      const unUsedDevice = await TrainerDevice.findOneWithTokenAndUnmatchDevice(token, deviceId)
+      if (unUsedDevice) {
+        await TrainerDevice.deleteOne(unUsedDevice.deviceId, unUsedDevice.trainerId, connection)
+      }
+    }
+
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
 async function updateMeetingBoundary(options: ITrainerMeetingBoundary): Promise<void> {
   try {
     await Trainer.updateTrainerMeetingBoundary(options)
@@ -284,5 +314,6 @@ export {
   findOneWithIdForAdmin,
   findTrainersMeetingBoundaryWithId,
   updatePassword,
+  updateFCMToken,
   updateMeetingBoundary
 }
