@@ -108,8 +108,6 @@
     "speciality",
     "coachingStyle",
     "favorite",
-    "profileImage",
-    "largeProfileImage",
     "mainVisible",
     "role",
     "status"
