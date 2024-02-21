@@ -10,7 +10,7 @@ async function postComments(req: IRequest, res: Response, next: Function): Promi
       content,
       gallery: gallery ? JSON.stringify(gallery) : null
     })
-    res.status(200).json(threadId)
+    res.status(200).json(commentId)
   } catch (e) {
     next(e)
   }

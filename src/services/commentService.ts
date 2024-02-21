@@ -4,7 +4,7 @@ import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
 import {threadSubscriber} from '../subscribers'
 
-async function create(options: ICommentCreateOne): Promise<any> {
+async function create(options: ICommentCreateOne): Promise<{id: number}> {
   const connection = await db.beginTransaction()
   try {
     const {threadId, userId, trainerId, content} = options
