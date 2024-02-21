@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "isNotification": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "isNotification"
+  ],
+  "additionalProperties": false
+}

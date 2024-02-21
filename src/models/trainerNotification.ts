@@ -1,8 +1,8 @@
 import {PoolConnection, escape} from 'mysql'
 import {db} from '../loaders'
-import {INotificationFindAll, INotificationList} from '../interfaces/notifications'
+import {INotificationFindAll, INotificationFindAllTrainer, INotificationList} from '../interfaces/notifications'
 
-const tableName = 'Notifications'
+const tableName = 'TrainerNotifications'
 
 async function create(
   options: {
@@ -25,10 +25,10 @@ async function create(
   }
 }
 
-async function findAll(options: INotificationFindAll): Promise<INotificationList> {
+async function findAll(options: INotificationFindAllTrainer): Promise<INotificationList> {
   try {
-    const {userId, start, perPage} = options
-    const where = [`t.userId = ${escape(userId)}`]
+    const {trainerId, start, perPage} = options
+    const where = [`t.trainerId = ${escape(trainerId)}`]
     const rows = await db.query({
       sql: `SELECT t.*
             FROM ?? t
@@ -52,12 +52,12 @@ async function findAll(options: INotificationFindAll): Promise<INotificationList
   }
 }
 
-async function findConfirm(trainerId: number): Promise<boolean> {
+async function findConfirm(userId: number): Promise<boolean> {
   try {
     const [row] = await db.query({
       sql: `SELECT count(*) as count
             FROM ?? t
-            WHERE t.trainerId = ${escape(trainerId)} AND t.isConfirm = false`,
+            WHERE t.userId = ${escape(userId)} AND t.isConfirm = false`,
       values: [tableName]
     })
     return row && row.count < 1

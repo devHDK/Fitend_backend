@@ -12,6 +12,7 @@ import * as DashboardService from './dashboardService'
 import * as ReservationService from './reservationService'
 import * as EventScheduleService from './eventScheduleService'
 import * as NotificationService from './notificationService'
+import * as TrainerNotificationService from './trainerNotificationService'
 import * as PayrollService from './payrollService'
 import * as FranchisesService from './franchisesService'
 import * as ThreadService from './threadService'
@@ -39,6 +40,7 @@ export {
   ReservationService,
   EventScheduleService,
   NotificationService,
+  TrainerNotificationService,
   PayrollService,
   FranchisesService,
   ThreadService,
