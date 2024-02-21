@@ -41,4 +41,19 @@ const getTrainersWithId = new ApiRouter({
   handler: ctrl.getTrainersWithId
 })
 
-export {getTrainers, getTrainersWithId, postTrainers}
+const putTrainers = new ApiRouter({
+  name: ':id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '트레이너 수정',
+  roles: ['master'],
+  tags: ['Trainers'],
+  schema: 'requests/admin/trainers/PutTrainers',
+  responses: {
+    200: {description: 'success'},
+    409: {description: '이메일 중복'}
+  },
+  handler: ctrl.putTrainers
+})
+
+export {getTrainers, getTrainersWithId, postTrainers, putTrainers}

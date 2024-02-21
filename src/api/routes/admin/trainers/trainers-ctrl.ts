@@ -69,4 +69,55 @@ async function getTrainersWithId(req: IRequest, res: Response, next: Function): 
   }
 }
 
-export {postTrainers, getTrainers, getTrainersWithId}
+async function putTrainers(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {
+      id,
+      nickname,
+      email,
+      password,
+      fcPercentage,
+      instagram,
+      meetingLink,
+      shortIntro,
+      intro,
+      welcomeThreadContent,
+      qualification,
+      speciality,
+      coachingStyle,
+      favorite,
+      profileImage,
+      largeProfileImage,
+      mainVisible,
+      role,
+      status
+    } = req.options
+    await TrainerService.updateTrainerForAdmin({
+      id,
+      nickname,
+      email,
+      password,
+      fcPercentage,
+      instagram,
+      meetingLink,
+      shortIntro,
+      intro,
+      welcomeThreadContent,
+      qualification,
+      speciality,
+      coachingStyle,
+      favorite,
+      profileImage,
+      largeProfileImage,
+      mainVisible,
+      role,
+      status
+    })
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'already_in_use') e.status = 409
+    next(e)
+  }
+}
+
+export {postTrainers, getTrainers, getTrainersWithId, putTrainers}

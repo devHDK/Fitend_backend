@@ -15,7 +15,8 @@ import {
   ITrainerUpdate,
   ITrainerMeetingBoundary,
   ITrainerFindExtend,
-  ICreateTrainerInfoForAdmin
+  ICreateTrainerInfoForAdmin,
+  ITrainerInfoUpdate
 } from '../interfaces/trainer'
 import {IWageInfo} from '../interfaces/payroll'
 import {Ticket, User} from './'
@@ -258,9 +259,14 @@ async function findOneTrainerThread(
 async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.nickname, t.email, t.createdAt, t.profileImage
-            FROM ?? t WHERE ?`,
-      values: [tableName, {id}]
+      sql: `SELECT t.id, t.nickname, t.email, t.profileImage, tri.largeProfileImage, t.status, t.mainVisible, t.role,
+            tri.instagram, tri.meetingLink, tri.shortIntro, tri.intro, tri.qualification, tri.speciality, tri.coachingStyle, tri.favorite,
+            tri.welcomeThreadContent, ft.fcPercentage
+            FROM ?? t
+            JOIN ?? tri ON t.id = tri.trainerId
+            JOIN ?? ft ON t.id = ft.trainerId
+            WHERE ?`,
+      values: [tableName, tableTrainerInfo, tableFranchiseTrainer, {id}]
     })
     return row
   } catch (e) {
@@ -341,12 +347,50 @@ async function updateOne(options: ITrainerUpdate, connection: PoolConnection): P
   }
 }
 
+async function updateForAdmin(options: ITrainerUpdate, connection: PoolConnection): Promise<void> {
+  const {id, ...data} = options
+  try {
+    await db.query({
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableName, data, {id}],
+      connection
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updateTrainerMeetingBoundary(options: ITrainerMeetingBoundary): Promise<void> {
   const {trainerId, ...data} = options
   try {
     await db.query({
       sql: `UPDATE ?? SET ? WHERE ? `,
       values: [tableTrainerInfo, data, {trainerId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function updateTrainerInfoForAdmin(options: ITrainerInfoUpdate, connection: PoolConnection): Promise<void> {
+  const {trainerId, ...data} = options
+  try {
+    await db.query({
+      connection,
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableTrainerInfo, data, {trainerId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function deleteRelationFranchise(trainerId: number, connection: PoolConnection): Promise<void> {
+  try {
+    await db.query({
+      connection,
+      sql: `DELETE FROM ?? WHERE ?`,
+      values: [tableFranchiseTrainer, {trainerId}]
     })
   } catch (e) {
     throw e
@@ -373,6 +417,9 @@ export {
   findOneWithIdForUser,
   findDeviceList,
   findTrainersMeetingBoundaryWithId,
+  updateForAdmin,
   updateOne,
-  updateTrainerMeetingBoundary
+  updateTrainerMeetingBoundary,
+  updateTrainerInfoForAdmin,
+  deleteRelationFranchise
 }
