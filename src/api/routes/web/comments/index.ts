@@ -8,7 +8,7 @@ const postComments = new ApiRouter({
   tags: ['Comment'],
   schema: 'requests/web/comments/PostComments',
   responses: {
-    200: {description: 'Success'}
+    200: {schema: 'responses/web/comments/PostComments'}
   },
   handler: ctrl.postComments
 })

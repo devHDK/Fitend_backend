@@ -24,6 +24,9 @@
         },
         "createdAt": {
           "type": "string"
+        },
+        "meetingLink": {
+          "type": "string"
         }
       },
       "additionalProperties": false

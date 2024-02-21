@@ -227,10 +227,11 @@ async function findLastTrainersWithUserId(options: {
 async function findOne(options: ITrainerFindOne): Promise<ITrainer> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.*
+      sql: `SELECT t.*, ti.meetingLink
             FROM ?? t
+            JOIN ?? ti ON ti.trainerId = t.id
             WHERE ?`,
-      values: [tableName, options]
+      values: [tableName, tableTrainerInfo, options]
     })
     return row
   } catch (e) {

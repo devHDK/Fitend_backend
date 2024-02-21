@@ -55,6 +55,8 @@ export interface IThreadUser {
       id: number
       isActive: boolean
       type: 'fitness' | 'personal'
+      month: number
+      expiredAt: string
     }
   ]
   updatedAt: string

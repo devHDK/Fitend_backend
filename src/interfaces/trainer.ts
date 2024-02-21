@@ -52,6 +52,7 @@ export interface ITrainer {
   createdAt?: string
   deviceId?: string
   platform?: 'ios' | 'android'
+  meetingLink?: string
 }
 
 export type ITrainerList = {
