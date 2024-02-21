@@ -4,6 +4,9 @@
     "workoutScheduleId": {
       "type": "integer"
     },
+    "userId": {
+      "type": "integer"
+    },
     "startDate": {
       "type": "string"
     },
@@ -34,6 +37,10 @@
       }
     },
     "workoutDuration": {
+      "type": "integer",
+      "nullable": true
+    },
+    "calories": {
       "type": "integer",
       "nullable": true
     },
@@ -107,6 +114,9 @@
             "items": {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "number"
+                },
                 "name": {
                   "type": "string"
                 },
@@ -211,6 +221,7 @@
   },
   "required": [
     "workoutScheduleId",
+    "userId",
     "workoutTitle",
     "workoutSubTitle",
     "targetMuscleTypes",
