@@ -71,11 +71,11 @@ async function create(options: {trainerId: number; userId: number; startTime: st
 
     const trainer = await Trainer.findOne({id: trainerId})
     const trainerDevices = await TrainerDevice.findAllWithUserId(trainerId)
-    const trainerContents = `${user.nickname}님과 온보딩 미팅이 있어요📆\n${util.defaultTimeFormatForPush(startTime)}`
+    const trainerContents = `${user.nickname}님과 온보딩 미팅이 있어요 📆\n${util.defaultTimeFormatForPush(startTime)}`
     await TrainerNotification.create(
       {
         trainerId,
-        type: 'thread',
+        type: 'meeting',
         contents: trainerContents
       },
       connection

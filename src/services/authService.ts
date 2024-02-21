@@ -444,9 +444,11 @@ async function createAccountForUser(options: IUserAccountCreate): Promise<void> 
 
     const trainer = await Trainer.findOne({id: trainerId})
     const trainerDevices = await TrainerDevice.findAllWithUserId(trainerId)
-    const contents = `${data.nickname}님이 무료체험을 신청했어요👏`
+    const contents = `${data.nickname}님이 무료체험을 신청했어요 👏\n체험기간: ${moment().format(
+      'YYYY.MM.DD'
+    )} ~ ${moment().add(13, 'day').format('YYYY.MM.DD')}`
     const info = {
-      userId,
+      userId: userId.toString(),
       nickname: data.nickname,
       gender: data.gender
     }

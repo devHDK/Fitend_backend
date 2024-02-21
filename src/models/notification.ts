@@ -52,12 +52,12 @@ async function findAll(options: INotificationFindAll): Promise<INotificationList
   }
 }
 
-async function findConfirm(trainerId: number): Promise<boolean> {
+async function findConfirm(userId: number): Promise<boolean> {
   try {
     const [row] = await db.query({
       sql: `SELECT count(*) as count
             FROM ?? t
-            WHERE t.trainerId = ${escape(trainerId)} AND t.isConfirm = false`,
+            WHERE t.userId = ${escape(userId)} AND t.isConfirm = false`,
       values: [tableName]
     })
     return row && row.count < 1

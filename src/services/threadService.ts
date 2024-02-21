@@ -1,4 +1,4 @@
-import {Thread, User, UserDevice, Notification, Trainer} from '../models/index'
+import {Thread, User, UserDevice, Notification, Trainer, TrainerDevice, TrainerNotification} from '../models/index'
 import {
   IThreadFindAll,
   IThreadList,
@@ -12,6 +12,7 @@ import {
 import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
 import {threadSubscriber} from '../subscribers'
+import {ITrainerDevice} from '../interfaces/trainerDevice'
 
 async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
   const connection = await db.beginTransaction()
@@ -23,9 +24,35 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
     const threadId = await Thread.create(options, connection)
     const user = await User.findOne({id: userId})
     if (writerType === 'user') {
-      // await firebase.sendToTopic(`trainer_${options.trainerId}`, {
-      //   notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
-      // })
+      const trainer = await Trainer.findOne({id: trainerId})
+      const trainerDevices = await TrainerDevice.findAllWithUserId(trainerId)
+      const contents = `${user.nickname}님이 스레드를 올렸어요 👀\n${title ? `${title} ∙ ` : ''}${content}`
+      const info = {
+        userId: userId.toString(),
+        nickname: user.nickname,
+        gender: user.gender,
+        threadId: threadId.toString()
+      }
+      await TrainerNotification.create(
+        {
+          trainerId,
+          type: 'thread',
+          contents,
+          info: JSON.stringify(info)
+        },
+        connection
+      )
+
+      if (trainerDevices && trainerDevices.length > 0) {
+        threadSubscriber.publishThreadPushEvent({
+          tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+          type: 'threadCreate',
+          sound: 'default',
+          badge: trainer.badgeCount + 1,
+          contents,
+          data: info
+        })
+      }
 
       if (isMeetingThread) {
         // await User.createInflowContent({complete: false, name: '사전상담여부', userId}, connection)

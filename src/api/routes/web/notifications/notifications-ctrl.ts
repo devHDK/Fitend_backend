@@ -22,7 +22,7 @@ async function getNotificationsConfirm(req: IRequest, res: Response, next: Funct
 
 async function putNotificationsConfirm(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    await TrainerNotificationService.updateConfirmWithUserId(req.userId)
+    await TrainerNotificationService.updateConfirmWithtrainerId(req.userId)
     res.status(200).json()
   } catch (e) {
     next(e)
