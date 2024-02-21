@@ -5,6 +5,9 @@ async function getNotifications(req: IRequest, res: Response, next: Function): P
   try {
     const {start, perPage} = req.options
     const ret = await TrainerNotificationService.findAll({trainerId: req.userId, start, perPage})
+
+    console.log(ret)
+
     res.status(200).json(ret)
   } catch (e) {
     next(e)

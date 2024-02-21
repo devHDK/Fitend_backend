@@ -90,10 +90,10 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
       )
 
       const info = {
-        userId: userId.toString(),
+        userId,
         nickname: user.nickname,
         gender: user.gender,
-        threadId: threadId.toString()
+        threadId
       }
 
       await TrainerNotification.create(
@@ -113,7 +113,12 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
           sound: 'default',
           badge: trainer.badgeCount + 1,
           contents,
-          data: info
+          data: {
+            userId: userId.toString(),
+            nickname: user.nickname,
+            gender: user.gender,
+            threadId: threadId.toString()
+          }
         })
       }
       // await firebase.sendToTopic(`trainer_${trainerId}`, {

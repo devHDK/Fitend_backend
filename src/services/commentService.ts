@@ -32,10 +32,10 @@ async function create(options: ICommentCreateOne): Promise<{id: number}> {
       const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
       const contents = `${user.nickname}님이 댓글을 달았어요 📥\n${content}`
       const info = {
-        userId: userId.toString(),
+        userId,
         nickname: user.nickname,
         gender: user.gender,
-        threadId: threadId.toString()
+        threadId
       }
       await TrainerNotification.create(
         {
@@ -54,7 +54,12 @@ async function create(options: ICommentCreateOne): Promise<{id: number}> {
           sound: 'default',
           badge: trainer.badgeCount + 1,
           contents,
-          data: info
+          data: {
+            userId: userId.toString(),
+            nickname: user.nickname,
+            gender: user.gender,
+            threadId: threadId.toString()
+          }
         })
       }
     } else {

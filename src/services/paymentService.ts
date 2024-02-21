@@ -41,7 +41,7 @@ async function confirmPayments(options: IPaymentConfirm): Promise<ITicketList> {
       data.startedAt
     ).format('YYYY.MM.DD')} ~ ${moment(data.expiredAt).format('YYYY.MM.DD')}`
     const info = {
-      userId: userId.toString(),
+      userId,
       nickname: user.nickname,
       gender: user.gender
     }
@@ -62,7 +62,11 @@ async function confirmPayments(options: IPaymentConfirm): Promise<ITicketList> {
         sound: 'default',
         badge: trainer.badgeCount + 1,
         contents,
-        data: info
+        data: {
+          userId: userId.toString(),
+          nickname: user.nickname,
+          gender: user.gender
+        }
       })
     }
 

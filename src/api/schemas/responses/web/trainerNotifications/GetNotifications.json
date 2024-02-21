@@ -9,7 +9,7 @@
           "id": {
             "type": "integer"
           },
-          "userId": {
+          "trainerId": {
             "type": "integer"
           },
           "type": {
@@ -30,7 +30,7 @@
             "type": "string"
           }
         },
-        "required": ["id", "userId", "type", "contents", "info", "isConfirm", "createdAt"],
+        "required": ["id", "trainerId", "type", "contents", "info", "isConfirm", "createdAt"],
         "additionalProperties": false
       }
     },

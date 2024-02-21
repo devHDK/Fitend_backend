@@ -12,7 +12,7 @@ export type INotificationFindAllTrainer = {
 
 export type INotificationList = IResponseList<{
   id: number
-  type: 'reservaion' | 'thread' | 'workoutSchedules' | 'noFeedback'
+  type: 'reservaion' | 'thread' | 'workoutSchedules' | 'noFeedback' | 'meeting'
   userNickname: string
   totalSession: number
   createdAt: string

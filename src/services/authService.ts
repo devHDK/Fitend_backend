@@ -448,7 +448,7 @@ async function createAccountForUser(options: IUserAccountCreate): Promise<void> 
       'YYYY.MM.DD'
     )} ~ ${moment().add(13, 'day').format('YYYY.MM.DD')}`
     const info = {
-      userId: userId.toString(),
+      userId,
       nickname: data.nickname,
       gender: data.gender
     }
@@ -469,7 +469,11 @@ async function createAccountForUser(options: IUserAccountCreate): Promise<void> 
         sound: 'default',
         badge: trainer.badgeCount + 1,
         contents,
-        data: info
+        data: {
+          userId: userId.toString(),
+          nickname: data.nickname,
+          gender: data.gender
+        }
       })
     }
 

@@ -28,10 +28,10 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
       const trainerDevices = await TrainerDevice.findAllWithUserId(trainerId)
       const contents = `${user.nickname}님이 스레드를 올렸어요 👀\n${title ? `${title} ∙ ` : ''}${content}`
       const info = {
-        userId: userId.toString(),
+        userId,
         nickname: user.nickname,
         gender: user.gender,
-        threadId: threadId.toString()
+        threadId
       }
       await TrainerNotification.create(
         {
@@ -50,7 +50,12 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
           sound: 'default',
           badge: trainer.badgeCount + 1,
           contents,
-          data: info
+          data: {
+            userId: userId.toString(),
+            nickname: user.nickname,
+            gender: user.gender,
+            threadId: threadId.toString()
+          }
         })
       }
 
