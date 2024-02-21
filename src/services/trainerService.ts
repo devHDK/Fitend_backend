@@ -55,6 +55,7 @@ async function signIn(options: {
         {id: trainer.id, franchiseId: 1},
         trainer.password.salt
       )
+      const trainerDevice = await TrainerDevice.findOne(trainer.id, trainer.deviceId, trainer.platform)
 
       if (platform != null) {
         await Trainer.updateOne({id: trainer.id, deviceId, platform}, connection)
@@ -66,7 +67,14 @@ async function signIn(options: {
 
       await db.commit(connection)
 
-      return {accessToken, refreshToken, trainer}
+      return {
+        accessToken,
+        refreshToken,
+        trainer: {
+          ...trainer,
+          isNotification: trainerDevice.isNotification
+        }
+      }
     }
     throw new Error('invalid_password')
   } catch (e) {
@@ -85,7 +93,8 @@ async function getMe(options: {id: number}): Promise<ITrainer> {
     delete trainer.password
 
     return {
-      ...trainer
+      ...trainer,
+      isNotification: trainerDevice.isNotification
     }
   } catch (e) {
     throw e

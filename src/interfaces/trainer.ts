@@ -15,6 +15,7 @@ export interface ITrainer {
   deviceId?: string
   platform?: 'ios' | 'android'
   meetingLink?: string
+  isNotification?: boolean
 }
 
 export type ITrainerList = {

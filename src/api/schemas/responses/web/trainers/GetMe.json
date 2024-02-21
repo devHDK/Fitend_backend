@@ -21,6 +21,9 @@
         },
         "meetingLink": {
           "type": "string"
+        },
+        "isNotification": {
+          "type": "boolean"
         }
       },
       "required": ["id", "email", "nickname", "profileImage", "createdAt", "meetingLink"],
