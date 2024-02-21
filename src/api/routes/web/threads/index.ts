@@ -8,7 +8,7 @@ const postThreads = new ApiRouter({
   tags: ['Thread'],
   schema: 'requests/web/threads/PostThreads',
   responses: {
-    200: {description: 'Success'}
+    200: {schema: 'responses/web/threads/PostThreads'}
   },
   handler: ctrl.postThreads
 })

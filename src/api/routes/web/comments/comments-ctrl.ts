@@ -4,13 +4,13 @@ import {CommentService} from '../../../../services'
 async function postComments(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {threadId, content, gallery} = req.options
-    await CommentService.create({
+    const commentId = await CommentService.create({
       trainerId: req.userId,
       threadId,
       content,
       gallery: gallery ? JSON.stringify(gallery) : null
     })
-    res.status(200).json()
+    res.status(200).json(threadId)
   } catch (e) {
     next(e)
   }

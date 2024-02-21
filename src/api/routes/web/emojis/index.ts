@@ -8,7 +8,7 @@ const putEmojis = new ApiRouter({
   tags: ['Emoji'],
   schema: 'requests/web/emojis/PutEmojis',
   responses: {
-    200: {description: 'success'}
+    200: {schema: 'responses/web/emojis/PutEmojis'}
   },
   handler: ctrl.putEmojis
 })
