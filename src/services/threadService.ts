@@ -30,7 +30,6 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
       if (isMeetingThread) {
         // await User.createInflowContent({complete: false, name: '사전상담여부', userId}, connection)
         const trainerThread = await Trainer.findOneTrainerThread({id: trainerId})
-
         const trainerThreadId = await Thread.create(
           {
             title: `${user.nickname.substring(1)}님 안녕하세요!`,

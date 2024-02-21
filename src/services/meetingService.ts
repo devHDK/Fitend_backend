@@ -9,7 +9,9 @@ import {
   Thread,
   Trainer,
   EventSchedule,
-  Reservation
+  Reservation,
+  TrainerDevice,
+  TrainerNotification
 } from '../models/index'
 import {db} from '../loaders'
 import {util} from '../libs'
@@ -22,6 +24,7 @@ import {
   IMeetingList,
   IMeetingUpdate
 } from '../interfaces/meetings'
+import {ITrainerDevice} from '../interfaces/trainerDevice'
 
 async function create(options: {trainerId: number; userId: number; startTime: string; endTime: string}): Promise<void> {
   const connection = await db.beginTransaction()
@@ -66,6 +69,26 @@ async function create(options: {trainerId: number; userId: number; startTime: st
       connection
     )
 
+    const trainer = await Trainer.findOne({id: trainerId})
+    const trainerDevices = await TrainerDevice.findAllWithUserId(trainerId)
+    const trainerContents = `${user.nickname}님과 온보딩 미팅이 있어요📆\n${util.defaultTimeFormatForPush(startTime)}`
+    await TrainerNotification.create(
+      {
+        trainerId,
+        type: 'thread',
+        contents: trainerContents
+      },
+      connection
+    )
+
+    if (trainerDevices && trainerDevices.length > 0) {
+      meetingSubscriber.publishMeetingPushEvent({
+        tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+        type: 'meetingCreate',
+        badge: trainer.badgeCount + 1,
+        contents: trainerContents
+      })
+    }
     const threadContents = `새로운 스레드가 올라왔어요 👀\n${user.nickname.substring(1)}님 안녕하세요!`
     await Notification.create(
       {

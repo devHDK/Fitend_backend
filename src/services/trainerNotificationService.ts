@@ -12,17 +12,17 @@ async function findAll(options: INotificationFindAllTrainer): Promise<INotificat
 
 async function findConfirm(trainerId: number): Promise<boolean> {
   try {
-    return await Notification.findConfirm(trainerId)
+    return await TrainerNotification.findConfirm(trainerId)
   } catch (e) {
     throw e
   }
 }
 
-async function updateConfirmWithUserId(trainerId: number): Promise<void> {
+async function updateConfirmWithtrainerId(trainerId: number): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    await Notification.updateConfirmWithUserId(trainerId, connection)
-    await User.updateOne({id: trainerId, badgeCount: 0}, connection)
+    await TrainerNotification.updateConfirmWithTrainerId(trainerId, connection)
+    await Trainer.updateOne({id: trainerId, badgeCount: 0}, connection)
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -39,4 +39,4 @@ async function updateSettings(trainerId: number, isNotification: boolean): Promi
   }
 }
 
-export {findAll, findConfirm, updateConfirmWithUserId, updateSettings}
+export {findAll, findConfirm, updateConfirmWithtrainerId, updateSettings}

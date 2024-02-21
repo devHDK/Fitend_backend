@@ -10,12 +10,14 @@ import {
   WorkoutSchedule,
   WorkoutPlan,
   WorkoutStat,
-  TrainerDevice
+  TrainerDevice,
+  TrainerNotification
 } from '../models'
 import {db} from '../loaders'
 import {passwordIterations} from '../libs/code'
-import {workoutScheduleSubscriber} from '../subscribers'
+import {userSubscriber, workoutScheduleSubscriber} from '../subscribers'
 import {IUserDevice} from '../interfaces/userDevice'
+import {ITrainerDevice} from '../interfaces/trainerDevice'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -437,6 +439,35 @@ async function createAccountForUser(options: IUserAccountCreate): Promise<void> 
       workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
         tokens: userDevices.map((device: IUserDevice) => device.token),
         type: 'workoutScheduleCreate'
+      })
+    }
+
+    const trainer = await Trainer.findOne({id: trainerId})
+    const trainerDevices = await TrainerDevice.findAllWithUserId(trainerId)
+    const contents = `${data.nickname}님이 무료체험을 신청했어요👏`
+    const info = {
+      userId,
+      nickname: data.nickname,
+      gender: data.gender
+    }
+    await TrainerNotification.create(
+      {
+        trainerId,
+        type: 'thread',
+        contents,
+        info: JSON.stringify(info)
+      },
+      connection
+    )
+
+    if (trainerDevices && trainerDevices.length > 0) {
+      userSubscriber.publishUserPushEvent({
+        tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+        type: 'userCreate',
+        sound: 'default',
+        badge: trainer.badgeCount + 1,
+        contents,
+        data: info
       })
     }
 

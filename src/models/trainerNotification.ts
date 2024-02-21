@@ -6,7 +6,7 @@ const tableName = 'TrainerNotifications'
 
 async function create(
   options: {
-    userId: number
+    trainerId: number
     type: string
     contents: string
     info?: string
@@ -52,12 +52,12 @@ async function findAll(options: INotificationFindAllTrainer): Promise<INotificat
   }
 }
 
-async function findConfirm(userId: number): Promise<boolean> {
+async function findConfirm(trainerId: number): Promise<boolean> {
   try {
     const [row] = await db.query({
       sql: `SELECT count(*) as count
             FROM ?? t
-            WHERE t.userId = ${escape(userId)} AND t.isConfirm = false`,
+            WHERE t.trainerId = ${escape(trainerId)} AND t.isConfirm = false`,
       values: [tableName]
     })
     return row && row.count < 1
@@ -66,15 +66,15 @@ async function findConfirm(userId: number): Promise<boolean> {
   }
 }
 
-async function updateConfirmWithUserId(userId: number, connection?: PoolConnection): Promise<void> {
+async function updateConfirmWithTrainerId(trainerId: number, connection?: PoolConnection): Promise<void> {
   try {
     await db.query({
       sql: `UPDATE ?? SET ? WHERE ?`,
-      values: [tableName, {isConfirm: true}, {userId}]
+      values: [tableName, {isConfirm: true}, {trainerId}]
     })
   } catch (e) {
     throw e
   }
 }
 
-export {tableName, create, findAll, findConfirm, updateConfirmWithUserId}
+export {tableName, create, findAll, findConfirm, updateConfirmWithTrainerId}

@@ -16,6 +16,7 @@ export interface ITrainer {
   platform?: 'ios' | 'android'
   meetingLink?: string
   isNotification?: boolean
+  badgeCount?: number
 }
 
 export type ITrainerList = {
@@ -76,6 +77,7 @@ export interface ITrainerUpdate {
   password?: string
   deviceId?: string
   platform?: 'ios' | 'android'
+  badgeCount?: number
 }
 
 export interface ITrainerMeetingBoundary {

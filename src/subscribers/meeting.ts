@@ -4,18 +4,18 @@ import {IMeetingPushType} from '../interfaces/meetings'
 import firebase = require('../loaders/firebase')
 
 const eventsEmitter = new events.EventEmitter()
-const reservationPushEvent = 'onReservationPushEvent'
+const meetingPushEvent = 'onMeetingPushEvent'
 
-eventsEmitter.on(reservationPushEvent, async (options: IMeetingPushType) => {
+eventsEmitter.on(meetingPushEvent, async (options: IMeetingPushType) => {
   try {
     await firebase.sendMeetingMessage(options)
   } catch (e) {
-    logger.error(`Error on event ${reservationPushEvent}`, e)
+    logger.error(`Error on event ${meetingPushEvent}`, e)
   }
 })
 
 function publishMeetingPushEvent(options: IMeetingPushType): void {
-  eventsEmitter.emit(reservationPushEvent, options)
+  eventsEmitter.emit(meetingPushEvent, options)
 }
 
 export {publishMeetingPushEvent}

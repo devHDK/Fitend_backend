@@ -4,7 +4,7 @@ import {IThreadPushType} from '../interfaces/thread'
 import firebase = require('../loaders/firebase')
 
 const eventsEmitter = new events.EventEmitter()
-const threadPushEvent = 'onReservationPushEvent'
+const threadPushEvent = 'onThreadPushEvent'
 
 eventsEmitter.on(threadPushEvent, async (options: IThreadPushType) => {
   try {
