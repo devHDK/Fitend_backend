@@ -5,6 +5,7 @@ import {IReservationPushType} from '../interfaces/reservation'
 import {IWorkoutSchedulePushType} from '../interfaces/workoutSchedules'
 import {IThreadPushType} from '../interfaces/thread'
 import {IMeetingPushType} from '../interfaces/meetings'
+import {IUserPushType} from '../interfaces/user'
 
 const awsSecrets: string = config.get('aws.firebase')
 
@@ -119,6 +120,19 @@ const sendThreadMessage = async (options: IThreadPushType): Promise<void> => {
   }
 }
 
+const sendUserMessage = async (options: IUserPushType): Promise<void> => {
+  const {tokens, type, data, badge, contents, sound} = options
+  try {
+    const payload = {
+      notification: {title: '', body: contents},
+      data: {type, ...data}
+    }
+    await sendPush(tokens, badge, sound, payload)
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   init,
   sendPush,
@@ -126,5 +140,6 @@ export {
   sendReservationMessage,
   sendMeetingMessage,
   sendWorkoutScheduleMessage,
-  sendThreadMessage
+  sendThreadMessage,
+  sendUserMessage
 }

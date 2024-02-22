@@ -1,8 +1,18 @@
-import {Comment, User, UserDevice, Notification, Thread} from '../models/index'
+import {
+  Comment,
+  User,
+  UserDevice,
+  Notification,
+  Thread,
+  Trainer,
+  TrainerDevice,
+  TrainerNotification
+} from '../models/index'
 import {ICommentCreateOne, IComment, ICommentUpdateOne} from '../interfaces/comment'
 import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
 import {threadSubscriber} from '../subscribers'
+import {ITrainerDevice} from '../interfaces/trainerDevice'
 
 async function create(options: ICommentCreateOne): Promise<{id: number}> {
   const connection = await db.beginTransaction()
@@ -16,6 +26,42 @@ async function create(options: ICommentCreateOne): Promise<{id: number}> {
       // await firebase.sendToTopic(`trainer_${trainerId}`, {
       //   notification: {body: `${user.nickname}님이 스레드에 댓글을 달았어요`}
       // })
+
+      const user = await User.findOne({id: userId})
+      const trainer = await Trainer.findOne({id: thread.trainer.id})
+      const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
+      const contents = `${user.nickname}님이 댓글을 달았어요 📥\n${content}`
+      const info = {
+        userId,
+        nickname: user.nickname,
+        gender: user.gender,
+        threadId
+      }
+      await TrainerNotification.create(
+        {
+          trainerId: thread.trainer.id,
+          type: 'thread',
+          contents,
+          info: JSON.stringify(info)
+        },
+        connection
+      )
+
+      if (trainerDevices && trainerDevices.length > 0) {
+        threadSubscriber.publishThreadPushEvent({
+          tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+          type: 'threadCreate',
+          sound: 'default',
+          badge: trainer.badgeCount + 1,
+          contents,
+          data: {
+            userId: userId.toString(),
+            nickname: user.nickname,
+            gender: user.gender,
+            threadId: threadId.toString()
+          }
+        })
+      }
     } else {
       const userDevices = await UserDevice.findAllWithUserId(user.id)
       const contents = `스레드에 댓글이 달렸어요 📥\n${content}`

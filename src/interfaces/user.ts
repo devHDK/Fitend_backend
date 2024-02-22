@@ -155,4 +155,13 @@ export interface IUserPreSurveyUpdate {
   place?: 'home' | 'gym' | 'both'
 }
 
+export interface IUserPushType {
+  tokens: string[]
+  badge: number
+  type: 'userCreate'
+  contents: string
+  data?: any
+  sound?: 'default'
+}
+
 export type IUserWithWorkoutList = IUsersWorkoutSchedules[]

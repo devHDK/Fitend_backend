@@ -15,6 +15,7 @@ import * as WorkoutRecords from './workoutRecords'
 import * as Reservation from './reservation'
 import * as EventSchedule from './eventSchedule'
 import * as Notification from './notification'
+import * as TrainerNotification from './trainerNotification'
 import * as WorkoutStat from './workoutStat'
 import * as Franchise from './franchise'
 import * as Thread from './thread'
@@ -45,6 +46,7 @@ export {
   Reservation,
   EventSchedule,
   Notification,
+  TrainerNotification,
   WorkoutStat,
   Franchise,
   Thread,

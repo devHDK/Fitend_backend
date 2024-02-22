@@ -1,0 +1,44 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "trainerId": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["reservation", "workoutSchedule", "thread", "noFeedback", "meeting"]
+          },
+          "contents": {
+            "type": "string"
+          },
+          "info": {
+            "type": "object",
+            "nullable": true
+          },
+          "isConfirm": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "trainerId", "type", "contents", "info", "isConfirm", "createdAt"],
+        "additionalProperties": false
+      }
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": ["data", "total"],
+  "additionalProperties": false
+}

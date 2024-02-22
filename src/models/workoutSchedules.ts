@@ -236,8 +236,8 @@ async function findOneScheduleRecord(
 async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutScheduleDetail> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id as workoutScheduleId, DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
-            t.workoutTitle, t.workoutSubTitle, t.seq, wsr.heartRates, wsr.workoutDuration,
+      sql: `SELECT t.id as workoutScheduleId, DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, t.userId,
+            t.workoutTitle, t.workoutSubTitle, t.seq, wsr.heartRates, wsr.workoutDuration, wsr.calories,
             (
               SELECT JSON_ARRAYAGG(tm.type) 
               FROM ?? tm
@@ -259,7 +259,7 @@ async function findOneForTrainer(workoutScheduleId: number): Promise<IWorkoutSch
                 'workoutPlanId', wp.id, 'exerciseId', wp.exerciseId, 'name', stde.name, 'description', e2.description,
                 'trackingFieldId', stde.trackingFieldId, 'isVideoRecord', wp.isVideoRecord,
                 'targetMuscles', 
-                (SELECT JSON_ARRAYAGG(JSON_OBJECT('name', tm.name, 'type', setm.type))
+                (SELECT JSON_ARRAYAGG(JSON_OBJECT('id',tm.id, 'name', tm.name, 'type', setm.type))
                 FROM ?? tm
                 JOIN ?? se ON se.exerciseId = e2.id
                 JOIN ?? setm ON setm.targetMuscleId = tm.id AND setm.standardExerciseId = se.standardExerciseId AND setm.type = 'main'

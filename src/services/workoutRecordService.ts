@@ -9,11 +9,16 @@ import {
   User,
   WorkoutPlan,
   StandardExercise,
-  Exercise
+  Exercise,
+  Trainer,
+  TrainerDevice,
+  TrainerNotification
 } from '../models'
 import {IWorkoutRecordDetail, IWorkoutRecordsCreate, IWorkoutHistory} from '../interfaces/workoutRecords'
 import {IWorkoutScheduleList} from '../interfaces/workoutSchedules'
 import {IThread, IThreadCreatedId} from '../interfaces/thread'
+import {threadSubscriber} from '../subscribers'
+import {ITrainerDevice} from '../interfaces/trainerDevice'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -67,6 +72,10 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
     if (workoutInfo) {
       const {trainerId, ...data} = workoutInfo
       const user = await User.findOne({id: userId})
+      const trainer = await Trainer.findOne({id: trainerId})
+      const trainerDevices = await TrainerDevice.findAllWithUserId(trainerId)
+      const contents = `${user.nickname}님이 운동을 완료했어요 🔥\n ${data.title} ∙ ${data.subTitle} `
+
       threadId = await Thread.create(
         {
           type: 'record',
@@ -79,6 +88,39 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
         },
         connection
       )
+
+      const info = {
+        userId,
+        nickname: user.nickname,
+        gender: user.gender,
+        threadId
+      }
+
+      await TrainerNotification.create(
+        {
+          trainerId,
+          type: 'thread',
+          contents,
+          info: JSON.stringify(info)
+        },
+        connection
+      )
+
+      if (trainerDevices && trainerDevices.length > 0) {
+        threadSubscriber.publishThreadPushEvent({
+          tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+          type: 'threadCreate',
+          sound: 'default',
+          badge: trainer.badgeCount + 1,
+          contents,
+          data: {
+            userId: userId.toString(),
+            nickname: user.nickname,
+            gender: user.gender,
+            threadId: threadId.toString()
+          }
+        })
+      }
       // await firebase.sendToTopic(`trainer_${trainerId}`, {
       //   notification: {body: `${user.nickname}님이 새로운 스레드를 올렸어요`}
       // })

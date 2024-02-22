@@ -1,8 +1,11 @@
+import moment from 'moment'
 import * as bootpay from '../libs/bootpay'
 import {db} from '../loaders'
 import {IPaymentConfirm, IPaymentList} from '../interfaces/payments'
-import {Payment, Ticket} from '../models'
+import {Payment, Ticket, Trainer, TrainerDevice, TrainerNotification, User} from '../models'
 import {ITicketList} from '../interfaces/tickets'
+import {threadSubscriber} from '../subscribers'
+import {ITrainerDevice} from '../interfaces/trainerDevice'
 
 async function confirmPayments(options: IPaymentConfirm): Promise<ITicketList> {
   const connection = await db.beginTransaction()
@@ -29,8 +32,43 @@ async function confirmPayments(options: IPaymentConfirm): Promise<ITicketList> {
     )
     await Ticket.createRelationExercises({userId, trainerIds: [trainerId], ticketId, franchiseId: 1}, connection)
     await Payment.create({ticketId, receiptId, orderId, price, orderName, status: true}, connection)
-
     const activeTickets = await Ticket.findAllForUser({userId}, connection)
+
+    const user = await User.findOne({id: userId})
+    const trainer = await Trainer.findOne({id: trainerId})
+    const trainerDevices = await TrainerDevice.findAllWithUserId(trainerId)
+    const contents = `${user.nickname}님이 멤버십을 구매했어요 🎉\n${data.month}개월권 ∙ ${moment(
+      data.startedAt
+    ).format('YYYY.MM.DD')} ~ ${moment(data.expiredAt).format('YYYY.MM.DD')}`
+    const info = {
+      userId,
+      nickname: user.nickname,
+      gender: user.gender
+    }
+    await TrainerNotification.create(
+      {
+        trainerId,
+        type: 'thread',
+        contents,
+        info: JSON.stringify(info)
+      },
+      connection
+    )
+
+    if (trainerDevices && trainerDevices.length > 0) {
+      threadSubscriber.publishThreadPushEvent({
+        tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+        type: 'threadCreate',
+        sound: 'default',
+        badge: trainer.badgeCount + 1,
+        contents,
+        data: {
+          userId: userId.toString(),
+          nickname: user.nickname,
+          gender: user.gender
+        }
+      })
+    }
 
     await db.commit(connection)
 

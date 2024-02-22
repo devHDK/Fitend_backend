@@ -27,6 +27,9 @@
         },
         "meetingLink": {
           "type": "string"
+        },
+        "isNotification": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false

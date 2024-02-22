@@ -1,3 +1,5 @@
+import {id} from 'aws-sdk/clients/datapipeline'
+
 export interface IWorkoutSchedule {
   id: number
   userId: number
@@ -65,11 +67,13 @@ export interface IWorkoutScheduleUpdate {
 export interface IWorkoutScheduleDetail {
   workoutScheduleId: number
   trainerId: number
+  userId: number
   startDate: string
   workoutTitle: string
   workoutSubTitle: string
   targetMuscleTypes: string[]
   heartRates?: number[]
+  calories?: number
   workoutDuration?: number
   isWorkoutComplete: boolean
   workoutTotalTime: string
@@ -90,6 +94,7 @@ export interface IWorkoutScheduleExercise {
   isVideoRecord: boolean
   targetMuscles: [
     {
+      id: number
       name: string
       muscleType: string
       type: string
