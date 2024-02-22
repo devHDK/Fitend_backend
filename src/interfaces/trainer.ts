@@ -11,6 +11,7 @@ export interface ITrainer {
   }
   salt?: string
   profileImage?: string
+  role?: 'master' | 'external'
   createdAt?: string
 }
 

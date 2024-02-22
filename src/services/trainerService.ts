@@ -41,7 +41,7 @@ async function signIn(options: {email: string; password: string}): Promise<{acce
       trainer &&
       Code.verifyPassword(password, trainer.password.password, trainer.password.salt, Code.passwordIterations.web)
     ) {
-      const accessToken = await JWT.createAccessTokenForTrainer({id: trainer.id, franchiseId: 1})
+      const accessToken = await JWT.createAccessTokenForTrainer({id: trainer.id, franchiseId: 1, role: trainer.role})
       delete trainer.password
       return {accessToken, trainer}
     }
