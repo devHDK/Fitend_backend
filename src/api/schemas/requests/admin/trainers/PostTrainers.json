@@ -7,7 +7,7 @@
     },
     "password": {
       "type": "string",
-      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=/]{6,40}$"
+      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=/]{8,20}$"
     },
     "email": {
       "type": "string",
