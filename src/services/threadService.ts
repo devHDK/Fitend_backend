@@ -164,7 +164,25 @@ async function findOne(id: number): Promise<IThread> {
 
 async function updateOne(options: IThreadUpdateOne): Promise<void> {
   try {
+    const {id} = options
+
     await Thread.updateOne(options)
+
+    const thread = await Thread.findOne(id)
+    const user = await User.findOne({id: thread.user.id})
+    const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
+    if (trainerDevices && trainerDevices.length > 0) {
+      threadSubscriber.publishThreadPushEvent({
+        tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+        type: 'threadUpdate',
+        data: {
+          userId: thread.user.id.toString(),
+          nickname: user.nickname,
+          gender: user.gender,
+          threadId: thread.id.toString()
+        }
+      })
+    }
   } catch (e) {
     throw e
   }
@@ -202,6 +220,22 @@ async function updateChecked(options: IThreadUpdateOne): Promise<void> {
 async function deleteOne(id: number): Promise<void> {
   try {
     await Thread.deleteOne(id)
+
+    const thread = await Thread.findOne(id)
+    const user = await User.findOne({id: thread.user.id})
+    const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
+    if (trainerDevices && trainerDevices.length > 0) {
+      threadSubscriber.publishThreadPushEvent({
+        tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+        type: 'threadDelete',
+        data: {
+          userId: thread.user.id.toString(),
+          nickname: user.nickname,
+          gender: user.gender,
+          threadId: thread.id.toString()
+        }
+      })
+    }
   } catch (e) {
     throw e
   }
