@@ -14,7 +14,9 @@ import {
   ITrainerListForUser,
   ITrainerUpdate,
   ITrainerMeetingBoundary,
-  ITrainerFindExtend
+  ITrainerFindExtend,
+  ICreateTrainerInfoForAdmin,
+  ITrainerInfoUpdate
 } from '../interfaces/trainer'
 import {IWageInfo} from '../interfaces/payroll'
 import {Ticket, User} from './'
@@ -27,14 +29,56 @@ const tableFranchise = 'Franchises'
 const tableTrainerInfo = 'TrainerInfo'
 
 async function create(
-  options: {password: string; nickname: string; email: string},
+  options: {
+    password: string
+    nickname: string
+    email: string
+    profileImage: string
+    mainVisible: boolean
+    role: 'master' | 'external'
+    status: 'able' | 'disable'
+  },
+  connection: PoolConnection
+): Promise<number> {
+  try {
+    const {insertId} = await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableName, options]
+    })
+    return insertId
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createTrainerInfo(options: ICreateTrainerInfoForAdmin, connection: PoolConnection): Promise<void> {
+  try {
+    return await db.query({
+      connection,
+      sql: `INSERT INTO ?? SET ?`,
+      values: [tableTrainerInfo, options]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function createRelationsFranchises(
+  options: {
+    trainerId: number
+    franchiseId: number
+    fcPercentage: number
+    ptPercentage: number
+    baseWage: number
+  },
   connection: PoolConnection
 ): Promise<void> {
   try {
     await db.query({
       connection,
       sql: `INSERT INTO ?? SET ?`,
-      values: [tableName, options]
+      values: [tableFranchiseTrainer, options]
     })
   } catch (e) {
     throw e
@@ -56,44 +100,30 @@ async function findAll(franchiseId: number): Promise<[ITrainerList]> {
 
 async function findAllForAdmin(options: ITrainerFindAllForAdmin): Promise<ITrainerListForAdmin> {
   try {
-    const {franchiseId, start, perPage, search} = options
+    const {start, status, perPage, search} = options
     const where = []
-    const currentTime = moment().format('YYYY-MM-DD')
     if (search) where.push(`(t.nickname like '%${search}%')`)
+    if (status && status !== 'all') where.push(`(t.status = ${escape(status)})`)
     const rows: ITrainerDataForAdmin[] = await db.query({
-      sql: `SELECT t.id, t.nickname, t.email, t.createdAt,
-            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', f.id, 'name', f.name)) FROM ?? f
-            JOIN ?? ft ON ft.trainerId = t.id AND ft.franchiseId = f.id) as franchises,
-            COUNT(u.id) as userAvailableCount
+      sql: `SELECT t.id, t.nickname, t.role, t.profileImage, tri.shortIntro, t.status, t.createdAt
             FROM ?? t
-            JOIN ?? tr ON tr.trainerId = t.id
-            JOIN ?? u ON tr.userId = u.id
-            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt >= '${currentTime}'
-            JOIN ?? ft ON ft.trainerId = t.id ${franchiseId ? `AND ft.franchiseId = ${escape(franchiseId)}` : ''}
+            JOIN ?? tri ON tri.trainerId = t.id
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
-      values: [
-        tableFranchise,
-        tableFranchiseTrainer,
-        tableName,
-        Ticket.tableTicketRelation,
-        User.tableName,
-        Ticket.tableName,
-        tableFranchiseTrainer
-      ]
+      values: [tableName, tableTrainerInfo]
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM (
-            SELECT t.id
+            SELECT t.id, t.nickname, t.role, t.profileImage, tri.shortIntro, t.status, t.createdAt
             FROM ?? t
-            JOIN ?? ft ON ft.trainerId = t.id ${franchiseId ? `AND ft.franchiseId = ${escape(franchiseId)}` : ''}
+            JOIN ?? tri ON tri.trainerId = t.id
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
             ORDER BY t.createdAt DESC
             ) t`,
-      values: [tableName, tableFranchiseTrainer]
+      values: [tableName, tableTrainerInfo]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
@@ -230,9 +260,14 @@ async function findOneTrainerThread(
 async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
   try {
     const [row] = await db.query({
-      sql: `SELECT t.id, t.nickname, t.email, t.createdAt, t.profileImage
-            FROM ?? t WHERE ?`,
-      values: [tableName, {id}]
+      sql: `SELECT t.id, t.nickname, t.email, t.profileImage, tri.largeProfileImage, t.status, t.mainVisible, t.role,
+            tri.instagram, tri.meetingLink, tri.shortIntro, tri.intro, tri.qualification, tri.speciality, tri.coachingStyle, tri.favorite,
+            tri.welcomeThreadContent, ft.fcPercentage
+            FROM ?? t
+            JOIN ?? tri ON t.id = tri.trainerId
+            JOIN ?? ft ON t.id = ft.trainerId
+            WHERE ?`,
+      values: [tableName, tableTrainerInfo, tableFranchiseTrainer, {id}]
     })
     return row
   } catch (e) {
@@ -313,6 +348,19 @@ async function updateOne(options: ITrainerUpdate, connection: PoolConnection): P
   }
 }
 
+async function updateForAdmin(options: ITrainerUpdate, connection: PoolConnection): Promise<void> {
+  const {id, ...data} = options
+  try {
+    await db.query({
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableName, data, {id}],
+      connection
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function updateTrainerMeetingBoundary(options: ITrainerMeetingBoundary): Promise<void> {
   const {trainerId, ...data} = options
   try {
@@ -325,11 +373,38 @@ async function updateTrainerMeetingBoundary(options: ITrainerMeetingBoundary): P
   }
 }
 
+async function updateTrainerInfoForAdmin(options: ITrainerInfoUpdate, connection: PoolConnection): Promise<void> {
+  const {trainerId, ...data} = options
+  try {
+    await db.query({
+      connection,
+      sql: `UPDATE ?? SET ? WHERE ? `,
+      values: [tableTrainerInfo, data, {trainerId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
+async function deleteRelationFranchise(trainerId: number, connection: PoolConnection): Promise<void> {
+  try {
+    await db.query({
+      connection,
+      sql: `DELETE FROM ?? WHERE ?`,
+      values: [tableFranchiseTrainer, {trainerId}]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 export {
   tableName,
   tableFranchiseTrainer,
   tableTrainerInfo,
   create,
+  createTrainerInfo,
+  createRelationsFranchises,
   findOne,
   findOneTrainerThread,
   findTrainerWageInfo,
@@ -343,6 +418,9 @@ export {
   findOneWithIdForUser,
   findDeviceList,
   findTrainersMeetingBoundaryWithId,
+  updateForAdmin,
   updateOne,
-  updateTrainerMeetingBoundary
+  updateTrainerMeetingBoundary,
+  updateTrainerInfoForAdmin,
+  deleteRelationFranchise
 }

@@ -1,6 +1,44 @@
 import {IFranchise, IFranchiseWithWageInfo} from './franchise'
 import {IPayrollResponseForAdminWithTrainerId} from './payroll'
 
+export type ITrainerCreateOneForAdmin = {
+  nickname: string
+  password: string
+  email: string
+  fcPercentage: number
+  instagram: string
+  meetingLink: string
+  shortIntro: string
+  intro: string
+  welcomeThreadContent: string
+  qualification: CoachingStyle
+  speciality: CoachingStyle
+  coachingStyle: CoachingStyle
+  favorite: CoachingStyle
+  profileImage: string
+  largeProfileImage: string
+  mainVisible: boolean
+  role: 'master' | 'external'
+  status: 'able' | 'disable'
+}
+
+export type ICreateTrainerInfoForAdmin = {
+  trainerId: number
+  instagram: string
+  meetingLink: string
+  shortIntro: string
+  intro: string
+  welcomeThreadContent: string
+  qualification: string
+  speciality: string
+  coachingStyle: string
+  favorite: string
+  largeProfileImage: string
+}
+
+export type CoachingStyle = {
+  data: string[]
+}
 export interface ITrainer {
   id?: number
   nickname?: string
@@ -11,6 +49,7 @@ export interface ITrainer {
   }
   salt?: string
   profileImage?: string
+  role?: 'master' | 'external'
   createdAt?: string
   deviceId?: string
   platform?: 'ios' | 'android'
@@ -35,17 +74,18 @@ export type ITrainerListForUser = {
 export interface ITrainerDataForAdmin {
   id: number
   nickname: string
-  email: string
-  franchises: [{id: number; name: string}]
-  users: number
+  profileImage: string
+  status: string
+  role: string
+  shortIntro: string
   createdAt: Date
 }
 
 export type ITrainerListForAdmin = IResponseList<ITrainerDataForAdmin>
 
 export type ITrainerFindAllForAdmin = {
-  franchiseId: number
   start: number
+  status: string
   perPage: number
   search?: string
 }
@@ -74,10 +114,30 @@ export interface ITrainerWageInfo {
 
 export interface ITrainerUpdate {
   id: number
+  nickname?: string
+  email?: string
+  profileImage?: string
+  mainVisible?: boolean
+  role?: 'master' | 'external'
+  status?: 'able' | 'disable'
   password?: string
   deviceId?: string
   platform?: 'ios' | 'android'
   badgeCount?: number
+}
+
+export interface ITrainerInfoUpdate {
+  trainerId: number
+  instagram?: string
+  meetingLink?: string
+  shortIntro?: string
+  intro?: string
+  welcomeThreadContent?: string
+  qualification?: string
+  speciality?: string
+  coachingStyle?: string
+  favorite?: string
+  largeProfileImage?: string
 }
 
 export interface ITrainerMeetingBoundary {
@@ -90,10 +150,21 @@ export type ITrainerDetail = {
   id: number
   nickname: string
   email: string
-  createdAt: Date
-  activeUsers: ActiveUsers
-  franchiseInfo: IFranchiseWithWageInfo
-  thisMonthSession: IPayrollResponseForAdminWithTrainerId
+  profileImage: string
+  largeProfileImage: string
+  status: string
+  mainVisible: boolean
+  instagram: string
+  meetingLink: string
+  shortIntro: string
+  intro: string
+  role: string
+  qualification: CoachingStyle
+  speciality: CoachingStyle
+  coachingStyle: CoachingStyle
+  favorite: CoachingStyle
+  welcomeThreadContent: string
+  fcPercentage: number
 }
 
 export type ITrainerDetailForUser = {

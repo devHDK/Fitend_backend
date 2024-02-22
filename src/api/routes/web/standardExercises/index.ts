@@ -6,6 +6,7 @@ const postStandardExercises = new ApiRouter({
   method: 'post',
   summary: '스탠다드 운동 생성',
   tags: ['StandardExercises'],
+  roles: ['master'],
   schema: 'requests/web/standardExercises/PostStandardExercises',
   responses: {
     200: {description: 'success'}
@@ -20,6 +21,7 @@ const postStandardExercisesUpload = new ApiRouter({
   fileNames: ['file'],
   summary: '스탠다드 운동 엑셀 업로드',
   tags: ['StandardExercises'],
+  roles: ['master'],
   responses: {
     200: {description: 'success'}
   },
@@ -56,6 +58,7 @@ const putStandardExercisesWithId = new ApiRouter({
   paths: ['common/IdPath'],
   summary: '스탠다드 운동 수정',
   tags: ['StandardExercises'],
+  roles: ['master'],
   schema: 'requests/web/standardExercises/PutStandardExercisesWithId',
   responses: {
     200: {description: 'success'}

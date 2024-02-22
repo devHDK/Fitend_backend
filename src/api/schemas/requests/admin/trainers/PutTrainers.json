@@ -5,16 +5,30 @@
       "type": "string",
       "pattern": "^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,20}$"
     },
-    "password": {
-      "type": "string",
-      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=/]{8,20}$"
-    },
     "email": {
       "type": "string",
       "format": "email"
     },
-    "fcPercentage": {
-      "type": "integer"
+    "password": {
+      "type": "string",
+      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=/]{8,20}$"
+    },
+    "profileImage": {
+      "type": "string"
+    },
+    "largeProfileImage": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["able", "disable"]
+    },
+    "role": {
+      "type": "string",
+      "enum": ["master", "external"]
+    },
+    "mainVisible": {
+      "type": "boolean"
     },
     "instagram": {
       "type": "string"
@@ -27,9 +41,6 @@
       "maxLength": 10
     },
     "intro": {
-      "type": "string"
-    },
-    "welcomeThreadContent": {
       "type": "string"
     },
     "qualification": {
@@ -76,41 +87,29 @@
         }
       }
     },
-    "profileImage": {
+    "welcomeThreadContent": {
       "type": "string"
     },
-    "largeProfileImage": {
-      "type": "string"
-    },
-    "mainVisible": {
-      "type": "boolean"
-    },
-    "role": {
-      "type": "string",
-      "enum": ["master", "external"]
-    },
-    "status": {
-      "type": "string",
-      "enum": ["able", "disable"]
+    "fcPercentage": {
+      "type": "integer"
     }
   },
   "required": [
     "nickname",
-    "password",
     "email",
-    "fcPercentage",
+    "status",
+    "role",
+    "mainVisible",
     "instagram",
     "meetingLink",
     "shortIntro",
     "intro",
-    "welcomeThreadContent",
     "qualification",
     "speciality",
     "coachingStyle",
     "favorite",
-    "mainVisible",
-    "role",
-    "status"
+    "welcomeThreadContent",
+    "fcPercentage"
   ],
   "additionalProperties": false
 }

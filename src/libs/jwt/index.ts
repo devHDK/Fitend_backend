@@ -44,10 +44,14 @@ async function createAccessToken(data: IUserPayload): Promise<string> {
   }
 }
 
-async function createAccessTokenForTrainer(data: {id: number; franchiseId: number}): Promise<string> {
+async function createAccessTokenForTrainer(data: {
+  id: number
+  franchiseId: number
+  role?: 'master' | 'external'
+}): Promise<string> {
   try {
-    const {id, franchiseId} = data
-    const payload: Dictionary = {sub: id, franchiseId}
+    const {id, franchiseId, role} = data
+    const payload: Dictionary = {sub: id, franchiseId, role}
     return await createToken(payload, {
       algorithm: 'RS256',
       expiresIn: 60 * 60 * 24 * 30
@@ -70,12 +74,14 @@ async function createRefreshToken(data: IUserPayload, tokenSecret: Secret): Prom
 }
 
 async function createRefreshTokenForTrainer(
-  data: {id: number; franchiseId: number},
+  data: {id: number; franchiseId: number; role?: 'master' | 'external'},
   tokenSecret: Secret
 ): Promise<string> {
   try {
     const payload = {
-      sub: data.id
+      sub: data.id,
+      franchiseId: data.franchiseId,
+      role: data.role
     }
     return await createToken(payload, {algorithm: 'HS256', expiresIn: 60 * 60 * 30}, tokenSecret)
   } catch (e) {

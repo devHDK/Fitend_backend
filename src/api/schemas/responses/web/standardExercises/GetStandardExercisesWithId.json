@@ -20,6 +20,9 @@
       "type": "string",
       "nullable": true
     },
+    "trackingFieldId": {
+      "type": "integer"
+    },
     "targetMuscles": {
       "type": "array",
       "items": {
@@ -66,6 +69,6 @@
       "nullable": true
     }
   },
-  "required": ["id", "name", "nameEn", "machineType", "targetMuscles", "devision", "jointType"],
+  "required": ["id", "name", "nameEn", "machineType", "targetMuscles", "devision", "jointType", "trackingFieldId"],
   "additionalProperties": false
 }

@@ -6,7 +6,6 @@ const getUsers = new ApiRouter({
   method: 'get',
   summary: '일반 회원 목록 조회',
   schema: 'requests/admin/users/GetUsers',
-  roles: ['master'],
   tags: ['Users'],
   responses: {
     200: {schema: 'responses/admin/users/GetUsers'}
@@ -19,7 +18,6 @@ const getUsersWithId = new ApiRouter({
   paths: ['common/IdPath'],
   method: 'get',
   summary: '일반 회원 상세 조회',
-  roles: ['master'],
   tags: ['Users'],
   responses: {
     200: {schema: 'responses/admin/users/GetUsersWithId'}

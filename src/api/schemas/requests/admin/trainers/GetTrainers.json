@@ -4,8 +4,9 @@
     "search": {
       "type": "string"
     },
-    "franchiseId": {
-      "type": "integer"
+    "status": {
+      "type": "string",
+      "enum": ["all", "able", "disable"]
     },
     "start": {
       "type": "integer",
@@ -19,9 +20,6 @@
       "default:": 25
     }
   },
-  "required": [
-    "start",
-    "perPage"
-  ],
+  "required": ["start", "perPage"],
   "additionalProperties": false
 }

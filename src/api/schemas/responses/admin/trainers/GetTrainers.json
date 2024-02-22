@@ -12,40 +12,26 @@
           "nickname": {
             "type": "string"
           },
-          "email": {
+          "profileImage": {
             "type": "string"
           },
-          "franchises": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "integer"
-                },
-                "name": {
-                  "type": "string"
-                }
-              }
-            }
+          "status": {
+            "type": "string",
+            "enum": ["able", "disable"]
           },
-          "userAvailableCount": {
-            "type": "number",
-            "nullable": true
+          "role": {
+            "type": "string",
+            "enum": ["master", "external"]
+          },
+          "shortIntro": {
+            "type": "string"
           },
           "createdAt": {
             "type": "string",
             "format": "date-time"
           }
         },
-        "required": [
-          "id",
-          "nickname",
-          "email",
-          "franchises",
-          "userAvailableCount",
-          "createdAt"
-        ],
+        "required": ["id", "nickname", "profileImage", "status", "role", "shortIntro", "createdAt"],
         "additionalProperties": false
       }
     },
@@ -54,9 +40,6 @@
       "minimum": 0
     }
   },
-  "required": [
-    "data",
-    "total"
-  ],
+  "required": ["data", "total"],
   "additionalProperties": false
 }

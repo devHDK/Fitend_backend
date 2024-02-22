@@ -13,130 +13,100 @@
     "profileImage": {
       "type": "string"
     },
-    "createdAt": {
+    "largeProfileImage": {
+      "type": "string"
+    },
+    "status": {
       "type": "string",
-      "format": "date-time"
+      "enum": ["able", "disable"]
     },
-    "activeUsers": {
+    "role": {
+      "type": "string",
+      "enum": ["master", "external"]
+    },
+    "mainVisible": {
+      "type": "boolean"
+    },
+    "instagram": {
+      "type": "string"
+    },
+    "meetingLink": {
+      "type": "string"
+    },
+    "shortIntro": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "string"
+    },
+    "qualification": {
       "type": "object",
       "properties": {
-        "fitnessActiveUsers": {
-          "type": "object",
-          "properties": {
-            "thisMonthCount": {
-              "type": "integer"
-            },
-            "lastMonthCount": {
-              "type": "integer"
-            }
-          }
-        },
-        "personalActiveUsers": {
-          "type": "object",
-          "properties": {
-            "thisMonthCount": {
-              "type": "integer"
-            },
-            "lastMonthCount": {
-              "type": "integer"
-            }
-          }
-        }
-      }
-    },
-    "franchiseInfo": {
-      "type": "object",
-      "properties": {
-        "franchiseId": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
-        },
-        "baseWage": {
-          "type": "integer"
-        },
-        "fcPercentage": {
-          "type": "integer"
-        },
-        "ptPercentage": {
-          "type": "integer"
-        }
-      }
-    },
-    "thisMonthSession": {
-      "type": "object",
-      "properties": {
-        "reservations": {
+        "data": {
           "type": "array",
           "items": {
-            "type": "object",
-            "required": [
-              "ticketId",
-              "type",
-              "nickname",
-              "sessionPrice",
-              "thisMonthCount"
-            ],
-            "properties": {
-              "ticketId": {
-                "type": "integer"
-              },
-              "type": {
-                "type": "string"
-              },
-              "nickname": {
-                "type": "string"
-              },
-              "sessionPrice": {
-                "type": "integer"
-              },
-              "thisMonthCount": {
-                "type": "integer"
-              }
-            }
-          }
-        },
-        "coaching": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "ticketId",
-              "nickname",
-              "type",
-              "coachingPrice",
-              "doneCount"
-            ],
-            "properties": {
-              "ticketId": {
-                "type": "integer"
-              },
-              "nickname": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string"
-              },
-              "coachingPrice": {
-                "type": "integer"
-              },
-              "doneCount": {
-                "type": "integer"
-              }
-            }
+            "type": "string"
           }
         }
       }
+    },
+    "speciality": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "coachingStyle": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "favorite": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "welcomeThreadContent": {
+      "type": "string"
+    },
+    "fcPercentage": {
+      "type": "integer"
     }
   },
   "required": [
     "id",
     "nickname",
     "email",
-    "activeUsers",
-    "franchiseInfo",
-    "createdAt"
+    "status",
+    "role",
+    "mainVisible",
+    "instagram",
+    "meetingLink",
+    "shortIntro",
+    "intro",
+    "qualification",
+    "speciality",
+    "coachingStyle",
+    "favorite",
+    "welcomeThreadContent",
+    "fcPercentage"
   ],
   "additionalProperties": false
 }

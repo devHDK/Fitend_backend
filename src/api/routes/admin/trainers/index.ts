@@ -6,7 +6,6 @@ const postTrainers = new ApiRouter({
   method: 'post',
   summary: '트레이너 생성',
   schema: 'requests/admin/trainers/PostTrainers',
-  roles: ['master'],
   tags: ['Trainers'],
   responses: {
     200: {description: 'success'},
@@ -20,7 +19,6 @@ const getTrainers = new ApiRouter({
   method: 'get',
   summary: '트레이너 목록 조회',
   schema: 'requests/admin/trainers/GetTrainers',
-  roles: ['master'],
   tags: ['Trainers'],
   responses: {
     200: {schema: 'responses/admin/trainers/GetTrainers'}
@@ -33,7 +31,6 @@ const getTrainersWithId = new ApiRouter({
   paths: ['common/IdPath'],
   method: 'get',
   summary: '트레이너 상세 조회',
-  roles: ['master'],
   tags: ['Trainers'],
   responses: {
     200: {schema: 'responses/admin/trainers/GetTrainersWithId'}
@@ -41,4 +38,18 @@ const getTrainersWithId = new ApiRouter({
   handler: ctrl.getTrainersWithId
 })
 
-export {getTrainers, getTrainersWithId, postTrainers}
+const putTrainers = new ApiRouter({
+  name: ':id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '트레이너 수정',
+  tags: ['Trainers'],
+  schema: 'requests/admin/trainers/PutTrainers',
+  responses: {
+    200: {description: 'success'},
+    409: {description: '이메일 중복'}
+  },
+  handler: ctrl.putTrainers
+})
+
+export {getTrainers, getTrainersWithId, postTrainers, putTrainers}

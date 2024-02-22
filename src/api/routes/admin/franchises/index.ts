@@ -5,7 +5,6 @@ const getFranchises = new ApiRouter({
   name: '',
   method: 'get',
   summary: '프랜차이즈 목록 조회',
-  roles: ['master'],
   tags: ['Franchises'],
   responses: {
     200: {schema: 'responses/admin/franchises/GetFranchises'}

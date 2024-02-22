@@ -8,7 +8,9 @@ import {
   ITrainerDetailForUser,
   ITrainerListForUser,
   ITrainerMeetingBoundary,
-  ITrainerFindExtend
+  ITrainerFindExtend,
+  ITrainerCreateOneForAdmin,
+  ITrainerUpdate
 } from '../interfaces/trainer'
 import {EventSchedule, Franchise, Meeting, Reservation, Ticket, Trainer, TrainerDevice, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
@@ -17,12 +19,74 @@ import {db} from '../loaders'
 
 moment.tz.setDefault('Asia/Seoul')
 
-async function create(options: {nickname: string; email: string; password: string}): Promise<void> {
+interface IUpdateTrainerForAdmin extends ITrainerUpdate {
+  instagram?: string
+  meetingLink?: string
+  shortIntro?: string
+  intro?: string
+  welcomeThreadContent?: string
+  qualification?: string
+  speciality?: string
+  coachingStyle?: string
+  favorite?: string
+  largeProfileImage?: string
+  fcPercentage?: number
+}
+
+async function create(options: ITrainerCreateOneForAdmin): Promise<void> {
   const connection = await db.beginTransaction()
   try {
-    const {password, ...data} = options
+    const {
+      nickname,
+      email,
+      password,
+      fcPercentage,
+      instagram,
+      meetingLink,
+      shortIntro,
+      intro,
+      welcomeThreadContent,
+      qualification,
+      speciality,
+      coachingStyle,
+      favorite,
+      profileImage,
+      largeProfileImage,
+      mainVisible,
+      role,
+      status
+    } = options
     const passwordHash = Code.createPasswordHash(password, passwordIterations.web)
-    await Trainer.create({password: JSON.stringify(passwordHash), ...data}, connection)
+    const insertId = await Trainer.create(
+      {password: JSON.stringify(passwordHash), nickname, email, profileImage, mainVisible, role, status},
+      connection
+    )
+    await Trainer.createTrainerInfo(
+      {
+        trainerId: insertId,
+        largeProfileImage,
+        shortIntro,
+        intro,
+        qualification: JSON.stringify(qualification),
+        speciality: JSON.stringify(speciality),
+        coachingStyle: JSON.stringify(coachingStyle),
+        favorite: JSON.stringify(favorite),
+        instagram,
+        meetingLink,
+        welcomeThreadContent
+      },
+      connection
+    )
+    await Trainer.createRelationsFranchises(
+      {
+        franchiseId: 1,
+        trainerId: insertId,
+        fcPercentage,
+        ptPercentage: 30,
+        baseWage: 2100000
+      },
+      connection
+    )
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -50,9 +114,9 @@ async function signIn(options: {
       trainer &&
       Code.verifyPassword(password, trainer.password.password, trainer.password.salt, Code.passwordIterations.web)
     ) {
-      const accessToken = await JWT.createAccessTokenForTrainer({id: trainer.id, franchiseId: 1})
+      const accessToken = await JWT.createAccessTokenForTrainer({id: trainer.id, franchiseId: 1, role: trainer.role})
       const refreshToken = await JWT.createRefreshTokenForTrainer(
-        {id: trainer.id, franchiseId: 1},
+        {id: trainer.id, franchiseId: 1, role: trainer.role},
         trainer.password.salt
       )
       const trainerDevice = await TrainerDevice.findOne(trainer.id, trainer.deviceId, trainer.platform)
@@ -204,34 +268,7 @@ async function findOneWithIdForUser(id: number): Promise<ITrainerDetailForUser> 
 
 async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
   try {
-    const thisMonthStart = moment().startOf('month').format('YYYY-MM-DD')
-    const thisMonthEnd = moment().add(1, 'day').format('YYYY-MM-DD')
-    const lastMonthStart = moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD')
-    const lastMonthEnd = moment().subtract(1, 'month').endOf('month').add(1, 'day').format('YYYY-MM-DD')
-    const trainer = await Trainer.findOneWithIdForAdmin(id)
-    const franchiseInfo = await Franchise.findOneWithTrainerId(id)
-    const fcThisMonthCount = await User.findActiveFitnessUsersForAdminWithTrainerId(id, thisMonthStart, thisMonthEnd)
-    const fcLastMonthCount = await User.findActiveFitnessUsersForAdminWithTrainerId(id, lastMonthStart, lastMonthEnd)
-    const ptThisMonthCount = await User.findActivePersonalUsersForAdminWithTrainerId(id, thisMonthStart, thisMonthEnd)
-    const ptLastMonthCount = await User.findActivePersonalUsersForAdminWithTrainerId(id, lastMonthStart, lastMonthEnd)
-    const fitnessActiveUsers = {thisMonthCount: fcThisMonthCount, lastMonthCount: fcLastMonthCount}
-    const personalActiveUsers = {thisMonthCount: ptThisMonthCount, lastMonthCount: ptLastMonthCount}
-    const reservations = await Reservation.findBetweenReservationWithTrainerIdForAdmin({
-      startTime: moment(thisMonthStart).utc().format('YYYY-MM-DDTHH:mm:ss'),
-      endTime: moment(thisMonthEnd).utc().format('YYYY-MM-DDTHH:mm:ss'),
-      trainerId: id
-    })
-    const coaching = await Ticket.findFcTicketWithTrainerIdForAdmin({
-      startTime: moment(thisMonthStart).utc().format('YYYY-MM-DDTHH:mm:ss'),
-      endTime: moment(thisMonthEnd).utc().format('YYYY-MM-DDTHH:mm:ss'),
-      trainerId: id
-    })
-    return {
-      ...trainer,
-      franchiseInfo,
-      activeUsers: {fitnessActiveUsers, personalActiveUsers},
-      thisMonthSession: {reservations, coaching}
-    }
+    return await Trainer.findOneWithIdForAdmin(id)
   } catch (e) {
     throw e
   }
@@ -241,6 +278,76 @@ async function findTrainersMeetingBoundaryWithId(id: number): Promise<ITrainerMe
   try {
     return await Trainer.findTrainersMeetingBoundaryWithId(id)
   } catch (e) {
+    throw e
+  }
+}
+
+async function updateTrainerForAdmin(options: IUpdateTrainerForAdmin): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {
+      id,
+      nickname,
+      email,
+      password,
+      fcPercentage,
+      instagram,
+      meetingLink,
+      shortIntro,
+      intro,
+      welcomeThreadContent,
+      qualification,
+      speciality,
+      coachingStyle,
+      favorite,
+      profileImage,
+      largeProfileImage,
+      mainVisible,
+      role,
+      status
+    } = options
+    if (password) {
+      const passwordHash = Code.createPasswordHash(password, passwordIterations.web)
+      await Trainer.updateForAdmin(
+        {id, password: JSON.stringify(passwordHash), nickname, email, profileImage, mainVisible, role, status},
+        connection
+      )
+    } else {
+      await Trainer.updateForAdmin({id, nickname, email, profileImage, mainVisible, role, status}, connection)
+    }
+    await Trainer.updateTrainerInfoForAdmin(
+      {
+        trainerId: id,
+        largeProfileImage,
+        shortIntro,
+        intro,
+        qualification: JSON.stringify(qualification),
+        speciality: JSON.stringify(speciality),
+        coachingStyle: JSON.stringify(coachingStyle),
+        favorite: JSON.stringify(favorite),
+        instagram,
+        meetingLink,
+        welcomeThreadContent
+      },
+      connection
+    )
+    await Trainer.deleteRelationFranchise(id, connection)
+    await Trainer.createRelationsFranchises(
+      {
+        franchiseId: 1,
+        trainerId: id,
+        fcPercentage,
+        ptPercentage: 30,
+        baseWage: 2100000
+      },
+      connection
+    )
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    if (e.code === 'ER_DUP_ENTRY') {
+      throw new Error('already_in_use')
+    }
     throw e
   }
 }
@@ -322,6 +429,7 @@ export {
   findOneWithIdForUser,
   findOneWithIdForAdmin,
   findTrainersMeetingBoundaryWithId,
+  updateTrainerForAdmin,
   updatePassword,
   updateFCMToken,
   updateMeetingBoundary
