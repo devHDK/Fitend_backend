@@ -50,15 +50,6 @@ async function getDashboardWorkoutUsers(req: IRequest, res: Response, next: Func
   }
 }
 
-async function getDashboardExpiredSevenDays(req: IRequest, res: Response, next: Function): Promise<void> {
-  try {
-    const ret = await DashboardService.findExpiredSevenDays(req.franchiseId, req.options.trainerId)
-    res.status(200).json({data: ret})
-  } catch (e) {
-    next(e)
-  }
-}
-
 async function getDashboardExpiredThreeSessions(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const ret = await DashboardService.findExpiredThreeSessions(req.franchiseId, req.options.trainerId)
@@ -74,6 +65,5 @@ export {
   getDashboardWorkoutToday,
   getDashboardWorkoutYesterday,
   getDashboardWorkoutUsers,
-  getDashboardExpiredSevenDays,
   getDashboardExpiredThreeSessions
 }

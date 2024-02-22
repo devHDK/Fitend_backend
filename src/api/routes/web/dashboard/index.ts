@@ -4,7 +4,7 @@ import * as ctrl from './dashboard-ctrl'
 const getDashboardActiveUsers = new ApiRouter({
   name: 'active/users',
   method: 'get',
-  summary: '대시보드 > 활성화 회원수(PT/FC)',
+  summary: '대시보드 > 활성화 회원수(FC 체험/유로)',
   tags: ['Dashboard'],
   schema: 'requests/web/dashboard/GetDashboardActiveUsers',
   responses: {
@@ -61,18 +61,6 @@ const getDashboardWorkoutUsers = new ApiRouter({
   handler: ctrl.getDashboardWorkoutUsers
 })
 
-const getDashboardExpiredSevenDays = new ApiRouter({
-  name: 'expired/sevenDays',
-  method: 'get',
-  summary: '대시보드 > 만료일 7일 남은 회원 목록',
-  tags: ['Dashboard'],
-  schema: 'requests/web/dashboard/GetDashboardExpiredSevenDays',
-  responses: {
-    200: {schema: 'responses/web/dashboard/GetDashboardExpiredSevenDays'}
-  },
-  handler: ctrl.getDashboardExpiredSevenDays
-})
-
 const getDashboardExpiredThreeSessions = new ApiRouter({
   name: 'expired/threeSessions',
   method: 'get',
@@ -91,6 +79,5 @@ export {
   getDashboardWorkoutToday,
   getDashboardWorkoutYesterday,
   getDashboardWorkoutUsers,
-  getDashboardExpiredSevenDays,
   getDashboardExpiredThreeSessions
 }

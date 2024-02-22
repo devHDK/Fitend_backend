@@ -5,6 +5,6 @@
       "type": "integer"
     }
   },
-  "required": [],
+  "required": ["trainerId"],
   "additionalProperties": false
 }

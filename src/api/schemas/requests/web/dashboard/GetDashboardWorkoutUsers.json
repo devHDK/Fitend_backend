@@ -9,6 +9,6 @@
       "type": "integer"
     }
   },
-  "required": ["today"],
+  "required": ["today", "trainerId"],
   "additionalProperties": false
 }

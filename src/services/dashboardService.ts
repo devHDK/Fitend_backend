@@ -7,21 +7,18 @@ async function findActiveUsers(
   franchiseId: number,
   trainerId: number
 ): Promise<{
-  personalActiveUsers: {thisMonthCount: number; lastMonthCount: number}
-  fitnessActiveUsers: {thisMonthCount: number; lastMonthCount: number}
+  preUserCount: number
+  paidUserCount: number
+  expiredSevenDaysCount: number
 }> {
   try {
-    const thisMonthStart = moment().startOf('month').format('YYYY-MM-DD')
-    const thisMonthEnd = moment().add(1, 'day').format('YYYY-MM-DD')
-    const lastMonthStart = moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD')
-    const lastMonthEnd = moment().subtract(1, 'month').endOf('month').add(1, 'day').format('YYYY-MM-DD')
-    const thisMonthCount = await User.findActivePersonalUsers(franchiseId, thisMonthStart, thisMonthEnd, trainerId)
-    const lastMonthCount = await User.findActivePersonalUsers(franchiseId, lastMonthStart, lastMonthEnd, trainerId)
-    const fcThisMonthCount = await User.findActiveFitnessUsers(franchiseId, thisMonthStart, thisMonthEnd, trainerId)
-    const fcLastMonthCount = await User.findActiveFitnessUsers(franchiseId, lastMonthStart, lastMonthEnd, trainerId)
+    const preUserCount = await User.findPreUserCount(franchiseId, trainerId)
+    const paidUserCount = await User.findPaidUserCount(franchiseId, trainerId)
+    const expiredSevenDaysCount = await User.findExpiredSevenDaysCount(franchiseId, trainerId)
     return {
-      personalActiveUsers: {thisMonthCount, lastMonthCount},
-      fitnessActiveUsers: {thisMonthCount: fcThisMonthCount, lastMonthCount: fcLastMonthCount}
+      preUserCount,
+      paidUserCount,
+      expiredSevenDaysCount
     }
   } catch (e) {
     throw e
@@ -110,26 +107,6 @@ async function findAllWorkoutUsers(
   }
 }
 
-async function findExpiredSevenDays(
-  franchiseId: number,
-  trainerId: number
-): Promise<
-  [
-    {
-      userId: 0
-      userNickname: 'string'
-      trainerNickname: 'string'
-      expiredAt: 'string'
-    }
-  ]
-> {
-  try {
-    return await Ticket.findExpiredSevenDays(franchiseId, trainerId)
-  } catch (e) {
-    throw e
-  }
-}
-
 async function findExpiredThreeSessions(
   franchiseId: number,
   trainerId: number
@@ -156,6 +133,5 @@ export {
   findAllWorkoutToday,
   findAllWorkoutYesterday,
   findAllWorkoutUsers,
-  findExpiredSevenDays,
   findExpiredThreeSessions
 }

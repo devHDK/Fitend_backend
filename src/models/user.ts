@@ -429,6 +429,68 @@ async function findNextWeekSurvey(mondayDate: string, userId: number): Promise<n
   }
 }
 
+async function findPreUserCount(franchiseId: number, trainerId: number): Promise<number> {
+  try {
+    const currentTime = moment().format('YYYY-MM-DD')
+    const [row] = await db.query({
+      sql: `SELECT COUNT(t.id) as count
+            FROM (
+            SELECT u.id
+            FROM ?? u
+            JOIN ?? fu ON fu.userId = u.id AND fu.franchiseId = ?
+            JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ? AND tr.trainerId = ${escape(trainerId)}
+            JOIN ?? ti ON tr.ticketId = ti.id AND ti.type = 'fitness' AND ti.month = 0 AND ti.expiredAt >= '${currentTime}'
+            GROUP BY u.id) t`,
+      values: [tableName, tableFranchiseUser, franchiseId, Ticket.tableTicketRelation, franchiseId, Ticket.tableName]
+    })
+    return row ? row.count : 0
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findPaidUserCount(franchiseId: number, trainerId: number): Promise<number> {
+  try {
+    const currentTime = moment().format('YYYY-MM-DD')
+    const [row] = await db.query({
+      sql: `SELECT COUNT(t.id) as count
+            FROM (
+            SELECT u.id
+            FROM ?? u
+            JOIN ?? fu ON fu.userId = u.id AND fu.franchiseId = ?
+            JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ? AND tr.trainerId = ${escape(trainerId)}
+            JOIN ?? ti ON tr.ticketId = ti.id AND ti.type = 'fitness' AND ti.month != 0 
+            AND ti.month IS NOT NULL AND ti.expiredAt >= '${currentTime}'
+            GROUP BY u.id) t`,
+      values: [tableName, tableFranchiseUser, franchiseId, Ticket.tableTicketRelation, franchiseId, Ticket.tableName]
+    })
+    return row ? row.count : 0
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findExpiredSevenDaysCount(franchiseId: number, trainerId: number): Promise<number> {
+  try {
+    const currentTime = moment().format('YYYY-MM-DD')
+    const [row] = await db.query({
+      sql: `SELECT COUNT(t.id) as count
+            FROM (
+            SELECT u.id
+            FROM ?? u
+            JOIN ?? fu ON fu.userId = u.id AND fu.franchiseId = ?
+            JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ? AND tr.trainerId = ${escape(trainerId)}
+            JOIN ?? ti ON tr.ticketId = ti.id AND ti.type = 'fitness' 
+            AND TIMESTAMPDIFF(DAY, ${escape(currentTime)}, ti.expiredAt) BETWEEN 0 AND 7
+            GROUP BY u.id) t`,
+      values: [tableName, tableFranchiseUser, franchiseId, Ticket.tableTicketRelation, franchiseId, Ticket.tableName]
+    })
+    return row ? row.count : 0
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findActivePersonalUsers(
   franchiseId: number,
   startDate: string,
@@ -699,6 +761,9 @@ export {
   findActivePersonalUsers,
   findActiveFitnessUsers,
   findPreSurveyWithId,
+  findPreUserCount,
+  findPaidUserCount,
+  findExpiredSevenDaysCount,
   updateOne,
   updateOneInflowContent,
   updateOnePreSurvey,

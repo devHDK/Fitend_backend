@@ -1,41 +1,16 @@
 {
   "type": "object",
   "properties": {
-    "personalActiveUsers": {
-      "type": "object",
-      "properties": {
-        "thisMonthCount": {
-          "type": "integer"
-        },
-        "lastMonthCount": {
-          "type": "integer"
-        }
-      },
-      "required": [
-        "thisMonthCount",
-        "lastMonthCount"
-      ]
+    "preUserCount": {
+      "type": "integer"
     },
-    "fitnessActiveUsers": {
-      "type": "object",
-      "properties": {
-        "thisMonthCount": {
-          "type": "integer"
-        },
-        "lastMonthCount": {
-          "type": "integer"
-        }
-      },
-      "required": [
-        "thisMonthCount",
-        "lastMonthCount"
-      ]
+    "paidUserCount": {
+      "type": "integer"
+    },
+    "expiredSevenDaysCount": {
+      "type": "integer"
     }
   },
-  "required": [
-    "personalActiveUsers",
-    "fitnessActiveUsers"
-  ],
+  "required": ["preUserCount", "paidUserCount", "expiredSevenDaysCount"],
   "additionalProperties": false
 }
-
