@@ -57,7 +57,7 @@ function getController(path: string, obj: any, router: Router): void {
         const args = [requestMiddleware(ctrl.paths, ctrl.schema, ctrl.coerceTypes), ...ctrl.middlewares, ctrl.handler]
 
         if (path.startsWith('/admin') && !ctrl.isPublic) args.unshift(authMiddleware.admin())
-        if (path.startsWith('/web') && !ctrl.isPublic) args.unshift(authMiddleware.web())
+        if (path.startsWith('/web') && !ctrl.isPublic) args.unshift(authMiddleware.web(ctrl.roles))
         if (ctrl.contentType === 'multipart/form-data') args.unshift(multipart(ctrl.fileNames))
         else if (!ctrl.isPublic) args.unshift(authMiddleware.user())
         args.unshift(validateResponse(ctrl))

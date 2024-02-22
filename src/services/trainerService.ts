@@ -114,7 +114,7 @@ async function signIn(options: {
       trainer &&
       Code.verifyPassword(password, trainer.password.password, trainer.password.salt, Code.passwordIterations.web)
     ) {
-      const accessToken = await JWT.createAccessTokenForTrainer({id: trainer.id, franchiseId: 1})
+      const accessToken = await JWT.createAccessTokenForTrainer({id: trainer.id, franchiseId: 1, role: trainer.role})
       const refreshToken = await JWT.createRefreshTokenForTrainer(
         {id: trainer.id, franchiseId: 1},
         trainer.password.salt
