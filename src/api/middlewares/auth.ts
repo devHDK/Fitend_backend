@@ -1,6 +1,6 @@
 import {Response} from 'express'
 import {jwt as JWT} from '../../libs'
-import { Trainer } from '../../models'
+import {Trainer} from '../../models'
 
 function user() {
   return async function (req: IRequest, res: Response, next?: Function): Promise<void> {
