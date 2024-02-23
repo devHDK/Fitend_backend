@@ -50,7 +50,7 @@ async function create(options: ICommentCreateOne): Promise<{id: number}> {
       if (trainerDevices && trainerDevices.length > 0) {
         threadSubscriber.publishThreadPushEvent({
           tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
-          type: 'threadCreate',
+          type: 'commentCreate',
           sound: 'default',
           badge: trainer.badgeCount + 1,
           contents,
@@ -121,7 +121,26 @@ async function findOne(id: number): Promise<IComment> {
 
 async function updateOne(options: ICommentUpdateOne): Promise<void> {
   try {
+    const {id} = options
+
     await Comment.updateOne(options)
+
+    const comment = await Comment.findOne(id)
+    const thread = await Thread.findOne(comment.threadId)
+    const user = await User.findOne({id: thread.user.id})
+    const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
+    if (trainerDevices && trainerDevices.length > 0) {
+      threadSubscriber.publishThreadPushEvent({
+        tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+        type: 'commentUpdate',
+        data: {
+          userId: thread.user.id.toString(),
+          nickname: user.nickname,
+          gender: user.gender,
+          threadId: thread.id.toString()
+        }
+      })
+    }
   } catch (e) {
     throw e
   }
@@ -153,6 +172,23 @@ async function updateOneForTrainer(options: ICommentUpdateOne): Promise<void> {
 async function deleteOne(id: number): Promise<void> {
   try {
     await Comment.deleteOne(id)
+
+    const comment = await Comment.findOne(id)
+    const thread = await Thread.findOne(comment.threadId)
+    const user = await User.findOne({id: thread.user.id})
+    const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
+    if (trainerDevices && trainerDevices.length > 0) {
+      threadSubscriber.publishThreadPushEvent({
+        tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+        type: 'commentDelete',
+        data: {
+          userId: thread.user.id.toString(),
+          nickname: user.nickname,
+          gender: user.gender,
+          threadId: thread.id.toString()
+        }
+      })
+    }
   } catch (e) {
     throw e
   }

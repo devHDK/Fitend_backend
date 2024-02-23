@@ -1,7 +1,8 @@
-import {Comment, Emoji, Thread, UserDevice} from '../models/index'
+import {Comment, Emoji, Thread, TrainerDevice, User, UserDevice} from '../models/index'
 import {db} from '../loaders'
 import {threadSubscriber} from '../subscribers'
 import {IUserDevice} from '../interfaces/userDevice'
+import {ITrainerDevice} from '../interfaces/trainerDevice'
 
 async function updateEmoji(options: {
   emoji?: string
@@ -38,8 +39,8 @@ async function updateEmoji(options: {
           connection
         )
 
+        const thread = await Thread.findOne(threadId)
         if (trainerId) {
-          const thread = await Thread.findOne(threadId)
           const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
 
           if (userDevices && userDevices.length > 0) {
@@ -51,6 +52,23 @@ async function updateEmoji(options: {
                 emoji: emoji.toString(),
                 trainerId: thread.trainer.id.toString(),
                 threadId: threadId.toString()
+              }
+            })
+          }
+        } else if (userId) {
+          const user = await User.findOne({id: thread.user.id})
+          const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
+          if (trainerDevices && trainerDevices.length > 0) {
+            threadSubscriber.publishThreadPushEvent({
+              tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+              type: 'emojiDelete',
+              data: {
+                id: emojiId.toString(),
+                emoji: emoji.toString(),
+                userId: thread.user.id.toString(),
+                nickname: user.nickname,
+                gender: user.gender,
+                threadId: thread.id.toString()
               }
             })
           }
@@ -66,8 +84,8 @@ async function updateEmoji(options: {
           connection
         )
 
+        const thread = await Thread.findOne(threadId)
         if (trainerId) {
-          const thread = await Thread.findOne(threadId)
           const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
 
           if (userDevices && userDevices.length > 0) {
@@ -79,6 +97,23 @@ async function updateEmoji(options: {
                 emoji: emoji.toString(),
                 trainerId: thread.trainer.id.toString(),
                 threadId: threadId.toString()
+              }
+            })
+          }
+        } else if (userId) {
+          const user = await User.findOne({id: thread.user.id})
+          const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
+          if (trainerDevices && trainerDevices.length > 0) {
+            threadSubscriber.publishThreadPushEvent({
+              tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+              type: 'emojiCreate',
+              data: {
+                id: emojiId.toString(),
+                emoji: emoji.toString(),
+                userId: thread.user.id.toString(),
+                nickname: user.nickname,
+                gender: user.gender,
+                threadId: thread.id.toString()
               }
             })
           }
@@ -102,9 +137,9 @@ async function updateEmoji(options: {
           connection
         )
 
+        const comment = await Comment.findOne(commentId)
+        const thread = await Thread.findOne(comment.threadId)
         if (trainerId) {
-          const comment = await Comment.findOne(commentId)
-          const thread = await Thread.findOne(comment.threadId)
           const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
 
           if (userDevices && userDevices.length > 0) {
@@ -116,6 +151,24 @@ async function updateEmoji(options: {
                 emoji: emoji.toString(),
                 trainerId: comment.trainerId.toString(),
                 threadId: comment.threadId.toString(),
+                commentId: commentId.toString()
+              }
+            })
+          }
+        } else if (userId) {
+          const user = await User.findOne({id: thread.user.id})
+          const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
+          if (trainerDevices && trainerDevices.length > 0) {
+            threadSubscriber.publishThreadPushEvent({
+              tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+              type: 'emojiDelete',
+              data: {
+                id: emojiId.toString(),
+                emoji: emoji.toString(),
+                userId: thread.user.id.toString(),
+                nickname: user.nickname,
+                gender: user.gender,
+                threadId: thread.id.toString(),
                 commentId: commentId.toString()
               }
             })
@@ -132,11 +185,10 @@ async function updateEmoji(options: {
           connection
         )
 
+        const comment = await Comment.findOne(commentId)
+        const thread = await Thread.findOne(comment.threadId)
+        const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
         if (trainerId) {
-          const comment = await Comment.findOne(commentId)
-          const thread = await Thread.findOne(comment.threadId)
-          const userDevices = await UserDevice.findAllWithUserId(thread.user.id)
-
           if (userDevices && userDevices.length > 0) {
             threadSubscriber.publishThreadPushEvent({
               tokens: userDevices.map((device: IUserDevice) => device.token),
@@ -150,6 +202,23 @@ async function updateEmoji(options: {
               }
             })
           }
+        } else if (userId) {
+          const user = await User.findOne({id: thread.user.id})
+          const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
+
+          threadSubscriber.publishThreadPushEvent({
+            tokens: trainerDevices.map((device: ITrainerDevice) => device.token),
+            type: 'emojiCreate',
+            data: {
+              id: emojiId.toString(),
+              emoji: emoji.toString(),
+              userId: thread.user.id.toString(),
+              nickname: user.nickname,
+              gender: user.gender,
+              threadId: thread.id.toString(),
+              commentId: commentId.toString()
+            }
+          })
         }
       }
     }
