@@ -59,6 +59,11 @@ async function createScheduleRecords(
 async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutScheduleList]> {
   try {
     const {userId, startDate, interval} = options
+    const thisWeekLimitDate = moment().endOf('isoWeek').format('YYYY-MM-DD')
+    const nextWeekLimitDate = moment().add(1, 'week').endOf('isoWeek').format('YYYY-MM-DD')
+    const today = moment().unix()
+    const standardTime = moment(thisWeekLimitDate).add(18, 'hour').unix()
+    const isThisWeek = today < standardTime
     return await db.query({
       sql: `SELECT DATE_FORMAT(t.startDate, '%Y-%m-%d') as startDate, 
             JSON_ARRAYAGG(JSON_OBJECT('workoutScheduleId', t.id , 'seq', t.seq, 'title', t.workoutTitle, 'subTitle', t.workoutSubTitle,
@@ -72,7 +77,9 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
               LEFT JOIN ?? wf ON wf.workoutScheduleId = ws.id
               LEFT JOIN ?? wr ON wr.workoutPlanId = wp.id
               WHERE ws.startDate BETWEEN '${startDate}' AND 
-              DATE_ADD('${startDate}', INTERVAL ${interval ? escape(interval) : 30} DAY) AND ws.?
+              DATE_ADD('${startDate}', INTERVAL ${interval ? escape(interval) : 30} DAY) 
+              AND ws.?
+              AND ws.startDate <= '${isThisWeek ? thisWeekLimitDate : nextWeekLimitDate}'
               GROUP BY ws.id 
               ORDER BY ws.seq
             ) t
