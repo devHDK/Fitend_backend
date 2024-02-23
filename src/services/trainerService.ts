@@ -128,7 +128,6 @@ async function signIn(options: {
       }
 
       delete trainer.password
-
       await db.commit(connection)
 
       return {
@@ -136,7 +135,7 @@ async function signIn(options: {
         refreshToken,
         trainer: {
           ...trainer,
-          isNotification: trainerDevice.isNotification
+          isNotification: trainerDevice ? trainerDevice.isNotification : true
         }
       }
     }

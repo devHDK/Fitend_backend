@@ -6,6 +6,7 @@ const postUsers = new ApiRouter({
   method: 'post',
   summary: '회원생성',
   tags: ['User'],
+  roles: ['master'],
   schema: 'requests/web/users/PostUsers',
   responses: {
     200: {description: 'success'},
