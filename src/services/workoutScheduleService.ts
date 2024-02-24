@@ -104,13 +104,24 @@ async function create(options: IWorkoutScheduleCreateData): Promise<void> {
     //   },
     //   connection
     // )
-    if (userDevices && userDevices.length > 0) {
-      // await User.updateBadgeCount(user.id, connection)
-      workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
-        tokens: userDevices.map((device: IUserDevice) => device.token),
-        type: 'workoutScheduleCreate'
-      })
+    const thisWeekLimitDate = moment().endOf('isoWeek').format('YYYY-MM-DD')
+    const nextWeekLimitDate = moment().add(1, 'week').endOf('isoWeek').format('YYYY-MM-DD')
+    const today = moment(startDate).unix()
+    const standardTime = moment(thisWeekLimitDate).add(18, 'hour').unix()
+    const isThisWeek = today < standardTime
+    const standardDate = isThisWeek ? thisWeekLimitDate : nextWeekLimitDate
+    const startDateUnix = moment(startDate).unix()
+    const standardUnix = moment(standardDate).unix()
+    if (startDateUnix <= standardUnix) {
+      if (userDevices && userDevices.length > 0) {
+        // await User.updateBadgeCount(user.id, connection)
+        workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
+          tokens: userDevices.map((device: IUserDevice) => device.token),
+          type: 'workoutScheduleCreate'
+        })
+      }
     }
+
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
@@ -223,6 +234,7 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
     const {workoutPlans, ...data} = options
     const workoutSchedule = await WorkoutSchedule.findOne(data.id)
     await WorkoutSchedule.update(data, connection)
+    const {startDate} = data
 
     if (workoutPlans && workoutPlans.length > 0) {
       await WorkoutPlan.deleteAllWithWorkoutScheduleId(data.id, connection)
@@ -281,7 +293,16 @@ async function update(options: IWorkoutScheduleUpdateData): Promise<void> {
     //   },
     //   connection
     // )
-    if (userDevices && userDevices.length > 0) {
+
+    const thisWeekLimitDate = moment().endOf('isoWeek').format('YYYY-MM-DD')
+    const nextWeekLimitDate = moment().add(1, 'week').endOf('isoWeek').format('YYYY-MM-DD')
+    const today = moment(startDate).unix()
+    const standardTime = moment(thisWeekLimitDate).add(18, 'hour').unix()
+    const isThisWeek = today < standardTime
+    const standardDate = isThisWeek ? thisWeekLimitDate : nextWeekLimitDate
+    const startDateUnix = moment(startDate).unix()
+    const standardUnix = moment(standardDate).unix()
+    if (startDateUnix <= standardUnix && userDevices && userDevices.length > 0) {
       // await User.updateBadgeCount(user.id, connection)
       workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
         tokens: userDevices.map((device: IUserDevice) => device.token),
@@ -336,10 +357,18 @@ async function deleteOne(id: number): Promise<void> {
       },
       connection
     )
-
+    const {startDate} = workoutSchedule
     const user = await User.findOne({id: workoutSchedule.userId})
     const userDevices = await UserDevice.findAllWithUserId(user.id)
-    if (userDevices && userDevices.length > 0) {
+    const thisWeekLimitDate = moment().endOf('isoWeek').format('YYYY-MM-DD')
+    const nextWeekLimitDate = moment().add(1, 'week').endOf('isoWeek').format('YYYY-MM-DD')
+    const today = moment(startDate).unix()
+    const standardTime = moment(thisWeekLimitDate).add(18, 'hour').unix()
+    const isThisWeek = today < standardTime
+    const standardDate = isThisWeek ? thisWeekLimitDate : nextWeekLimitDate
+    const startDateUnix = moment(startDate).unix()
+    const standardUnix = moment(standardDate).unix()
+    if (startDateUnix <= standardUnix && userDevices && userDevices.length > 0) {
       // await User.updateBadgeCount(user.id, connection)
       workoutScheduleSubscriber.publishWorkoutSchedulePushEvent({
         tokens: userDevices.map((device: IUserDevice) => device.token),

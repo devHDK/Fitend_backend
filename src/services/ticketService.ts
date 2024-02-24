@@ -92,7 +92,7 @@ async function createTicketHolding(options: ITicketHolding): Promise<void> {
     const days = moment(endAt).diff(moment(startAt), 'days') + 1
     const ticket = await Ticket.findOne({id: ticketId})
 
-    if (moment(ticket.startedAt).isBefore(currentTime)) {
+    if (moment(ticket.startedAt).isAfter(currentTime)) {
       throw Error('future_ticket')
     }
 
