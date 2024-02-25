@@ -1,6 +1,6 @@
 import {PoolConnection} from 'mysql'
 import {db} from '../loaders'
-import {ICommentFindAll, IComment, ICommentCreateOne, ICommentUpdateOne} from '../interfaces/comment'
+import {ICommentFindAll, IComment, ICommentCreateOne, ICommentUpdateOne, ICommentOne} from '../interfaces/comment'
 import {Emoji, Trainer, User} from '.'
 
 const tableName = 'Comments'
@@ -45,7 +45,7 @@ async function findAll(threadId: number): Promise<IComment[]> {
   }
 }
 
-async function findOne(id: number): Promise<any> {
+async function findOne(id: number): Promise<ICommentOne> {
   try {
     const [row] = await db.query({
       sql: `SELECT * 

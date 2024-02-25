@@ -1,7 +1,7 @@
 export interface IComment {
   id: number
   userId?: number
-  trainerId?: number
+  trainerId: number
   threadId: number
   content: number
   gallery: {
@@ -26,6 +26,22 @@ export interface IComment {
     trainerId: number
   }[]
   commentCount: number
+  createdAt: Date
+}
+
+export interface ICommentOne {
+  id: number
+  userId?: number
+  trainerId?: number
+  threadId: number
+  content: number
+  gallery: {
+    type: ['image', 'video']
+    url: string
+    thumbnail: string
+  }
+
+  updatedAt: Date
   createdAt: Date
 }
 
