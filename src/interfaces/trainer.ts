@@ -61,6 +61,8 @@ export interface ITrainer {
 export type ITrainerList = {
   id: number
   nickname: string
+  profileImage: string
+  role: string
 }
 
 export type ITrainerListForUser = {

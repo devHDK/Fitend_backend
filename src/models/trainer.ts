@@ -88,7 +88,7 @@ async function createRelationsFranchises(
 async function findAll(franchiseId: number): Promise<[ITrainerList]> {
   try {
     return await db.query({
-      sql: `SELECT t.id, t.nickname, t.profileImage
+      sql: `SELECT t.id, t.nickname, t.profileImage, t.role
             FROM ?? t
             JOIN ?? ft ON ft.trainerId = t.id AND ft.franchiseId = ?`,
       values: [tableName, tableFranchiseTrainer, franchiseId]
