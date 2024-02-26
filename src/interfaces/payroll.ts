@@ -11,7 +11,6 @@ export interface IPayrollFindAllForAdmin {
 
 export interface IPayrollResponse {
   thisMonth: IMonth
-  lastMonth: IMonth
 }
 
 export interface IPayrollResponseForAdminWithTrainerId {
@@ -20,6 +19,7 @@ export interface IPayrollResponseForAdminWithTrainerId {
 }
 
 export interface IMonth {
+  userCount: IUserCount
   wageInfo: IWageInfo
   reservations?: IReservation[]
   coaching?: ICoaching[]
@@ -50,6 +50,12 @@ export interface IWageInfo {
   baseWage: number
   ptPercentage: number
   fcPercentage: number
+}
+
+export interface IUserCount {
+  preUser: number
+  paidUser: number
+  leaveUser: number
 }
 
 export interface ICoachingForAdmin {

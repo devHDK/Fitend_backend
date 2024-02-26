@@ -3,19 +3,26 @@
   "properties": {
     "thisMonth": {
       "type": "object",
-      "required": [
-        "wageInfo",
-        "reservations",
-        "coaching"
-      ],
+      "required": ["wageInfo", "reservations", "coaching", "userCount"],
       "properties": {
+        "userCount": {
+          "type": "object",
+          "required": ["preUser", "paidUser", "leaveUser"],
+          "properties": {
+            "preUser": {
+              "type": "integer"
+            },
+            "paidUser": {
+              "type": "integer"
+            },
+            "leaveUser": {
+              "type": "integer"
+            }
+          }
+        },
         "wageInfo": {
           "type": "object",
-          "required": [
-            "baseWage",
-            "ptPercentage",
-            "fcPercentage"
-          ],
+          "required": ["baseWage", "ptPercentage", "fcPercentage"],
           "properties": {
             "baseWage": {
               "type": "integer"
@@ -70,124 +77,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": [
-              "ticketId",
-              "nickname",
-              "type",
-              "startedAt",
-              "expiredAt",
-              "coachingPrice",
-              "doneCount"
-            ],
-            "properties": {
-              "ticketId": {
-                "type": "integer"
-              },
-              "nickname": {
-                "type": "string"
-              },
-              "type": {
-                "type": "string"
-              },
-              "startedAt": {
-                "type": "string"
-              },
-              "expiredAt": {
-                "type": "string"
-              },
-              "coachingPrice": {
-                "type": "integer"
-              },
-              "doneCount": {
-                "type": "integer"
-              }
-            }
-          }
-        }
-      }
-    },
-    "lastMonth": {
-      "type": "object",
-      "required": [
-        "wageInfo",
-        "reservations",
-        "coaching"
-      ],
-      "properties": {
-        "wageInfo": {
-          "type": "object",
-          "required": [
-            "baseWage",
-            "ptPercentage",
-            "fcPercentage"
-          ],
-          "properties": {
-            "baseWage": {
-              "type": "integer"
-            },
-            "ptPercentage": {
-              "type": "integer"
-            },
-            "fcPercentage": {
-              "type": "integer"
-            }
-          }
-        },
-        "reservations": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "ticketId",
-              "type",
-              "nickname",
-              "sessionPrice",
-              "coachingPrice",
-              "totalSession",
-              "leftSession",
-              "thisMonthCount"
-            ],
-            "properties": {
-              "ticketId": {
-                "type": "integer"
-              },
-              "type": {
-                "type": "string"
-              },
-              "nickname": {
-                "type": "string"
-              },
-              "sessionPrice": {
-                "type": "integer"
-              },
-              "coachingPrice": {
-                "type": "integer"
-              },
-              "totalSession": {
-                "type": "integer"
-              },
-              "leftSession": {
-                "type": "integer"
-              },
-              "thisMonthCount": {
-                "type": "integer"
-              }
-            }
-          }
-        },
-        "coaching": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": [
-              "ticketId",
-              "nickname",
-              "type",
-              "startedAt",
-              "expiredAt",
-              "coachingPrice",
-              "doneCount"
-            ],
+            "required": ["ticketId", "nickname", "type", "startedAt", "expiredAt", "coachingPrice", "doneCount"],
             "properties": {
               "ticketId": {
                 "type": "integer"

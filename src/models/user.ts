@@ -19,7 +19,7 @@ import {
   IUserBodySpecList,
   IUserPreSurveyUpdate
 } from '../interfaces/user'
-import {Trainer, Ticket, TicketHolding, User} from './'
+import {Trainer, Ticket, TicketHolding, User, Payment} from './'
 import {tableTicketRelation} from './ticket'
 import {
   IInflowContentCreate,
@@ -29,6 +29,7 @@ import {
   IUserInflowContentsList
 } from '../interfaces/inflowContent'
 import {createPasswordHash, passwordIterations} from '../libs/code'
+import {IUserCount} from '../interfaces/payroll'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -215,6 +216,79 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
       ]
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllUserCount(options: {trainerId: number; franchiseId: number}): Promise<IUserCount> {
+  try {
+    const currentTime = moment().format('YYYY-MM-DD')
+    const thisMonth = moment().startOf('month').format('YYYY-MM-DD')
+    const thisMonthStart = moment().startOf('month').format('YYYY-MM-DD HH:mm:ss')
+    const thisMonthEnd = moment().endOf('month').format('YYYY-MM-DD HH:mm:ss')
+    const {trainerId, franchiseId} = options
+    const [row] = await db.query({
+      sql: `SELECT 
+            (
+            SELECT COUNT(t.id)
+            FROM (
+            SELECT u.id FROM ?? u
+            JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ${escape(franchiseId)} 
+            AND tr.trainerId = ${escape(trainerId)}
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.type = 'fitness' AND ti.month = 0 AND ti.expiredAt >= '${currentTime}'
+            GROUP BY u.id
+            ) t 
+            ) as preUser,
+            (
+            SELECT COUNT(t.id)
+            FROM (
+            SELECT u.id FROM ?? u
+            JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ${escape(franchiseId)}
+            AND tr.trainerId = ${escape(trainerId)}
+            JOIN ?? ti ON ti.id = tr.ticketId
+            JOIN ?? p ON ti.id = p.ticketId 
+            AND p.createdAt BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}
+            GROUP BY u.id
+            ) t 
+            ) as paidUser,
+            ((
+            SELECT COUNT(t.id)
+            FROM (
+            SELECT u.id FROM ?? u
+            JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ${escape(franchiseId)}
+            AND tr.trainerId = ${escape(trainerId)}
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt BETWEEN ${escape(thisMonth)} AND ${escape(currentTime)}
+            GROUP BY u.id
+            ) t 
+            ) - (
+            SELECT COUNT(t.id)
+            FROM (
+            SELECT u.id FROM ?? u
+            JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ${escape(franchiseId)}
+            AND tr.trainerId = ${escape(trainerId)}
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.startedAt > ${escape(currentTime)}
+            GROUP BY u.id
+            ) t 
+            )) as leaveUser
+            )`,
+      values: [
+        tableName,
+        Ticket.tableTicketRelation,
+        Ticket.tableName,
+        tableName,
+        Ticket.tableTicketRelation,
+        Ticket.tableName,
+        Payment.tableName,
+        tableName,
+        Ticket.tableTicketRelation,
+        Ticket.tableName,
+        tableName,
+        Ticket.tableTicketRelation,
+        Ticket.tableName
+      ]
+    })
+    return row
   } catch (e) {
     throw e
   }
@@ -752,6 +826,7 @@ export {
   findUserInflowForTrainer,
   findUsersWorkoutSchedules,
   findAllForAdmin,
+  findAllUserCount,
   findOne,
   findNextWeekSurvey,
   updatePasswordForUser,
