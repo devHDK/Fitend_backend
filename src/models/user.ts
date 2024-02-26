@@ -250,7 +250,7 @@ async function findAllThisMonthUserCount(options: {
             SELECT u.id FROM ?? u
             JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ${escape(franchiseId)}
             AND tr.trainerId = ${escape(trainerId)}
-            JOIN ?? ti ON ti.id = tr.ticketId
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.type = 'fitness'
             JOIN ?? p ON ti.id = p.ticketId 
             AND p.createdAt BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}
             GROUP BY u.id
@@ -262,7 +262,7 @@ async function findAllThisMonthUserCount(options: {
             SELECT u.id FROM ?? u
             JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ${escape(franchiseId)}
             AND tr.trainerId = ${escape(trainerId)}
-            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt 
+            JOIN ?? ti ON ti.id = tr.ticketId  AND ti.type = 'fitness' AND ti.expiredAt 
             BETWEEN ${escape(thisMonthStart)} AND ${escape(currentTime)}
             GROUP BY u.id
             ) t 
@@ -272,7 +272,7 @@ async function findAllThisMonthUserCount(options: {
             SELECT u.id FROM ?? u
             JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ${escape(franchiseId)}
             AND tr.trainerId = ${escape(trainerId)}
-            JOIN ?? ti ON ti.id = tr.ticketId AND ti.startedAt > ${escape(currentTime)}
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.type = 'fitness' AND ti.startedAt > ${escape(currentTime)}
             GROUP BY u.id
             ) t 
             )) as leaveUser
