@@ -221,13 +221,17 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
   }
 }
 
-async function findAllUserCount(options: {trainerId: number; franchiseId: number}): Promise<IUserCount> {
+async function findAllThisMonthUserCount(options: {
+  trainerId: number
+  franchiseId: number
+  startDate: Date
+}): Promise<IUserCount> {
   try {
+    const {trainerId, franchiseId, startDate} = options
     const currentTime = moment().format('YYYY-MM-DD')
-    const thisMonth = moment().startOf('month').format('YYYY-MM-DD')
-    const thisMonthStart = moment().startOf('month').format('YYYY-MM-DD HH:mm:ss')
-    const thisMonthEnd = moment().endOf('month').format('YYYY-MM-DD HH:mm:ss')
-    const {trainerId, franchiseId} = options
+    const thisMonthStart = moment(startDate).startOf('month').format('YYYY-MM-DD')
+    const thisMonthEnd = moment(startDate).endOf('month').format('YYYY-MM-DD')
+
     const [row] = await db.query({
       sql: `SELECT 
             (
@@ -258,7 +262,8 @@ async function findAllUserCount(options: {trainerId: number; franchiseId: number
             SELECT u.id FROM ?? u
             JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ${escape(franchiseId)}
             AND tr.trainerId = ${escape(trainerId)}
-            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt BETWEEN ${escape(thisMonth)} AND ${escape(currentTime)}
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.expiredAt 
+            BETWEEN ${escape(thisMonthStart)} AND ${escape(currentTime)}
             GROUP BY u.id
             ) t 
             ) - (
@@ -826,7 +831,7 @@ export {
   findUserInflowForTrainer,
   findUsersWorkoutSchedules,
   findAllForAdmin,
-  findAllUserCount,
+  findAllThisMonthUserCount,
   findOne,
   findNextWeekSurvey,
   updatePasswordForUser,
