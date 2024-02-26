@@ -39,6 +39,7 @@ const sendPush = async (
       notification: payload.notification,
       android:
         payload.data.type === 'reservation' ||
+        payload.data.type === 'meeting' ||
         payload.data.type === 'threadCreate' ||
         payload.data.type === 'commentCreate'
           ? {
