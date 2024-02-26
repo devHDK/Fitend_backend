@@ -6,6 +6,7 @@ const postReservations = new ApiRouter({
   method: 'post',
   summary: '예약 생성',
   tags: ['Reservation'],
+  roles: ['master'],
   schema: 'requests/web/reservations/PostReservations',
   responses: {
     200: {description: 'success'},
@@ -21,6 +22,7 @@ const getReservations = new ApiRouter({
   method: 'get',
   summary: '예약 목록',
   tags: ['Reservation'],
+  roles: ['master'],
   schema: 'requests/web/reservations/GetReservations',
   responses: {
     200: {schema: 'responses/web/reservations/GetReservations'}
@@ -34,6 +36,7 @@ const getReservationsWithId = new ApiRouter({
   paths: ['common/IdPath'],
   summary: '예약 상세',
   tags: ['Reservation'],
+  roles: ['master'],
   responses: {
     200: {schema: 'responses/web/reservations/GetReservationsWithId'},
     404: {description: 'not_found'}
@@ -47,6 +50,7 @@ const putReservationsWithId = new ApiRouter({
   paths: ['common/IdPath'],
   summary: '예약 수정',
   tags: ['Reservation'],
+  roles: ['master'],
   schema: 'requests/web/reservations/PutReservationsWithId',
   responses: {
     200: {description: 'success'},

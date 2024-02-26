@@ -6,6 +6,7 @@ const postTickets = new ApiRouter({
   method: 'post',
   summary: '수강권 생성',
   tags: ['Ticket'],
+  roles: ['master'],
   schema: 'requests/web/tickets/PostTickets',
   responses: {
     200: {description: 'success'}
