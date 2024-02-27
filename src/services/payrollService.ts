@@ -17,7 +17,7 @@ async function findAllWithMonth(req: IPayrollFindAll): Promise<IPayrollResponse>
     const wageInfo = await Trainer.findTrainerWageInfo({trainerId, franchiseId})
     //tickets
     const reservations = await Reservation.findBetweenReservationWithTrainerId({
-      startTime: moment(startDate).utc().format('YYYY-MM-DDTHH:mm:ss'),
+      startTime: moment(startDate).startOf('month').utc().format('YYYY-MM-DDTHH:mm:ss'),
       endTime: endDate,
       trainerId,
       franchiseId
