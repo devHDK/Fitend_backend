@@ -10,7 +10,9 @@ async function findAllWithMonth(req: IPayrollFindAll): Promise<IPayrollResponse>
     const {trainerId, franchiseId, startDate} = req
     const endDate = moment(startDate).endOf('month').subtract(9, 'hours').format('YYYY-MM-DDTHH:mm:ss')
 
-    const userCount = await User.findAllThisMonthUserCount({trainerId, franchiseId, startDate})
+    const preUser = await User.findThisMonthPreUserCount({trainerId, franchiseId, startDate})
+    const paidUser = await User.findThisMonthPaidUserCount({trainerId, franchiseId, startDate})
+    const leaveUser = await User.findThisMonthLeaveUserCount({trainerId, franchiseId, startDate})
     //baseWage 및 percentage
     const wageInfo = await Trainer.findTrainerWageInfo({trainerId, franchiseId})
     //tickets
@@ -36,7 +38,11 @@ async function findAllWithMonth(req: IPayrollFindAll): Promise<IPayrollResponse>
 
     const ret = {
       thisMonth: <IMonth>{
-        userCount,
+        userCount: {
+          preUser,
+          paidUser,
+          leaveUser
+        },
         wageInfo,
         reservations,
         coaching
