@@ -28,11 +28,15 @@ export interface IMonth {
 export interface ICoaching {
   ticketId: number
   nickname: string
-  type: string
+  type: number
   startedAt: string
   expiredAt: string
-  coachingPrice: number
-  doneCount: number
+  holdingList: {
+    holdId: number
+    startAt: string
+    endAt: string
+    days: number
+  }[]
 }
 
 export interface IReservation {

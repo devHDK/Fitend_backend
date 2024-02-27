@@ -475,17 +475,17 @@ async function findThisMonthPreUserCount(options: {
   trainerId: number
   franchiseId: number
   startDate: Date
+  endDate: string
 }): Promise<number> {
   try {
-    const {trainerId, franchiseId, startDate} = options
-    const currentTime = moment().format('YYYY-MM-DD')
-
+    const {trainerId, franchiseId, startDate, endDate} = options
+    const startMonth = moment(startDate).startOf('month').format('YYYY-MM-DD')
     const [row] = await db.query({
       sql: `SELECT COUNT(t.id) as count
             FROM (SELECT u.id FROM ?? u
             JOIN ?? tr ON tr.userId = u.id AND tr.franchiseId = ${escape(franchiseId)} 
             AND tr.trainerId = ${escape(trainerId)}
-            JOIN ?? ti ON ti.id = tr.ticketId AND ti.type = 'fitness' AND ti.month = 0 AND ti.expiredAt >= '${currentTime}'
+            JOIN ?? ti ON ti.id = tr.ticketId AND ti.type = 'fitness' AND ti.month = 0 AND ti.startedAt BETWEEN '${startMonth}' AND '${endDate}'
             GROUP BY u.id) t`,
       values: [tableName, Ticket.tableTicketRelation, Ticket.tableName]
     })
@@ -530,7 +530,7 @@ async function findThisMonthLeaveUserCount(options: {
 }): Promise<number> {
   try {
     const {trainerId, franchiseId, startDate} = options
-    const currentTime = moment().format('YYYY-MM-DD')
+    const currentTime = moment(startDate).format('YYYY-MM-DD')
     const thisMonthStart = moment(startDate).startOf('month').format('YYYY-MM-DD')
 
     const [row] = await db.query({

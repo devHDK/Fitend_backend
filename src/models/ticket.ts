@@ -392,43 +392,30 @@ async function findOne(options: ITicketFindOne): Promise<ITicket> {
 }
 
 async function findBetweenFCTicket(options: {
-  startTime: string
-  endTime: string
+  startDate: Date
   trainerId: number
   franchiseId: number
-  plusMonth: number
 }): Promise<[ICoaching]> {
   try {
-    const {startTime, endTime, trainerId, franchiseId, plusMonth} = options
+    const {startDate, trainerId, franchiseId} = options
+    const currentTime = moment(startDate).format('YYYY-MM-DD')
+    const startMonth = moment(startDate).startOf('month').format('YYYY-MM-DD')
 
     const rows = await db.query({
-      sql: `SELECT t.id as ticketId, u.nickname, t.type, t.startedAt, t.expiredAt, t.coachingPrice,
-            (SELECT COUNT(wf.id) FROM ?? wf 
-                JOIN ?? ws ON wf.workoutScheduleId = ws.id
-                WHERE ws.trainerId = ${trainerId} AND ws.franchiseId = ${franchiseId} AND ws.userId = u.id AND wf.createdAt < ${escape(
-        endTime
-      )} ) as doneCount 
+      sql: `SELECT t.id as ticketId, u.nickname, t.month as type, 
+            DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt, DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt,
+            (SELECT JSON_ARRAYAGG(
+              JSON_OBJECT('holdId', th.id, 'startAt', th.startAt, 'endAt', th.endAt, 'days', th.days
+            ))
+            FROM ?? th
+            WHERE th.ticketId = t.id
+            )  as holdingList
             FROM ?? t 
             JOIN ?? tr ON tr.ticketId = t.id 
             JOIN ?? u ON u.id = tr.userId
-            WHERE tr.trainerId = ? AND tr.franchiseId = ? 
-            AND 
-            (DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH)  >= ${escape(startTime)} 
-            AND 
-            DATE_ADD(t.startedAt, INTERVAL ${plusMonth} MONTH) <= ${escape(endTime)}) 
-            AND DATE_SUB(t.expiredAt, INTERVAL (SELECT IF(SUM(th.days) > 0 , SUM(th.days), 0) FROM ?? th WHERE th.ticketId = t.id) DAY) 
-            > ${escape(endTime)}
-            AND t.type = 'fitness'`,
-      values: [
-        WorkoutFeedbacks.tableName,
-        WorkoutSchedule.tableName,
-        tableName,
-        tableTicketRelation,
-        User.tableName,
-        trainerId,
-        franchiseId,
-        TicketHolding.tableName
-      ]
+            WHERE tr.trainerId = ? AND tr.franchiseId = ? AND t.type = 'fitness' 
+            AND t.expiredAt >= ${escape(startMonth)} AND t.startedAt <= ${escape(currentTime)}`,
+      values: [TicketHolding.tableName, tableName, tableTicketRelation, User.tableName, trainerId, franchiseId]
     })
     return rows
   } catch (e) {
