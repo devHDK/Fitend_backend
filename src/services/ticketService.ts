@@ -271,6 +271,16 @@ async function updateTicketHolding(options: ITicketHoldingUpdate): Promise<void>
   try {
     const {id, startAt, endAt} = options
 
+    const currentTime = moment().format('YYYY-MM-DD')
+
+    if (
+      moment(startAt).isBefore(currentTime) ||
+      moment(endAt).isBefore(currentTime) ||
+      moment(endAt).isSameOrBefore(moment(startAt))
+    ) {
+      throw Error('past_date_error')
+    }
+
     const beforeTicketHolding = await TicketHolding.findOneWithId(id)
 
     const holdings = await TicketHolding.findAllWithTicketId(beforeTicketHolding.ticketId)
@@ -311,6 +321,7 @@ async function updateTicketHolding(options: ITicketHoldingUpdate): Promise<void>
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
+    if (e.message === 'past_date_error') e.status = 402
     if (e.message === 'date_overlap') e.status = 403
     throw e
   }
@@ -345,6 +356,18 @@ async function deleteTicketHolding(id: number): Promise<void> {
     const ticket = await Ticket.findOne({id: beforeTicketHolding.ticketId})
     const newExpiredAt = moment(ticket.expiredAt).subtract(beforeTicketHolding.days, 'days').format('YYYY-MM-DD')
 
+    const startAt = beforeTicketHolding.startAt
+    const endAt = beforeTicketHolding.endAt
+    const currentTime = moment().format('YYYY-MM-DD')
+
+    if (
+      moment(startAt).isBefore(currentTime) ||
+      moment(endAt).isBefore(currentTime) ||
+      moment(endAt).isSameOrBefore(moment(startAt))
+    ) {
+      throw Error('past_date_error')
+    }
+
     await TicketHolding.deleteOne(id)
     await Ticket.update(
       {
@@ -362,6 +385,7 @@ async function deleteTicketHolding(id: number): Promise<void> {
     await db.commit(connection)
   } catch (e) {
     if (connection) await db.rollback(connection)
+    if (e.message === 'past_date_error') e.status = 402
     throw e
   }
 }
