@@ -8,7 +8,7 @@ import {
   TrainerDevice,
   TrainerNotification
 } from '../models/index'
-import {ICommentCreateOne, IComment, ICommentUpdateOne} from '../interfaces/comment'
+import {ICommentCreateOne, IComment, ICommentUpdateOne, ICommentOne} from '../interfaces/comment'
 import {IUserDevice} from '../interfaces/userDevice'
 import {firebase, db} from '../loaders'
 import {threadSubscriber} from '../subscribers'
@@ -111,7 +111,7 @@ async function findAll(threadId: number): Promise<IComment[]> {
   }
 }
 
-async function findOne(id: number): Promise<IComment> {
+async function findOne(id: number): Promise<ICommentOne> {
   try {
     return await Comment.findOne(id)
   } catch (e) {
@@ -171,9 +171,10 @@ async function updateOneForTrainer(options: ICommentUpdateOne): Promise<void> {
 
 async function deleteOne(id: number): Promise<void> {
   try {
+    const comment = await Comment.findOne(id)
+
     await Comment.deleteOne(id)
 
-    const comment = await Comment.findOne(id)
     const thread = await Thread.findOne(comment.threadId)
     const user = await User.findOne({id: thread.user.id})
     const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)

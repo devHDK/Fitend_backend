@@ -219,9 +219,10 @@ async function updateChecked(options: IThreadUpdateOne): Promise<void> {
 
 async function deleteOne(id: number): Promise<void> {
   try {
+    const thread = await Thread.findOne(id)
+
     await Thread.deleteOne(id)
 
-    const thread = await Thread.findOne(id)
     const user = await User.findOne({id: thread.user.id})
     const trainerDevices = await TrainerDevice.findAllWithUserId(thread.trainer.id)
     if (trainerDevices && trainerDevices.length > 0) {
