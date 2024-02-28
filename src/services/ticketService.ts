@@ -273,11 +273,7 @@ async function updateTicketHolding(options: ITicketHoldingUpdate): Promise<void>
 
     const currentTime = moment().format('YYYY-MM-DD')
 
-    if (
-      moment(startAt).isBefore(currentTime) ||
-      moment(endAt).isBefore(currentTime) ||
-      moment(endAt).isSameOrBefore(moment(startAt))
-    ) {
+    if (moment(endAt).isBefore(currentTime) || moment(endAt).isSameOrBefore(moment(startAt))) {
       throw Error('past_date_error')
     }
 
