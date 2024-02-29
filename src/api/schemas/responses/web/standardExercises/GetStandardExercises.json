@@ -12,6 +12,9 @@
           "name": {
             "type": "string"
           },
+          "nameEn": {
+            "type": "string"
+          },
           "devision": {
             "type": "string"
           },
@@ -35,9 +38,12 @@
                 }
               }
             }
+          },
+          "isRecord": {
+            "type": "boolean"
           }
         },
-        "required": ["id", "name", "machineType", "targetMuscles", "devision", "jointType"],
+        "required": ["id", "name", "nameEn", "machineType", "targetMuscles", "devision", "jointType", "isRecord"],
         "additionalProperties": false
       }
     },

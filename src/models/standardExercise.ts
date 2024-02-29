@@ -73,11 +73,18 @@ async function createRelationExercises(
 }
 
 async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExercisesList> {
-  const {search, targetMuscleIds, devisionId, machineType, start, perPage} = options
+  const {trainerId, search, targetMuscleIds, devisionId, machineType, start, perPage} = options
   try {
     const where = []
     const join = []
-    const values = [tableName, tableExercisesDevision, tableStandardExerciseTargetMuscle, TargetMuscle.tableName]
+    const values = [
+      tableStandardExercisesExercises,
+      Exercise.tableName,
+      tableName,
+      tableExercisesDevision,
+      tableStandardExerciseTargetMuscle,
+      TargetMuscle.tableName
+    ]
     const totalValues = [tableName]
     if (search) where.push(`t.name like ${escape(`%${search}%`)} OR t.nameEn like ${escape(`%${search}%`)}`)
     if (machineType) where.push(`t.machineType like ${escape(`%${machineType}%`)}`)
@@ -93,8 +100,12 @@ async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExer
     }
 
     const rows = await db.query({
-      sql: `SELECT t.id, t.name, t.machineType, t.jointType, ed.name as devision,
-            JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name)) as targetMuscles
+      sql: `SELECT t.id, t.name, t.nameEn, t.machineType, t.jointType, ed.name as devision,
+            JSON_ARRAYAGG(JSON_OBJECT('id', tm.id, 'name', tm.name)) as targetMuscles,
+            (SELECT IF(EXISTS(SELECT * FROM ?? ste
+              JOIN ?? e ON e.id = ste.exerciseId AND e.trainerId = ${escape(trainerId)}
+              WHERE ste.standardExerciseId = t.id), TRUE, FALSE)
+            ) as isRecord
             FROM ?? t
             JOIN ?? ed ON t.devisionId = ed.id
             JOIN ?? st ON st.standardExerciseId = t.id AND st.type = 'main'

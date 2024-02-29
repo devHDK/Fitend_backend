@@ -16,7 +16,6 @@
     },
     "jointType": {
       "type": "string",
-      "enum": ["multi", "single"],
       "nullable": true
     },
     "videos": {

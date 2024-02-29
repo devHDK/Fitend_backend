@@ -20,6 +20,7 @@ export interface IStandardExerciseUpload {
 }
 
 export interface IStandardExerciseFindAll {
+  trainerId: number
   search?: string
   devisionId?: number
   machineType?: string
@@ -53,6 +54,7 @@ export interface IStandardExercisesFindOne {
 export interface IStandardExercises {
   id: number
   name: string
+  nameEn: string
   devision: string
   machineType: string
   jointType?: string
@@ -60,6 +62,7 @@ export interface IStandardExercises {
     id: number
     name: string
   }[]
+  isRecord: boolean
 }
 
 export interface IStandardExerciseUpdate {

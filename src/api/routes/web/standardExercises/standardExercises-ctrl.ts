@@ -48,6 +48,7 @@ async function getStandardExercises(req: IRequest, res: Response, next: Function
   try {
     const {search, targetMuscleIds, devisionId, machineType, start, perPage} = req.options
     const ret = await StandardExerciseService.findAll({
+      trainerId: req.userId,
       search,
       targetMuscleIds,
       devisionId,
