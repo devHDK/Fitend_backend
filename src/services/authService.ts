@@ -400,6 +400,7 @@ async function createAccountForUser(options: IUserAccountCreate): Promise<void> 
     await Ticket.createRelationExercises({userId, trainerIds: [trainerId], ticketId, franchiseId: 1}, connection)
 
     const {workoutPlans, ...rest} = demoWorkoutScheduleData
+    rest.startDate = moment().format('YYYY-MM-DD')
     const workoutScheduleId = await WorkoutSchedule.create(
       {
         userId,
