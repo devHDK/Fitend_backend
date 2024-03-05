@@ -293,7 +293,7 @@ async function findBetweenReservationWithTrainerId(
   try {
     return await db.query({
       connection,
-      sql: `SELECT t.ticketId, ti.type, u.nickname as nickname, ti.sessionPrice, ti.coachingPrice, (ti.totalSession + ti.serviceSession) as totalSession,
+      sql: `SELECT t.ticketId, ti.type, u.nickname as nickname, ti.sessionPrice, (ti.totalSession + ti.serviceSession) as totalSession,
             ((ti.totalSession + ti.serviceSession) - (SELECT coalesce(MAX(r2.seq), 0) FROM ?? r2 
                 WHERE r2.ticketId = tr.ticketId AND r2.times != 0 AND r2.status != 'complete' AND
                 r2.startTime <= ${escape(endTime)})) as leftSession,
