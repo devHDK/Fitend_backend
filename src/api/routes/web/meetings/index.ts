@@ -8,7 +8,7 @@ const postMeeting = new ApiRouter({
   tags: ['Meeting'],
   schema: 'requests/web/meetings/PostMeeting',
   responses: {
-    200: {description: 'success'},
+    200: {schema: 'responses/web/meetings/PostMeetings'},
     403: {description: 'ticket_expired'},
     409: {description: 'schedule_dupplicate'}
   },

@@ -133,7 +133,7 @@ async function createForTrainer(options: {
   userId: number
   startTime: string
   endTime: string
-}): Promise<void> {
+}): Promise<{id: number}> {
   const connection = await db.beginTransaction()
   try {
     const {trainerId, userId, startTime, endTime} = options
@@ -184,6 +184,8 @@ async function createForTrainer(options: {
     }
 
     await db.commit(connection)
+
+    return {id: meetingId}
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e

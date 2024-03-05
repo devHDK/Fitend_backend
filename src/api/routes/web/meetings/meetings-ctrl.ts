@@ -10,7 +10,7 @@ async function postMeeting(req: IRequest, res: Response, next: Function): Promis
       startTime,
       endTime
     })
-    res.status(200).json({data: ret})
+    res.status(200).json(ret)
   } catch (e) {
     if (e.message === 'ticket_expired') e.status = 403
     if (e.message === 'schedule_dupplicate') e.status = 409
