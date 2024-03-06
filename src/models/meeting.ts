@@ -43,6 +43,7 @@ async function findAll(options: IMeetingFindAll): Promise<[IMeetingList]> {
             JOIN ?? tra ON tra.id = t.trainerId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY t.id
+            ORDER BY t.startTime ASC
             `,
       values: [tableName, User.tableName, Trainer.tableName]
     })

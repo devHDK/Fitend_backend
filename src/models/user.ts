@@ -135,8 +135,18 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
     if (search) where.push(`(t.nickname like '%${search}%' OR t.phone like '%${search}%')`)
     const currentTime = moment().format('YYYY-MM-DD')
     const rows: IUserData[] = await db.query({
-      sql: `SELECT t.id, t.nickname, t.phone, t.createdAt,
-            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
+      sql: `SELECT t.id, t.nickname, t.phone, t.createdAt, t.gender,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', ti.id, 'isActive', ti.expiredAt >= ${escape(
+              currentTime
+            )}, 'type', ti.type,
+            'month', ti.month, 'expiredAt', ti.expiredAt))
+            FROM ?? ti
+            JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
+            WHERE ti.expiredAt >= '${currentTime}' 
+            LIMIT 1
+            ) as availableTickets,
+            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) 
+            FROM ?? ti
             JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
             JOIN ?? tra ON tra.id = tr.trainerId
             WHERE ti.expiredAt >= '${currentTime}'
@@ -163,6 +173,8 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
       values: [
+        Ticket.tableName,
+        Ticket.tableTicketRelation,
         Ticket.tableName,
         Ticket.tableTicketRelation,
         Trainer.tableName,

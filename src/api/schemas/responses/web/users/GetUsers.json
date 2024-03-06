@@ -15,6 +15,35 @@
           "phone": {
             "type": "string"
           },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female"]
+          },
+          "availableTickets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "isActive": {
+                  "type": "boolean"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["personal", "fitness"]
+                },
+                "month": {
+                  "type": "integer"
+                },
+                "expiredAt": {
+                  "type": "string",
+                  "format": "date"
+                }
+              }
+            }
+          },
           "trainers": {
             "type": "array",
             "items": {
@@ -38,14 +67,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "id",
-          "nickname",
-          "phone",
-          "trainers",
-          "createdAt",
-          "isHolding"
-        ],
+        "required": ["id", "nickname", "phone", "trainers", "createdAt", "isHolding"],
         "additionalProperties": false
       }
     },
@@ -54,9 +76,6 @@
       "minimum": 0
     }
   },
-  "required": [
-    "data",
-    "total"
-  ],
+  "required": ["data", "total"],
   "additionalProperties": false
 }

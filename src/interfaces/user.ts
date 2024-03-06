@@ -50,6 +50,16 @@ export interface IUserData {
   id: number
   nickname: string
   phone: string
+  gender: 'male' | 'female'
+  availableTickets: [
+    {
+      id: number
+      isActive: boolean
+      type: 'fitness' | 'personal'
+      month: number
+      expiredAt: string
+    }
+  ]
   trainers: [{id: string; nickname: string}]
   createdAt: Date
 }
