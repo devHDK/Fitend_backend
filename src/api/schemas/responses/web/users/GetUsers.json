@@ -36,16 +36,12 @@
           },
           "isHolding": {
             "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
           }
         },
-        "required": [
-          "id",
-          "nickname",
-          "phone",
-          "trainers",
-          "createdAt",
-          "isHolding"
-        ],
+        "required": ["id", "nickname", "phone", "trainers", "createdAt", "isHolding", "isActive"],
         "additionalProperties": false
       }
     },
@@ -54,9 +50,6 @@
       "minimum": 0
     }
   },
-  "required": [
-    "data",
-    "total"
-  ],
+  "required": ["data", "total"],
   "additionalProperties": false
 }

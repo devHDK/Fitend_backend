@@ -52,6 +52,8 @@ export interface IUserData {
   phone: string
   trainers: [{id: string; nickname: string}]
   createdAt: Date
+  isHolding: boolean
+  isActive: boolean
 }
 
 export interface IUserDataForAdmin {
