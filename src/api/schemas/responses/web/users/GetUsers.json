@@ -42,7 +42,8 @@
                   "format": "date"
                 }
               }
-            }
+            },
+            "nullable": true
           },
           "trainers": {
             "type": "array",
