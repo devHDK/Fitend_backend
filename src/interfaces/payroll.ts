@@ -22,21 +22,29 @@ export interface IMonth {
   userCount: IUserCount
   wageInfo: IWageInfo
   reservations?: IReservation[]
-  coaching?: ICoaching[]
+  coaching?: IResponseList<ICoaching>
 }
 
+export interface ICalculatedPayroll {
+  userCount: IUserCount
+  wageInfo: {
+    wage: number
+    monthEndWage: number
+  }
+  reservations?: IReservation[]
+  coaching?: IResponseList<ICoaching>
+}
 export interface ICoaching {
   ticketId: number
   nickname: string
   type: number
+  coachingPrice?: number
+  payroll?: number
   startedAt: string
   expiredAt: string
-  holdingList: {
-    holdId: number
-    startAt: string
-    endAt: string
-    days: number
-  }[]
+  holdingList: IHolding[]
+  usedDate?: number
+  totalUser?: number
 }
 
 export interface IReservation {
@@ -44,7 +52,7 @@ export interface IReservation {
   type: string
   nickname: string
   sessionPrice: number
-  coachingPrice: number
+  payroll?: number
   totalSession: number
   leftSession: number
   thisMonthCount?: number
@@ -60,6 +68,13 @@ export interface IUserCount {
   preUser: number
   paidUser: number
   leaveUser: number
+}
+
+export interface IHolding {
+  holdId: number
+  startAt: string
+  endAt: string
+  days: number
 }
 
 export interface ICoachingForAdmin {

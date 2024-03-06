@@ -65,9 +65,12 @@
           },
           "isHolding": {
             "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
           }
         },
-        "required": ["id", "nickname", "phone", "trainers", "createdAt", "isHolding"],
+        "required": ["id", "nickname", "phone", "trainers", "createdAt", "isHolding", "isActive"],
         "additionalProperties": false
       }
     },

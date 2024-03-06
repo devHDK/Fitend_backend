@@ -149,27 +149,29 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
             FROM ?? ti
             JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
             JOIN ?? tra ON tra.id = tr.trainerId
-            WHERE ti.expiredAt >= '${currentTime}'
-            LIMIT 1
             ) as trainers,
             (SELECT IF(EXISTS(SELECT * FROM ?? th
               JOIN ?? tr ON tr.userId = t.id
               JOIN ?? ti ON tr.ticketId = ti.id AND th.ticketId = ti.id
               WHERE th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}'), TRUE, FALSE) 
-              ) as isHolding
+            ) as isHolding,
+            (SELECT IF(EXISTS(SELECT * FROM ?? ti 
+              JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
+              WHERE ti.startedAt <= '${currentTime}' AND ti.expiredAt >= '${currentTime}'), TRUE, FALSE)
+            ) as isActive
             FROM ?? t
             JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
             ${
               trainerId
                 ? `JOIN TicketsRelations tr ON tr.trainerId = ${escape(trainerId)} AND tr.userId = t.id
-                   JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt >= '${currentTime}'`
+                   JOIN Tickets ti ON ti.id = tr.ticketId`
                 : ''
             }
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''} 
             GROUP BY t.id
-            ${status === 'active' ? `HAVING trainers IS NOT NULL AND isHolding IS false` : ``}
-            ${status === 'banned' ? `HAVING trainers IS NULL` : ``}
+            ${status === 'active' ? `HAVING isActive IS true AND isHolding IS false` : ``}
             ${status === 'hold' ? `HAVING isHolding IS true` : ``}
+            ${status === 'banned' ? `HAVING isActive IS false` : ``}
             ORDER BY t.createdAt DESC
             LIMIT ${start}, ${perPage}`,
       values: [
@@ -181,6 +183,8 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
         TicketHolding.tableName,
         Ticket.tableTicketRelation,
         Ticket.tableName,
+        Ticket.tableName,
+        Ticket.tableTicketRelation,
         tableName,
         tableFranchiseUser,
         franchiseId
@@ -192,27 +196,29 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
               (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
               JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
               JOIN ?? tra ON tra.id = tr.trainerId
-              WHERE ti.expiredAt >= '${currentTime}'
-              LIMIT 1
               ) as trainers,
               (SELECT IF(EXISTS(SELECT * FROM ?? th
-                JOIN ?? tr ON tr.userId = t.id
-                JOIN ?? ti ON tr.ticketId = ti.id AND th.ticketId = ti.id
-                WHERE th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}'), TRUE, FALSE) 
-                ) as isHolding
+              JOIN ?? tr ON tr.userId = t.id
+              JOIN ?? ti ON tr.ticketId = ti.id AND th.ticketId = ti.id
+              WHERE th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}'), TRUE, FALSE) 
+              ) as isHolding,
+              (SELECT IF(EXISTS(SELECT * FROM ?? ti 
+              JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
+              WHERE ti.startedAt <= '${currentTime}' AND ti.expiredAt >= '${currentTime}'), TRUE, FALSE)
+              ) as isActive
               FROM ?? t
               JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
               ${
                 trainerId
                   ? `JOIN TicketsRelations tr ON tr.trainerId = ${escape(trainerId)} AND tr.userId = t.id
-                   JOIN Tickets ti ON ti.id = tr.ticketId AND ti.expiredAt >= '${currentTime}'`
+                   JOIN Tickets ti ON ti.id = tr.ticketId`
                   : ''
               }
               ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
               GROUP BY t.id
-              ${status === 'active' ? `HAVING trainers IS NOT NULL AND isHolding IS false` : ``}
-              ${status === 'banned' ? `HAVING trainers IS NULL` : ``}
+              ${status === 'active' ? `HAVING isActive IS true AND isHolding IS false` : ``}
               ${status === 'hold' ? `HAVING isHolding IS true` : ``}
+              ${status === 'banned' ? `HAVING isActive IS false` : ``}
             ) t
             `,
       values: [
@@ -222,6 +228,8 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
         TicketHolding.tableName,
         Ticket.tableTicketRelation,
         Ticket.tableName,
+        Ticket.tableName,
+        Ticket.tableTicketRelation,
         tableName,
         tableFranchiseUser,
         franchiseId

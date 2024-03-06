@@ -1,0 +1,143 @@
+{
+  "type": "object",
+  "properties": {
+    "userCount": {
+      "type": "object",
+      "required": ["preUser", "paidUser", "leaveUser"],
+      "properties": {
+        "preUser": {
+          "type": "integer"
+        },
+        "paidUser": {
+          "type": "integer"
+        },
+        "leaveUser": {
+          "type": "integer"
+        }
+      }
+    },
+    "wageInfo": {
+      "type": "object",
+      "required": ["wage", "monthEndWage"],
+      "properties": {
+        "wage": {
+          "type": "integer"
+        },
+        "monthEndWage": {
+          "type": "integer"
+        }
+      }
+    },
+    "reservations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "ticketId",
+          "type",
+          "nickname",
+          "sessionPrice",
+          "payroll",
+          "totalSession",
+          "leftSession",
+          "thisMonthCount"
+        ],
+        "properties": {
+          "ticketId": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "sessionPrice": {
+            "type": "integer"
+          },
+          "payroll": {
+            "type": "integer"
+          },
+          "totalSession": {
+            "type": "integer"
+          },
+          "leftSession": {
+            "type": "integer"
+          },
+          "thisMonthCount": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "coaching": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "ticketId",
+              "nickname",
+              "type",
+              "usedDate",
+              "payroll",
+              "startedAt",
+              "expiredAt",
+              "holdingList"
+            ],
+            "properties": {
+              "ticketId": {
+                "type": "integer"
+              },
+              "nickname": {
+                "type": "string"
+              },
+              "type": {
+                "type": "integer"
+              },
+              "usedDate": {
+                "type": "integer"
+              },
+              "payroll": {
+                "type": "integer"
+              },
+              "startedAt": {
+                "type": "string"
+              },
+              "expiredAt": {
+                "type": "string"
+              },
+              "holdingList": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "holdId": {
+                      "type": "integer"
+                    },
+                    "startAt": {
+                      "type": "string"
+                    },
+                    "endAt": {
+                      "type": "string"
+                    },
+                    "days": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "nullable": true
+              }
+            }
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "required": ["wageInfo", "reservations", "coaching", "userCount"]
+}

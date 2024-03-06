@@ -62,6 +62,8 @@ export interface IUserData {
   ]
   trainers: [{id: string; nickname: string}]
   createdAt: Date
+  isHolding: boolean
+  isActive: boolean
 }
 
 export interface IUserDataForAdmin {

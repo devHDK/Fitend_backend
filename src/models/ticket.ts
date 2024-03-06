@@ -395,14 +395,14 @@ async function findBetweenFCTicket(options: {
   startDate: Date
   trainerId: number
   franchiseId: number
-}): Promise<[ICoaching]> {
+}): Promise<IResponseList<ICoaching>> {
   try {
     const {startDate, trainerId, franchiseId} = options
     const currentTime = moment(startDate).format('YYYY-MM-DD')
     const startMonth = moment(startDate).startOf('month').format('YYYY-MM-DD')
 
     const rows = await db.query({
-      sql: `SELECT t.id as ticketId, u.nickname, t.month as type, 
+      sql: `SELECT t.id as ticketId, u.nickname, t.month as type, t.coachingPrice,
             DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt, DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt,
             (SELECT JSON_ARRAYAGG(
               JSON_OBJECT('holdId', th.id, 'startAt', th.startAt, 'endAt', th.endAt, 'days', th.days
@@ -417,7 +417,19 @@ async function findBetweenFCTicket(options: {
             AND t.expiredAt >= ${escape(startMonth)} AND t.startedAt <= ${escape(currentTime)}`,
       values: [TicketHolding.tableName, tableName, tableTicketRelation, User.tableName, trainerId, franchiseId]
     })
-    return rows
+
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total FROM (
+        SELECT u.id FROM ?? u
+        JOIN ?? tr ON tr.userId = u.id
+        JOIN ?? ti ON ti.id = tr.ticketId
+        WHERE tr.trainerId = ? AND tr.franchiseId = ? AND ti.type = 'fitness'
+        AND ti.expiredAt >= ${escape(startMonth)} AND ti.startedAt <= ${escape(currentTime)}
+        GROUP BY u.id
+      ) t`,
+      values: [User.tableName, tableTicketRelation, tableName, trainerId, franchiseId]
+    })
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
     throw e
   }
