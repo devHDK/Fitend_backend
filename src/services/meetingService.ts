@@ -224,7 +224,12 @@ async function update(options: IMeetingUpdate): Promise<void> {
     const meetingDetail = await Meeting.findOneWithId(options.id)
     const trainerId = meetingDetail.trainer.id
 
-    const meetingCount = await Meeting.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
+    const meetingCount = await Meeting.findOneWithTimeAndTrainerId({
+      trainerId,
+      startTime,
+      endTime,
+      reservedId: meetingDetail.id
+    })
     if (meetingCount > 0) throw new Error('schedule_dupplicate')
 
     const reservationCount = await Reservation.findOneWithTimeAndTrainerId({trainerId, startTime, endTime})
