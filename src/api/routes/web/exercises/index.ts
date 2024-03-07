@@ -49,6 +49,19 @@ const getExercisesWithId = new ApiRouter({
   handler: ctrl.getExercisesWithId
 })
 
+const getExerciseHistoryWithId = new ApiRouter({
+  name: ':id/history',
+  method: 'get',
+  paths: ['common/IdPath'],
+  summary: '운동 히스토리',
+  tags: ['Exercise'],
+  schema: 'requests/web/exercises/GetExerciseHistoryWithId',
+  responses: {
+    200: {schema: 'responses/web/exercises/GetExerciseHistoryWithId'}
+  },
+  handler: ctrl.getExerciseHistoryWithId
+})
+
 const putExercisesWithId = new ApiRouter({
   name: ':id',
   method: 'put',
@@ -74,4 +87,12 @@ const putExercisesBookmark = new ApiRouter({
   handler: ctrl.putExercisesBookmark
 })
 
-export {postExercises, getExercises, getExercisesTags, getExercisesWithId, putExercisesWithId, putExercisesBookmark}
+export {
+  postExercises,
+  getExercises,
+  getExercisesTags,
+  getExercisesWithId,
+  getExerciseHistoryWithId,
+  putExercisesWithId,
+  putExercisesBookmark
+}

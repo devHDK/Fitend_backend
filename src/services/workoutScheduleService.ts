@@ -17,8 +17,7 @@ import {
   IWorkoutScheduleDetail,
   IWorkoutScheduleCreate,
   IWorkoutScheduleUpdate,
-  IWorkoutScheduleListForTrainer,
-  IWorkoutHistory
+  IWorkoutScheduleListForTrainer
 } from '../interfaces/workoutSchedules'
 import {IWorkoutFeedbackCreate} from '../interfaces/workoutFeedbacks'
 import {db, firebase} from '../loaders'
@@ -194,16 +193,6 @@ async function findAll(options: IWorkoutScheduleFindAll): Promise<[IWorkoutSched
 async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWorkoutScheduleListForTrainer]> {
   try {
     return await WorkoutSchedule.findAllForTrainer(options)
-  } catch (e) {
-    throw e
-  }
-}
-
-async function findAllHistory(id: number, userId: number): Promise<[IWorkoutHistory]> {
-  try {
-    const today = moment().format('YYYY-MM-DD')
-    const startDate = moment().subtract(2, 'M').format('YYYY-MM-DD')
-    return await WorkoutSchedule.findAllHistory(id, userId, today, startDate)
   } catch (e) {
     throw e
   }
@@ -392,7 +381,6 @@ export {
   createFeedbacks,
   findAll,
   findAllForTrainer,
-  findAllHistory,
   findOne,
   findOneForTrainer,
   update,

@@ -88,8 +88,11 @@
         },
         "required": ["workoutScheduleId", "createdAt"]
       }
+    },
+    "total": {
+      "type": "integer"
     }
   },
-  "required": ["data"],
+  "required": ["data", "total"],
   "additionalProperties": false
 }

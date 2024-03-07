@@ -52,19 +52,6 @@ const putWorkoutSchedulesWithId = new ApiRouter({
   handler: ctrl.putWorkoutSchedulesWithId
 })
 
-const getWorkoutHistoryWithId = new ApiRouter({
-  name: ':id/history',
-  method: 'get',
-  paths: ['common/IdPath'],
-  summary: '운동 히스토리',
-  tags: ['WorkoutSchedule'],
-  schema: 'requests/web/workoutSchedules/GetWorkoutHistoryWithId',
-  responses: {
-    200: {schema: 'responses/web/workoutSchedules/GetWorkoutHistoryWithId'}
-  },
-  handler: ctrl.getWorkoutHistoryWithId
-})
-
 const deleteWorkoutSchedulesWithId = new ApiRouter({
   name: ':id',
   paths: ['common/IdPath'],
@@ -81,7 +68,6 @@ export {
   postWorkoutSchedules,
   getWorkoutSchedules,
   getWorkoutSchedulesWithId,
-  getWorkoutHistoryWithId,
   putWorkoutSchedulesWithId,
   deleteWorkoutSchedulesWithId
 }

@@ -1,6 +1,7 @@
 import {IExerciseFindAll, IExerciseList, IExerciseFindOne} from '../interfaces/exercise'
-import {Exercise, StandardExercise} from '../models/index'
+import {Exercise, StandardExercise, WorkoutSchedule} from '../models/index'
 import {db} from '../loaders'
+import {IWorkoutHistoryFindAll, IWorkoutHistoryListForTrainer} from '../interfaces/workoutSchedules'
 
 async function create(options: {
   trainerId: number
@@ -58,6 +59,14 @@ async function findAllTags(search: string): Promise<[{id: number; name: string}]
   }
 }
 
+async function findAllHistory(options: IWorkoutHistoryFindAll): Promise<IWorkoutHistoryListForTrainer> {
+  try {
+    return await WorkoutSchedule.findAllHistory(options)
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findOne(id: number, trainerId: number): Promise<IExerciseFindOne> {
   try {
     return await Exercise.findOneWithId(id, trainerId)
@@ -100,4 +109,4 @@ async function updateBookmark(options: {exerciseId: number; trainerId: number}):
   }
 }
 
-export {create, findAll, findAllTags, findOne, update, updateBookmark}
+export {create, findAll, findAllTags, findAllHistory, findOne, update, updateBookmark}

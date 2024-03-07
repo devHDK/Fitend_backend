@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "integer"
+    },
+    "start": {
+      "type": "integer"
+    },
+    "perPage": {
+      "type": "integer"
+    }
+  },
+  "required": ["userId", "start", "perPage"],
+  "additionalProperties": false
+}

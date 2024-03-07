@@ -78,6 +78,17 @@ async function getExercisesWithId(req: IRequest, res: Response, next: Function):
   }
 }
 
+async function getExerciseHistoryWithId(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, userId, start, perPage} = req.options
+    const ret = await ExerciseService.findAllHistory({id, userId, start, perPage})
+    res.status(200).json(ret)
+  } catch (e) {
+    if (e.message === 'not_found') e.status = 404
+    next(e)
+  }
+}
+
 async function putExercisesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id, description, tags, videos} = req.options
@@ -103,4 +114,12 @@ async function putExercisesBookmark(req: IRequest, res: Response, next: Function
   }
 }
 
-export {postExercises, getExercises, getExercisesTags, getExercisesWithId, putExercisesWithId, putExercisesBookmark}
+export {
+  postExercises,
+  getExercises,
+  getExercisesTags,
+  getExercisesWithId,
+  getExerciseHistoryWithId,
+  putExercisesWithId,
+  putExercisesBookmark
+}

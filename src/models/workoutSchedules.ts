@@ -8,7 +8,9 @@ import {
   IWorkoutScheduleCreate,
   IWorkoutScheduleUpdate,
   IWorkoutScheduleListForTrainer,
-  IWorkoutHistory
+  IWorkoutHistory,
+  IWorkoutHistoryFindAll,
+  IWorkoutHistoryListForTrainer
 } from '../interfaces/workoutSchedules'
 import {db} from '../loaders'
 import {
@@ -117,33 +119,56 @@ async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWo
   }
 }
 
-async function findAllHistory(
-  id: number,
-  userId: number,
-  today: string,
-  startDate: string
-): Promise<[IWorkoutHistory]> {
+async function findAllHistory(options: IWorkoutHistoryFindAll): Promise<IWorkoutHistoryListForTrainer> {
+  const {id, userId, start, perPage} = options
   try {
-    return await db.query({
-      sql: `SELECT t.id as workoutScheduleId, st.trackingFieldId, st.name, wr.setInfo, wp.setInfo as goalSetInfo,wr.createdAt
+    const rows = await db.query({
+      sql: `SELECT t.id as workoutScheduleId, st.trackingFieldId, st.name, wr.setInfo, wp.setInfo as goalSetInfo, wr.createdAt
             FROM ?? t
-            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = ${escape(id)}
-            JOIN ?? see ON see.exerciseId = wp.exerciseId
+            JOIN ?? see ON see.exerciseId = ${escape(id)}
             JOIN ?? st ON st.id = see.standardExerciseId
+            JOIN ?? see2 ON see2.standardExerciseId = st.id
+            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = see2.exerciseId
             JOIN ?? wr ON wr.workoutPlanId = wp.id
-            WHERE t.userId = ${escape(userId)} AND 
-            t.startDate BETWEEN ${escape(startDate)} AND ${escape(today)}
+            WHERE t.userId = ${escape(userId)}
             GROUP BY t.id
             ORDER BY wr.createdAt DESC
+            LIMIT ${start}, ${perPage}
             `,
       values: [
         tableName,
-        WorkoutPlan.tableName,
         StandardExercise.tableStandardExercisesExercises,
         StandardExercise.tableName,
+        StandardExercise.tableStandardExercisesExercises,
+        WorkoutPlan.tableName,
         WorkoutRecords.tableName
       ]
     })
+
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total FROM (
+            SELECT t.id as workoutScheduleId, st.trackingFieldId, st.name, wr.setInfo, wp.setInfo as goalSetInfo, wr.createdAt
+            FROM ?? t
+            JOIN ?? see ON see.exerciseId = ${escape(id)}
+            JOIN ?? st ON st.id = see.standardExerciseId
+            JOIN ?? see2 ON see2.standardExerciseId = st.id
+            JOIN ?? wp ON wp.workoutScheduleId = t.id AND wp.exerciseId = see2.exerciseId
+            JOIN ?? wr ON wr.workoutPlanId = wp.id
+            WHERE t.userId = ${escape(userId)}
+            GROUP BY t.id
+            ORDER BY wr.createdAt DESC
+      ) t
+      `,
+      values: [
+        tableName,
+        StandardExercise.tableStandardExercisesExercises,
+        StandardExercise.tableName,
+        StandardExercise.tableStandardExercisesExercises,
+        WorkoutPlan.tableName,
+        WorkoutRecords.tableName
+      ]
+    })
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {
     throw e
   }

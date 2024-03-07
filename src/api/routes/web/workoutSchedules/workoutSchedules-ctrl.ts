@@ -43,16 +43,6 @@ async function getWorkoutSchedulesWithId(req: IRequest, res: Response, next: Fun
   }
 }
 
-async function getWorkoutHistoryWithId(req: IRequest, res: Response, next: Function): Promise<void> {
-  try {
-    const ret = await WorkoutScheduleService.findAllHistory(req.options.id, req.options.userId)
-    res.status(200).json({data: ret})
-  } catch (e) {
-    if (e.message === 'not_found') e.status = 404
-    next(e)
-  }
-}
-
 async function putWorkoutSchedulesWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id, workoutTitle, workoutSubTitle, startDate, seq, totalTime, workoutPlans} = req.options
@@ -86,7 +76,6 @@ export {
   postWorkoutSchedules,
   getWorkoutSchedules,
   getWorkoutSchedulesWithId,
-  getWorkoutHistoryWithId,
   putWorkoutSchedulesWithId,
   deleteWorkoutSchedulesWithId
 }

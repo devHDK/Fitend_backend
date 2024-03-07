@@ -126,13 +126,22 @@ export interface IWorkoutSchedulePushType {
   data?: any
 }
 
-export type IWorkoutHistory = {
+export type IWorkoutHistoryFindAll = {
+  id: number
+  userId: number
+  start: number
+  perPage: number
+}
+
+export interface IWorkoutHistory {
   workoutScheduleId: number
   name: string
   createdAt: Date
   setInfo: SetInfo[]
   goalSetInfo: SetInfo[]
 }
+
+export type IWorkoutHistoryListForTrainer = IResponseList<IWorkoutHistory>
 
 export type SetInfo = {
   index: number
