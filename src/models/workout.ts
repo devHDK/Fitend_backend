@@ -172,7 +172,7 @@ async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDet
                 FROM (
                   SELECT DISTINCT tm.name
                   FROM ?? we
-                  JOIN ?? se ON se.exerciseId = we.exerciseId
+                  JOIN ?? se ON se.exerciseId = we.exerciseId AND e.id = we.exerciseId
                   JOIN ?? stde ON stde.id = se.standardExerciseId
                   JOIN ?? setm ON setm.standardExerciseId = se.standardExerciseId AND setm.type = 'main'
                   JOIN ?? tm ON tm.id = setm.targetMuscleId
