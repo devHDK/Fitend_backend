@@ -166,8 +166,12 @@ async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDet
             ) as primaryTypes,
             t.trainerId, tr.nickname as trainerNickname, tr.profileImage as trainerProfileImage, t.updatedAt,
             JSON_ARRAYAGG(
-              JSON_OBJECT('id', e.id, 'videos', e.videos, 'name', stde.name, 'trackingFieldId', stde.trackingFieldId ,
-              'setInfo', we.setInfo, 'circuitGroupNum', we.circuitGroupNum, 'setType', we.setType, 'circuitSeq', we.circuitSeq,
+              JSON_OBJECT('id', e.id, 'videos', e.videos, 'name', stde.name, 'trackingFieldId', stde.trackingFieldId,
+              'setInfo', we.setInfo, 'circuitGroupNum', we.circuitGroupNum, 'setType', we.setType, 'circuitSeq', we.circuitSeq, 
+              'trainerNickname', (SELECT tra.nickname 
+                FROM ?? tra
+                WHERE tra.id = e.trainerId
+                ),
               'targetMuscles', (SELECT JSON_ARRAYAGG(t.name) 
                 FROM (
                   SELECT DISTINCT tm.name
@@ -195,6 +199,7 @@ async function findOneWithId(id: number, trainerId: number): Promise<IWorkoutDet
         StandardExercise.tableStandardExercisesExercises,
         StandardExercise.tableStandardExerciseTargetMuscle,
         Exercise.tableTargetMuscle,
+        Trainer.tableName,
         tableWorkoutExercise,
         StandardExercise.tableStandardExercisesExercises,
         StandardExercise.tableName,

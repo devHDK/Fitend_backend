@@ -64,10 +64,13 @@
           "name": {
             "type": "string"
           },
+          "trainerNickname": {
+            "type": "string"
+          },
           "trackingFieldId": {
             "type": "integer"
           },
-          "circuitGroupNum" : {
+          "circuitGroupNum": {
             "type": "integer",
             "nullable": true
           },
@@ -132,4 +135,3 @@
   ],
   "additionalProperties": false
 }
-

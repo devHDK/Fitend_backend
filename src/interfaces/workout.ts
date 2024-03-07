@@ -50,6 +50,7 @@ export interface IWorkoutDetail {
         }
       ]
       name: string
+      trainerNickname: string
       trackingFieldId: number
       setInfo: [{index: number; reps: number; weight: number; seconds: number}]
       targetMuscles: string[]
