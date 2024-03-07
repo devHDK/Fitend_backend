@@ -20,6 +20,9 @@
       "type": "object",
       "required": ["wage", "monthEndWage"],
       "properties": {
+        "baseWage": {
+          "type": "integer"
+        },
         "wage": {
           "type": "integer"
         },

@@ -118,6 +118,7 @@ async function findCalculatedPayroll(req: IPayrollFindAll): Promise<ICalculatedP
         leaveUser
       },
       wageInfo: {
+        baseWage: trainerWageInfo.baseWage,
         wage: totalReservationPayroll + totalCoachingPayroll,
         monthEndWage: totalReservationPayroll + monthEndCoachingPayroll
       },

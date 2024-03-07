@@ -28,6 +28,7 @@ export interface IMonth {
 export interface ICalculatedPayroll {
   userCount: IUserCount
   wageInfo: {
+    baseWage: number
     wage: number
     monthEndWage: number
   }

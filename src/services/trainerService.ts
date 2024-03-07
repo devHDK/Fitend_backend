@@ -83,7 +83,7 @@ async function create(options: ITrainerCreateOneForAdmin): Promise<void> {
         trainerId: insertId,
         fcPercentage,
         ptPercentage: 30,
-        baseWage: 2100000
+        baseWage: 0
       },
       connection
     )
