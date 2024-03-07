@@ -10,3 +10,12 @@ export type IFranchiseWithWageInfo = {
   fcPercentage: number
   ptPercentage: number
 }
+
+export type IFranchiseTrainers = {
+  franchiseId: number
+  trainerId: string
+  baseWage: number
+  fcPercentage: number
+  ptPercentage: number
+  createdAt: Date
+}

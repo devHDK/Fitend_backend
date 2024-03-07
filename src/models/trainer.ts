@@ -20,6 +20,7 @@ import {
 } from '../interfaces/trainer'
 import {IWageInfo} from '../interfaces/payroll'
 import {Ticket, User} from './'
+import {IFranchiseTrainers} from '../interfaces/franchise'
 
 moment.tz.setDefault('Asia/Seoul')
 
@@ -293,6 +294,19 @@ async function findOneWithIdForUser(id: number): Promise<ITrainerDetailForUser> 
   }
 }
 
+async function findOneRelationFranchise(trainerId: number, connection: PoolConnection): Promise<IFranchiseTrainers> {
+  try {
+    const [rows] = await db.query({
+      connection,
+      sql: `SELECT ft.* FROM ?? ft WHERE ?`,
+      values: [tableFranchiseTrainer, {trainerId}]
+    })
+    return rows
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findDeviceList(): Promise<[{deviceId: string}]> {
   try {
     const row = await db.query({
@@ -416,6 +430,7 @@ export {
   findExtendTrainer,
   findOneWithIdForAdmin,
   findOneWithIdForUser,
+  findOneRelationFranchise,
   findDeviceList,
   findTrainersMeetingBoundaryWithId,
   updateForAdmin,

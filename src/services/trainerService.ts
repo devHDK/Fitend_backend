@@ -330,14 +330,17 @@ async function updateTrainerForAdmin(options: IUpdateTrainerForAdmin): Promise<v
       },
       connection
     )
+    const trainerRelationFranchise = await Trainer.findOneRelationFranchise(id, connection)
+
     await Trainer.deleteRelationFranchise(id, connection)
+
     await Trainer.createRelationsFranchises(
       {
         franchiseId: 1,
         trainerId: id,
         fcPercentage,
         ptPercentage: 30,
-        baseWage: 2100000
+        baseWage: trainerRelationFranchise.baseWage
       },
       connection
     )
