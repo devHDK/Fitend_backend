@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "preUserCount": {
+      "type": "integer"
+    },
+    "paidUserCount": {
+      "type": "integer"
+    },
+    "expiredSevenDaysCount": {
+      "type": "integer"
+    }
+  },
+  "required": ["preUserCount", "paidUserCount", "expiredSevenDaysCount"],
+  "additionalProperties": false
+}

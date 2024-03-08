@@ -3,7 +3,7 @@ import {DashboardService} from '../../../../services'
 
 async function getDashboardActiveUsers(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const ret = await DashboardService.findActiveUsers(req.franchiseId, req.options.trainerId)
+    const ret = await DashboardService.findActiveUsers({franchiseId: req.franchiseId, trainerId: req.options.trainerId})
     res.status(200).json(ret)
   } catch (e) {
     next(e)

@@ -107,6 +107,11 @@ export interface IUserFindAll {
   trainerId?: number
 }
 
+export interface IFindActiveUsers {
+  franchiseId: number
+  trainerId?: number
+}
+
 export interface IUserUpdate {
   id: number
   nickname?: string
