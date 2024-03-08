@@ -74,7 +74,7 @@ async function createRecords(userId: number, options: IWorkoutRecordsCreate): Pr
       const user = await User.findOne({id: userId})
       const trainer = await Trainer.findOne({id: trainerId})
       const trainerDevices = await TrainerDevice.findAllWithUserId(trainerId)
-      const contents = `${user.nickname}님이 운동을 완료했어요 🔥\n ${data.title} ∙ ${data.subTitle} `
+      const contents = `${user.nickname}님이 운동을 완료했어요 🔥\n${data.title} ∙ ${data.subTitle} `
 
       threadId = await Thread.create(
         {
