@@ -1,20 +1,20 @@
 import moment from 'moment-timezone'
 import {Reservation, Ticket, User, WorkoutRecords} from '../models/index'
+import {IFindActiveUsers} from '../interfaces/user'
 
 moment.tz.setDefault('Asia/Seoul')
 
 async function findActiveUsers(
-  franchiseId: number,
-  trainerId: number
+  options: IFindActiveUsers
 ): Promise<{
   preUserCount: number
   paidUserCount: number
   expiredSevenDaysCount: number
 }> {
   try {
-    const preUserCount = await User.findPreUserCount(franchiseId, trainerId)
-    const paidUserCount = await User.findPaidUserCount(franchiseId, trainerId)
-    const expiredSevenDaysCount = await User.findExpiredSevenDaysCount(franchiseId, trainerId)
+    const preUserCount = await User.findPreUserCount(options)
+    const paidUserCount = await User.findPaidUserCount(options)
+    const expiredSevenDaysCount = await User.findExpiredSevenDaysCount(options)
     return {
       preUserCount,
       paidUserCount,
