@@ -15,6 +15,10 @@
       "type": "boolean",
       "nullable": true
     },
+    "isChangeDateThread": {
+      "type": "boolean",
+      "nullable": true
+    },
     "gallery": {
       "type": "array",
       "items": {

@@ -74,6 +74,7 @@ export interface IThreadCreateOne {
   gallery?: string
   workoutInfo?: IThreadWorkoutInfo | string
   isMeetingThread?: boolean
+  isChangeDateThread?: boolean
 }
 
 export interface IThreadWorkoutInfo {

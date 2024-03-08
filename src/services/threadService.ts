@@ -17,16 +17,19 @@ import {ITrainerDevice} from '../interfaces/trainerDevice'
 async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
   const connection = await db.beginTransaction()
   try {
-    const {userId, writerType, title, content, isMeetingThread, trainerId} = options
+    const {userId, writerType, title, content, isMeetingThread, isChangeDateThread, trainerId} = options
 
     delete options.isMeetingThread
+    delete options.isChangeDateThread
 
     const threadId = await Thread.create(options, connection)
     const user = await User.findOne({id: userId})
     if (writerType === 'user') {
       const trainer = await Trainer.findOne({id: trainerId})
       const trainerDevices = await TrainerDevice.findAllWithUserId(trainerId)
-      const contents = `${user.nickname}님이 스레드를 올렸어요 👀\n${title ? `${title} ∙ ` : ''}${content}`
+      const contents = isChangeDateThread
+        ? `${user.nickname}님이 일정을 변경했어요 🗓️️\n${content.split('\n')[0]} ∙ ${content.split('\n')[1]}`
+        : `${user.nickname}님이 스레드를 올렸어요 👀\n${title ? `${title} ∙ ` : ''}${content}`
       const info = {
         userId,
         nickname: user.nickname,
