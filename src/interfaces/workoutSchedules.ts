@@ -92,6 +92,7 @@ export interface IWorkoutScheduleExercise {
   description: string
   trackingFieldId: number
   isVideoRecord: boolean
+  devisionId: boolean
   targetMuscles: [
     {
       id: number

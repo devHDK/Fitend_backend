@@ -35,6 +35,9 @@
     "isVideoRecord": {
       "type": "boolean"
     },
+    "devisionId": {
+      "type": "number"
+    },
     "exercises": {
       "type": "array",
       "items": {
