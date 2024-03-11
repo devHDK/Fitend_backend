@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "nickname": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,20}$"
+    },
+    "password": {
+      "type": "string",
+      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=/]{8,20}$"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "phone": {
+      "type": "string",
+      "pattern": "^01([016789]{1})([0-9]{4})([0-9]{4})$"
+    },
+    "birth": {
+      "type": "string",
+      "format": "date"
+    },
+    "gender": {
+      "type": "string",
+      "enum": ["male", "female"]
+    },
+    "memo": {
+      "type": "string"
+    }
+  },
+  "required": ["nickname", "phone", "gender"],
+  "additionalProperties": false
+}

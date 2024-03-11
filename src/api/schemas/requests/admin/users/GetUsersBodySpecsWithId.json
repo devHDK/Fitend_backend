@@ -1,16 +1,6 @@
 {
   "type": "object",
   "properties": {
-    "search": {
-      "type": "string"
-    },
-    "trainerSearch": {
-      "type": "string"
-    },
-    "status": {
-      "type": "string",
-      "enum": ["active", "expired", "hold"]
-    },
     "start": {
       "type": "integer",
       "minimum": 0,

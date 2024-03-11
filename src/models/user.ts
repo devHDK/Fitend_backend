@@ -318,49 +318,98 @@ async function findUsersWorkoutSchedules(options: IUsersWorkoutSchedulesFindAll)
 
 async function findAllForAdmin(options: IUserFindAll): Promise<IUserListForAdmin> {
   try {
-    const {franchiseId, start, perPage, search, status} = options
+    const {franchiseId, start, perPage, search, trainerSearch, status} = options
     const where = []
+    const values = [
+      Ticket.tableName,
+      Ticket.tableTicketRelation,
+      Trainer.tableName,
+      TicketHolding.tableName,
+      Ticket.tableTicketRelation,
+      Ticket.tableName,
+      Ticket.tableName,
+      Ticket.tableTicketRelation,
+      tableName,
+      tableFranchiseUser
+    ]
+    const totalValues = [
+      TicketHolding.tableName,
+      Ticket.tableTicketRelation,
+      Ticket.tableName,
+      Ticket.tableName,
+      Ticket.tableTicketRelation,
+      tableName,
+      tableFranchiseUser
+    ]
 
-    if (search) where.push(`(u.nickname like '%${search}%' OR u.phone like '%${search}%')`)
+    if (trainerSearch) {
+      values.push(Ticket.tableTicketRelation, Trainer.tableName)
+      totalValues.push(Ticket.tableTicketRelation, Trainer.tableName)
+    }
+    if (search) where.push(`(u.nickname like '%${search}%')`)
     const currentTime = moment().format('YYYY-MM-DD')
     const rows: IUserDataForAdmin[] = await db.query({
-      sql: `SELECT u.id, u.email, u.nickname, u.phone, u.createdAt,
-            (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', fu.franchiseId, 'name', f.name)) FROM ?? f
-            JOIN ?? fu ON u.id = fu.userId AND f.id = fu.franchiseId) as franchises,
+      sql: `SELECT u.id, u.email, u.nickname, u.phone, u.gender, u.createdAt,
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', tra.id, 'nickname', tra.nickname)) FROM ?? ti
               JOIN ?? tr ON tr.userId = u.id AND tr.ticketId = ti.id
               JOIN ?? tra ON tra.id = tr.trainerId
-              WHERE ti.expiredAt > '${currentTime}'
-              LIMIT 1
-              ) as trainers
+            ) as trainers,
+            (SELECT IF(EXISTS(SELECT * FROM ?? th
+              JOIN ?? tr ON tr.userId = u.id
+              JOIN ?? ti ON tr.ticketId = ti.id AND th.ticketId = ti.id
+              WHERE th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}'), TRUE, FALSE) 
+              ) as isHolding,
+              (SELECT IF(EXISTS(SELECT * FROM ?? ti 
+              JOIN ?? tr ON tr.userId = u.id AND tr.ticketId = ti.id
+              WHERE ti.startedAt <= '${currentTime}' AND ti.expiredAt >= '${currentTime}'), TRUE, FALSE)
+              ) as isActive
             FROM ?? u
-            JOIN ?? fu ON fu.userId = u.id ${franchiseId ? `AND fu.franchiseId = ${escape(franchiseId)}` : ''}
+            JOIN ?? fu ON fu.userId = u.id AND fu.franchiseId = ${escape(franchiseId)}
+            ${
+              trainerSearch
+                ? `JOIN ?? tr ON tr.userId = u.id
+               JOIN ?? tra ON tra.id = tr.trainerId AND tra.nickname like '%${trainerSearch}%'
+              `
+                : ``
+            }
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY u.id
-            ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
+            ${status === 'active' ? `HAVING isActive IS true AND isHolding IS false` : ``}
+            ${status === 'hold' ? `HAVING isHolding IS true` : ``}
+            ${status === 'expired' ? `HAVING isActive IS false` : ``}
             ORDER BY u.createdAt DESC
             LIMIT ${start}, ${perPage}`,
-      values: [
-        tableFranchise,
-        tableFranchiseUser,
-        Ticket.tableName,
-        Ticket.tableTicketRelation,
-        Trainer.tableName,
-        tableName,
-        tableFranchiseUser
-      ]
+      values
     })
     const [rowTotal] = await db.query({
       sql: `SELECT COUNT(1) as total FROM (
-            SELECT u.id
+            SELECT u.id,
+            (SELECT IF(EXISTS(SELECT * FROM ?? th
+              JOIN ?? tr ON tr.userId = u.id
+              JOIN ?? ti ON tr.ticketId = ti.id AND th.ticketId = ti.id
+              WHERE th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}'), TRUE, FALSE) 
+              ) as isHolding,
+              (SELECT IF(EXISTS(SELECT * FROM ?? ti 
+              JOIN ?? tr ON tr.userId = u.id AND tr.ticketId = ti.id
+              WHERE ti.startedAt <= '${currentTime}' AND ti.expiredAt >= '${currentTime}'), TRUE, FALSE)
+              ) as isActive
             FROM ?? u
-            JOIN ?? fu ON fu.userId = u.id ${franchiseId ? `AND fu.franchiseId = ${escape(franchiseId)}` : ''}
+            JOIN ?? fu ON fu.userId = u.id AND fu.franchiseId = ${escape(franchiseId)}
+            ${
+              trainerSearch
+                ? `JOIN ?? tr ON tr.userId = u.id
+               JOIN ?? tra ON tra.id = tr.trainerId AND tra.nickname like '%${trainerSearch}%'
+              `
+                : ``
+            }
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
             GROUP BY u.id
-            ${status !== undefined ? `HAVING trainers IS ${status ? 'NOT' : ''} NULL` : ``}
+            ${status === 'active' ? `HAVING isActive IS true AND isHolding IS false` : ``}
+            ${status === 'hold' ? `HAVING isHolding IS true` : ``}
+            ${status === 'expired' ? `HAVING isActive IS false` : ``}
             ) u
             `,
-      values: [tableName, tableFranchiseUser]
+      values: totalValues
     })
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
   } catch (e) {

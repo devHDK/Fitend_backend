@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "startDate": {
+      "type": "string"
+    },
+    "endDate": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "integer"
+    }
+  },
+  "required": ["startDate", "userId"],
+  "additionalProperties": false
+}
