@@ -18,9 +18,14 @@ async function create(options: IPaymentCreate, connection: PoolConnection): Prom
   }
 }
 
-async function findAll(options: {search: string; start: number; perPage: number}): Promise<IPaymentList> {
+async function findAll(options: {
+  search: string
+  trainerId: number
+  start: number
+  perPage: number
+}): Promise<IPaymentList> {
   try {
-    const {search, start, perPage} = options
+    const {search, trainerId, start, perPage} = options
     const where = []
 
     if (search) where.push(`(u.nickname like '%${search}%')`)
@@ -28,7 +33,7 @@ async function findAll(options: {search: string; start: number; perPage: number}
       sql: `SELECT t.id, t.ticketId, u.nickname as userNickname,
             t.price, t.orderName, t.status, t.createdAt
             FROM ?? t
-            JOIN ?? tr ON tr.ticketId = t.ticketId
+            JOIN ?? tr ON tr.ticketId = t.ticketId ${trainerId ? `AND tr.trainerId = ${escape(trainerId)}` : ``}
             JOIN ?? u ON u.id = tr.userId
             ${where.length ? `WHERE ${where.join(' AND ')}` : ''} 
             GROUP BY t.id
@@ -41,7 +46,7 @@ async function findAll(options: {search: string; start: number; perPage: number}
       sql: `SELECT COUNT(1) as total FROM (SELECT t.id, t.ticketId, u.nickname as userNickname, 
         t.price, t.orderName, t.status, t.createdAt
         FROM ?? t
-        JOIN ?? tr ON tr.ticketId = t.ticketId
+        JOIN ?? tr ON tr.ticketId = t.ticketId ${trainerId ? `AND tr.trainerId = ${escape(trainerId)}` : ``}
         JOIN ?? u ON u.id = tr.userId
         ${where.length ? `WHERE ${where.join(' AND ')}` : ''} 
         GROUP BY t.ticketId

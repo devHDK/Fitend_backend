@@ -79,7 +79,12 @@ async function confirmPayments(options: IPaymentConfirm): Promise<ITicketList> {
   }
 }
 
-async function findAll(options: {search: string; start: number; perPage: number}): Promise<IPaymentList> {
+async function findAll(options: {
+  search: string
+  trainerId: number
+  start: number
+  perPage: number
+}): Promise<IPaymentList> {
   try {
     return await Payment.findAll(options)
   } catch (e) {

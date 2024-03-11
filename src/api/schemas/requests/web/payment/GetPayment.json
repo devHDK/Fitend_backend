@@ -4,6 +4,9 @@
     "search": {
       "type": "string"
     },
+    "trainerId": {
+      "type": "integer"
+    },
     "start": {
       "type": "integer",
       "minimum": 0,
