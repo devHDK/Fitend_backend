@@ -24,7 +24,7 @@
     },
     "shortIntro": {
       "type": "string",
-      "maxLength": 14
+      "maxLength": 17
     },
     "intro": {
       "type": "string"
