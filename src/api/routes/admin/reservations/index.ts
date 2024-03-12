@@ -13,4 +13,17 @@ const getReservations = new ApiRouter({
   handler: ctrl.getReservations
 })
 
-export {getReservations}
+const getReservationsWithId = new ApiRouter({
+  name: ':id',
+  method: 'get',
+  paths: ['common/IdPath'],
+  summary: '예약 상세',
+  tags: ['Reservation'],
+  responses: {
+    200: {schema: 'responses/admin/reservations/GetReservationsWithId'},
+    404: {description: 'not_found'}
+  },
+  handler: ctrl.getReservationsWithId
+})
+
+export {getReservations, getReservationsWithId}
