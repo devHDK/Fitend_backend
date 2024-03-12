@@ -58,7 +58,7 @@ async function putTicketsWithId(req: IRequest, res: Response, next: Function): P
       type,
       userId,
       trainerIds,
-      franchiseId: req.franchiseId,
+      franchiseId: 1,
       totalSession,
       serviceSession,
       sessionPrice,
