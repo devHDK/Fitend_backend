@@ -37,8 +37,7 @@
       "type": "string"
     },
     "shortIntro": {
-      "type": "string",
-      "maxLength": 17
+      "type": "string"
     },
     "intro": {
       "type": "string"
