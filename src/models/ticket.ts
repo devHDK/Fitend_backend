@@ -425,7 +425,6 @@ async function findBetweenFCTicket(options: {
         JOIN ?? ti ON ti.id = tr.ticketId
         WHERE tr.trainerId = ? AND tr.franchiseId = ? AND ti.type = 'fitness'
         AND ti.expiredAt >= ${escape(startMonth)} AND ti.startedAt <= ${escape(currentTime)}
-        GROUP BY u.id
       ) t`,
       values: [User.tableName, tableTicketRelation, tableName, trainerId, franchiseId]
     })
