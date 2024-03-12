@@ -32,6 +32,15 @@ export interface ITicketFindAll {
   perPage: number
 }
 
+export interface ITicketFindAllForAdmin {
+  search?: string
+  trainerSearch?: string
+  status?: string
+  type?: string
+  start: number
+  perPage: number
+}
+
 export interface ITicketDetail {
   id: number
   type: 'personal' | 'fitness'
@@ -99,3 +108,15 @@ export interface ITicketForUser {
   isHolding?: boolean
   month?: number
 }
+
+export type ITicketListForAdmin = IResponseList<{
+  id: number
+  type: 'personal' | 'fitness'
+  userName: string
+  trainerName: number
+  startedAt: string
+  expiredAt: string
+  createdAt: string
+  isHolding: boolean
+  isPaid: boolean
+}>

@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": ["personal", "fitness"]
+    },
+    "userId": {
+      "type": "integer"
+    },
+    "trainerIds": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
+    },
+    "totalSession": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "serviceSession": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "sessionPrice": {
+      "type": "integer"
+    },
+    "coachingPrice": {
+      "type": "integer"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date"
+    },
+    "expiredAt": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "type",
+    "userId",
+    "trainerIds",
+    "totalSession",
+    "serviceSession",
+    "sessionPrice",
+    "coachingPrice",
+    "startedAt",
+    "expiredAt"
+  ],
+  "additionalProperties": false
+}
