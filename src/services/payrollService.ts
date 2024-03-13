@@ -7,7 +7,9 @@ import {
   IHolding,
   IMonth,
   IPayrollFindAll,
+  IPayrollFindAllForAdmin,
   IPayrollResponse,
+  IPayrollResponseForAdmin,
   IReservation
 } from '../interfaces/payroll'
 import {findBetweenReservationWithTrainerId} from '../models/reservation'
@@ -131,6 +133,35 @@ async function findCalculatedPayroll(req: IPayrollFindAll): Promise<ICalculatedP
   }
 }
 
+async function findAllWithMonthForAdmin(options: IPayrollFindAllForAdmin): Promise<IPayrollResponseForAdmin> {
+  try {
+    const {startDate} = options
+    const endDate = moment(startDate).endOf('month').subtract(9, 'hours').format('YYYY-MM-DDTHH:mm:ss')
+
+    const preUser = await User.findThisMonthPreUserCount({startDate, endDate})
+    const paidUser = await User.findThisMonthPaidUserCount({startDate})
+    const leaveUser = await User.findThisMonthLeaveUserCount({startDate})
+    const activeUser = await User.findActiveUserCountForAdmin({startDate})
+
+    const coachList = await Trainer.findThisMonthSales({startDate})
+    const totalSales = coachList.reduce((acc, cur) => acc + cur.sales, 0)
+
+    const ret = {
+      userCount: {
+        preUser,
+        paidUser,
+        leaveUser,
+        activeUser
+      },
+      totalSales,
+      coachList
+    }
+    return ret
+  } catch (e) {
+    throw e
+  }
+}
+
 // 세션 페이롤
 function calculateSessionPay(sessionPrice: number, ptPercentage: number, thisMonthCount: number) {
   if ((sessionPrice * ptPercentage) / 100 >= 18000) {
@@ -203,4 +234,4 @@ function calculateDailyPay(
   return payroll
 }
 
-export {findAllWithMonth, findCalculatedPayroll}
+export {findAllWithMonth, findCalculatedPayroll, findAllWithMonthForAdmin}
