@@ -133,6 +133,17 @@ async function putUsers(req: IRequest, res: Response, next: Function): Promise<v
   }
 }
 
+async function putUserMemo(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id, memo} = req.options
+    await UserService.update({id, memo})
+    res.status(200).json()
+  } catch (e) {
+    if (e.message === 'already_in_use') e.status = 409
+    next(e)
+  }
+}
+
 async function PutUserInflowComplete(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {id} = req.options
@@ -192,6 +203,7 @@ export {
   getUsersWithId,
   getUsersBodySpecsWithId,
   putUsers,
+  putUserMemo,
   PutUserInflowComplete,
   putUsersInflowContent,
   putUserPreSurvey,

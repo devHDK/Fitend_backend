@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "memo": {
+      "type": "string"
+    }
+  },
+  "required": ["memo"],
+  "additionalProperties": false
+}

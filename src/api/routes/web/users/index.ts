@@ -128,6 +128,19 @@ const putUsers = new ApiRouter({
   handler: ctrl.putUsers
 })
 
+const putUserMemo = new ApiRouter({
+  name: ':id/memo',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '회원 memo 수정',
+  tags: ['User'],
+  schema: 'requests/web/users/PutUserMemo',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putUserMemo
+})
+
 const putUsersInflowContent = new ApiRouter({
   name: 'inflow/:id',
   method: 'put',
@@ -189,6 +202,7 @@ export {
   getUsersWithId,
   getUsersBodySpecsWithId,
   putUsers,
+  putUserMemo,
   putUsersInflowContent,
   putUsersInflowComplete,
   putUserPreSurvey,
