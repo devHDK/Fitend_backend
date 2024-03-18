@@ -51,7 +51,7 @@ const putAdminsWithId = new ApiRouter({
   schema: 'requests/admin/administrators/PutAdministrators',
   tags: ['Admins'],
   responses: {
-    200: {schema: 'responses/admin/administrators/PutAdministratorsWithId'},
+    200: {description: 'success'},
     404: {description: 'Not found'}
   },
   handler: ctrl.putAdminsWithId

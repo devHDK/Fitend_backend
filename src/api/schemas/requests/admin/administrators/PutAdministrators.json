@@ -1,21 +1,15 @@
 {
   "type": "object",
   "properties": {
-    "name": {
+    "username": {
       "type": "string",
       "pattern": "^[0-9a-zA-Z!_]{4,20}$"
     },
-    "nickname": {
-      "type": "string",
-      "maxLength": 20
-    },
     "password": {
       "type": "string",
-      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=\/]{6,40}$"
+      "pattern": "^[0-9a-zA-Z!@#$%^&*()?+-_~=/]{6,40}$"
     }
   },
-  "required": [
-    "name"
-  ],
+  "required": ["username"],
   "additionalProperties": false
 }

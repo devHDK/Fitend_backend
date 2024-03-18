@@ -81,15 +81,14 @@ async function findOneSecret(id?: number, username?: string): Promise<IAdministr
 
 async function updatePassword(options: IAdministratorUpdatePassword, connection?: PoolConnection): Promise<void> {
   try {
-    const {id, password, salt} = options
+    const {id, password} = options
     await db.query({
       connection,
       sql: `UPDATE ?? SET ? WHERE ?`,
       values: [
         tableName,
         {
-          password,
-          salt
+          password
         },
         {id}
       ]
