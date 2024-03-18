@@ -86,7 +86,14 @@ async function findAll(options: IStandardExerciseFindAll): Promise<IStandardExer
       TargetMuscle.tableName
     ]
     const totalValues = [tableName]
-    if (search) where.push(`t.name like ${escape(`%${search}%`)} OR t.nameEn like ${escape(`%${search}%`)}`)
+    if (search) {
+      const noSpaceSearch = search.split(' ').join('')
+      where.push(
+        `(REPLACE(t.name, " ", "") like ${escape(`%${noSpaceSearch}%`)} OR REPLACE(t.nameEn, " ", "") like ${escape(
+          `%${noSpaceSearch}%`
+        )})`
+      )
+    }
     if (machineType) where.push(`t.machineType like ${escape(`%${machineType}%`)}`)
     if (devisionId) where.push(`t.devisionId = ${escape(devisionId)}`)
     if (targetMuscleIds && targetMuscleIds.length > 0) {
