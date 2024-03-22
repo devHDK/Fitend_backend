@@ -58,14 +58,14 @@ async function findOne(id: number): Promise<IAdministrator> {
   }
 }
 
-async function update(id: number, name: string, nickname: string, password?: string): Promise<IAdministratorUpdate> {
+async function update(id: number, username: string, password?: string): Promise<IAdministratorUpdate> {
   const connection = await db.beginTransaction()
   try {
     if (password) {
       const passwordHash = createPasswordHash(password, passwordIterations.admin)
-      await Administrator.updatePassword({id, ...passwordHash}, connection)
+      await Administrator.updatePassword({id, password: JSON.stringify(passwordHash)}, connection)
     }
-    const admin = await Administrator.updateOne({id, name, nickname}, connection)
+    const admin = await Administrator.updateOne({id, username}, connection)
     await db.commit(connection)
     if (admin) return admin
     throw new Error('not_found')

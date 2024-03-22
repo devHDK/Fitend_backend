@@ -157,7 +157,14 @@ async function findAll(options: IExerciseFindAll): Promise<IExerciseList> {
     ]
     const join = []
 
-    if (search) where.push(`(stde.name like ${escape(`%${search}%`)} OR stde.nameEn like ${escape(`%${search}%`)} )`)
+    if (search) {
+      const noSpaceSearch = search.split(' ').join('')
+      where.push(
+        `(REPLACE(stde.name, " ", "") like ${escape(
+          `%${noSpaceSearch}%`
+        )} OR REPLACE(stde.nameEn, " ", "") like ${escape(`%${noSpaceSearch}%`)})`
+      )
+    }
     if (isMe) where.push(`t.trainerId = ${escape(trainerId)}`)
     else where.push(`t.trainerId != ${escape(trainerId)}`)
 

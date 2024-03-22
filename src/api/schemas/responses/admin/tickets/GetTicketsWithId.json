@@ -1,0 +1,132 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "type": {
+      "type": "string"
+    },
+    "users": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "nickname": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "totalSession": {
+      "type": "integer"
+    },
+    "serviceSession": {
+      "type": "integer"
+    },
+    "restSession": {
+      "type": "integer"
+    },
+    "sessionPrice": {
+      "type": "integer"
+    },
+    "coachingPrice": {
+      "type": "integer"
+    },
+    "startedAt": {
+      "type": "string"
+    },
+    "expiredAt": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "trainers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "nickname": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "reservations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "seq": {
+            "type": "integer"
+          },
+          "startTime": {
+            "type": "string"
+          },
+          "endTime": {
+            "type": "string"
+          },
+          "userNickname": {
+            "type": "string"
+          },
+          "trainerNickname": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "holdings" : {
+      "type" : "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "ticketId": {
+            "type": "integer"
+          },
+          "startAt" : {
+            "type": "string"
+          },
+          "endAt" : {
+            "type": "string"
+          },
+          "days" : {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "users",
+    "totalSession",
+    "serviceSession",
+    "restSession",
+    "sessionPrice",
+    "coachingPrice",
+    "startedAt",
+    "createdAt",
+    "trainers",
+    "reservations",
+    "holdings"
+  ],
+  "additionalProperties": false
+}
+

@@ -5,7 +5,6 @@ export interface IPayrollFindAll {
 }
 
 export interface IPayrollFindAllForAdmin {
-  trainerId: number
   startDate: Date
 }
 
@@ -13,9 +12,14 @@ export interface IPayrollResponse {
   thisMonth: IMonth
 }
 
-export interface IPayrollResponseForAdminWithTrainerId {
-  reservations?: IReservationForAdmin[]
-  coaching?: ICoachingForAdmin[]
+export interface IPayrollResponseForAdmin {
+  userCount: IUserCountForAdmin
+  totalSales: number
+  coachList: {
+    trainerId: number
+    nickname: string
+    sales: number
+  }[]
 }
 
 export interface IMonth {
@@ -69,6 +73,10 @@ export interface IUserCount {
   preUser: number
   paidUser: number
   leaveUser: number
+}
+
+export interface IUserCountForAdmin extends IUserCount {
+  activeUser: number
 }
 
 export interface IHolding {

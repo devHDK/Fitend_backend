@@ -28,14 +28,12 @@ export interface IAdministratorFindAll {
 
 export interface IAdministratorUpdate {
   id: number
-  name: string
-  nickname: string
+  username: string
 }
 
 export interface IAdministratorUpdatePassword {
   id: number
   password: string
-  salt: string
 }
 
 export interface IAdministratorDelete {

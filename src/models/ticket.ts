@@ -8,9 +8,11 @@ import {
   ITicketList,
   ITicketFindOne,
   ITicketForUser,
-  IActiveTicketList
+  IActiveTicketList,
+  ITicketFindAllForAdmin,
+  ITicketListForAdmin
 } from '../interfaces/tickets'
-import {Payment, Reservation, TicketHolding, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
+import {Payment, Reservation, Ticket, TicketHolding, Trainer, User, WorkoutFeedbacks, WorkoutSchedule} from './index'
 import {ICoaching, ICoachingForAdmin} from '../interfaces/payroll'
 
 moment.tz.setDefault('Asia/Seoul')
@@ -150,6 +152,82 @@ async function findAll(options: ITicketFindAll): Promise<ITicketList> {
             ) t
             `,
       values: [TicketHolding.tableName, Payment.tableName, tableName, tableTicketRelation, User.tableName]
+    })
+
+    return {data: rows, total: rowTotal ? rowTotal.total : 0}
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllTicketsForAdmin(options: ITicketFindAllForAdmin): Promise<ITicketListForAdmin> {
+  try {
+    const {search, trainerSearch, status, type, start, perPage} = options
+    const where = []
+    const currentTime = moment().format('YYYY-MM-DD')
+    if (status !== undefined) {
+      if (status === 'expired') {
+        where.push(`t.expiredAt < '${currentTime}'`)
+      } else if (status === 'active') {
+        where.push(`t.expiredAt >= '${currentTime}'`)
+      }
+    }
+    if (type !== undefined) {
+      where.push(`t.type = ${escape(type)}`)
+    }
+    const rows = await db.query({
+      sql: `SELECT t.id, t.type, u.nickname as userName, tra.nickname as trainerName,
+            DATE_FORMAT(t.startedAt, '%Y-%m-%d') as startedAt,
+            DATE_FORMAT(t.expiredAt, '%Y-%m-%d') as expiredAt, t.createdAt,
+            (SELECT IF(EXISTS(SELECT * FROM ?? th 
+            WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
+            ) as isHolding,
+            (SELECT IF(EXISTS(SELECT * FROM ?? t2
+            WHERE t2.id = t.id AND t2.month > 0), TRUE, FALSE)
+              ) as isPaid
+            FROM ?? t
+            JOIN ?? tr ON tr.ticketId = t.id
+            JOIN ?? tra ON tra.id = tr.trainerId ${trainerSearch ? `AND (tra.nickname like '%${trainerSearch}%')` : ``}
+            JOIN ?? u ON u.id = tr.userId ${search ? `AND (u.nickname like '%${search}%')` : ``}
+            ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+            GROUP BY t.id
+            ${status === 'active' ? `HAVING isHolding IS FALSE` : ``}
+            ${status === 'hold' ? `HAVING isHolding IS TRUE` : ``}
+            ORDER BY t.createdAt DESC
+            LIMIT ${start}, ${perPage}`,
+      values: [TicketHolding.tableName, tableName, tableName, tableTicketRelation, Trainer.tableName, User.tableName]
+    })
+
+    rows.forEach((value) => {
+      if (value.isHolding === null) {
+        value.isHolding = false
+      }
+    })
+
+    const [rowTotal] = await db.query({
+      sql: `SELECT COUNT(1) as total FROM (
+              SELECT t.id,
+              (SELECT IF(EXISTS(SELECT * FROM ?? th 
+              WHERE th.ticketId = t.id AND th.startAt <= '${currentTime}' AND th.endAt >= '${currentTime}') , TRUE, FALSE) 
+              ) as isHolding,
+              (SELECT IF(EXISTS(SELECT * FROM ?? t2
+              WHERE t2.id = t.id AND t2.month > 0), TRUE, FALSE)
+              ) as isPaid
+              FROM ?? t
+              JOIN ?? tr ON tr.ticketId = t.id
+              JOIN ?? tra ON tra.id = tr.trainerId ${
+                trainerSearch ? `AND (tra.nickname like '%${trainerSearch}%')` : ``
+              }
+              JOIN ?? u ON u.id = tr.userId ${
+                search ? `AND (u.nickname like '%${search}%' OR u.phone = '%${search}%')` : ``
+              }
+              ${where.length ? `WHERE ${where.join(' AND ')}` : ''}
+              GROUP BY t.id
+              ${status === 'active' ? `HAVING isHolding IS FALSE` : ``}
+              ${status === 'hold' ? `HAVING isHolding IS TRUE` : ``}
+            ) t
+            `,
+      values: [TicketHolding.tableName, tableName, tableName, tableTicketRelation, Trainer.tableName, User.tableName]
     })
 
     return {data: rows, total: rowTotal ? rowTotal.total : 0}
@@ -695,6 +773,7 @@ export {
   findAll,
   findAllForUser,
   findAllTicketsForUser,
+  findAllTicketsForAdmin,
   findUserTicketCountWithUserId,
   findLastTicketUser,
   findOne,

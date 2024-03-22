@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "properties": {
+    "userCount": {
+      "type": "object",
+      "required": ["preUser", "paidUser", "leaveUser", "activeUser"],
+      "properties": {
+        "preUser": {
+          "type": "integer"
+        },
+        "paidUser": {
+          "type": "integer"
+        },
+        "leaveUser": {
+          "type": "integer"
+        },
+        "activeUser": {
+          "type": "integer"
+        }
+      }
+    },
+    "totalSales": {
+      "type": "integer"
+    },
+    "coachList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["trainerId", "nickname", "sales"],
+        "properties": {
+          "trainerId": {
+            "type": "integer"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "sales": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "required": ["userCount", "totalSales", "coachList"]
+}

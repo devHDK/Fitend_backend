@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "workoutScheduleId": {
+            "type": "integer"
+          },
+          "workoutId": {
+            "type": "integer"
+          },
+          "seq": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subTitle": {
+            "type": "string"
+          },
+          "isComplete": {
+            "type": "boolean"
+          },
+          "isRecord": {
+            "type": "boolean"
+          },
+          "startDate": {
+            "type": "string"
+          }
+        },
+        "required": ["workoutScheduleId", "seq", "title", "subTitle", "isComplete", "isRecord", "startDate"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["data"],
+  "additionalProperties": false
+}

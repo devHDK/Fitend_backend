@@ -25,4 +25,31 @@ const getUsersWithId = new ApiRouter({
   handler: ctrl.getUsersWithId
 })
 
-export {getUsers, getUsersWithId}
+const getUsersBodySpecsWithId = new ApiRouter({
+  name: ':id/bodySpec',
+  method: 'get',
+  paths: ['common/IdPath'],
+  summary: '회원 bodySpec 조회',
+  tags: ['Users'],
+  schema: 'requests/admin/users/GetUsersBodySpecsWithId',
+  responses: {
+    200: {schema: 'responses/admin/users/GetUsersBodySpecsWithId'}
+  },
+  handler: ctrl.getUsersBodySpecsWithId
+})
+
+const putUsers = new ApiRouter({
+  name: ':id',
+  method: 'put',
+  paths: ['common/IdPath'],
+  summary: '회원수정',
+  tags: ['Users'],
+  schema: 'requests/admin/users/PutUsers',
+  responses: {
+    200: {description: 'success'},
+    409: {description: '이메일 또는 휴대폰번호 중복'}
+  },
+  handler: ctrl.putUsers
+})
+
+export {getUsers, getUsersWithId, getUsersBodySpecsWithId, putUsers}

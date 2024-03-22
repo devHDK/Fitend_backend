@@ -1,5 +1,4 @@
 import {IFranchise, IFranchiseWithWageInfo} from './franchise'
-import {IPayrollResponseForAdminWithTrainerId} from './payroll'
 
 export type ITrainerCreateOneForAdmin = {
   nickname: string

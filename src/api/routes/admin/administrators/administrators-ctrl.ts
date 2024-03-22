@@ -34,8 +34,8 @@ async function getAdminsWithId(req: IRequest, res: Response, next: Function): Pr
 
 async function putAdminsWithId(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
-    const {id, name, nickname, password} = req.options
-    const admin = await AdministratorService.update(id, name, nickname, password)
+    const {id, username, password} = req.options
+    const admin = await AdministratorService.update(id, username, password)
     res.status(200).json(admin)
   } catch (e) {
     if (e.message === 'not_found') e.status = 404

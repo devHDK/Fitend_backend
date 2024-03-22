@@ -30,6 +30,9 @@
       "type": "string",
       "format": "date-time"
     },
+    "isHolding": {
+      "type": "boolean"
+    },
     "tickets": {
       "type": "object",
       "properties": {
@@ -41,17 +44,6 @@
         },
         "expiredCount": {
           "type": "integer"
-        }
-      }
-    },
-    "franchises": {
-      "type": "object",
-      "properties": {
-        "franchiseId": {
-          "type": "integer"
-        },
-        "name": {
-          "type": "string"
         }
       }
     },
@@ -71,16 +63,58 @@
           "type": "string"
         }
       }
+    },
+    "trainers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "nickname": {
+            "type": "string"
+          },
+          "profileImage": {
+            "type": "string"
+          }
+        }
+      },
+      "nullable": true
+    },
+    "preSurvey": {
+      "type": "object",
+      "properties": {
+        "experience": {
+          "type": "integer"
+        },
+        "purpose": {
+          "type": "integer"
+        },
+        "achievement": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "obstacle": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "place": {
+          "type": "string"
+        },
+        "preferDays": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
     }
   },
-  "required": [
-    "id",
-    "nickname",
-    "email",
-    "phone",
-    "gender",
-    "franchises",
-    "createdAt"
-  ],
+  "required": ["id", "nickname", "email", "phone", "gender", "trainers", "createdAt", "isHolding"],
   "additionalProperties": false
 }

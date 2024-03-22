@@ -1,0 +1,231 @@
+{
+  "type": "object",
+  "properties": {
+    "workoutScheduleId": {
+      "type": "integer"
+    },
+    "userId": {
+      "type": "integer"
+    },
+    "startDate": {
+      "type": "string"
+    },
+    "workoutTitle": {
+      "type": "string"
+    },
+    "workoutSubTitle": {
+      "type": "string"
+    },
+    "targetMuscleTypes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "workoutTotalTime": {
+      "type": "string",
+      "example": "00:00:00"
+    },
+    "isWorkoutComplete": {
+      "type": "boolean"
+    },
+    "heartRates": {
+      "type": "array",
+      "nullable": true,
+      "items": {
+        "type": "integer"
+      }
+    },
+    "workoutDuration": {
+      "type": "integer",
+      "nullable": true
+    },
+    "calories": {
+      "type": "integer",
+      "nullable": true
+    },
+    "strengthIndex": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "nullable": true
+    },
+    "issueIndexes": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5
+      },
+      "nullable": true
+    },
+    "contents": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "nullable": true
+    },
+    "trainerNickname": {
+      "type": "string"
+    },
+    "seq": {
+      "type": "integer"
+    },
+    "trainerProfileImage": {
+      "type": "string"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "workoutPlanId": {
+            "type": "integer"
+          },
+          "exerciseId": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "trackingFieldId": {
+            "type": "integer"
+          },
+          "circuitGroupNum": {
+            "type": "integer",
+            "nullable": true
+          },
+          "setType": {
+            "type": "string",
+            "nullable": true
+          },
+          "circuitSeq": {
+            "type": "integer",
+            "nullable": true
+          },
+          "isVideoRecord": {
+            "type": "boolean"
+          },
+          "targetMuscles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["main", "sub"]
+                }
+              }
+            }
+          },
+          "videos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "index": {
+                  "type": "integer"
+                },
+                "thumbnail": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "setInfo": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 15
+                },
+                "reps": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 99
+                },
+                "weight": {
+                  "type": "number",
+                  "minimum": 0.1,
+                  "maximum": 999
+                },
+                "seconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10800
+                }
+              }
+            }
+          },
+          "recordSetInfo": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "index": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 15
+                },
+                "reps": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 99,
+                  "nullable": true
+                },
+                "weight": {
+                  "type": "number",
+                  "minimum": 0.1,
+                  "maximum": 999,
+                  "nullable": true
+                },
+                "seconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10800,
+                  "nullable": true
+                }
+              }
+            },
+            "nullable": true
+          }
+        },
+        "required": [
+          "workoutPlanId",
+          "exerciseId",
+          "name",
+          "description",
+          "trackingFieldId",
+          "targetMuscles",
+          "videos",
+          "setInfo",
+          "recordSetInfo"
+        ]
+      }
+    }
+  },
+  "required": [
+    "workoutScheduleId",
+    "userId",
+    "workoutTitle",
+    "workoutSubTitle",
+    "targetMuscleTypes",
+    "workoutTotalTime",
+    "exercises"
+  ]
+}

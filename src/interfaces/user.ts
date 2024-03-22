@@ -103,6 +103,7 @@ export interface IUserFindAll {
   start: number
   perPage: number
   search?: string
+  trainerSearch?: string
   status?: string
   trainerId?: number
 }

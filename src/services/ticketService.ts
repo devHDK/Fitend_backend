@@ -1,7 +1,14 @@
 import moment from 'moment-timezone'
 import {Reservation, Ticket, TicketHolding} from '../models/index'
 import {db} from '../loaders'
-import {ITicketFindAll, ITicketList, ITicketDetail, ITicketForUser} from '../interfaces/tickets'
+import {
+  ITicketFindAll,
+  ITicketList,
+  ITicketDetail,
+  ITicketForUser,
+  ITicketFindAllForAdmin,
+  ITicketListForAdmin
+} from '../interfaces/tickets'
 import {IReservationListForTicket} from '../interfaces/reservation'
 import {ITicketHolding, ITicketHoldingFindAll, ITicketHoldingUpdate} from '../interfaces/ticketHoldings'
 
@@ -161,6 +168,14 @@ async function findAllForUser(options: {userId: number}): Promise<ITicketForUser
   try {
     const {userId} = options
     return await Ticket.findAllTicketsForUser({userId})
+  } catch (e) {
+    throw e
+  }
+}
+
+async function findAllForAdmin(options: ITicketFindAllForAdmin): Promise<ITicketListForAdmin> {
+  try {
+    return await Ticket.findAllTicketsForAdmin(options)
   } catch (e) {
     throw e
   }
@@ -391,6 +406,7 @@ export {
   createTicketHolding,
   findAll,
   findAllForUser,
+  findAllForAdmin,
   findOneWithId,
   update,
   updateTicketRefund,

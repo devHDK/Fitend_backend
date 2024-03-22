@@ -4,11 +4,12 @@
     "search": {
       "type": "string"
     },
-    "status": {
-      "type": "boolean"
+    "trainerSearch": {
+      "type": "string"
     },
-    "franchiseId": {
-      "type": "integer"
+    "status": {
+      "type": "string",
+      "enum": ["active", "expired", "hold"]
     },
     "start": {
       "type": "integer",
@@ -22,9 +23,6 @@
       "default:": 25
     }
   },
-  "required": [
-    "start",
-    "perPage"
-  ],
+  "required": ["start", "perPage"],
   "additionalProperties": false
 }

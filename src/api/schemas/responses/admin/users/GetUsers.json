@@ -12,13 +12,14 @@
           "nickname": {
             "type": "string"
           },
-          "email": {
-            "type": "string"
-          },
           "phone": {
             "type": "string"
           },
-          "franchises": {
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female"]
+          },
+          "trainers": {
             "type": "array",
             "items": {
               "type": "object",
@@ -26,41 +27,25 @@
                 "id": {
                   "type": "integer"
                 },
-                "name": {
+                "nickname": {
                   "type": "string"
                 }
               }
-            }
-          },
-            "trainers": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "integer"
-                  },
-                  "nickname": {
-                    "type": "string"
-                  }
-                }
-              },
+            },
             "nullable": true
           },
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "isHolding": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
           }
         },
-        "required": [
-          "id",
-          "nickname",
-          "email",
-          "phone",
-          "franchises",
-          "trainers",
-          "createdAt"
-        ],
+        "required": ["id", "nickname", "phone", "trainers", "createdAt", "isHolding", "isActive"],
         "additionalProperties": false
       }
     },
@@ -69,9 +54,6 @@
       "minimum": 0
     }
   },
-  "required": [
-    "data",
-    "total"
-  ],
+  "required": ["data", "total"],
   "additionalProperties": false
 }

@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "properties": {
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["personal", "fitness"]
+          },
+          "userName": {
+            "type": "string"
+          },
+          "trainerName": {
+            "type": "string"
+          },
+          "startedAt": {
+            "type": "string"
+          },
+          "expiredAt": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "isHolding": {
+            "type": "boolean"
+          },
+          "isPaid": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "userName",
+          "trainerName",
+          "startedAt",
+          "expiredAt",
+          "createdAt",
+          "isHolding",
+          "isPaid"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": ["data", "total"],
+  "additionalProperties": false
+}

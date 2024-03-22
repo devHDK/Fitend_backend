@@ -335,6 +335,41 @@ async function findTrainerWageInfo(options: ITrainerFindOneWageInfo): Promise<IW
   }
 }
 
+async function findThisMonthSales(options: {
+  startDate: Date
+}): Promise<
+  {
+    trainerId: number
+    nickname: string
+    sales: number
+  }[]
+> {
+  const {startDate} = options
+  const thisMonthStart = moment(startDate).startOf('month').format('YYYY-MM-DD')
+  const thisMonthEnd = moment(startDate).endOf('month').format('YYYY-MM-DD')
+  try {
+    return await db.query({
+      sql: `SELECT t.id as trainerId, t.nickname, (
+            (SELECT SUM(ti.coachingPrice)
+            FROM ?? ti
+            JOIN ?? tr ON tr.trainerId = t.id AND tr.ticketId = ti.id
+            WHERE ti.month != 0 AND ti.month IS NOT NULL AND ti.type = 'fitness'
+            AND ti.createdAt BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)}) +
+            (SELECT SUM(ti2.sessionPrice * ti2.totalSession)
+            FROM ?? ti2
+            JOIN ?? tr2 ON tr2.trainerId = t.id AND tr2.ticketId = ti2.id
+            WHERE ti2.type = 'personal'
+            AND ti2.createdAt BETWEEN ${escape(thisMonthStart)} AND ${escape(thisMonthEnd)})
+            ) as sales
+            FROM ?? t
+            `,
+      values: [Ticket.tableName, Ticket.tableTicketRelation, Ticket.tableName, Ticket.tableTicketRelation, tableName]
+    })
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findTrainersMeetingBoundaryWithId(trainerId: number): Promise<ITrainerMeetingBoundary> {
   try {
     const [row] = await db.query({
@@ -422,6 +457,7 @@ export {
   findOne,
   findOneTrainerThread,
   findTrainerWageInfo,
+  findThisMonthSales,
   findAll,
   findActiveTrainersWithUserId,
   findLastTrainersWithUserId,
