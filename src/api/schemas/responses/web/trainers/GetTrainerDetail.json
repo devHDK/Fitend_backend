@@ -1,0 +1,111 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number"
+    },
+    "nickname": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "profileImage": {
+      "type": "string"
+    },
+    "largeProfileImage": {
+      "type": "string"
+    },
+    "shortIntro": {
+      "type": "string"
+    },
+    "intro": {
+      "type": "string"
+    },
+    "instagram": {
+      "type": "string"
+    },
+    "qualification": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "speciality": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "coachingStyle": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "favorite": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["data"]
+    },
+    "franchises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "nullable": true
+    },
+    "additionalProperties": false
+  },
+  "required": [
+    "id",
+    "nickname",
+    "email",
+    "createdAt",
+    "profileImage",
+    "largeProfileImage",
+    "shortIntro",
+    "intro",
+    "qualification",
+    "speciality",
+    "coachingStyle",
+    "favorite"
+  ]
+}

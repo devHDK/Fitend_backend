@@ -23,6 +23,17 @@ const getMe = new ApiRouter({
   handler: ctrl.getMe
 })
 
+const getTrainersWithId = new ApiRouter({
+  name: 'detail',
+  method: 'get',
+  summary: '트레이너 상세 조회',
+  tags: ['Trainer'],
+  responses: {
+    200: {schema: 'responses/web/trainers/GetTrainerDetail'}
+  },
+  handler: ctrl.getTrainerDetail
+})
+
 const getTrainersMeetingBoundary = new ApiRouter({
   name: ':id/meetingBoundary',
   method: 'get',
@@ -60,4 +71,4 @@ const putTrainerMeetingBoundary = new ApiRouter({
   handler: ctrl.putTrainerMeetingBoundary
 })
 
-export {getTrainers, getMe, getTrainersMeetingBoundary, putFCMToken, putTrainerMeetingBoundary}
+export {getTrainers, getMe, getTrainersWithId, getTrainersMeetingBoundary, putFCMToken, putTrainerMeetingBoundary}
