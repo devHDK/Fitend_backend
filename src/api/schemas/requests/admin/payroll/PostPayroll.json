@@ -1,43 +1,23 @@
 {
   "type": "object",
   "properties": {
-    "userCount": {
-      "type": "object",
-      "required": ["preUser", "paidUser", "leaveUser"],
-      "properties": {
-        "preUser": {
-          "type": "integer"
-        },
-        "paidUser": {
-          "type": "integer"
-        },
-        "leaveUser": {
-          "type": "integer"
-        }
-      }
+    "trainerId": {
+      "type": "integer"
     },
-    "wageInfo": {
-      "type": "object",
-      "required": ["wage", "monthEndWage"],
-      "properties": {
-        "fcPercentage": {
-          "type": "integer"
-        },
-        "ptPercentage": {
-          "type": "integer"
-        },
-        "baseWage": {
-          "type": "integer"
-        },
-        "wage": {
-          "type": "integer"
-        },
-        "monthEndWage": {
-          "type": "integer"
-        }
-      }
+    "month": {
+      "type": "string",
+      "format": "date"
     },
-    "reservations": {
+    "baseWage": {
+      "type": "integer"
+    },
+    "ptPercentage": {
+      "type": "integer"
+    },
+    "fcPercentage": {
+      "type": "integer"
+    },
+    "sessions": {
       "type": "array",
       "items": {
         "type": "object",
@@ -146,10 +126,7 @@
           "type": "integer"
         }
       }
-    },
-    "isSaved": {
-      "type": "boolean"
     }
   },
-  "required": ["wageInfo", "reservations", "coaching", "userCount"]
+  "required": ["trainerId", "month", "fcPercentage", "coaching"]
 }

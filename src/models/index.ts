@@ -27,6 +27,7 @@ import * as Payment from './payment'
 import * as Verification from './verification'
 import * as Meeting from './meeting'
 import * as StandardExercise from './standardExercise'
+import * as Payroll from './payroll'
 
 export {
   Administrator,
@@ -57,5 +58,6 @@ export {
   Payment,
   Verification,
   Meeting,
-  StandardExercise
+  StandardExercise,
+  Payroll
 }

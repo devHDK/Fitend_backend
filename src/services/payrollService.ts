@@ -1,18 +1,37 @@
 import moment, {Moment} from 'moment-timezone'
-import {print} from 'redis'
 import {Response} from 'express'
-import {Ticket, Reservation, Trainer, TicketHolding, User} from '../models/index'
+import {Ticket, Reservation, Trainer, TicketHolding, User, Payroll} from '../models/index'
 import {
   ICalculatedPayroll,
   IHolding,
   IMonth,
+  IPayrollCreateSave,
   IPayrollFindAll,
   IPayrollFindAllForAdmin,
   IPayrollResponse,
   IPayrollResponseForAdmin,
+  IPayrollUpdateSave,
   IReservation
 } from '../interfaces/payroll'
 import {findBetweenReservationWithTrainerId} from '../models/reservation'
+
+async function createPayrollSave(options: IPayrollCreateSave): Promise<void> {
+  try {
+    const {sessions, coaching, trainerId, month, ...data} = options
+
+    const monthDuplicate = await Payroll.findSavedPayroll({trainerId, lastDate: month})
+    if (monthDuplicate) throw new Error('payroll_duplicate')
+    await Payroll.createPayrollSave({
+      sessions: JSON.stringify(sessions),
+      coaching: JSON.stringify(coaching),
+      trainerId,
+      month,
+      ...data
+    })
+  } catch (e) {
+    throw e
+  }
+}
 
 async function findAllWithMonth(req: IPayrollFindAll): Promise<IPayrollResponse> {
   try {
@@ -65,54 +84,79 @@ async function findCalculatedPayroll(req: IPayrollFindAll): Promise<ICalculatedP
     const preUser = await User.findThisMonthPreUserCount({trainerId, franchiseId, startDate, endDate})
     const paidUser = await User.findThisMonthPaidUserCount({trainerId, franchiseId, startDate})
     const leaveUser = await User.findThisMonthLeaveUserCount({trainerId, franchiseId, startDate})
-    //baseWage 및 percentage
-    const trainerWageInfo = await Trainer.findTrainerWageInfo({trainerId, franchiseId})
-    //sessionPay
-    const reservations = await Reservation.findBetweenReservationWithTrainerId({
-      startTime: moment(startDate).startOf('month').utc().format('YYYY-MM-DDTHH:mm:ss'),
-      endTime: endDate,
-      trainerId,
-      franchiseId
-    })
-    reservations.forEach(
-      (el) => (el.payroll = calculateSessionPay(el.sessionPrice, trainerWageInfo.ptPercentage, el.thisMonthCount))
-    )
-    const totalReservationPayroll = reservations.reduce((acc, cur) => acc + cur.payroll, 0)
 
-    //coachingPay
-    const coaching = await Ticket.findBetweenFCTicket({
-      startDate,
-      trainerId,
-      franchiseId
-    })
-    coaching.data.forEach((el) => {
-      const totalDays = moment(el.expiredAt).diff(moment(el.startedAt), 'days') + 1
-      el.usedDate = calculateUseDate(startDate, el.startedAt, el.expiredAt, el.holdingList)
-      el.payroll =
-        Math.floor(
-          (calculateDailyPay(el.type, el.coachingPrice, trainerWageInfo.fcPercentage, totalDays, el.holdingList) *
-            el.usedDate) /
-            10
-        ) * 10
-    })
+    const savedPayroll = await Payroll.findSavedPayroll({trainerId, lastDate: startDate})
 
-    //totalPay
-    const totalCoachingPayroll = coaching.data.reduce((acc, cur) => acc + cur.payroll, 0)
-    const monthEndCoachingPayroll = coaching.data.reduce((acc, cur) => {
-      const lastDate = moment(startDate).endOf('month')
-      const totalDays = moment(cur.expiredAt).diff(moment(cur.startedAt), 'days') + 1
-      const monthUsedDate = calculateUseDate(lastDate, cur.startedAt, cur.expiredAt, cur.holdingList)
-      return (
-        acc +
-        Math.floor(
-          (calculateDailyPay(cur.type, cur.coachingPrice, trainerWageInfo.fcPercentage, totalDays, cur.holdingList) *
-            monthUsedDate) /
-            10
-        ) *
-          10
+    if (!savedPayroll) {
+      //baseWage 및 percentage
+      const trainerWageInfo = await Trainer.findTrainerWageInfo({trainerId, franchiseId})
+      //sessionPay
+      const reservations = await Reservation.findBetweenReservationWithTrainerId({
+        startTime: moment(startDate).startOf('month').utc().format('YYYY-MM-DDTHH:mm:ss'),
+        endTime: endDate,
+        trainerId,
+        franchiseId
+      })
+      reservations.forEach(
+        (el) => (el.payroll = calculateSessionPay(el.sessionPrice, trainerWageInfo.ptPercentage, el.thisMonthCount))
       )
-    }, 0)
+      const totalReservationPayroll = reservations.reduce((acc, cur) => acc + cur.payroll, 0)
 
+      //coachingPay
+      const coaching = await Ticket.findBetweenFCTicket({
+        startDate,
+        trainerId,
+        franchiseId
+      })
+      coaching.data.forEach((el) => {
+        const totalDays = moment(el.expiredAt).diff(moment(el.startedAt), 'days') + 1
+        el.usedDate = calculateUseDate(startDate, el.startedAt, el.expiredAt, el.holdingList)
+        el.payroll =
+          Math.floor(
+            (calculateDailyPay(el.type, el.coachingPrice, trainerWageInfo.fcPercentage, totalDays, el.holdingList) *
+              el.usedDate) /
+              10
+          ) * 10
+      })
+
+      //totalPay
+      const totalCoachingPayroll = coaching.data.reduce((acc, cur) => acc + cur.payroll, 0)
+      const monthEndCoachingPayroll = coaching.data.reduce((acc, cur) => {
+        const lastDate = moment(startDate).endOf('month')
+        const totalDays = moment(cur.expiredAt).diff(moment(cur.startedAt), 'days') + 1
+        const monthUsedDate = calculateUseDate(lastDate, cur.startedAt, cur.expiredAt, cur.holdingList)
+        return (
+          acc +
+          Math.floor(
+            (calculateDailyPay(cur.type, cur.coachingPrice, trainerWageInfo.fcPercentage, totalDays, cur.holdingList) *
+              monthUsedDate) /
+              10
+          ) *
+            10
+        )
+      }, 0)
+
+      const ret = {
+        userCount: {
+          preUser,
+          paidUser,
+          leaveUser
+        },
+        wageInfo: {
+          fcPercentage: trainerWageInfo.fcPercentage,
+          ptPercentage: trainerWageInfo.ptPercentage,
+          baseWage: trainerWageInfo.baseWage,
+          wage: totalReservationPayroll + totalCoachingPayroll,
+          monthEndWage: totalReservationPayroll + monthEndCoachingPayroll
+        },
+        reservations,
+        coaching,
+        isSaved: false
+      }
+      return ret
+    }
+    const totalSessionPay = savedPayroll.sessions.reduce((acc, cur) => acc + cur.payroll, 0)
+    const totalCoachingPay = savedPayroll.coaching.data.reduce((acc, cur) => acc + cur.payroll, 0)
     const ret = {
       userCount: {
         preUser,
@@ -120,12 +164,15 @@ async function findCalculatedPayroll(req: IPayrollFindAll): Promise<ICalculatedP
         leaveUser
       },
       wageInfo: {
-        baseWage: trainerWageInfo.baseWage,
-        wage: totalReservationPayroll + totalCoachingPayroll,
-        monthEndWage: totalReservationPayroll + monthEndCoachingPayroll
+        fcPercentage: savedPayroll.fcPercentage,
+        ptPercentage: savedPayroll.ptPercentage,
+        baseWage: savedPayroll.baseWage,
+        wage: totalSessionPay + totalCoachingPay,
+        monthEndWage: totalSessionPay + totalCoachingPay
       },
-      reservations,
-      coaching
+      reservations: savedPayroll.sessions,
+      coaching: savedPayroll.coaching,
+      isSaved: true
     }
     return ret
   } catch (e) {
@@ -157,6 +204,41 @@ async function findAllWithMonthForAdmin(options: IPayrollFindAllForAdmin): Promi
       coachList
     }
     return ret
+  } catch (e) {
+    throw e
+  }
+}
+
+async function updateSavedPayroll(options: IPayrollUpdateSave): Promise<void> {
+  try {
+    const {trainerId, month, baseWage, fcPercentage, ptPercentage} = options
+    const savedPayroll = await Payroll.findSavedPayroll({trainerId, lastDate: month})
+    if (!savedPayroll) throw new Error('not_found')
+
+    savedPayroll.sessions.forEach(
+      (el) => (el.payroll = calculateSessionPay(el.sessionPrice, ptPercentage, el.thisMonthCount))
+    )
+
+    savedPayroll.coaching.data.forEach((el) => {
+      const totalDays = moment(el.expiredAt).diff(moment(el.startedAt), 'days') + 1
+      el.usedDate = calculateUseDate(month, el.startedAt, el.expiredAt, el.holdingList)
+      el.payroll =
+        Math.floor(
+          (calculateDailyPay(el.type, el.coachingPrice, fcPercentage, totalDays, el.holdingList) * el.usedDate) / 10
+        ) * 10
+    })
+
+    const data = {
+      trainerId,
+      month,
+      baseWage,
+      ptPercentage,
+      fcPercentage,
+      sessions: JSON.stringify(savedPayroll.sessions),
+      coaching: JSON.stringify(savedPayroll.coaching)
+    }
+
+    await Payroll.updateSavedPayroll(data)
   } catch (e) {
     throw e
   }
@@ -234,4 +316,4 @@ function calculateDailyPay(
   return payroll
 }
 
-export {findAllWithMonth, findCalculatedPayroll, findAllWithMonthForAdmin}
+export {createPayrollSave, findAllWithMonth, findCalculatedPayroll, findAllWithMonthForAdmin, updateSavedPayroll}

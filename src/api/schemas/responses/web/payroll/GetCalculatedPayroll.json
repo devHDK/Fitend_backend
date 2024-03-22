@@ -20,6 +20,12 @@
       "type": "object",
       "required": ["wage", "monthEndWage"],
       "properties": {
+        "fcPercentage": {
+          "type": "integer"
+        },
+        "ptPercentage": {
+          "type": "integer"
+        },
         "baseWage": {
           "type": "integer"
         },

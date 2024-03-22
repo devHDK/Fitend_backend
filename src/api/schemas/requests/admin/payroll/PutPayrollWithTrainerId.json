@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "properties": {
+    "month": {
+      "type": "string",
+      "format": "date"
+    },
+    "baseWage": {
+      "type": "integer"
+    },
+    "ptPercentage": {
+      "type": "integer"
+    },
+    "fcPercentage": {
+      "type": "integer"
+    }
+  },
+  "required": ["month", "fcPercentage", "ptPercentage", "baseWage"]
+}

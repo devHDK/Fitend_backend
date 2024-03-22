@@ -1,3 +1,21 @@
+export interface IPayrollCreateSave {
+  trainerId: number
+  month: Date
+  baseWage?: number
+  ptPercentage?: number
+  fcPercentage: number
+  sessions?: IReservation[] | string
+  coaching: IResponseList<ICoaching> | string
+}
+
+export interface IPayrollUpdateSave {
+  trainerId: number
+  month: Date
+  baseWage: number
+  ptPercentage: number
+  fcPercentage: number
+}
+
 export interface IPayrollFindAll {
   trainerId: number
   franchiseId: number
@@ -8,6 +26,15 @@ export interface IPayrollFindAllForAdmin {
   startDate: Date
 }
 
+export interface IPayrollFindSave {
+  trainerId: number
+  month: Date
+  baseWage?: number
+  ptPercentage?: number
+  fcPercentage: number
+  sessions?: IReservation[]
+  coaching: IResponseList<ICoaching>
+}
 export interface IPayrollResponse {
   thisMonth: IMonth
 }
@@ -32,12 +59,15 @@ export interface IMonth {
 export interface ICalculatedPayroll {
   userCount: IUserCount
   wageInfo: {
+    fcPercentage: number
+    ptPercentage: number
     baseWage: number
     wage: number
     monthEndWage: number
   }
   reservations?: IReservation[]
   coaching?: IResponseList<ICoaching>
+  isSaved: boolean
 }
 export interface ICoaching {
   ticketId: number
@@ -49,7 +79,6 @@ export interface ICoaching {
   expiredAt: string
   holdingList: IHolding[]
   usedDate?: number
-  totalUser?: number
 }
 
 export interface IReservation {
