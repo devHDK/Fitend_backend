@@ -9,6 +9,7 @@ async function postAuth(req: IRequest, res: Response, next: Function): Promise<v
 
     res.status(200).json(ret)
   } catch (e) {
+    if (e.message === 'disable_user') e.status = 403
     if (e.message === 'not_found') e.status = 404
     if (e.message === 'invalid_password') e.status = 409
     next(e)
