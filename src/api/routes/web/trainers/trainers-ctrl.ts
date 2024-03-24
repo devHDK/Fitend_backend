@@ -16,6 +16,7 @@ async function getMe(req: IRequest, res: Response, next: Function): Promise<void
     res.status(200).json({trainer})
   } catch (e) {
     if (e.message === 'no_token') e.status = 401
+    if (e.message === 'disable_user') e.status = 401
     next(e)
   }
 }

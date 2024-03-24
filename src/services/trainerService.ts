@@ -152,6 +152,7 @@ async function getMe(options: {id: number}): Promise<ITrainer> {
   try {
     const {id} = options
     const trainer = await Trainer.findOne({id})
+    if (trainer && trainer.status === 'disable') throw new Error('disable_user')
     const trainerDevice = await TrainerDevice.findOne(trainer.id, trainer.deviceId, trainer.platform)
     if (!trainerDevice || !trainerDevice.token) throw new Error('no_token')
 
