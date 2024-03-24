@@ -100,7 +100,7 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
             badge: user.badgeCount + 1,
             sound: 'default',
             data: {
-              threadId: threadId.toString()
+              threadId: trainerThreadId.toString()
             }
           })
         }
@@ -135,6 +135,63 @@ async function create(options: IThreadCreateOne): Promise<IThreadCreatedId> {
     await db.commit(connection)
 
     return {id: threadId}
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    throw e
+  }
+}
+
+async function createWelcomeThread(options: {userId: number; trainerId: number}): Promise<IThreadCreatedId> {
+  const connection = await db.beginTransaction()
+  try {
+    const {userId, trainerId} = options
+
+    const user = await User.findOne({id: userId})
+
+    const trainerThread = await Trainer.findOneTrainerThread({id: trainerId})
+    const trainerThreadId = await Thread.create(
+      {
+        title: `${user.nickname.substring(1)}님 안녕하세요!`,
+        content: trainerThread.welcomeThreadContent,
+        gallery: trainerThread.welcomeThreadGallery ? JSON.stringify(trainerThread.welcomeThreadGallery) : null,
+        trainerId,
+        userId,
+        type: 'general',
+        writerType: 'trainer'
+      },
+      connection
+    )
+
+    const contents = `새로운 스레드가 올라왔어요 👀\n${user.nickname.substring(1)}님 안녕하세요! ∙${
+      trainerThread.welcomeThreadContent
+    }`
+    await Notification.create(
+      {
+        userId,
+        type: 'thread',
+        contents,
+        info: JSON.stringify({threadId: trainerThreadId})
+      },
+      connection
+    )
+    const userDevices = await UserDevice.findAllWithUserId(user.id)
+    if (userDevices && userDevices.length > 0) {
+      await User.updateBadgeCount(userId, connection)
+      threadSubscriber.publishThreadPushEvent({
+        tokens: userDevices.map((device: IUserDevice) => device.token),
+        type: 'threadCreate',
+        contents,
+        badge: user.badgeCount + 1,
+        sound: 'default',
+        data: {
+          threadId: trainerThreadId.toString()
+        }
+      })
+    }
+
+    await db.commit(connection)
+
+    return {id: trainerThreadId}
   } catch (e) {
     if (connection) await db.rollback(connection)
     throw e
@@ -269,6 +326,7 @@ async function deleteOneForTrainer(id: number): Promise<void> {
 
 export {
   create,
+  createWelcomeThread,
   findAll,
   findAllUsers,
   findOne,

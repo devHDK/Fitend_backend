@@ -13,6 +13,19 @@ const postThreads = new ApiRouter({
   handler: ctrl.postThreads
 })
 
+const postWelcomeThreads = new ApiRouter({
+  name: 'welcome/:id',
+  paths: ['common/IdPath'],
+  method: 'post',
+  summary: 'Welcome Threads 요청',
+  tags: ['Thread'],
+  // schema: 'requests/mobile/threads/PostWelcomeThreads',
+  responses: {
+    200: {schema: 'responses/mobile/threads/PostWelcomeThreads'}
+  },
+  handler: ctrl.postWelcomeThreads
+})
+
 const getThreads = new ApiRouter({
   name: '',
   method: 'get',
@@ -63,4 +76,4 @@ const deleteThreadsWithId = new ApiRouter({
   handler: ctrl.deleteThreadsWithId
 })
 
-export {postThreads, getThreads, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}
+export {postThreads, postWelcomeThreads, getThreads, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}

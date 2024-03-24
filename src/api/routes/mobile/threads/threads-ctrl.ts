@@ -21,6 +21,19 @@ async function postThreads(req: IRequest, res: Response, next: Function): Promis
   }
 }
 
+async function postWelcomeThreads(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const {id} = req.options
+    const threadId = await ThreadService.createWelcomeThread({
+      userId: req.userId,
+      trainerId: id
+    })
+    res.status(200).json(threadId)
+  } catch (e) {
+    next(e)
+  }
+}
+
 async function getThreads(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const {start, perPage} = req.options
@@ -68,4 +81,4 @@ async function deleteThreadsWithId(req: IRequest, res: Response, next: Function)
   }
 }
 
-export {postThreads, getThreads, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}
+export {postThreads, postWelcomeThreads, getThreads, getThreadsWithId, putThreadsWithId, deleteThreadsWithId}
