@@ -114,6 +114,8 @@ async function signIn(options: {
       trainer &&
       Code.verifyPassword(password, trainer.password.password, trainer.password.salt, Code.passwordIterations.web)
     ) {
+      if (trainer.status === 'disable') throw new Error('disable_user')
+
       const accessToken = await JWT.createAccessTokenForTrainer({id: trainer.id, franchiseId: 1, role: trainer.role})
       const refreshToken = await JWT.createRefreshTokenForTrainer(
         {id: trainer.id, franchiseId: 1, role: trainer.role},
@@ -150,6 +152,7 @@ async function getMe(options: {id: number}): Promise<ITrainer> {
   try {
     const {id} = options
     const trainer = await Trainer.findOne({id})
+    if (trainer && trainer.status === 'disable') throw new Error('disable_user')
     const trainerDevice = await TrainerDevice.findOne(trainer.id, trainer.deviceId, trainer.platform)
     if (!trainerDevice || !trainerDevice.token) throw new Error('no_token')
 

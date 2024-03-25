@@ -10,6 +10,7 @@ const postAuth = new ApiRouter({
   isPublic: true,
   responses: {
     200: {schema: 'responses/web/auth/PostAuth'},
+    403: {description: '계정 상태를 확인해주세요'},
     404: {description: '이메일을 확인해주세요'},
     409: {description: '비밀번호를 확인해주세요'}
   },

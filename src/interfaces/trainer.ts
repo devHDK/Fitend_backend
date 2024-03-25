@@ -49,6 +49,7 @@ export interface ITrainer {
   salt?: string
   profileImage?: string
   role?: 'master' | 'external'
+  status?: 'able' | 'disable'
   createdAt?: string
   deviceId?: string
   platform?: 'ios' | 'android'
