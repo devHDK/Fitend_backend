@@ -20,6 +20,16 @@ async function getMe(req: IRequest, res: Response, next: Function): Promise<void
   }
 }
 
+async function getTrainerDetail(req: IRequest, res: Response, next: Function): Promise<void> {
+  try {
+    const ret = await TrainerService.findOneWithIdForUser(req.userId)
+    res.status(200).json(ret)
+  } catch (e) {
+    if (e.message === 'not_found') e.status = 404
+    next(e)
+  }
+}
+
 async function getTrainersMeetingBoundary(req: IRequest, res: Response, next: Function): Promise<void> {
   try {
     const ret = await TrainerService.findTrainersMeetingBoundaryWithId(req.options.id)
@@ -55,4 +65,4 @@ async function putTrainerMeetingBoundary(req: IRequest, res: Response, next: Fun
   }
 }
 
-export {getTrainers, getMe, getTrainersMeetingBoundary, putFCMToken, putTrainerMeetingBoundary}
+export {getTrainers, getMe, getTrainerDetail, getTrainersMeetingBoundary, putFCMToken, putTrainerMeetingBoundary}
