@@ -21,7 +21,8 @@ async function postTrainers(req: IRequest, res: Response, next: Function): Promi
       largeProfileImage,
       mainVisible,
       role,
-      status
+      status,
+      bankInfo
     } = req.options
     await TrainerService.create({
       nickname,
@@ -41,7 +42,8 @@ async function postTrainers(req: IRequest, res: Response, next: Function): Promi
       largeProfileImage,
       mainVisible,
       role,
-      status
+      status,
+      bankInfo
     })
     res.status(200).json()
   } catch (e) {
@@ -90,7 +92,8 @@ async function putTrainers(req: IRequest, res: Response, next: Function): Promis
       largeProfileImage,
       mainVisible,
       role,
-      status
+      status,
+      bankInfo
     } = req.options
     await TrainerService.updateTrainerForAdmin({
       id,
@@ -111,7 +114,8 @@ async function putTrainers(req: IRequest, res: Response, next: Function): Promis
       largeProfileImage,
       mainVisible,
       role,
-      status
+      status,
+      bankInfo
     })
     res.status(200).json()
   } catch (e) {
