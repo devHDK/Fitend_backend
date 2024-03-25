@@ -263,7 +263,7 @@ async function findOneWithIdForAdmin(id: number): Promise<ITrainerDetail> {
     const [row] = await db.query({
       sql: `SELECT t.id, t.nickname, t.email, t.profileImage, tri.largeProfileImage, t.status, t.mainVisible, t.role,
             tri.instagram, tri.meetingLink, tri.shortIntro, tri.intro, tri.qualification, tri.speciality, tri.coachingStyle, tri.favorite,
-            tri.welcomeThreadContent, ft.fcPercentage
+            tri.welcomeThreadContent, ft.fcPercentage, tri.bankInfo
             FROM ?? t
             JOIN ?? tri ON t.id = tri.trainerId
             JOIN ?? ft ON t.id = ft.trainerId
@@ -281,6 +281,7 @@ async function findOneWithIdForUser(id: number): Promise<ITrainerDetailForUser> 
     const [row] = await db.query({
       sql: `SELECT t.id, t.nickname, t.email, t.createdAt, t.profileImage,
             ti.largeProfileImage, ti.shortIntro, ti.intro, ti.instagram, ti.qualification, ti.speciality, ti.coachingStyle, ti.favorite,
+            ti.bankInfo, ti.welcomeThreadContent, ti.meetingLink,
             (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', f.id, 'name', f.name)) FROM ?? f
             JOIN ?? ft ON ft.trainerId = t.id AND ft.franchiseId = f.id) as franchises
             FROM ?? t 

@@ -10,7 +10,8 @@ import {
   ITrainerMeetingBoundary,
   ITrainerFindExtend,
   ITrainerCreateOneForAdmin,
-  ITrainerUpdate
+  ITrainerUpdate,
+  BankInfo
 } from '../interfaces/trainer'
 import {EventSchedule, Franchise, Meeting, Reservation, Ticket, Trainer, TrainerDevice, User} from '../models/index'
 import {code as Code, jwt as JWT} from '../libs'
@@ -31,6 +32,7 @@ interface IUpdateTrainerForAdmin extends ITrainerUpdate {
   favorite?: string
   largeProfileImage?: string
   fcPercentage?: number
+  bankInfo?: BankInfo
 }
 
 async function create(options: ITrainerCreateOneForAdmin): Promise<void> {
@@ -54,7 +56,8 @@ async function create(options: ITrainerCreateOneForAdmin): Promise<void> {
       largeProfileImage,
       mainVisible,
       role,
-      status
+      status,
+      bankInfo
     } = options
     const passwordHash = Code.createPasswordHash(password, passwordIterations.web)
     const insertId = await Trainer.create(
@@ -73,7 +76,8 @@ async function create(options: ITrainerCreateOneForAdmin): Promise<void> {
         favorite: JSON.stringify(favorite),
         instagram,
         meetingLink,
-        welcomeThreadContent
+        welcomeThreadContent,
+        bankInfo: JSON.stringify(bankInfo)
       },
       connection
     )
@@ -284,6 +288,68 @@ async function findTrainersMeetingBoundaryWithId(id: number): Promise<ITrainerMe
   }
 }
 
+async function updateTrainerDetailForTrainer(options: IUpdateTrainerForAdmin): Promise<void> {
+  const connection = await db.beginTransaction()
+  try {
+    const {
+      id,
+      nickname,
+      email,
+      instagram,
+      meetingLink,
+      shortIntro,
+      intro,
+      welcomeThreadContent,
+      qualification,
+      speciality,
+      coachingStyle,
+      favorite,
+      profileImage,
+      largeProfileImage,
+      bankInfo
+    } = options
+    await Trainer.updateForAdmin({id, nickname, email, profileImage}, connection)
+    await Trainer.updateTrainerInfoForAdmin(
+      {
+        trainerId: id,
+        largeProfileImage,
+        shortIntro,
+        intro,
+        qualification: JSON.stringify(qualification),
+        speciality: JSON.stringify(speciality),
+        coachingStyle: JSON.stringify(coachingStyle),
+        favorite: JSON.stringify(favorite),
+        instagram,
+        meetingLink,
+        welcomeThreadContent,
+        bankInfo: JSON.stringify(bankInfo)
+      },
+      connection
+    )
+    const trainerRelationFranchise = await Trainer.findOneRelationFranchise(id, connection)
+
+    await Trainer.deleteRelationFranchise(id, connection)
+
+    await Trainer.createRelationsFranchises(
+      {
+        franchiseId: 1,
+        trainerId: id,
+        fcPercentage: trainerRelationFranchise.fcPercentage,
+        ptPercentage: trainerRelationFranchise.ptPercentage,
+        baseWage: trainerRelationFranchise.baseWage
+      },
+      connection
+    )
+    await db.commit(connection)
+  } catch (e) {
+    if (connection) await db.rollback(connection)
+    if (e.code === 'ER_DUP_ENTRY') {
+      throw new Error('already_in_use')
+    }
+    throw e
+  }
+}
+
 async function updateTrainerForAdmin(options: IUpdateTrainerForAdmin): Promise<void> {
   const connection = await db.beginTransaction()
   try {
@@ -306,7 +372,8 @@ async function updateTrainerForAdmin(options: IUpdateTrainerForAdmin): Promise<v
       largeProfileImage,
       mainVisible,
       role,
-      status
+      status,
+      bankInfo
     } = options
     if (password) {
       const passwordHash = Code.createPasswordHash(password, passwordIterations.web)
@@ -329,7 +396,8 @@ async function updateTrainerForAdmin(options: IUpdateTrainerForAdmin): Promise<v
         favorite: JSON.stringify(favorite),
         instagram,
         meetingLink,
-        welcomeThreadContent
+        welcomeThreadContent,
+        bankInfo: JSON.stringify(bankInfo)
       },
       connection
     )
@@ -437,5 +505,6 @@ export {
   updateTrainerForAdmin,
   updatePassword,
   updateFCMToken,
-  updateMeetingBoundary
+  updateMeetingBoundary,
+  updateTrainerDetailForTrainer
 }

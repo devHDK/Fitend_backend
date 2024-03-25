@@ -71,4 +71,24 @@ const putTrainerMeetingBoundary = new ApiRouter({
   handler: ctrl.putTrainerMeetingBoundary
 })
 
-export {getTrainers, getMe, getTrainersWithId, getTrainersMeetingBoundary, putFCMToken, putTrainerMeetingBoundary}
+const putTrainerDetail = new ApiRouter({
+  name: 'detail',
+  method: 'put',
+  summary: '트레이너 프로필 수정',
+  tags: ['Trainer'],
+  schema: 'requests/web/trainers/PutTrainerDetail',
+  responses: {
+    200: {description: 'success'}
+  },
+  handler: ctrl.putTrainerDetail
+})
+
+export {
+  getTrainers,
+  getMe,
+  getTrainersWithId,
+  getTrainersMeetingBoundary,
+  putFCMToken,
+  putTrainerMeetingBoundary,
+  putTrainerDetail
+}

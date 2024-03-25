@@ -19,6 +19,7 @@ export type ITrainerCreateOneForAdmin = {
   mainVisible: boolean
   role: 'master' | 'external'
   status: 'able' | 'disable'
+  bankInfo?: BankInfo
 }
 
 export type ICreateTrainerInfoForAdmin = {
@@ -33,6 +34,7 @@ export type ICreateTrainerInfoForAdmin = {
   coachingStyle: string
   favorite: string
   largeProfileImage: string
+  bankInfo?: string
 }
 
 export type CoachingStyle = {
@@ -140,6 +142,7 @@ export interface ITrainerInfoUpdate {
   coachingStyle?: string
   favorite?: string
   largeProfileImage?: string
+  bankInfo?: string
 }
 
 export interface ITrainerMeetingBoundary {
@@ -167,6 +170,7 @@ export type ITrainerDetail = {
   favorite: CoachingStyle
   welcomeThreadContent: string
   fcPercentage: number
+  bankInfo?: BankInfo
 }
 
 export type ITrainerDetailForUser = {
@@ -179,10 +183,13 @@ export type ITrainerDetailForUser = {
   shortIntro: string
   intro: string
   instagram: string
+  meetingLink: string
   qualification: {data: [string]}
   speciality: {data: [string]}
   coachingStyle: {data: [string]}
   favorite: {data: [string]}
+  bankInfo?: BankInfo
+  welcomeThreadContent: string
 }
 
 export type ActiveUsers = {
@@ -193,4 +200,10 @@ export type ActiveUsers = {
 export type FitnessActiveUsersClass = {
   thisMonthCount: number
   lastMonthCount: number
+}
+
+export type BankInfo = {
+  bank: string
+  account: string
+  owner: string
 }

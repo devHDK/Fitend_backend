@@ -66,4 +66,53 @@ async function putTrainerMeetingBoundary(req: IRequest, res: Response, next: Fun
   }
 }
 
-export {getTrainers, getMe, getTrainerDetail, getTrainersMeetingBoundary, putFCMToken, putTrainerMeetingBoundary}
+async function putTrainerDetail(req: IRequest, res: Response, next: Function): Promise<void> {
+  const {
+    nickname,
+    email,
+    instagram,
+    meetingLink,
+    shortIntro,
+    intro,
+    welcomeThreadContent,
+    qualification,
+    speciality,
+    coachingStyle,
+    favorite,
+    profileImage,
+    largeProfileImage,
+    bankInfo
+  } = req.options
+  try {
+    await TrainerService.updateTrainerDetailForTrainer({
+      id: req.userId,
+      nickname,
+      email,
+      instagram,
+      meetingLink,
+      shortIntro,
+      intro,
+      welcomeThreadContent,
+      qualification,
+      speciality,
+      coachingStyle,
+      favorite,
+      profileImage,
+      largeProfileImage,
+      bankInfo
+    })
+    res.status(200).json()
+  } catch (e) {
+    next(e)
+  }
+}
+
+export {
+  getTrainers,
+  getMe,
+  getTrainerDetail,
+  getTrainersMeetingBoundary,
+  putFCMToken,
+  putTrainerMeetingBoundary,
+  putTrainerDetail
+}
