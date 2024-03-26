@@ -73,6 +73,20 @@
     },
     "welcomeThreadContent": {
       "type": "string"
+    },
+    "bankInfo": {
+      "type": "object",
+      "properties": {
+        "bank": {
+          "type": "string"
+        },
+        "account": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        }
+      }
     }
   },
   "required": [

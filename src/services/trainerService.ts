@@ -410,7 +410,7 @@ async function updateTrainerForAdmin(options: IUpdateTrainerForAdmin): Promise<v
         franchiseId: 1,
         trainerId: id,
         fcPercentage,
-        ptPercentage: 30,
+        ptPercentage: trainerRelationFranchise.ptPercentage,
         baseWage: trainerRelationFranchise.baseWage
       },
       connection
