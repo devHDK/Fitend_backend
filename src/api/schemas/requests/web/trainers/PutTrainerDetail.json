@@ -5,10 +5,6 @@
       "type": "string",
       "pattern": "^[a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,20}$"
     },
-    "email": {
-      "type": "string",
-      "format": "email"
-    },
     "profileImage": {
       "type": "string"
     },
@@ -73,25 +69,10 @@
     },
     "welcomeThreadContent": {
       "type": "string"
-    },
-    "bankInfo": {
-      "type": "object",
-      "properties": {
-        "bank": {
-          "type": "string"
-        },
-        "account": {
-          "type": "string"
-        },
-        "owner": {
-          "type": "string"
-        }
-      }
     }
   },
   "required": [
     "nickname",
-    "email",
     "instagram",
     "meetingLink",
     "shortIntro",

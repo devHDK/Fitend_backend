@@ -294,7 +294,6 @@ async function updateTrainerDetailForTrainer(options: IUpdateTrainerForAdmin): P
     const {
       id,
       nickname,
-      email,
       instagram,
       meetingLink,
       shortIntro,
@@ -305,10 +304,9 @@ async function updateTrainerDetailForTrainer(options: IUpdateTrainerForAdmin): P
       coachingStyle,
       favorite,
       profileImage,
-      largeProfileImage,
-      bankInfo
+      largeProfileImage
     } = options
-    await Trainer.updateForAdmin({id, nickname, email, profileImage}, connection)
+    await Trainer.updateForAdmin({id, nickname, profileImage}, connection)
     await Trainer.updateTrainerInfoForAdmin(
       {
         trainerId: id,
@@ -321,8 +319,7 @@ async function updateTrainerDetailForTrainer(options: IUpdateTrainerForAdmin): P
         favorite: JSON.stringify(favorite),
         instagram,
         meetingLink,
-        welcomeThreadContent,
-        bankInfo: JSON.stringify(bankInfo)
+        welcomeThreadContent
       },
       connection
     )
