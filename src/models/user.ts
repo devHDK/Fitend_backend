@@ -158,7 +158,7 @@ async function findAllForTrainer(options: IUserFindAll): Promise<IUserListForTra
             ) as isHolding,
             (SELECT IF(EXISTS(SELECT * FROM ?? ti 
               JOIN ?? tr ON tr.userId = t.id AND tr.ticketId = ti.id
-              WHERE ti.startedAt <= '${currentTime}' AND ti.expiredAt >= '${currentTime}'), TRUE, FALSE)
+              WHERE ti.expiredAt >= '${currentTime}'), TRUE, FALSE)
             ) as isActive
             FROM ?? t
             JOIN ?? fu ON fu.userId = t.id AND fu.franchiseId = ?
