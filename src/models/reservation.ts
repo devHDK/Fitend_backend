@@ -192,6 +192,20 @@ async function findValidCount(ticketId: number): Promise<number> {
   }
 }
 
+async function findTotalAttendanceNoShowCount(ticketId: number): Promise<number> {
+  try {
+    const [row] = await db.query({
+      sql: `SELECT COUNT(*) as count 
+            FROM ?? 
+            WHERE ticketId = ${escape(ticketId)} AND times = 1 AND (status = 'attendance' OR status = 'cancel')`,
+      values: [tableName]
+    })
+    return row ? row.count : 0
+  } catch (e) {
+    throw e
+  }
+}
+
 async function findAttendanceNoShowCount(
   franchiseId: number,
   thisMonthStart: string,
@@ -483,6 +497,7 @@ export {
   findOneWithId,
   findOne,
   findValidCount,
+  findTotalAttendanceNoShowCount,
   findCountByTicketIdAndPrevStartTime,
   findBetweenReservation,
   findBetweenReservationWithTrainerId,

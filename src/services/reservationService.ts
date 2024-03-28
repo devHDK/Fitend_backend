@@ -188,7 +188,7 @@ async function update(options: {id: number; startTime: string; endTime: string; 
     const userId = tickets.users[0].id
 
     if (tickets.type === 'personal' && (status === 'attendance' || status === 'noShow')) {
-      const usedSessionCount = await Reservation.findValidCount(reservedReservation.ticketId)
+      const usedSessionCount = await Reservation.findTotalAttendanceNoShowCount(reservedReservation.ticketId)
 
       if (tickets.totalSession + tickets.serviceSession <= usedSessionCount + 1) {
         const ticket = await Ticket.findOne({id: reservedReservation.ticketId})
