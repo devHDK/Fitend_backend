@@ -319,7 +319,11 @@ async function findAllUsersWorkout(options: IUsersWorkoutSchedulesFindAll): Prom
           startDate: startDateToString,
           endDate
         }),
-        workout: await WorkoutSchedule.findAll({userId: user.id, startDate, interval: interval || 13})
+        workout: await WorkoutSchedule.findAllUsersWorkoutForTrainer({
+          userId: user.id,
+          startDate,
+          interval: interval || 13
+        })
       }))
     )
 
