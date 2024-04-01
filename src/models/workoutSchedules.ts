@@ -127,6 +127,7 @@ async function findAllUsersWorkoutForTrainer(options: IWorkoutScheduleFindAll): 
 async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWorkoutScheduleListForTrainer]> {
   try {
     const {userId, startDate, endDate} = options
+    const endTime = moment(endDate).add(1, 'day').format('YYYY-MM-DD')
     return await db.query({
       sql: `SELECT DATE_FORMAT(ws.startDate, '%Y-%m-%d') as startDate, ws.id as workoutScheduleId, ws.workoutId,
               ws.seq, ws.workoutTitle as title, ws.workoutSubTitle as subTitle,
@@ -138,7 +139,7 @@ async function findAllForTrainer(options: IWorkoutScheduleFindAll): Promise<[IWo
               LEFT JOIN ?? wr ON wr.workoutPlanId = wp.id
               WHERE ws.startDate BETWEEN 
               ${escape(startDate)} AND 
-              ${endDate ? escape(endDate) : escape(moment(startDate).add(30, 'day').format('YYYY-MM-DD'))}
+              ${endDate ? escape(endTime) : escape(moment(startDate).add(30, 'day').format('YYYY-MM-DD'))}
               AND ws.?
               GROUP BY ws.id
               ORDER BY ws.startDate`,

@@ -1,4 +1,5 @@
 import {escape, PoolConnection} from 'mysql'
+import moment from 'moment'
 import {db} from '../loaders'
 import {
   IEventScheduleDetail,
@@ -27,10 +28,11 @@ async function create(options: IEventScheduleCreate, connection?: PoolConnection
 
 async function findAll(options: IEventScheduleFindAll): Promise<[IEventScheduleList]> {
   const {franchiseId, trainerId, startDate, endDate} = options
+  const endTime = moment(endDate).add(1, 'day').format('YYYY-MM-DD')
   try {
     const where = [
       `t.franchiseId = ${escape(franchiseId)}`,
-      `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`
+      `t.startTime BETWEEN ${escape(startDate)} AND ${escape(endTime)}`
     ]
     if (trainerId) where.push(`t.trainerId = ${escape(trainerId)}`)
     return await db.query({

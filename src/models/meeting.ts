@@ -31,8 +31,9 @@ async function create(options: IMeetingCreate, connection?: PoolConnection): Pro
 
 async function findAll(options: IMeetingFindAll): Promise<[IMeetingList]> {
   const {userId, trainerId, startDate, endDate} = options
+  const endTime = moment(endDate).add(1, 'day').format('YYYY-MM-DD')
   try {
-    const where = [`t.startTime BETWEEN ${escape(startDate)} AND ${escape(endDate)}`]
+    const where = [`t.startTime BETWEEN ${escape(startDate)} AND ${escape(endTime)}`]
     if (trainerId) where.push(`t.trainerId = ${escape(trainerId)}`)
     return await db.query({
       sql: `SELECT t.id, t.startTime, t.endTime, t.status,
