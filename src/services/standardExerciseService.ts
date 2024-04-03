@@ -7,7 +7,7 @@ import {
   IStandardExercisesList
 } from '../interfaces/standardExercises'
 import {db} from '../loaders'
-import {Exercise, StandardExercise} from '../models'
+import {Exercise, StandardExercise, TargetMuscle} from '../models'
 
 async function create(options: {
   name: string
@@ -44,6 +44,7 @@ async function uploadExcel(data: IStandardExerciseUpload[]): Promise<any[]> {
   const connection = await db.beginTransaction()
   const duplicatedArr = []
   try {
+    const targetMucles = await TargetMuscle.findAll()
     for (const standard of data) {
       try {
         const name = standard.name
@@ -83,160 +84,18 @@ async function uploadExcel(data: IStandardExerciseUpload[]): Promise<any[]> {
 
         const primaryArr = standard.primary.split(', ')
         const targetMusclePrimaryIds = primaryArr.map((target) => {
-          if (target === '전신') {
-            return {id: 1, type: 'main'}
-          }
-          if (target === '상체') {
-            return {id: 2, type: 'main'}
-          }
-          if (target === '하체') {
-            return {id: 3, type: 'main'}
-          }
-          if (target === '대흉근') {
-            return {id: 4, type: 'main'}
-          }
-          if (target === '전거근') {
-            return {id: 6, type: 'main'}
-          }
-          if (target === '승모근') {
-            return {id: 7, type: 'main'}
-          }
-          if (target === '광배근') {
-            return {id: 8, type: 'main'}
-          }
-          if (target === '능형근') {
-            return {id: 9, type: 'main'}
-          }
-          if (target === '전면 삼각근') {
-            return {id: 10, type: 'main'}
-          }
-          if (target === '측면 삼각근') {
-            return {id: 11, type: 'main'}
-          }
-          if (target === '후면 삼각근') {
-            return {id: 12, type: 'main'}
-          }
-          if (target === '이두근') {
-            return {id: 13, type: 'main'}
-          }
-          if (target === '삼두근') {
-            return {id: 14, type: 'main'}
-          }
-          if (target === '전완근') {
-            return {id: 15, type: 'main'}
-          }
-          if (target === '복직근') {
-            return {id: 16, type: 'main'}
-          }
-          if (target === '복사근') {
-            return {id: 17, type: 'main'}
-          }
-          if (target === '척추기립근') {
-            return {id: 18, type: 'main'}
-          }
-          if (target === '장요근') {
-            return {id: 19, type: 'main'}
-          }
-          if (target === '요방형근') {
-            return {id: 20, type: 'main'}
-          }
-          if (target === '대둔근') {
-            return {id: 21, type: 'main'}
-          }
-          if (target === '중둔근') {
-            return {id: 22, type: 'main'}
-          }
-          if (target === '햄스트링') {
-            return {id: 24, type: 'main'}
-          }
-          if (target === '대퇴사두근') {
-            return {id: 25, type: 'main'}
-          }
-          if (target === '내전근') {
-            return {id: 26, type: 'main'}
-          }
-          if (target === '비복근') {
-            return {id: 28, type: 'main'}
+          const index = targetMucles.findIndex((el) => el.name === target)
+          if (index !== -1) {
+            return {id: targetMucles[index].id, type: 'main'}
           }
           return {id: 1, type: 'main'}
         })
         if (standard.secondary) {
           const secondary = standard.secondary.split(', ')
           const targetMuscleSecondaryIds = secondary.map((target) => {
-            if (target === '전신') {
-              return {id: 1, type: 'sub'}
-            }
-            if (target === '상체') {
-              return {id: 2, type: 'sub'}
-            }
-            if (target === '하체') {
-              return {id: 3, type: 'sub'}
-            }
-            if (target === '대흉근') {
-              return {id: 4, type: 'sub'}
-            }
-            if (target === '전거근') {
-              return {id: 6, type: 'sub'}
-            }
-            if (target === '승모근') {
-              return {id: 7, type: 'sub'}
-            }
-            if (target === '광배근') {
-              return {id: 8, type: 'sub'}
-            }
-            if (target === '능형근') {
-              return {id: 9, type: 'sub'}
-            }
-            if (target === '전면 삼각근') {
-              return {id: 10, type: 'sub'}
-            }
-            if (target === '측면 삼각근') {
-              return {id: 11, type: 'sub'}
-            }
-            if (target === '후면 삼각근') {
-              return {id: 12, type: 'sub'}
-            }
-            if (target === '이두근') {
-              return {id: 13, type: 'sub'}
-            }
-            if (target === '삼두근') {
-              return {id: 14, type: 'sub'}
-            }
-            if (target === '전완근') {
-              return {id: 15, type: 'sub'}
-            }
-            if (target === '복직근') {
-              return {id: 16, type: 'sub'}
-            }
-            if (target === '복사근') {
-              return {id: 17, type: 'sub'}
-            }
-            if (target === '척추기립근') {
-              return {id: 18, type: 'sub'}
-            }
-            if (target === '장요근') {
-              return {id: 19, type: 'sub'}
-            }
-            if (target === '요방형근') {
-              return {id: 20, type: 'sub'}
-            }
-            if (target === '대둔근') {
-              return {id: 21, type: 'sub'}
-            }
-            if (target === '중둔근') {
-              return {id: 22, type: 'sub'}
-            }
-            if (target === '햄스트링') {
-              return {id: 24, type: 'sub'}
-            }
-            if (target === '대퇴사두근') {
-              return {id: 25, type: 'sub'}
-            }
-            if (target === '내전근') {
-              return {id: 26, type: 'sub'}
-            }
-            if (target === '비복근') {
-              return {id: 28, type: 'sub'}
+            const index = targetMucles.findIndex((el) => el.name === target)
+            if (index !== -1) {
+              return {id: targetMucles[index].id, type: 'sub'}
             }
             return {id: 1, type: 'sub'}
           })
